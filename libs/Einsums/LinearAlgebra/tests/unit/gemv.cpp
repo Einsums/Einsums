@@ -13,9 +13,9 @@ using namespace einsums;
 
 template <typename T>
 void test_gemv() {
-    Tensor A = create_tensor<T>("A", 3, 3);
-    Tensor x = create_tensor<T>("x", 3);
-    Tensor y = create_tensor<T>("y", 3);
+    auto A = create_tensor<T>("A", 3, 3);
+    auto x = create_tensor<T>("x", 3);
+    auto y = create_tensor<T>("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -45,9 +45,9 @@ void test_gemv() {
 
 TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
     SECTION("Column Major") {
-        Tensor A = create_tensor<TestType>(false, "A", 3, 3);
-        Tensor x = create_tensor<TestType>(false, "x", 3);
-        Tensor y = create_tensor<TestType>(false, "y", 3);
+        auto A = create_tensor<TestType>(false, "A", 3, 3);
+        auto x = create_tensor<TestType>(false, "x", 3);
+        auto y = create_tensor<TestType>(false, "y", 3);
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
         REQUIRE((x.dim(0) == 3));
@@ -66,9 +66,9 @@ TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float
     }
 
     SECTION("Row Major") {
-        Tensor A = create_tensor<TestType>(true, "A", 3, 3);
-        Tensor x = create_tensor<TestType>(true, "x", 3);
-        Tensor y = create_tensor<TestType>(true, "y", 3);
+        auto A = create_tensor<TestType>(true, "A", 3, 3);
+        auto x = create_tensor<TestType>(true, "x", 3);
+        auto y = create_tensor<TestType>(true, "y", 3);
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
         REQUIRE((x.dim(0) == 3));

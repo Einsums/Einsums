@@ -12,9 +12,10 @@ set(LinearAlgebraHeaders
     Einsums/LinearAlgebra/Bases/ger.hpp Einsums/LinearAlgebra/Bases/high_precision.hpp Einsums/LinearAlgebra/Bases/norm.hpp Einsums/LinearAlgebra/Bases/sum_square.hpp
     Einsums/LinearAlgebra/Bases/syev.hpp
     Einsums/LinearAlgebra/DiskAlgebra.hpp
+    Einsums/LinearAlgebra/ModuleVars.hpp
 )
 
-set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp)
+set(LinearAlgebraSources LinearAlgebra.cpp ForwardDeclarations.cpp ModuleVars.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)

@@ -13,10 +13,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     using namespace einsums::index;
 
     SECTION("C") {
-        auto   C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
@@ -29,10 +29,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("A") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, *A, B, 0.0, &C1);
@@ -45,10 +45,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("B") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, A, *B, 0.0, &C1);
@@ -61,10 +61,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("AB") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, *A, *B, 0.0, &C1);
@@ -77,10 +77,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("CA") {
-        auto   C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, *A, B, 0.0, &C1);
@@ -93,10 +93,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("CB") {
-        auto   C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, A, *B, 0.0, &C1);
@@ -109,10 +109,10 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("CAB") {
-        auto   C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = std::make_shared<Tensor<TestType, 2>>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, *A, *B, 0.0, &C1);
@@ -126,17 +126,15 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
 
     SECTION("explicit prefactors") {
         // Verify the with-prefactors overload works: 2.0 * C += 0.5 * A * B
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         zero(C0);
         zero(C1);
 
-        REQUIRE_NOTHROW(einsum(TestType{2.0}, Indices{i, j}, &C0,
-                               TestType{0.5}, Indices{i, k}, A,
-                               Indices{k, j}, B));
+        REQUIRE_NOTHROW(einsum(TestType{2.0}, Indices{i, j}, &C0, TestType{0.5}, Indices{i, k}, A, Indices{k, j}, B));
         // C1 = 0.5 * (*A) * (*B)  (C1 was zero, so 2.0 * 0 + 0.5 * A * B)
         linear_algebra::gemm<false, false>(0.5, *A, *B, 0.0, &C1);
 
@@ -148,9 +146,9 @@ TEMPLATE_TEST_CASE("shared_ptr", "[tensor_algebra]", float, double) { //, std::c
     }
 
     SECTION("algorithm_choice") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        auto   A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        auto   B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto A  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
+        auto B  = std::make_shared<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         tensor_algebra::detail::AlgorithmChoice alg_choice = tensor_algebra::detail::INDETERMINATE;
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B, &alg_choice));

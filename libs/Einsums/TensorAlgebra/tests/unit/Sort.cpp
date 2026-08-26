@@ -278,8 +278,8 @@ TEST_CASE("Saving and loading permutes") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    Tensor A{"A", 2, 3, 4};
-    Tensor B{"B", 3, 4, 2};
+    Tensor<double, 3> A{"A", 2, 3, 4};
+    Tensor<double, 3> B{"B", 3, 4, 2};
 
     for (int i = 0, ij = 1; i < A.dim(0); i++) {
         for (int j = 0; j < A.dim(1); j++) {

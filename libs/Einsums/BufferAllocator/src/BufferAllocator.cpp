@@ -4,9 +4,21 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Logging.hpp>
+
+#if __cpp_lib_int_pow2 >= 202002L
+#    include <bit>
+#endif
+
+#ifdef EINSUMS_WINDOWS
+#    include <Windows.h>
+#endif
 
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
 #    include <mimalloc.h>
+#else
+#    include <cstdlib>
 #endif
 
 namespace einsums::detail {
@@ -14,24 +26,40 @@ namespace einsums::detail {
 void *allocate(size_t n) {
     void *ptr = nullptr;
 
+    constexpr size_t alignment = 64;
+    constexpr size_t mask      = alignment - 1;
+    size_t const     remainder = n & mask;
+    size_t const     rounding  = (remainder == 0) ? 0 : alignment;
+    size_t const     rounded_n = (n & ~mask) + rounding;
+
+#if __cpp_lib_int_pow2 >= 202002L
+    static_assert(std::has_single_bit(alignment));
+#endif
+
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
-    ptr = mi_malloc_aligned(n, 64);
-#elif defined(_ISOC11_SOURCE) || (__STDC_VERSION__ >= 201112L)
-    ptr = std::aligned_alloc(64, n);
-#else
-    // returns zero on success, or an error value. On Linux (and other systems), p is not modified on failure.
-    if (posix_memalign(&ptr, 64, n) != 0) {
-        ptr = nullptr;
+    ptr = mi_malloc_aligned(n, alignment);
+#elif !defined(EINSUMS_WINDOWS)
+    ptr = std::aligned_alloc(alignment, rounded_n);
+#elif defined(EINSUMS_WINDOWS)
+    if (rounded_n != 0) { // Windows will throw errors if n = 0. Everyone else returns null.
+        ptr = _aligned_malloc(rounded_n, alignment);
     }
 #endif
+
+    if (n != 0 && ptr == nullptr) {
+        EINSUMS_LOG_WARN("Requested {} bytes, rounded to {} bytes, but allocator returned null!", n, rounded_n);
+    }
+
     return ptr;
 }
 
 void deallocate(void *p) {
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
     mi_free(p);
-#else
-    free(static_cast<void *>(p));
+#elif !defined(EINSUMS_WINDOWS)
+    free(p);
+#elif defined(EINSUMS_WINDOWS)
+    _aligned_free(p);
 #endif
 }
 

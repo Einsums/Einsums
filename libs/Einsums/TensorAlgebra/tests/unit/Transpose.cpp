@@ -15,10 +15,10 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
     size_t _i = 3, _j = 4, _k = 5;
 
     SECTION("i,j <- j,k * k,i === true, false, false") {
-        Tensor A  = create_random_tensor<TestType>("A", _j, _k);
-        Tensor B  = create_random_tensor<TestType>("B", _k, _i);
-        Tensor C  = create_tensor<TestType>("C", _i, _j);
-        Tensor C0 = create_tensor<TestType>("C0", _i, _j);
+        auto A  = create_random_tensor<TestType>("A", _j, _k);
+        auto B  = create_random_tensor<TestType>("B", _k, _i);
+        auto C  = create_tensor<TestType>("C", _i, _j);
+        auto C0 = create_tensor<TestType>("C0", _i, _j);
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B));
@@ -40,10 +40,10 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
     }
 
     SECTION("i,j <- k,j * k,i === true, true, false") {
-        Tensor A  = create_random_tensor<TestType>("A", _k, _j);
-        Tensor B  = create_random_tensor<TestType>("B", _k, _i);
-        Tensor C  = create_tensor<TestType>("C", _i, _j);
-        Tensor C0 = create_tensor<TestType>("C0", _i, _j);
+        auto A  = create_random_tensor<TestType>("A", _k, _j);
+        auto B  = create_random_tensor<TestType>("B", _k, _i);
+        auto C  = create_tensor<TestType>("C", _i, _j);
+        auto C0 = create_tensor<TestType>("C0", _i, _j);
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B));
@@ -68,10 +68,10 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
     }
 
     SECTION("i,j <- j,k * i,k === true, false, true") {
-        Tensor A  = create_random_tensor<TestType>("A", _j, _k);
-        Tensor B  = create_random_tensor<TestType>("B", _i, _k);
-        Tensor C  = create_tensor<TestType>("C", _i, _j);
-        Tensor C0 = create_tensor<TestType>("C0", _i, _j);
+        auto A  = create_random_tensor<TestType>("A", _j, _k);
+        auto B  = create_random_tensor<TestType>("B", _i, _k);
+        auto C  = create_tensor<TestType>("C", _i, _j);
+        auto C0 = create_tensor<TestType>("C0", _i, _j);
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B));
@@ -96,10 +96,10 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
     }
 
     SECTION("i,j <- k,j * i,k === true, true, true") {
-        Tensor A  = create_random_tensor<TestType>("A", _k, _j);
-        Tensor B  = create_random_tensor<TestType>("B", _i, _k);
-        Tensor C  = create_tensor<TestType>("C", _i, _j);
-        Tensor C0 = create_tensor<TestType>("C0", _i, _j);
+        auto A  = create_random_tensor<TestType>("A", _k, _j);
+        auto B  = create_random_tensor<TestType>("B", _i, _k);
+        auto C  = create_tensor<TestType>("C", _i, _j);
+        auto C0 = create_tensor<TestType>("C0", _i, _j);
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B));

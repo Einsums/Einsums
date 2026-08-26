@@ -26,41 +26,41 @@ constexpr double fma(double const &x, double const &y, double const &sum) {
 }
 
 constexpr std::complex<float> fma(std::complex<float> const &x, std::complex<float> const &y, std::complex<float> const &sum) {
-    float real_real = std::real(x) * std::real(y);
-    float imag_imag = std::imag(x) * std::imag(y);
-    float real_imag = std::real(x) * std::imag(y);
-    float imag_real = std::imag(x) * std::imag(y);
+    float const real_real = std::real(x) * std::real(y);
+    float const imag_imag = std::imag(x) * std::imag(y);
+    float const real_imag = std::real(x) * std::imag(y);
+    float const imag_real = std::imag(x) * std::imag(y);
 
-    float real = real_real - imag_imag;
-    float imag = real_imag + imag_real;
+    float const real = real_real - imag_imag;
+    float const imag = real_imag + imag_real;
 
-    float real_real_error = mult_error(std::real(x), std::real(y));
-    float imag_imag_error = mult_error(std::imag(x), std::imag(y));
-    float real_imag_error = mult_error(std::real(x), std::imag(y));
-    float imag_real_error = mult_error(std::imag(x), std::real(y));
+    float const real_real_error = mult_error(std::real(x), std::real(y));
+    float const imag_imag_error = mult_error(std::imag(x), std::imag(y));
+    float const real_imag_error = mult_error(std::real(x), std::imag(y));
+    float const imag_real_error = mult_error(std::imag(x), std::real(y));
 
-    float real_error = real_real_error - imag_imag_error;
-    float imag_error = real_imag_error + imag_real_error;
+    float const real_error = real_real_error - imag_imag_error;
+    float const imag_error = real_imag_error + imag_real_error;
 
     return std::complex<float>{real + real_error, imag + imag_error};
 }
 
 constexpr std::complex<double> fma(std::complex<double> const &x, std::complex<double> const &y, std::complex<double> const &sum) {
-    double real_real = std::real(x) * std::real(y);
-    double imag_imag = std::imag(x) * std::imag(y);
-    double real_imag = std::real(x) * std::imag(y);
-    double imag_real = std::imag(x) * std::imag(y);
+    double const real_real = std::real(x) * std::real(y);
+    double const imag_imag = std::imag(x) * std::imag(y);
+    double const real_imag = std::real(x) * std::imag(y);
+    double const imag_real = std::imag(x) * std::imag(y);
 
-    double real = real_real - imag_imag;
-    double imag = real_imag + imag_real;
+    double const real = real_real - imag_imag;
+    double const imag = real_imag + imag_real;
 
-    double real_real_error = mult_error(std::real(x), std::real(y));
-    double imag_imag_error = mult_error(std::imag(x), std::imag(y));
-    double real_imag_error = mult_error(std::real(x), std::imag(y));
-    double imag_real_error = mult_error(std::imag(x), std::real(y));
+    double const real_real_error = mult_error(std::real(x), std::real(y));
+    double const imag_imag_error = mult_error(std::imag(x), std::imag(y));
+    double const real_imag_error = mult_error(std::real(x), std::imag(y));
+    double const imag_real_error = mult_error(std::imag(x), std::real(y));
 
-    double real_error = real_real_error - imag_imag_error;
-    double imag_error = real_imag_error + imag_real_error;
+    double const real_error = real_real_error - imag_imag_error;
+    double const imag_error = real_imag_error + imag_real_error;
 
     return std::complex<double>{real + real_error, imag + imag_error};
 }
@@ -83,14 +83,14 @@ constexpr std::complex<double> fma(double const &x, std::complex<double> const &
 
 template <typename T>
 constexpr T triple_product(T const &x, T const &y, T const &z) {
-    T first_prod  = x * y;
-    T first_error = detail::fma(x, y, -first_prod);
+    T const first_prod  = x * y;
+    T const first_error = detail::fma(x, y, -first_prod);
 
-    T second_prod  = z * first_prod;
-    T second_error = z * first_error;
-    T third_error  = detail::fma(z, first_prod, -second_prod);
+    T const second_prod  = z * first_prod;
+    T const second_error = z * first_error;
+    T const third_error  = detail::fma(z, first_prod, -second_prod);
 
-    T error = second_error + third_error;
+    T const error = second_error + third_error;
 
     return second_prod + error;
 }
@@ -102,7 +102,7 @@ inline void add_scale(T value, T &big_sum, T &medium_sum, T &small_sum, bool &no
     constexpr T smlnum = (small > sfmin) ? small * (1 + std::numeric_limits<T>::epsilon()) : sfmin;
     constexpr T bignum = 1 / smlnum;
 
-    auto ax = std::abs(value);
+    auto const ax = std::abs(value);
 
     if (ax > bignum) {
         big_sum += value * smlnum;
@@ -129,6 +129,7 @@ inline void add_scale(std::complex<T> value, std::complex<T> &big_sum, std::comp
 
 template <typename T>
 inline T combine_accum(T big_sum, T medium_sum, T small_sum) {
+#pragma float_control(precise, on)
     constexpr T sfmin  = std::numeric_limits<T>::min();
     constexpr T small  = 1 / std::numeric_limits<T>::max();
     constexpr T smlnum = (small > sfmin) ? small * (1 + std::numeric_limits<T>::epsilon()) : sfmin;

@@ -15,9 +15,9 @@ TEST_CASE("einsum1", "[tensor]") {
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     SECTION("ik=ij,jk") {
-        Tensor A{"A", 3, 3};
-        Tensor B{"B", 3, 3};
-        Tensor C{"C", 3, 3};
+        Tensor<double, 2> A{"A", 3, 3};
+        Tensor<double, 2> B{"B", 3, 3};
+        Tensor<double, 2> C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -49,9 +49,9 @@ TEST_CASE("einsum1", "[tensor]") {
     }
 
     SECTION("il=ijk,jkl") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
-        Tensor C{"C", 3, 3};
+        Tensor<double, 3> A{"A", 3, 3, 3};
+        Tensor<double, 3> B{"B", 3, 3, 3};
+        Tensor<double, 2> C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -96,18 +96,18 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     // Test if everything passed to einsum is a TensorView.
-    Tensor     A = create_random_tensor<TestType>("A", 3, 5);
-    Tensor     B = create_random_tensor<TestType>("B", 3, 5);
+    auto       A = create_random_tensor<TestType>("A", 3, 5);
+    auto       B = create_random_tensor<TestType>("B", 3, 5);
     TensorView A_view{A, Dim<2>{3, 3}};
     TensorView B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
 
-    Tensor C = create_tensor<TestType>("C2", 10, 10);
+    auto C = create_tensor<TestType>("C2", 10, 10);
     C.zero();
     TensorView C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
 
     // To perform the test we make an explicit copy of the TensorViews into their own Tensors
-    Tensor A_copy = create_tensor<TestType>("A copy", 3, 3);
-    Tensor B_copy = create_tensor<TestType>("B copy", 3, 3);
+    auto A_copy = create_tensor<TestType>("A copy", 3, 3);
+    auto B_copy = create_tensor<TestType>("B copy", 3, 3);
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
@@ -117,7 +117,7 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
     }
 
     // The target solution is determined from not using views
-    Tensor C_solution = create_tensor<TestType>("C solution", 3, 3);
+    auto C_solution = create_tensor<TestType>("C solution", 3, 3);
     C_solution.zero();
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy, &alg_choice));
     REQUIRE(alg_choice == einsums::tensor_algebra::detail::GEMM);

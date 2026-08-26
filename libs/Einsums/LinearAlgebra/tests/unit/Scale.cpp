@@ -11,8 +11,8 @@ TEMPLATE_TEST_CASE("Scale Row", "[tensor]", float, double, std::complex<float>, 
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor I_original = create_random_tensor<TestType>("I", 3, 3);
-    Tensor I_copy     = I_original;
+    auto I_original = create_random_tensor<TestType>("I", 3, 3);
+    auto I_copy     = I_original;
 
     scale_row(1, 2.0, &I_copy);
 
@@ -31,8 +31,8 @@ TEMPLATE_TEST_CASE("Scale Column", "[tensor]", float, double, std::complex<float
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor I_original = create_random_tensor<TestType>("I", 3, 3);
-    Tensor I_copy     = I_original;
+    auto I_original = create_random_tensor<TestType>("I", 3, 3);
+    auto I_copy     = I_original;
 
     scale_column(1, 2.0, &I_copy);
 
@@ -51,8 +51,8 @@ TEMPLATE_TEST_CASE("Scale Row TensorView", "[tensor]", float, double, std::compl
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor     I_original = create_random_tensor<TestType>("I", 3, 3);
-    Tensor     I_copy     = I_original;
+    auto     I_original = create_random_tensor<TestType>("I", 3, 3);
+    auto     I_copy     = I_original;
     TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_row(1, 2.0, &I_view);
@@ -77,8 +77,8 @@ TEMPLATE_TEST_CASE("Scale Column TensorView", "[tensor]", float, double, std::co
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor     I_original = create_random_tensor<TestType>("I", 3, 3);
-    Tensor     I_copy     = I_original;
+    auto     I_original = create_random_tensor<TestType>("I", 3, 3);
+    auto     I_copy     = I_original;
     TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_column(1, 2.0, &I_view);

@@ -18,7 +18,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
     SECTION("Integer power") {
 
-        Tensor A = create_random_tensor<TestType>("A", 10, 10);
+        auto A = create_random_tensor<TestType>("A", 10, 10);
 
         // Can only handle symmetric matrices.
         for (int i = 0; i < A.dim(0); i++) {
@@ -27,11 +27,11 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
             }
         }
 
-        Tensor C = create_tensor_like(A);
+        auto C = create_tensor_like(A);
 
         linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
 
-        Tensor B = linear_algebra::pow(A, TestType{2.0});
+        auto B = linear_algebra::pow(A, TestType{2.0});
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {

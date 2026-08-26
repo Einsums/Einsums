@@ -22,8 +22,8 @@ TEMPLATE_TEST_CASE("element transform", "[tensor_algebra]", float, double, std::
     }
 
     SECTION("tensor") {
-        Tensor A     = create_random_tensor<TestType>("A", 32, 32, 32, 32);
-        Tensor Acopy = A;
+        auto A     = create_random_tensor<TestType>("A", 32, 32, 32, 32);
+        auto Acopy = A;
 
         if constexpr (IsComplexV<TestType>) {
             element_transform(&A, [](TestType val) -> TestType { return TestType{1.0, 1.0} / val; });
@@ -56,10 +56,10 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
     int _i = 5;
 
     SECTION("1") {
-        Tensor A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
-        Tensor Acopy = A;
+        auto A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
+        auto Acopy = A;
 
-        Tensor B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
+        auto B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
 
         element([](TestType const &Aval, TestType const &Bval) { return Aval + Bval; }, &A, B);
 
@@ -76,11 +76,11 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
     }
 
     SECTION("2") {
-        Tensor A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
-        Tensor Acopy = A;
+        auto A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
+        auto Acopy = A;
 
-        Tensor B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
-        Tensor C = create_random_tensor<TestType>("C", _i, _i, _i, _i);
+        auto B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
+        auto C = create_random_tensor<TestType>("C", _i, _i, _i, _i);
 
         element([](TestType const &Aval, TestType const &Bval, TestType const &Cval) { return Aval + Bval + Cval; }, &A, B, C);
 
@@ -108,11 +108,11 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
     int const _i{5}, _j{5};
 
     SECTION("1") {
-        Tensor C  = create_tensor<TestType>("C", _i, _j);
-        Tensor C0 = create_tensor<TestType>("C", _i, _j);
+        auto C  = create_tensor<TestType>("C", _i, _j);
+        auto C0 = create_tensor<TestType>("C", _i, _j);
 
-        Tensor B = create_random_tensor<TestType>("B", _i, _j);
-        Tensor A = create_random_tensor<TestType>("A", _i, _j);
+        auto B = create_random_tensor<TestType>("B", _i, _j);
+        auto A = create_random_tensor<TestType>("A", _i, _j);
 
         element([](TestType const & /*Cval*/, TestType const &Aval, TestType const &Bval) { return Aval * Bval; }, &C0, A, B);
 
@@ -134,11 +134,11 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
     }
 
     SECTION("2") {
-        Tensor C          = create_random_tensor<TestType>("C", _i, _j);
-        Tensor C0         = C;
-        Tensor testresult = create_zero_tensor<TestType>("result", _i, _j);
+        auto C          = create_random_tensor<TestType>("C", _i, _j);
+        auto C0         = C;
+        auto testresult = create_zero_tensor<TestType>("result", _i, _j);
 
-        Tensor A = create_random_tensor<TestType>("A", _i, _j);
+        auto A = create_random_tensor<TestType>("A", _i, _j);
 
         element([](TestType const &Cval, TestType const &Aval) { return Cval * Aval; }, &C, A);
 
@@ -154,13 +154,13 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
     }
 
     SECTION("3") {
-        Tensor parentC  = create_random_tensor<TestType>("parentC", _i, _i, _i, _j);
-        Tensor parentC0 = parentC;
-        Tensor parentA  = create_random_tensor<TestType>("parentA", _i, _i, _i, _j);
+        auto parentC  = create_random_tensor<TestType>("parentC", _i, _i, _i, _j);
+        auto parentC0 = parentC;
+        auto parentA  = create_random_tensor<TestType>("parentA", _i, _i, _i, _j);
 
         auto   C          = parentC(3, All, All, 4);
         auto   C0         = parentC0(3, All, All, 4);
-        Tensor testresult = create_zero_tensor<TestType>("result", _i, _j);
+        auto testresult = create_zero_tensor<TestType>("result", _i, _j);
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {

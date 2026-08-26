@@ -14,8 +14,8 @@
 TEST_CASE("Tensor creation", "[tensor]") {
     using namespace einsums;
 
-    Tensor A(true, "A", 1, 1);
-    Tensor B(true, "B", 1, 1);
+    Tensor<double, 2> A(true, "A", 1, 1);
+    Tensor<double, 2> B(true, "B", 1, 1);
 
     REQUIRE((A.dim(0) == 1 && A.dim(1) == 1));
     REQUIRE((B.dim(0) == 1 && B.dim(1) == 1));
@@ -57,9 +57,9 @@ TEST_CASE("Tensor creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor B("B", 3, 3);
-    einsums::Tensor C("C", 3, 3);
+    einsums::Tensor<double, 2> A("A", 3, 3);
+    einsums::Tensor<double, 2> B("B", 3, 3);
+    einsums::Tensor<double, 2> C("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -104,9 +104,9 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor x("x", 3);
-    einsums::Tensor y("y", 3);
+    einsums::Tensor<double, 2> A("A", 3, 3);
+    einsums::Tensor<double, 1> x("x", 3);
+    einsums::Tensor<double, 1> y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -131,8 +131,8 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
-    einsums::Tensor A(true, "A", 3, 3);
-    einsums::Tensor x(true, "x", 3);
+    einsums::Tensor<double, 2> A(true, "A", 3, 3);
+    einsums::Tensor<double, 1> x(true, "x", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -147,7 +147,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor Invert") {
-    einsums::Tensor A(true, "A", 3, 3);
+    einsums::Tensor<double, 2> A(true, "A", 3, 3);
     A(0, 0) = 1.0;
     A(0, 1) = 2.0;
     A(0, 2) = 3.0;
@@ -168,12 +168,12 @@ TEST_CASE("Tensor Invert") {
 TEST_CASE("TensorView creation", "[tensor]") {
     using namespace einsums;
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
-    einsums::Tensor     A("A", 3, 3, 3);
-    einsums::TensorView viewA(A, einsums::Dim{3, 9});
+    einsums::Tensor<double, 3> A("A", 3, 3, 3);
+    einsums::TensorView        viewA(A, einsums::Dim{3, 9});
 
     // Since we are changing the underlying datatype to float the deduction guides will not work.
-    einsums::Tensor     fA("A", 3, 3, 3);
-    einsums::TensorView fviewA(fA, einsums::Dim{3, 9});
+    einsums::Tensor<double, 3> fA("A", 3, 3, 3);
+    einsums::TensorView        fviewA(fA, einsums::Dim{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
@@ -374,13 +374,13 @@ TEST_CASE("TensorView Ranges") {
 TEST_CASE("reshape") {
     SECTION("1") {
         auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
-        REQUIRE_NOTHROW(einsums::Tensor{std::move(C), "D", 10, -1});
+        REQUIRE_NOTHROW(einsums::Tensor<double, 2>{std::move(C), "D", 10, -1});
         // NOTE: At this point tensor C is no longer valid.
     }
 
     SECTION("2") {
         auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
-        auto D = einsums::Tensor{std::move(C), "D", 100, 10};
+        auto D = einsums::Tensor<double, 2>{std::move(C), "D", 100, 10};
         // NOTE: At this point tensor C is no longer valid.
 
         // println(C); // <- This will cause a segfault when println tries to print the tensor elements
@@ -389,13 +389,13 @@ TEST_CASE("reshape") {
 
     SECTION("3") {
         auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
-        REQUIRE_THROWS(einsums::Tensor{std::move(C), "D", -1, -1});
+        REQUIRE_THROWS(einsums::Tensor<double, 2>{std::move(C), "D", -1, -1});
         // NOTE: At this point tensor C is no longer valid.
     }
 
     SECTION("4") {
         auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
-        REQUIRE_THROWS(einsums::Tensor{std::move(C), "D", 9, 9});
+        REQUIRE_THROWS(einsums::Tensor<double, 2>{std::move(C), "D", 9, 9});
         // NOTE: At this point tensor C is no longer valid.
     }
 }
@@ -428,9 +428,9 @@ template <typename T>
 void test_tensor_from_tensorview() {
     using namespace einsums;
 
-    auto   A  = create_incremented_tensor("A", 10, 10);
-    auto   vA = TensorView(A, Dim{2, 2}, Offset{4, 4});
-    Tensor B  = vA;
+    auto              A  = create_incremented_tensor("A", 10, 10);
+    auto              vA = TensorView(A, Dim{2, 2}, Offset{4, 4});
+    Tensor<double, 2> B  = vA;
 
     A.lock();
 

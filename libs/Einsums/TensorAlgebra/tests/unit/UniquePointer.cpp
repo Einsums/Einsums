@@ -14,9 +14,9 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
     SECTION("C") {
         auto   C0 = std::make_unique<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -31,10 +31,10 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
     }
 
     SECTION("A") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
         auto   A  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -49,9 +49,9 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
     }
 
     SECTION("B") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
         auto   B  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
@@ -67,8 +67,8 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
     }
 
     SECTION("AB") {
-        Tensor C0 = create_tensor<TestType>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
+        auto C0 = create_tensor<TestType>("C0", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
         auto   A  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
         auto   B  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
@@ -86,9 +86,9 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
     SECTION("CA") {
         auto   C0 = std::make_unique<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
         auto   A  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
-        Tensor B  = create_random_tensor<TestType>("B", 5, 3);
+        auto B  = create_random_tensor<TestType>("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -104,8 +104,8 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
     SECTION("CB") {
         auto   C0 = std::make_unique<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
-        Tensor A  = create_random_tensor<TestType>("A", 3, 5);
+        auto C1 = create_tensor<TestType>("C1", 3, 3);
+        auto A  = create_random_tensor<TestType>("A", 3, 5);
         auto   B  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
@@ -122,7 +122,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
     SECTION("CAB") {
         auto   C0 = std::make_unique<Tensor<TestType, 2>>("C0", 3, 3);
-        Tensor C1 = create_tensor<TestType>("C1", 3, 3);
+        auto   C1 = create_tensor<TestType>("C1", 3, 3);
         auto   A  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("A", 3, 5));
         auto   B  = std::make_unique<Tensor<TestType, 2>>(create_random_tensor<TestType>("B", 5, 3));
 

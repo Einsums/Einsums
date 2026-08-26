@@ -10,6 +10,7 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
+#include <Einsums/LinearAlgebra/ModuleVars.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/Utilities/Random.hpp>
 
@@ -21,7 +22,7 @@ void scale(U alpha, CType *C) {
 
     BufferAllocator<typename CType::ValueType> C_alloc;
 
-    size_t buffer_size = C_alloc.work_buffer_size();
+    size_t const buffer_size = C_alloc.work_buffer_size();
 
     if (C->size() <= buffer_size) {
         scale(alpha, &C->get());
@@ -106,7 +107,7 @@ auto dot_base(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     BufferAllocator<typename AType::ValueType> A_alloc;
     BufferAllocator<typename BType::ValueType> B_alloc;
 
-    size_t buffer_size = std::min(A_alloc.work_buffer_size(), B_alloc.work_buffer_size());
+    size_t const buffer_size = std::min(A_alloc.work_buffer_size(), B_alloc.work_buffer_size());
 
     if (A.size() <= buffer_size) {
         BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out;
@@ -225,7 +226,7 @@ void direct_product(U alpha, AType const &A, BType const &B, U beta, CType *C) {
     BufferAllocator<typename BType::ValueType> B_alloc;
     BufferAllocator<typename CType::ValueType> C_alloc;
 
-    size_t buffer_size = std::min(A_alloc.work_buffer_size(), std::min(B_alloc.work_buffer_size(), C_alloc.work_buffer_size()));
+    size_t const buffer_size = std::min(A_alloc.work_buffer_size(), std::min(B_alloc.work_buffer_size(), C_alloc.work_buffer_size()));
 
     if (A.size() <= buffer_size) {
         direct_product(alpha, A.get(), B.get(), beta, &C->get());
@@ -308,28 +309,30 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
         requires MatrixConcept<AType>;
     }
 void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U beta, CType *C) {
-    bool tA = (std::tolower(transA) == 'n') ? false : true;
-    bool tB = (std::tolower(transB) == 'n') ? false : true;
+    bool const tA = (std::tolower(transA) == 'n') ? false : true;
+    bool const tB = (std::tolower(transB) == 'n') ? false : true;
 
     // Calculate the parameters.
-    size_t C_m = C->dim(0);
-    size_t C_n = C->dim(1);
+    size_t const C_m = C->dim(0);
+    size_t const C_n = C->dim(1);
 
-    size_t A_m = (tA) ? A.dim(1) : A.dim(0);
-    size_t A_k = (tA) ? A.dim(0) : A.dim(1);
+    size_t const A_m = (tA) ? A.dim(1) : A.dim(0);
+    size_t const A_k = (tA) ? A.dim(0) : A.dim(1);
 
-    size_t B_k = (tB) ? B.dim(1) : B.dim(0);
-    size_t B_n = (tB) ? B.dim(0) : B.dim(1);
+    size_t const B_k = (tB) ? B.dim(1) : B.dim(0);
+    size_t const B_n = (tB) ? B.dim(0) : B.dim(1);
 
     if (A_m != C_m || A_k != B_k || C_n != B_n) {
         EINSUMS_THROW_EXCEPTION(einsums::dimension_error, "The tensors passed to gemm need to be the same size!");
     }
 
     // We are assuming that we have done some Strassen iterations before, so we need to find the least of these.
-    size_t m = A_m, n = B_n, k = A_k;
+    size_t const m = A_m, n = B_n, k = A_k;
+
+    unsigned int const block_size = Einsums_LinearAlgebra_vars::get_singleton().get_gemm_chunk();
 
     // If all parameters are less than 500, then perform the normal matrix multiplication.
-    if (m <= 500 && n <= 500 && k <= 500) {
+    if (m <= block_size && n <= block_size && k <= block_size) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemm(transA, transB, alpha, A.get(), B.get(), beta, &C->get());
             C->put();
@@ -358,149 +361,155 @@ void gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U b
         }
 
         // Next, we are going to loop over the indices in blocks of 500.
-        int min_dim = 500;
-
-        int m_loops = m / min_dim;
-        int n_loops = n / min_dim;
-        int k_loops = k / min_dim;
+        int const m_loops = m / block_size;
+        int const n_loops = n / block_size;
+        int const k_loops = k / block_size;
 
         for (int i = 0; i < m_loops; i++) {
             for (int j = 0; j < n_loops; j++) {
-                auto C_view = (*C)(Range{i * min_dim, (i + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim});
+                auto C_view = (*C)(Range{i * block_size, (i + 1) * block_size}, Range{j * block_size, (j + 1) * block_size});
                 for (int l = 0; l < k_loops; l++) {
 
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{l * block_size, (l + 1) * block_size}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{l * block_size, (l + 1) * block_size}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{i * block_size, (i + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{i * block_size, (i + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     }
                 }
 
-                if (k - k_loops * min_dim != 0) {
+                if (k - k_loops * block_size != 0) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{k_loops * block_size, k}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{k_loops * block_size, k}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
-                             B(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{k_loops * block_size, k}),
+                             B(Range{k_loops * block_size, k}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     }
                 }
             }
-            if (n - n_loops * min_dim != 0) {
-                auto C_view = (*C)(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto C_view = (*C)(Range{i * block_size, (i + 1) * block_size}, Range{n_loops * block_size, n});
                 for (int l = 0; l < k_loops; l++) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{l * block_size, (l + 1) * block_size}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{n_loops * block_size, n}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{l * block_size, (l + 1) * block_size}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{i * block_size, (i + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{n_loops * block_size, n}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha,
+                             A(Range{i * block_size, (i + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     }
                 }
 
-                if (k - k_loops * min_dim != 0) {
+                if (k - k_loops * block_size != 0) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{n_loops * block_size, n}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{i * min_dim, (i + 1) * min_dim}),
-                             B(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{i * block_size, (i + 1) * block_size}),
+                             B(Range{k_loops * block_size, k}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
-                             B(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{k_loops * block_size, k}),
+                             B(Range{n_loops * block_size, n}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{k_loops * min_dim, k}),
-                             B(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{k_loops * block_size, k}),
+                             B(Range{k_loops * block_size, k}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     }
                 }
             }
         }
-        if (m - m_loops * min_dim != 0) {
+        if (m - m_loops * block_size != 0) {
             for (int j = 0; j < n_loops; j++) {
-                auto C_view = (*C)(Range{m - m_loops * min_dim, m}, Range{j * min_dim, (j + 1) * min_dim});
+                auto C_view = (*C)(Range{m_loops * block_size, m}, Range{j * block_size, (j + 1) * block_size});
                 for (int l = 0; l < k_loops; l++) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{l * block_size, (l + 1) * block_size}, Range{m_loops * block_size, m}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{l * block_size, (l + 1) * block_size}, Range{m_loops * block_size, m}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     }
                 }
 
-                if (k - k_loops * min_dim != 0) {
+                if (k - k_loops * block_size != 0) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{m_loops * block_size, m}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
-                             B(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{m_loops * block_size, m}),
+                             B(Range{k_loops * block_size, k}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
-                             B(Range{j * min_dim, (j + 1) * min_dim}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{k_loops * block_size, k}),
+                             B(Range{j * block_size, (j + 1) * block_size}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
-                             B(Range{k_loops * min_dim, k}, Range{j * min_dim, (j + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{k_loops * block_size, k}),
+                             B(Range{k_loops * block_size, k}, Range{j * block_size, (j + 1) * block_size}), U{1.0}, &C_view);
                     }
                 }
             }
-            if (n - n_loops * min_dim != 0) {
-                auto C_view = (*C)(Range{m - m_loops * min_dim, m}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto C_view = (*C)(Range{m_loops * block_size, m}, Range{n_loops * block_size, n});
                 for (int l = 0; l < k_loops; l++) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
-                             B(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{l * block_size, (l + 1) * block_size}, Range{m_loops * block_size, m}),
+                             B(Range{n_loops * block_size, n}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{l * min_dim, (l + 1) * min_dim}, Range{m - m_loops * min_dim, m}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{l * block_size, (l + 1) * block_size}, Range{m_loops * block_size, m}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{n_loops * min_dim, n}, Range{l * min_dim, (l + 1) * min_dim}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{n_loops * block_size, n}, Range{l * block_size, (l + 1) * block_size}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{l * min_dim, (l + 1) * min_dim}),
-                             B(Range{l * min_dim, (l + 1) * min_dim}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{l * block_size, (l + 1) * block_size}),
+                             B(Range{l * block_size, (l + 1) * block_size}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     }
                 }
 
-                if (k - k_loops * min_dim != 0) {
+                if (k - k_loops * block_size != 0) {
                     if (tA && tB) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
-                             B(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{m_loops * block_size, m}),
+                             B(Range{n_loops * block_size, n}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else if (tA) {
-                        gemm(transA, transB, alpha, A(Range{k_loops * min_dim, k}, Range{m - m_loops * min_dim, m}),
-                             B(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{k_loops * block_size, k}, Range{m_loops * block_size, m}),
+                             B(Range{k_loops * block_size, k}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     } else if (tB) {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
-                             B(Range{n_loops * min_dim, n}, Range{k_loops * min_dim, k}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{k_loops * block_size, k}),
+                             B(Range{n_loops * block_size, n}, Range{k_loops * block_size, k}), U{1.0}, &C_view);
                     } else {
-                        gemm(transA, transB, alpha, A(Range{m - m_loops * min_dim, m}, Range{k_loops * min_dim, k}),
-                             B(Range{k_loops * min_dim, k}, Range{n_loops * min_dim, n}), U{1.0}, &C_view);
+                        gemm(transA, transB, alpha, A(Range{m_loops * block_size, m}, Range{k_loops * block_size, k}),
+                             B(Range{k_loops * block_size, k}, Range{n_loops * block_size, n}), U{1.0}, &C_view);
                     }
                 }
             }
@@ -517,13 +526,14 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
         requires VectorConcept<CType>;
     }
 void gemv(char transA, U alpha, AType const &A, BType const &B, U beta, CType *C) {
-    bool tA = (std::tolower(transA) == 'n') ? false : true;
+    bool const tA = (std::tolower(transA) == 'n') ? false : true;
 
     // We are assuming that we have done some Strassen iterations before, so we need to find the least of these.
-    size_t m = B.dim(0), n = C->dim(0);
+    size_t const m = B.dim(0), n = C->dim(0);
 
     // If all parameters are less than 500, then perform the normal matrix multiplication.
-    if (m < 500 && n < 500) {
+    unsigned int const block_size = Einsums_LinearAlgebra_vars::get_singleton().get_gemv_chunk();
+    if (m <= block_size && n <= block_size) {
         if constexpr (BufferableTensorConcept<AType> && BufferableTensorConcept<BType> && BufferableTensorConcept<CType>) {
             detail::gemv(transA, alpha, A.get(), B.get(), beta, &C->get());
             C->put();
@@ -552,49 +562,51 @@ void gemv(char transA, U alpha, AType const &A, BType const &B, U beta, CType *C
         }
 
         // Next, we are going to loop over the indices in blocks of 500.
-        int min_dim = 100;
-
-        int m_loops = m / min_dim;
-        int n_loops = n / min_dim;
+        int const m_loops = m / block_size;
+        int const n_loops = n / block_size;
 
         for (int i = 0; i < m_loops; i++) {
-            auto B_view = B(Range{i * min_dim, (i + 1) * min_dim});
+            auto B_view = B(Range{i * block_size, (i + 1) * block_size});
             for (int j = 0; j < n_loops; j++) {
-                auto C_view = (*C)(Range{j * min_dim, (j + 1) * min_dim});
+                auto C_view = (*C)(Range{j * block_size, (j + 1) * block_size});
                 if (tA) {
-                    gemv(transA, alpha, A(Range{j * min_dim, (j + 1) * min_dim}, Range{i * min_dim, (i + 1) * min_dim}), B_view, U{1.0},
-                         &C_view);
+                    gemv(transA, alpha, A(Range{j * block_size, (j + 1) * block_size}, Range{i * block_size, (i + 1) * block_size}), B_view,
+                         U{1.0}, &C_view);
                 } else {
-                    gemv(transA, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim}), B_view, U{1.0},
-                         &C_view);
+                    gemv(transA, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{j * block_size, (j + 1) * block_size}), B_view,
+                         U{1.0}, &C_view);
                 }
             }
-            if (n - n_loops * min_dim != 0) {
-                auto C_view = (*C)(Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto C_view = (*C)(Range{n_loops * block_size, n});
                 if (tA) {
-                    gemv(transA, alpha, A(Range{n_loops * min_dim, n}, Range{i * min_dim, (i + 1) * min_dim}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{n_loops * block_size, n}, Range{i * block_size, (i + 1) * block_size}), B_view, U{1.0},
+                         &C_view);
 
                 } else {
-                    gemv(transA, alpha, A(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{i * block_size, (i + 1) * block_size}, Range{n_loops * block_size, n}), B_view, U{1.0},
+                         &C_view);
                 }
             }
         }
-        if (m - m_loops * min_dim != 0) {
-            auto B_view = B(Range{m_loops * min_dim, m});
+        if (m - m_loops * block_size != 0) {
+            auto B_view = B(Range{m_loops * block_size, m});
             for (int j = 0; j < n_loops; j++) {
-                auto C_view = (*C)(Range{j * min_dim, (j + 1) * min_dim});
+                auto C_view = (*C)(Range{j * block_size, (j + 1) * block_size});
                 if (tA) {
-                    gemv(transA, alpha, A(Range{j * min_dim, (j + 1) * min_dim}, Range{m_loops * min_dim, m}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{j * block_size, (j + 1) * block_size}, Range{m_loops * block_size, m}), B_view, U{1.0},
+                         &C_view);
                 } else {
-                    gemv(transA, alpha, A(Range{m_loops * min_dim, m}, Range{j * min_dim, (j + 1) * min_dim}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{m_loops * block_size, m}, Range{j * block_size, (j + 1) * block_size}), B_view, U{1.0},
+                         &C_view);
                 }
             }
-            if (n - n_loops * min_dim != 0) {
-                auto C_view = (*C)(Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto C_view = (*C)(Range{n_loops * block_size, n});
                 if (tA) {
-                    gemv(transA, alpha, A(Range{n_loops * min_dim, n}, Range{m_loops * min_dim, m}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{n_loops * block_size, n}, Range{m_loops * block_size, m}), B_view, U{1.0}, &C_view);
                 } else {
-                    gemv(transA, alpha, A(Range{m_loops * min_dim, m}, Range{n_loops * min_dim, n}), B_view, U{1.0}, &C_view);
+                    gemv(transA, alpha, A(Range{m_loops * block_size, m}, Range{n_loops * block_size, n}), B_view, U{1.0}, &C_view);
                 }
             }
         }
@@ -610,10 +622,12 @@ template <TensorConcept XType, TensorConcept YType, DiskTensorConcept AType, typ
     }
 void ger(U alpha, XType const &X, YType const &Y, AType *A) {
     // We are assuming that we have done some Strassen iterations before, so we need to find the least of these.
-    size_t m = X.dim(0), n = Y.dim(0);
+    size_t const m = X.dim(0), n = Y.dim(0);
+
+    unsigned int const block_size = Einsums_LinearAlgebra_vars::get_singleton().get_ger_chunk();
 
     // If all parameters are less than 500, then perform the normal matrix multiplication.
-    if (m < 500 && n < 500) {
+    if (m <= block_size && n <= block_size) {
         if constexpr (BufferableTensorConcept<XType> && BufferableTensorConcept<YType>) {
             detail::ger(alpha, X.get(), Y.get(), &A->get());
             A->put();
@@ -628,41 +642,39 @@ void ger(U alpha, XType const &X, YType const &Y, AType *A) {
         }
     } else {
         // We are going to loop over the indices in blocks of 500.
-        int min_dim = 100;
-
-        int m_loops = m / min_dim;
-        int n_loops = n / min_dim;
+        int const m_loops = m / block_size;
+        int const n_loops = n / block_size;
 
         // Compute the Y views.
         BufferVector<decltype(Y(All))> Y_views;
         Y_views.reserve(n_loops);
 
         for (int j = 0; j < n_loops; j++) {
-            Y_views.push_back(Y(Range{j * min_dim, (j + 1) * min_dim}));
+            Y_views.push_back(Y(Range{j * block_size, (j + 1) * block_size}));
         }
 
-        auto Y_last = Y(Range{n_loops * min_dim, n});
+        auto Y_last = Y(Range{n_loops * block_size, n});
 
         // Now, loop.
         for (int i = 0; i < m_loops; i++) {
-            auto X_view = X(Range{i * min_dim, (i + 1) * min_dim});
+            auto X_view = X(Range{i * block_size, (i + 1) * block_size});
             for (int j = 0; j < n_loops; j++) {
-                auto A_view = (*A)(Range{i * min_dim, (i + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim});
+                auto A_view = (*A)(Range{i * block_size, (i + 1) * block_size}, Range{j * block_size, (j + 1) * block_size});
                 ger(alpha, X_view, Y_views[j], &A_view);
             }
-            if (n - n_loops * min_dim != 0) {
-                auto A_view = (*A)(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto A_view = (*A)(Range{i * block_size, (i + 1) * block_size}, Range{n_loops * block_size, n});
                 ger(alpha, X_view, Y_last, &A_view);
             }
         }
-        if (m - m_loops * min_dim != 0) {
-            auto X_view = X(Range{m_loops * min_dim, m});
+        if (m - m_loops * block_size != 0) {
+            auto X_view = X(Range{m_loops * block_size, m});
             for (int j = 0; j < n_loops; j++) {
-                auto A_view = (*A)(Range{m_loops * min_dim, m}, Range{j * min_dim, (j + 1) * min_dim});
+                auto A_view = (*A)(Range{m_loops * block_size, m}, Range{j * block_size, (j + 1) * block_size});
                 ger(alpha, X_view, Y_views[j], &A_view);
             }
-            if (n - n_loops * min_dim != 0) {
-                auto A_view = (*A)(Range{m_loops * min_dim, m}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto A_view = (*A)(Range{m_loops * block_size, m}, Range{n_loops * block_size, n});
                 ger(alpha, X_view, Y_last, &A_view);
             }
         }
@@ -678,10 +690,12 @@ template <TensorConcept XType, TensorConcept YType, DiskTensorConcept AType, typ
     }
 void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
     // We are assuming that we have done some Strassen iterations before, so we need to find the least of these.
-    size_t m = X.dim(0), n = Y.dim(0);
+    size_t const m = X.dim(0), n = Y.dim(0);
+
+    unsigned int const block_size = Einsums_LinearAlgebra_vars::get_singleton().get_ger_chunk();
 
     // If all parameters are less than 500, then perform the normal matrix multiplication.
-    if (m < 500 && n < 500) {
+    if (m <= block_size && n <= block_size) {
         if constexpr (BufferableTensorConcept<XType> && BufferableTensorConcept<YType>) {
             detail::gerc(alpha, X.get(), Y.get(), &A->get());
             A->put();
@@ -696,41 +710,39 @@ void gerc(U alpha, XType const &X, YType const &Y, AType *A) {
         }
     } else {
         // We are going to loop over the indices in blocks of 500.
-        int min_dim = 100;
-
-        int m_loops = m / min_dim;
-        int n_loops = n / min_dim;
+        int const m_loops = m / block_size;
+        int const n_loops = n / block_size;
 
         // Compute the Y views.
         BufferVector<decltype(Y(All))> Y_views;
         Y_views.reserve(n_loops);
 
         for (int j = 0; j < n_loops; j++) {
-            Y_views.push_back(Y(Range{j * min_dim, (j + 1) * min_dim}));
+            Y_views.push_back(Y(Range{j * block_size, (j + 1) * block_size}));
         }
 
-        auto Y_last = Y(Range{n_loops * min_dim, n});
+        auto Y_last = Y(Range{n_loops * block_size, n});
 
         // Now, loop.
         for (int i = 0; i < m_loops; i++) {
-            auto X_view = X(Range{i * min_dim, (i + 1) * min_dim});
+            auto X_view = X(Range{i * block_size, (i + 1) * block_size});
             for (int j = 0; j < n_loops; j++) {
-                auto A_view = (*A)(Range{i * min_dim, (i + 1) * min_dim}, Range{j * min_dim, (j + 1) * min_dim});
+                auto A_view = (*A)(Range{i * block_size, (i + 1) * block_size}, Range{j * block_size, (j + 1) * block_size});
                 gerc(alpha, X_view, Y_views[j], &A_view);
             }
-            if (n - n_loops * min_dim != 0) {
-                auto A_view = (*A)(Range{i * min_dim, (i + 1) * min_dim}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto A_view = (*A)(Range{i * block_size, (i + 1) * block_size}, Range{n_loops * block_size, n});
                 gerc(alpha, X_view, Y_last, &A_view);
             }
         }
-        if (m - m_loops * min_dim != 0) {
-            auto X_view = X(Range{m_loops * min_dim, m});
+        if (m - m_loops * block_size != 0) {
+            auto X_view = X(Range{m_loops * block_size, m});
             for (int j = 0; j < n_loops; j++) {
-                auto A_view = (*A)(Range{m_loops * min_dim, m}, Range{j * min_dim, (j + 1) * min_dim});
+                auto A_view = (*A)(Range{m_loops * block_size, m}, Range{j * block_size, (j + 1) * block_size});
                 gerc(alpha, X_view, Y_views[j], &A_view);
             }
-            if (n - n_loops * min_dim != 0) {
-                auto A_view = (*A)(Range{m_loops * min_dim, m}, Range{n_loops * min_dim, n});
+            if (n - n_loops * block_size != 0) {
+                auto A_view = (*A)(Range{m_loops * block_size, m}, Range{n_loops * block_size, n});
                 gerc(alpha, X_view, Y_last, &A_view);
             }
         }

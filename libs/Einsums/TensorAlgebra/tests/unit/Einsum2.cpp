@@ -22,7 +22,7 @@ TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<
         size_t const                e1 = 2;
         std::array<size_t, 6> const untouched1{0, 1, 3, 4, 5, 6};
 
-        Tensor original = create_random_tensor<TestType>("Original", d1_size, d2_size, d3_size);
+        auto original = create_random_tensor<TestType>("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<
             }
         }
 
-        Tensor copy = original;
+        Tensor<TestType, 3> copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
         TensorView view = original(d1, All, All);

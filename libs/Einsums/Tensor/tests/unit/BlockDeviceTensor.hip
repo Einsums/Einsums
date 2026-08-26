@@ -195,9 +195,9 @@ TEST_CASE("Block Device Tensor Info", "[tensor][block-tensor][gpu]") {
 
 /*
 TEST_CASE("Tensor GEMMs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor B("B", 3, 3);
-    einsums::Tensor C("C", 3, 3);
+    auto A("A", 3, 3);
+    auto B("B", 3, 3);
+    auto C("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -224,9 +224,9 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor x("x", 3);
-    einsums::Tensor y("y", 3);
+    auto A("A", 3, 3);
+    auto x("x", 3);
+    auto y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -243,8 +243,8 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor x("x", 3);
+    auto A("A", 3, 3);
+    auto x("x", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -259,7 +259,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor Invert") {
-    einsums::Tensor A("A", 3, 3);
+    auto A("A", 3, 3);
     A(0, 0) = 1.0;
     A(0, 1) = 2.0;
     A(0, 2) = 3.0;
@@ -280,11 +280,11 @@ TEST_CASE("Tensor Invert") {
 
 TEST_CASE("TensorView creation", "[tensor]") {
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
-    einsums::Tensor     A("A", 3, 3, 3);
+    auto     A("A", 3, 3, 3);
     einsums::TensorView viewA(A, einsums::Dim<2>{3, 9});
 
     // Since we are changing the underlying datatype to float the deduction guides will not work.
-    einsums::Tensor     fA("A", 3, 3, 3);
+    auto     fA("A", 3, 3, 3);
     einsums::TensorView fviewA(fA, einsums::Dim<2>{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
@@ -301,7 +301,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor-2D HDF5") {
-    einsums::Tensor A("A", 3, 3);
+    auto A("A", 3, 3);
 
     for (int i = 0, ij = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++, ij++) {
