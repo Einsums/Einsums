@@ -74,9 +74,9 @@ EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
         attach = true;
     }
 
-    if (signum != SIGINT && attach) {
-        util::attach_debugger();
-    }
+    //    if (signum != SIGINT && attach) {
+    //        util::attach_debugger();
+    //    }
 
     /// @todo If einsums.diagnostics_on_terminate is true then print out a lot of information.
 

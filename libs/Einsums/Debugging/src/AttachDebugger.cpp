@@ -50,9 +50,9 @@ void attach_debugger() {
               << " ready for attaching debugger. Once attached set i = 1 "
                  "and continue"
               << std::endl;
-    while (i == 0) {
-        sleep(1);
-    }
+//    while (i == 0) {
+//        sleep(1);
+//    }
 #endif
 }
 

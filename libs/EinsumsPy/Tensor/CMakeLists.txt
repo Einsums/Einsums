@@ -5,9 +5,11 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorHeaders EinsumsPy/Tensor/PyTensor.hpp EinsumsPy/Tensor/TensorExport.hpp)
+set(TensorHeaders EinsumsPy/Tensor/PyTensor.hpp EinsumsPy/Tensor/TensorExport.hpp 
+  EinsumsPy/Tensor/BlockTensorExport.hpp EinsumsPy/Tensor/PyBlockTensor.hpp
+  EinsumsPy/Tensor/PyTiledTensor.hpp)
 
-set(TensorSources Export.cpp)
+set(TensorSources Export.cpp Export_float.cpp Export_double.cpp Export_cfloat.cpp Export_cdouble.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

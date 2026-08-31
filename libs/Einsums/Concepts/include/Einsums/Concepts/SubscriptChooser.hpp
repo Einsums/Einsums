@@ -53,6 +53,15 @@ template <RankTensorConcept TensorType, typename ContainerType>
 inline auto subscript_tensor(TensorType &&tensor, ContainerType const &args) -> decltype(tensor(args)) {
     return tensor(args);
 }
+
+template <TensorConcept TensorType, typename ContainerType>
+    requires requires {
+        requires !std::is_integral_v<ContainerType>;
+        requires !RankTensorConcept<TensorType>;
+    }
+inline auto subscript_tensor(TensorType &&tensor, ContainerType const &args) -> decltype(tensor(args)) {
+    return tensor(args);
+}
 #endif
 
 } // namespace einsums

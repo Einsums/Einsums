@@ -25,7 +25,7 @@ def test_sumsq(length, dtype, array):
 
     check = sum(abs(x) ** 2 for x in lst_view)
 
-    assert check == pytest.approx(scale**2 * sumsq)
+    assert check == pytest.approx(scale ** 2 * sumsq)
 
 
 @pytest.mark.parametrize(
@@ -37,9 +37,9 @@ def test_gemm(a, b, c, dtype, array):
     B = ein.utils.random_tensor_factory("B", [b + 2, c + 2], dtype, array)
     C = ein.utils.tensor_factory("C", [a + 2, c + 2], dtype, array)
 
-    A_view = A[:a, :b]
-    B_view = B[:b, :c]
-    C_view = C[:a, :c]
+    A_view = A[:a,:b]
+    B_view = B[:b,:c]
+    C_view = C[:a,:c]
 
     C_actual = np.array([[0.0 for i in range(c)] for j in range(a)], dtype=dtype)
 
@@ -65,7 +65,7 @@ def test_mat_vec_prod(a, b, dtype, array):
     B = ein.utils.random_tensor_factory("B", [b + 2, 2], dtype, array)
     C = ein.utils.tensor_factory("C", [a + 2, 2], dtype, array)
 
-    A_view = A[:a, :b]
+    A_view = A[:a,:b]
     B_view = B[:b, 0]
     C_view = C[:a, 0]
 
@@ -88,7 +88,7 @@ def test_syev(width, dtype, array):
         "Test tensor", [width + 2, width + 2], dtype, array
     )
 
-    A_view = A[:width, :width]
+    A_view = A[:width,:width]
 
     # Make A symmetric/hermitian.
     for i in range(width + 2):
@@ -120,7 +120,7 @@ def test_syev(width, dtype, array):
         div = A[i, 0]
         for j in range(width):
             A[i, j] /= div
-        norm = np.linalg.norm(list(A[i, :width]))
+        norm = np.linalg.norm(list(A[i,:width]))
         for j in range(width):
             A[i, j] /= norm
 
@@ -154,7 +154,7 @@ def test_geev(width, dtype, array):
         "Test tensor", [width + 2, width + 2], dtype, array
     )
 
-    A_view = A[:width, :width]
+    A_view = A[:width,:width]
 
     A_copy = np.array(A_view.copy(), dtype=dtype)
 
@@ -227,8 +227,8 @@ def test_gesv(a, b, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a + 2, dtype=dtype, method=array)
     B = ein.utils.random_tensor_factory("B", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :a]
-    B_view = B[:a, :b]
+    A_view = A[:a,:a]
+    B_view = B[:a,:b]
 
     A_copy = A_view.copy()
     B_copy = B_view.copy()
@@ -246,7 +246,7 @@ def test_gesv(a, b, dtype, array):
 def test_scale(a, b, c, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2, c + 2], dtype, array)
 
-    A_view = A[:a, :b, :c]
+    A_view = A[:a,:b,:c]
 
     A_copy = A_view.copy()
 
@@ -265,7 +265,7 @@ def test_scale(a, b, c, dtype, array):
 def test_scale_row(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :b]
+    A_view = A[:a,:b]
 
     A_copy = A_view.copy()
 
@@ -286,7 +286,7 @@ def test_scale_row(a, b, dtype, array):
 def test_scale_col(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :b]
+    A_view = A[:a,:b]
 
     A_copy = A_view.copy()
 
@@ -354,7 +354,7 @@ def test_ger(a, b, dtype, array):
 
     X_view = X[:a]
     Y_view = Y[:, 0]
-    A_view = A[:a, :b]
+    A_view = A[:a,:b]
 
     alpha = ein.utils.random.random()
 
@@ -375,7 +375,7 @@ def test_ger(a, b, dtype, array):
 def test_invert(a, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a + 2, dtype=dtype, method=array)
 
-    A_view = A[:a, :a]
+    A_view = A[:a,:a]
 
     A_copy = A_view.copy()
 
@@ -396,7 +396,7 @@ def test_invert(a, dtype, array):
 def test_norm(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :b]
+    A_view = A[:a,:b]
 
     assert ein.core.norm(ein.core.FROBENIUS, A_view) == pytest.approx(
         np.linalg.norm(A_view, "fro")
@@ -438,8 +438,8 @@ def test_dot_mats(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :b]
-    B_view = B[:a, :b]
+    A_view = A[:a,:b]
+    B_view = B[:a,:b]
 
     test = dtype(0.0)
 
@@ -472,8 +472,8 @@ def test_true_dot_mats(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A_view = A[:a, :b]
-    B_view = B[:a, :b]
+    A_view = A[:a,:b]
+    B_view = B[:a,:b]
 
     test = dtype(0.0)
 
@@ -490,7 +490,7 @@ def test_true_dot_mats(a, b, dtype, array):
 def test_svd(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A = A_base[:a, :b]
+    A = A_base[:a,:b]
 
     A_copy = np.array(A.copy(), dtype=dtype)
 
@@ -514,7 +514,7 @@ def test_svd(a, b, dtype, array):
 def test_nullspace(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A = A_base[:a, :b]
+    A = A_base[:a,:b]
 
     A_copy = np.array(A.copy(), dtype=dtype)
 
@@ -546,7 +546,7 @@ def test_nullspace(a, b, dtype, array):
 def test_sdd(a, b, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A = A_base[:a, :b]
+    A = A_base[:a,:b]
 
     A_copy = np.array(A.copy(), dtype=dtype)
 
@@ -568,26 +568,30 @@ def test_sdd(a, b, dtype, array):
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13), (13, 11)])
 def test_qr(a, b, dtype, array):
+    ein.log_debug("Creating the array.")
     A_base = ein.utils.random_tensor_factory("A", [a + 2, b + 2], dtype, array)
 
-    A = A_base[:a, :b]
+    ein.log_debug("Creating the view of the array.")
+    A = A_base[:a,:b]
 
-    A_copy = np.array(A.copy(), dtype=dtype)
-
+    ein.log_debug("Decomposing the array.")
     QR, tau = ein.core.qr(A)
 
+    ein.log_debug("Getting the Q matrix.")
     Q = ein.core.q(QR, tau)
+    ein.log_debug("Getting the R matrix.")
     R = ein.core.r(QR, tau)
-
-    Q_expected, R_expected = np.linalg.qr(A_copy)
-
-    for i in range(Q_expected.shape[0]):
-        for j in range(Q_expected.shape[1]):
-            assert Q[i, j] == pytest.approx(Q_expected[i, j])
-
-    for i in range(R_expected.shape[0]):
-        for j in range(R_expected.shape[1]):
-            assert R[i, j] == pytest.approx(R_expected[i, j])
+    
+    ein.log_debug("Reconstructing the original matrix.")
+    A_test = ein.utils.create_tensor("A test", [a, b], dtype=dtype)
+    
+    ein.core.gemm("N", "N", 1.0, Q, R, 0.0, A_test)
+    
+    ein.log_debug("Comparing the original matrix to the reconstructed matrix.")
+    for i in range(a):
+        for j in range(b):
+            assert A[i, j] == pytest.approx(A_test[i, j])
+    ein.log_debug("Done.")
 
 
 @pytest.mark.parametrize("dims", [[10, 10], [10, 10, 10], [11, 12, 13], [100]])
@@ -715,7 +719,7 @@ def test_direct_prod(dims, dtype, array):
 def test_det(a, dtype, array):
     A_base = ein.utils.random_tensor_factory("A", [a + 2, a + 2], dtype, array)
 
-    A = A_base[:a, :a]
+    A = A_base[:a,:a]
 
     A_numpy = A.copy()
 

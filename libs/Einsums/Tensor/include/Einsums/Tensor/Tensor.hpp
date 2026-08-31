@@ -9,9 +9,11 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
+#include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Iterator/Application.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
@@ -72,7 +74,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
  * @tparam T data type of the underlying tensor data
  * @tparam Rank the rank of the tensor
  */
-template <typename T, size_t rank>
+template <typename T, size_t rank_>
 struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
     /**
      * @typedef ValueType
@@ -86,7 +88,7 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      *
      * @brief The rank of the tensor.
      */
-    constexpr static size_t Rank = rank;
+    constexpr static size_t Rank = rank_;
 
     /**
      * @typedef Vector
@@ -225,13 +227,34 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     }
 
     /**
+     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     *
+     * @param dims The dimensions of the new tensor in Dim form.
+     */
+    template <Container Dims>
+    explicit Tensor(Dims const &dims) {
+        if (dims.size() != Rank) {
+            EINSUMS_THROW_EXCEPTION(rank_error, "Wrong number of dimensions passed to tensor!");
+        }
+
+        for (size_t i = 0; i < Rank; i++) {
+            _dims[i] = dims[i];
+        }
+
+        size_t size = dims_to_strides(_dims, _strides);
+
+        // Resize the data structure
+        _data.resize(size);
+    }
+
+    /**
      * @brief Construct a new Tensor object from a TensorView.
      *
      * Data is explicitly copied from the view to the new tensor.
      *
      * @param other The tensor view to copy.
      */
-    Tensor(TensorView<T, rank> const &other) : _name{other.name()}, _dims{other.dims()} {
+    Tensor(TensorView<T, rank_> const &other) : _name{other.name()}, _dims{other.dims()} {
         size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
@@ -614,15 +637,15 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
      */
-    template <typename Container>
+    template <Container Index>
         requires requires {
-            requires !std::is_integral_v<Container>;
-            requires !std::is_same_v<Container, Dim<Rank>>;
-            requires !std::is_same_v<Container, Stride<Rank>>;
-            requires !std::is_same_v<Container, Offset<Rank>>;
-            requires !std::is_same_v<Container, Range>;
+            requires !std::is_same_v<Index, Dim<Rank>>;
+            requires !std::is_same_v<Index, Stride<Rank>>;
+            requires !std::is_same_v<Index, Offset<Rank>>;
+            requires !std::is_same_v<Index, Range>;
+			requires std::is_integral_v<typename Index::value_type>;
         }
-    T &operator()(Container const &index) {
+    T &operator()(Index const &index) {
         if (index.size() < Rank) {
             [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
@@ -636,15 +659,15 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
     /**
      * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
      */
-    template <typename Container>
+    template <Container Index>
         requires requires {
-            requires !std::is_integral_v<Container>;
-            requires !std::is_same_v<Container, Dim<Rank>>;
-            requires !std::is_same_v<Container, Stride<Rank>>;
-            requires !std::is_same_v<Container, Offset<Rank>>;
-            requires !std::is_same_v<Container, Range>;
+            requires !std::is_same_v<Index, Dim<Rank>>;
+            requires !std::is_same_v<Index, Stride<Rank>>;
+            requires !std::is_same_v<Index, Offset<Rank>>;
+            requires !std::is_same_v<Index, Range>;
+			requires std::is_integral_v<typename Index::value_type>;
         }
-    T const &operator()(Container const &index) const {
+    T const &operator()(Index const &index) const {
         if (index.size() < Rank) {
             [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
@@ -653,6 +676,18 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal];
+    }
+
+    template <Container Index>
+        requires(std::is_same_v<typename Index::value_type, Range>)
+    TensorView<T, Rank> operator()(Index const &index) {
+        return einsums::apply<Rank>(*this, index);
+    }
+
+    template <Container Index>
+        requires(std::is_same_v<typename Index::value_type, Range>)
+    TensorView<T, Rank> const operator()(Index const &index) const {
+        return einsums::apply<Rank>(*this, index);
     }
 
     /**
@@ -904,6 +939,8 @@ struct Tensor : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mu
      */
     void set_name(std::string const &new_name) { _name = new_name; };
 
+    constexpr size_t rank() const { return Rank; }
+
   private:
     std::string  _name{"(unnamed)"};
     Dim<Rank>    _dims;
@@ -1061,6 +1098,8 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
      */
     Stride<0> strides() const { return Stride{}; }
 
+    constexpr size_t rank() const { return Rank; }
+
   private:
     /**
      * @var _name
@@ -1083,7 +1122,7 @@ struct Tensor<T, 0> final : tensor_base::CoreTensor, design_pats::Lockable<std::
  * @tparam T The data type being stored.
  * @tparam Rank The rank of the view.
  */
-template <typename T, size_t rank>
+template <typename T, size_t rank_>
 struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::recursive_mutex>, tensor_base::AlgebraOptimizedTensor {
     /**
      * @typedef ValueType
@@ -1097,7 +1136,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @brief The rank of the tensor view.
      */
-    constexpr static size_t Rank = rank;
+    constexpr static size_t Rank = rank_;
 
     /**
      * @typedef underlying_type
@@ -1563,6 +1602,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             requires !std::is_same_v<Container, Stride<Rank>>;
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
+            requires einsums::Container<Container>;
+            requires std::is_integral_v<typename Container::value_type_t>;
         }
     T &operator()(Container const &index) {
         if (index.size() < Rank) {
@@ -1573,6 +1614,30 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal + _offset_ordinal];
+    }
+
+    template <Container Indices>
+        requires requires { requires std::is_same_v<Range, typename Indices::value_type_t>; }
+    TensorView<T, Rank> operator()(Indices const &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
+        }
+
+        return einsums::apply<Rank>(*this, index);
+    }
+
+    template <Container Indices>
+        requires requires { requires std::is_same_v<Range, typename Indices::value_type_t>; }
+    TensorView<T, Rank> const operator()(Indices const &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
+        }
+
+        return einsums::apply<Rank>(*this, index);
     }
 
     /**
@@ -1589,6 +1654,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
             requires !std::is_same_v<Container, Stride<Rank>>;
             requires !std::is_same_v<Container, Offset<Rank>>;
             requires !std::is_same_v<Container, Range>;
+            requires einsums::Container<Container>;
+            requires std::is_integral_v<typename Container::value_type_t>;
         }
     T const &operator()(Container const &index) const {
         if (index.size() < Rank) {
@@ -1705,6 +1772,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      * Get the number of elements in the view.
      */
     size_t size() const { return _dims[0] * _index_strides[0]; }
+
+    constexpr size_t rank() const { return Rank; }
 
   private:
     /**

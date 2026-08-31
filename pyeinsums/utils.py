@@ -12,9 +12,9 @@ import functools
 import typing
 import random
 
-try :
+try:
     from einsums import core
-except ImportError :
+except ImportError:
     from pyeinsums import core
 
 import numpy as np
@@ -30,6 +30,7 @@ def labeled_section(arg: typing.Union[str, typing.Callable]):
     if isinstance(arg, str):
 
         def labeled_section_outer(func):
+
             @functools.wraps(func)
             def labeled_section_inner(*args, **kwargs):
                 section = core.Section(f"{func.__name__} {arg}")
@@ -194,6 +195,44 @@ def create_tensor(*args, dtype=float):
     raise ValueError(f"Can not create tensor with data type {dtype}!")
 
 
+def create_block_tensor(*args, dtype=float):
+    """
+    Create a block tensor. The arguments will be passed to the constructor.
+    The data type can also be specified.
+
+    :param args: The arguments to pass to the constructor.
+    :param dtype: The data type to be stored. Can only be single or double precision real or complex floating points.
+    """
+    if dtype in __singles:
+        return core.BlockTensorF(*args)
+    if dtype in __doubles:
+        return core.BlockTensorD(*args)
+    if dtype in __complex_singles:
+        return core.BlockTensorC(*args)
+    if dtype in __complex_doubles:
+        return core.BlockTensorZ(*args)
+    raise ValueError(f"Can not create tensor with data type {dtype}!")
+
+
+def create_tiled_tensor(*args, dtype=float):
+    """
+    Create a tiled tensor. The arguments will be passed to the constructor.
+    The data type can also be specified.
+
+    :param args: The arguments to pass to the constructor.
+    :param dtype: The data type to be stored. Can only be single or double precision real or complex floating points.
+    """
+    if dtype in __singles:
+        return core.TiledTensorF(*args)
+    if dtype in __doubles:
+        return core.TiledTensorD(*args)
+    if dtype in __complex_singles:
+        return core.TiledTensorC(*args)
+    if dtype in __complex_doubles:
+        return core.TiledTensorZ(*args)
+    raise ValueError(f"Can not create tensor with data type {dtype}!")
+
+
 def tensor_factory(name: str, dims: list[int], dtype=float, method="einsums"):
     """
     Create either a NumPy array or an Einsums tensor. This function is mostly used in tests
@@ -284,8 +323,61 @@ def create_random_tensor(name: str, dims: list[int], dtype=float):
         raise ValueError(f"Can not create random tensor with data type {dtype}!")
 
 
+def create_random_block_tensor(name: str, rank: int, block_dims: list[int], dtype=float):
+    """
+    Creates a new Einsums block tensor and fills it with random data.
+
+    :param name: The name of the tensor.
+    :param dims: The dimensions of each of the blocks. They are forced to be square.
+    :param dtype: The data type to store.
+    :raises ValueError: if the data type is not a real or complex floating point type.
+    """
+    
+    out = create_block_tensor(name, rank, dtype=dtype)
+    
+    for index, dim in enumerate(block_dims):
+        out.push_block(create_random_tensor(f"block {index}", [dim for _ in range(rank)], dtype))
+    return out
+
+
+def create_random_tiled_tensor(name: str, grid: list[list[int]], dtype=float, fill_ratio: float=1.0):
+    """
+    Creates a new Einsums tiled tensor and fills it with random data. The ratio of empty blocks can be specified.
+    
+    :param name: The name for the tensor.
+    :param grid: A grid specification.
+    :param dtype: The data type for the tensor to store.
+    :param fill_ratio: The ratio of tiles to populate. Defaults to 1, which populates all tiles.
+    """
+    
+    out = create_tiled_tensor(name, grid, dtype=dtype)
+    
+    index = [0 for _ in range(len(grid))]
+    
+    done = False 
+    
+    while not done:
+        
+        trial = random.random()
+        
+        if trial < fill_ratio:
+            out.set_tile(index, create_random_tensor(f"tile {index}", [grid[i][index[i]] for i in range(len(grid))], dtype=dtype))
+        
+        curr_pos = 0
+        index[0] += 1
+        for i in range(len(index) - 1):
+            if index[i] >= len(grid[i]):
+                index[i] = 0
+                index[i + 1] += 1
+            else:
+                break
+        if index[-1] >= len(grid[-1]):
+            done = True
+    return out
+
+
 def random_tensor_factory(
-    name: str, dims: list[int], dtype: type = float, method: str = "einsums"
+    name: str, dims: list[int], dtype: type=float, method: str="einsums"
 ):
     """
     Create either a NumPy array or an Einsums tensor and fills it with random data.
@@ -306,7 +398,27 @@ def random_tensor_factory(
             "Can only produce tensors when the method is 'einsums' or 'numpy'."
         )
 
+    """
+    Create either a NumPy array or an Einsums tensor and fills it with random data.
+    This function is mostly used in tests to ensure cross functionality.
 
+    :param name: The name of the tensor.
+    :param rank: the rank of the tensors.
+    :param dims: The dimensions of each of the blocks of the tensor.
+    :param dtype: The data type for the tensor.
+    :param method: The kind of tensor to create for the blocks. It should be either "einsums"  or "numpy'.
+    :raises ValueError: if the method is not valid.
+    """
+    if method == "einsums":
+        return create_random_block_tensor(name, rank, block_dims, dtype)
+    elif method == "numpy":
+        out = create_block_tensor(name, rank)
+    
+        for dim in block_dims:
+            out.push_back(create_random_numpy_array([dim for _ in range(rank)], dtype))
+        return out
+
+    
 def create_random_definite(name: str, rows: int, mean=1.0, dtype=float):
     """
     Create a random positive definite tensor. If the ``mean`` parameter is
@@ -350,7 +462,7 @@ def create_random_definite_numpy_array(rows: int, mean=1.0, dtype=float):
 
 
 def random_definite_tensor_factory(
-    name: str, rows: int, mean=1.0, dtype: type = float, method: str = "einsums"
+    name: str, rows: int, mean=1.0, dtype: type=float, method: str="einsums"
 ):
     """
     Create a random positive definite NumPy array or Einsums tensor. If the ``mean`` parameter is
@@ -435,8 +547,8 @@ def random_semidefinite_tensor_factory(
     rows: int,
     mean=1.0,
     force_zeros=1,
-    dtype: type = float,
-    method: str = "einsums",
+    dtype: type=float,
+    method: str="einsums",
 ):
     """
     Create a random positive semidefinite NumPy array or Einsums tensor. If the ``mean`` parameter is
@@ -463,3 +575,4 @@ def random_semidefinite_tensor_factory(
         raise ValueError(
             "Can only produce tensors when the method is 'einsums' or 'numpy'."
         )
+
