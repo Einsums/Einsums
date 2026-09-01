@@ -13,6 +13,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <variant>
 
@@ -245,15 +246,29 @@ class EINSUMS_EXPORT GlobalConfigMap {
      */
     size_t max_size() const noexcept;
 
+    enum KeyMembership : uint8_t { None = 0x0, String = 0x1, Int = 0x2, Double = 0x4, Bool = 0x8 };
+
+    bool has_key(std::string const &key, KeyMembership *key_member_of = nullptr) const;
+
+    bool key_in_strings(std::string const &key) const;
+
+    bool key_in_ints(std::string const &key) const;
+
+    bool key_in_doubles(std::string const &key) const;
+
+    bool key_in_bools(std::string const &key) const;
+
     /**
      * @brief Get the string value stored at the given key.
      *
      * Throws an error if the key is not in the map.
      *
      * @param key The key to query.
-     * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     * @param default_value The default value. If the key is not in the map, this is what will be returned.
      */
-    std::string const &get_string(std::string const &key, std::string const &dephault = "") const;
+    std::string const &get_string(std::string const &key, std::string const &default_value = "") const;
+
+    void set_string(std::string const &key, std::string const &value);
 
     /**
      * @brief Get the integer value stored at the given key.
@@ -261,9 +276,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * Throws an error if the key is not in the map.
      *
      * @param key The key to query.
-     * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     * @param default_value The default value. If the key is not in the map, this is what will be returned.
      */
-    std::int64_t get_int(std::string const &key, std::int64_t dephault = 0) const;
+    std::int64_t get_int(std::string const &key, std::int64_t default_value = 0) const;
+
+    void set_int(std::string const &key, std::int64_t vaule);
 
     /**
      * @brief Get the floating point value stored at the given key.
@@ -271,9 +288,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * Throws an error if the key is not in the map.
      *
      * @param key The key to query.
-     * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     * @param default_value The default value. If the key is not in the map, this is what will be returned.
      */
-    double get_double(std::string const &key, double dephault = 0) const;
+    double get_double(std::string const &key, double default_value = 0) const;
+
+    void set_double(std::string const &key, double value);
 
     /**
      * @brief Get the boolean flag stored at the given key.
@@ -281,9 +300,11 @@ class EINSUMS_EXPORT GlobalConfigMap {
      * Throws an error if the key is not in the map.
      *
      * @param key The key to query.
-     * @param dephault The default value. If the key is not in the map, this is what will be returned.
+     * @param default_value The default value. If the key is not in the map, this is what will be returned.
      */
-    bool get_bool(std::string const &key, bool dephaul = false) const;
+    bool get_bool(std::string const &key, bool default_value = false) const;
+
+    void set_bool(std::string const &key, bool value);
 
     /**
      * @brief Returns the map containing string options.

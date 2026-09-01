@@ -4,7 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - libblas[build=*mkl]
-  - mkl-devel
-  - mkl
+  - mkl-devel<2026
+  - mkl<2026
   - tbb-devel
 

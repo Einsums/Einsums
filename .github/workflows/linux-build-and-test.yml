@@ -80,7 +80,7 @@ jobs:
           restore-keys: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
-      - name: Setup Miniforge
+      - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
@@ -127,6 +127,17 @@ jobs:
 
       - name: Configure CMake
         run: |
+          echo $PYTHONPATH
+          which python
+          which python3
+          echo $PATH
+          
+          if [[ -z "$CMAKE_PREFIX_PATH" ]]; then
+            export CMAKE_PREFIX_PATH=$CONDA_PREFIX/lib/cmake
+          fi
+          
+          echo $CMAKE_PREFIX_PATH
+          
           cmake \
             -G Ninja \
             -S "$GITHUB_WORKSPACE/src" \
