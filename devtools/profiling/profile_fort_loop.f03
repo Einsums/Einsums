@@ -83,15 +83,26 @@ CONTAINS
    SUBROUTINE parse_args(norbs, trials)
       INTEGER, INTENT(OUT) :: norbs, trials
 
-      INTEGER :: i, state
-      CHARACTER(len=64) :: arg
+      INTEGER :: i, state, arg_length
+      CHARACTER(len=:), ALLOCATABLE :: arg
+
+      INTEGER :: argc
+
+      argc = command_argument_count()
 
       state = 0
       norbs = 20
       trials = 20
 
-      DO i = 1, iargc()
-         CALL GETARG(i, arg)
+      DO i = 1, argc
+         CALL get_command_argument(i, length=arg_length)
+         IF(ALLOCATED(arg)) THEN
+           DEALLOCATE(arg)
+         END IF
+
+         ALLOCATE(CHARACTER(len=arg_length) :: arg)
+
+         CALL get_command_argument(i, arg)
          SELECT CASE(state)
           CASE (0)
             IF(arg == "-n") THEN
@@ -126,6 +137,10 @@ CONTAINS
             STOP "Something really bad happened."
          END SELECT
       END DO
+
+      IF(ALLOCATED(arg)) THEN
+        DEALLOCATE(arg)
+      END IF
    END SUBROUTINE parse_args
 
 END MODULE loops
