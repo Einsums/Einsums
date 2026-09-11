@@ -144,13 +144,13 @@ The benchmark was performed on a system with the following specifications.
 |                         +------------------+------------------------+
 |                         | Storage          | 2 TB NVME SSD storage  |
 |                         +------------------+------------------------+
-|                         | Operating System | Debian Bookworm        |
+|                         | Operating System | Debian Trixie          |
 |                         +------------------+------------------------+
-|                         | Einsums Version  | 1.1-pre                |
+|                         | Einsums Version  | 1.1.5                  |
 |                         +------------------+------------------------+
-|                         | C++ Compiler     | Clang 19.7.1           |
+|                         | C++ Compiler     | GCC 15.2.0             |
 |                         +------------------+------------------------+
-|                         | Fortran Compiler | GCC Fortran 12.2.0     |
+|                         | Fortran Compiler | GCC Fortran 15.2.0     |
 |                         +------------------+------------------------+
 |                         | BLAS Vendor      | Netlib 3.9.0           |
 +-------------------------+------------------+------------------------+
