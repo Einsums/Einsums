@@ -146,7 +146,7 @@ The benchmark was performed on a system with the following specifications.
 |                         +------------------+------------------------+
 |                         | Operating System | Debian Trixie          |
 |                         +------------------+------------------------+
-|                         | Einsums Version  | 1.1.5                  |
+|                         | Einsums Version  | 1.2-pre                |
 |                         +------------------+------------------------+
 |                         | C++ Compiler     | GCC 15.2.0             |
 |                         +------------------+------------------------+
