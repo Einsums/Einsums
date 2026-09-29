@@ -115,7 +115,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         auto const C_target_strides = tensor_algebra::get_stride_for(*C, target_position_in_C, C_unique);
 
         if (C_prefactor == CDataType{0.0}) {
-            C->zero();
+            *C = CDataType{0.0};
         } else {
             *C *= C_prefactor;
         }

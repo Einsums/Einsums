@@ -572,6 +572,74 @@ int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, double *A, in
     return out;
 }
 
+__global__ void list_sum_kernel_general(size_t elements, hipFloatComplex *const __restrict__ X, int incx, hipFloatComplex *out) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    size_t elements_per_group = num_threads / elements;
+
+    size_t remainder = num_threads % elements;
+
+    hipFloatComplex const *ptr = X + thread_id * elements_per_group * incx;
+
+    hipFloatComplex sum;
+
+    einsums::gpu::make_zero(sum);
+
+    for(size_t i = 0; i < elements_per_group * incx; i += incx) {
+        sum += ptr[i];
+    }
+
+    for(int i = warpSize / 2; i != 0; i /= 2) {
+        sum.x += __shfl_down(sum.x, i);
+        sum.y += __shfl_down(sum.y, i);
+    }
+
+    if(thread_id == 0) {
+        ptr = X + num_threads * elements_per_group * incx;
+        for(size_t i = num_threads * elements_per_group * incx; i < elements * incx; i += incx) {
+            sum += ptr[i];
+        }
+    }
+
+    einsums::gpu::atomicAdd_wrap(out, sum);
+}
+
+__global__ void list_sum_kernel_general(size_t elements, hipDoubleComplex *const __restrict__ X, int incx, hipDoubleComplex *out) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    size_t elements_per_group = num_threads / elements;
+
+    size_t remainder = num_threads % elements;
+
+    hipDoubleComplex const *ptr = X + thread_id * elements_per_group * incx;
+
+    hipDoubleComplex sum;
+
+    einsums::gpu::make_zero(sum);
+
+    for(size_t i = 0; i < elements_per_group * incx; i += incx) {
+        sum += ptr[i];
+    }
+
+    for(int i = warpSize / 2; i != 0; i /= 2) {
+        sum.x += __shfl_down(sum.x, i);
+        sum.y += __shfl_down(sum.y, i);
+    }
+
+    if(thread_id == 0) {
+        ptr = X + num_threads * elements_per_group * incx;
+        for(size_t i = num_threads * elements_per_group * incx; i < elements * incx; i += incx) {
+            sum += ptr[i];
+        }
+    }
+
+    einsums::gpu::atomicAdd_wrap(out, sum);
+}
+
 } // namespace gpu
 
 } // namespace detail

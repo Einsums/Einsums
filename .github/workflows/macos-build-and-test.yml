@@ -134,6 +134,7 @@ jobs:
           export BINARIES="$(find . -name "*_test")"
           echo "PROFILES=$PROFILES"
           echo "BINARIES=$BINARIES"
+          echo "$(which llvm-profdata)"
           llvm-profdata merge $PROFILES -o default.profdata
           llvm-cov export -format=lcov -ignore-filename-regex="_deps|einsums-env" -instr-profile=default.profdata $BINARIES > coverage.info
 
