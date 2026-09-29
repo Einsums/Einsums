@@ -74,7 +74,7 @@ inline std::basic_string<wchar_t> corrected_format(std::basic_string_view<wchar_
 
     size_t out_size = fmt::formatted_size(runtime_format, std::forward<Args>(args)...);
 
-    std::basic_string<wchar_t> out(out_size);
+    std::basic_string<wchar_t> out(out_size, 0);
 
     fmt::format_to(out.begin(), runtime_format, std::forward<Args>(args)...);
 
