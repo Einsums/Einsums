@@ -143,6 +143,10 @@ function(einsums_add_module libname modulename)
   if(WIN32)
     target_compile_definitions(${libname}_${modulename} PRIVATE _CRT_SECURE_NO_WARNINGS)
   endif()
+  
+  if(NOT "${module_library_type}" STREQUAL "INTERFACE")
+    target_compile_definitions(${libname}_${modulename} PRIVATE EINSUMS_EXPORTS)
+  endif()
 
   if(EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
