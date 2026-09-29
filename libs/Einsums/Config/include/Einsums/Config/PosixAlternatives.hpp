@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <Einsums/Config/CompilerSpecific.hpp>
+#include <Einsums/Config/ExportDefinitions.hpp>
+
 #ifdef EINSUMS_WINDOWS
 #    include <process.h>
 #    include <stdlib.h>
