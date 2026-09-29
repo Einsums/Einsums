@@ -139,7 +139,7 @@ void report(std::string const &fname, bool append) {
         EINSUMS_LOG_ERROR("Error while opening the profile file.");
 
         auto errno_1 = errno;
-        
+
         char *error_str = std::strerror(errno_1);
 
         if (error_str == nullptr) {
