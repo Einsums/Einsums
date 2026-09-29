@@ -140,11 +140,12 @@ function(einsums_add_module libname modulename)
     ${libname}_${modulename} ${module_public_keyword}
   )
   
-  if(WIN32)
-    target_compile_definitions(${libname}_${modulename} PRIVATE _CRT_SECURE_NO_WARNINGS)
-  endif()
+  
   
   if(NOT "${module_library_type}" STREQUAL "INTERFACE")
+    if(WIN32)
+      target_compile_definitions(${libname}_${modulename} PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endif()
     target_compile_definitions(${libname}_${modulename} PRIVATE EINSUMS_EXPORTS)
   endif()
 
