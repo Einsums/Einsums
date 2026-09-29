@@ -79,13 +79,13 @@ foreach(lib ${EINSUMS_LIBS})
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
   
-<<<<<<< Updated upstream
+
   if(WIN32)
     target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
-=======
+  endif()
+
   if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
     target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
->>>>>>> Stashed changes
   endif()
 
   if(EINSUMS_WITH_BACKTRACES)
