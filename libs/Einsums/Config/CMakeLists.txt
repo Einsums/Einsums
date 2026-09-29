@@ -15,13 +15,14 @@ set(ConfigHeaders
     Einsums/Config/ForceInline.hpp
     Einsums/Config/Namespace.hpp
     Einsums/Config/Types.hpp
-    Einsums/Config/StdAlternatives.hpp
+    Einsums/Config/FmtAlternatives.hpp
+    Einsums/Config/PosixAlternatives.hpp
 )
 
-set(ConfigSources Version.cpp Types.cpp StdAlternatives.cpp)
+set(ConfigSources Version.cpp Types.cpp PosixAlternatives.cpp)
 
 if(NOT WIN32)
-  list(APPEND ConfigSources Sort.cpp)
+  list(APPEND ConfigSources)
 endif()
 
 include(Einsums_AddModule)

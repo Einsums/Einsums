@@ -3,13 +3,13 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Config/StdAlternatives.hpp>
 #include <Einsums/Errors/Error.hpp>
 
 #include <fmt/base.h>
 #include <fmt/format.h>
 
 #include <cstdio>
+#include <Config/FmtAlternatives.hpp>
 
 namespace einsums::detail {
 

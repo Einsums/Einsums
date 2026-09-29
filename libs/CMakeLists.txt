@@ -116,6 +116,7 @@ foreach(lib ${EINSUMS_LIBS})
   if(WIN32)
     add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
       -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
+    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS)
   endif()
   einsums_export_targets(${lib})
 
@@ -158,6 +159,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     if(WIN32)
       add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
         -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
+      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS)
     endif()
     einsums_export_targets(${lib})
 

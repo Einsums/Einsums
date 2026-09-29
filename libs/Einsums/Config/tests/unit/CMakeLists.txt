@@ -15,7 +15,7 @@
 set(ConfigTests)
 
 if((NOT MSVC) OR (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-  list(APPEND ConfigTests WindowsWrappers.cpp)
+  list(APPEND ConfigTests)
 endif()
   
 

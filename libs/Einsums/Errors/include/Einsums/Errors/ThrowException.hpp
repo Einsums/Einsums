@@ -5,9 +5,9 @@
 
 #pragma once
 
+#include <Einsums/Config/FmtAlternatives.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
-#include <Einsums/Config/StdAlternatives.hpp>
 
 #include <fmt/base.h>
 #include <fmt/format.h>
@@ -21,7 +21,7 @@
     throw except(einsums::detail::make_error_message(einsums::type_name<except>(), "", std::source_location::current())) /**/
 
 #define EINSUMS_THROW_EXCEPTION(except, ...)                                                                                               \
-    throw except(einsums::detail::make_error_message(einsums::type_name<except>(), einsums::detail::corrected_format(__VA_ARGS__), \
+    throw except(einsums::detail::make_error_message(einsums::type_name<except>(), einsums::detail::corrected_format(__VA_ARGS__),         \
                                                      std::source_location::current())) /**/
 
 #define EINSUMS_THROW_CODED_EXCEPTION(except, code, ...)                                                                                   \
