@@ -56,13 +56,11 @@ FMT_NODISCARD FMT_INLINE auto formatted_size(fmt::text_style ts, fmt::format_str
 // Windows thinks fmtlib does heap bashing. I don't think it does, but it still causes segfaults.
 template <typename... Args>
 inline std::basic_string<char> corrected_format(std::basic_string_view<char> const &format, Args &&...args) {
-    std::basic_string<char> out;
-
     auto runtime_format = fmt::runtime(format);
 
     size_t out_size = fmt::formatted_size(runtime_format, std::forward<Args>(args)...);
 
-    out.resize(out_size);
+    std::basic_string<char> out(out_size, 0);
 
     fmt::format_to(out.begin(), runtime_format, std::forward<Args>(args)...);
 
@@ -71,13 +69,12 @@ inline std::basic_string<char> corrected_format(std::basic_string_view<char> con
 
 template <typename... Args>
 inline std::basic_string<wchar_t> corrected_format(std::basic_string_view<wchar_t> const &format, Args &&...args) {
-    std::basic_string<wchar_t> out;
 
     auto runtime_format = fmt::runtime(format);
 
     size_t out_size = fmt::formatted_size(runtime_format, std::forward<Args>(args)...);
 
-    out.resize(out_size);
+    std::basic_string<wchar_t> out(out_size);
 
     fmt::format_to(out.begin(), runtime_format, std::forward<Args>(args)...);
 
