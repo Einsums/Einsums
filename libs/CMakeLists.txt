@@ -78,6 +78,10 @@ foreach(lib ${EINSUMS_LIBS})
   if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
+  
+  if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+    target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
+  endif()
 
   if(EINSUMS_HAVE_BACKTRACES)
     # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
@@ -141,6 +145,10 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 
     # adds some RPATH and link flags
     einsums_extend_with_python(${lib})
+    
+    if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+      target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
+    endif()
 
     install(
       TARGETS ${lib}
