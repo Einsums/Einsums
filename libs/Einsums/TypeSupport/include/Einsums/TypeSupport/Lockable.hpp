@@ -31,6 +31,8 @@ class Lockable {
      * necessary for subclasses so that they can define copy constructors.
      */
     Lockable(Lockable<Mutex> const &) : lock_{} {};
+    
+    virtual ~Lockable() = default;
 
     /**
      * @brief Lock the object.
