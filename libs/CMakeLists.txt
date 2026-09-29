@@ -116,7 +116,7 @@ foreach(lib ${EINSUMS_LIBS})
   if(WIN32)
     add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
       -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
-    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
   endif()
   einsums_export_targets(${lib})
 
@@ -141,8 +141,46 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
   foreach(lib ${PYTHON_LIBS})
     set(EINSUMS_PYTHON_LIB_NAME ${lib})
     pybind11_add_module(${lib} MODULE src/dummy.cpp)
+    einsums_append_coverage_compiler_flags_to_target(${lib} PUBLIC)
 
-    set_target_properties(${lib} PROPERTIES OUTPUT_NAME ${lib} EXPORT_NAME ${lib} FOLDER "Core")
+    # Add underscores before uppercase letters, except the first one
+    string(REGEX REPLACE "([A-Z])" "_\\1" transformed_string ${lib})
+    # Remove the leading underscore if it exists
+    string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
+    # Convert to uppercase
+    string(TOUPPER ${transformed_string} LIB_NAME)
+    string(MAKE_C_IDENTIFIER ${LIB_NAME} MACRO_LIB_NAME)
+
+    target_compile_definitions(${lib} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
+
+    if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
+        target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
+    endif()
+
+    if(EINSUMS_WITH_BACKTRACES)
+      # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
+      # required if static linking.
+      if(WIN32)
+        add_custom_command(
+          TARGET ${lib}
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:cpptrace::cpptrace>
+                $<TARGET_FILE_DIR:${lib}>
+        )
+      endif()
+
+      # Create a .dSYM file on macOS
+      if(APPLE AND dsymutil_EXECUTABLE)
+        add_custom_command(
+          TARGET ${lib}
+          POST_BUILD
+          COMMENT "Calling dsymutil on $<TARGET_FILE:${lib}>"
+          COMMAND dsymutil $<TARGET_FILE:${lib}>
+        )
+      endif()
+    endif()
+
+    set_target_properties(${lib} PROPERTIES OUTPUT_NAME ${lib} SOVERSION ${EINSUMS_SOVERSION} EXPORT_NAME ${lib} FOLDER "Core")
 
     # adds some RPATH and link flags
     einsums_extend_with_python(${lib})
@@ -159,7 +197,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     if(WIN32)
       add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
         -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
-      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS)
+      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
     endif()
     einsums_export_targets(${lib})
 
