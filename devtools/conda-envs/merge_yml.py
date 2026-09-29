@@ -8,6 +8,7 @@ import argparse
 
 packages_to_filter = [
     'cpptrace' if platform.system() == 'Windows' else None,
+    'cpptrace' if platform.machine().lower() in ('aarch64', 'arm64') and platform.system() != 'Darwin' else None
 ]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -58,8 +59,8 @@ if __name__ == "__main__":
         action="store_true"
     )
 
-    parser.add_argument("compiler", choices=["default", "intel", "windows"], default="default", nargs="?",
-                        help="The compiler to use (choices: default, intel, Windows). Default implies default for your platform.")
+    parser.add_argument("compiler", choices=["default", "clang", "intel", "windows"], default="default", nargs="?",
+                        help="The compiler to use (choices: default, clang, intel, Windows). Default implies default for your platform.")
 
     # Optional positional argument with choices
     parser.add_argument(
