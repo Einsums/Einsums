@@ -177,7 +177,10 @@ void push(std::string name) {
 
         if (!current_timer) {
             if (already_warned == false) {
-                println("Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will receive.");
+                println(
+                    "einsums::profile::Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will "
+                    "receive. Avoid this message by calling einsums::initialize() before using a timer or using the einsums::start or "
+                    "einsums::run handlers.");
                 already_warned = true;
             }
             return;
@@ -204,8 +207,8 @@ void pop() {
     if (omp_get_thread_num() == 0) {
         if (current_timer == nullptr) {
             if (already_warned == false) {
-                println(
-                    "Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
+                println("einsums::profile::Timer::pop: current_timer is already nullptr; something might be wrong. This is the only "
+                        "warning you will receive. This may have happened if pop was called too many times.");
                 already_warned = true;
             }
             return;
@@ -226,8 +229,8 @@ void pop(duration elapsed) {
     if (omp_get_thread_num() == 0) {
         if (current_timer == nullptr) {
             if (already_warned == false) {
-                println(
-                    "Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
+                println("einsums::profile::Timer::pop: current_timer is already nullptr; something might be wrong. This is the only "
+                        "warning you will receive. This may have happened if pop was called too many times.");
                 already_warned = true;
             }
             return;

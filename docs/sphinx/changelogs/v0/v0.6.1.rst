@@ -4,12 +4,13 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v0.6.1.rst
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
 
-.. include:: v0.6.0.rst
+==============
+v0.6.1 Release
+==============
 
-.. include:: v0.5.0.rst
+What's Changed
+--------------
 
-.. include:: v0.4.1.rst
-
-.. include:: v0.4.0.rst
+* Changed ``find_package`` semantics to only require the same major version instead of major and minor.
