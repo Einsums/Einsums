@@ -184,7 +184,7 @@ jobs:
           echo "SOURCES=$SOURCES"
           gcov -r $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude \*/_deps/\* --exclude /usr/\* --exclude \*/einsums-env/\* \
-              --ignore-error inconsistent
+              --ignore-errors inconsistent,unused
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'default') }}

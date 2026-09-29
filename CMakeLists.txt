@@ -503,6 +503,11 @@ get_property(
   PROPERTY INT_INTERFACE
 )
 einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
+einsums_info("BLA_VENDOR ${BLA_VENDOR}")
+
+if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+  target_link_libraries(einsums_base_libraries INTERFACE $<$<CXX_COMPILER_ID:GNU>:atomic>)
+endif()
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
