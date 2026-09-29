@@ -82,6 +82,10 @@ foreach(lib ${EINSUMS_LIBS})
   if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
+  
+  if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+    target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
+  endif()
 
   if(EINSUMS_HAVE_BACKTRACES)
     # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
