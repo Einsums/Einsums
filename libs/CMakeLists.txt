@@ -78,6 +78,10 @@ foreach(lib ${EINSUMS_LIBS})
   if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
+  
+  if(WIN32)
+    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
+  endif()
 
   if(EINSUMS_WITH_BACKTRACES)
     # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
@@ -116,7 +120,6 @@ foreach(lib ${EINSUMS_LIBS})
   if(WIN32)
     add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
       -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
-    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
   endif()
   einsums_export_targets(${lib})
 
@@ -152,6 +155,10 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     string(MAKE_C_IDENTIFIER ${LIB_NAME} MACRO_LIB_NAME)
 
     target_compile_definitions(${lib} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
+    
+    if(WIN32)
+      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
+    endif()
 
     if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
         target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
@@ -180,7 +187,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
       endif()
     endif()
 
-    set_target_properties(${lib} PROPERTIES OUTPUT_NAME ${lib} SOVERSION ${EINSUMS_SOVERSION} EXPORT_NAME ${lib} FOLDER "Core")
+    set_target_properties(${lib} PROPERTIES OUTPUT_NAME ${lib} EXPORT_NAME ${lib} FOLDER "Core")
 
     # adds some RPATH and link flags
     einsums_extend_with_python(${lib})
@@ -197,7 +204,6 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     if(WIN32)
       add_custom_command(TARGET ${lib} POST_BUILD COMMAND ${CMAKE_COMMAND} 
         -E copy -t $<TARGET_FILE_DIR:${lib}> $<TARGET_RUNTIME_DLLS:${lib}> COMMAND_EXPAND_LISTS)
-      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
     endif()
     einsums_export_targets(${lib})
 

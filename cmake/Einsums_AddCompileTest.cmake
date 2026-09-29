@@ -124,16 +124,13 @@ function(einsums_add_header_tests category)
       # remove extension, '/' --> '_'
       string(REGEX REPLACE ".hpp" "_hpp" test_file "${relpath}")
       string(REGEX REPLACE "/" "_" test_name "${test_file}")
-      
-      message("Relative path is ${relpath}")
-      
+            
       if(NOT relpath MATCHES "Einsums[a-zA-Z0-9_-]*/[a-zA-Z0-9_-]+/")
-      	string(REGEX REPLACE "[/\.]" "_" short_name "${category}.Top.${test_file_base}")
+        string(REGEX REPLACE "[/\.]" "_" short_name "${category}.Top.${test_file_base}")
       else()
-	    string(REGEX REPLACE "[/\.]" "_" short_name "${category}.${test_file_base}")
-	  endif()
-	  
-	  message("Short name is ${short_name}")	
+        string(REGEX REPLACE "[/\.]" "_" short_name "${category}.${test_file_base}")
+      endif()
+      
 
       # generate the test
       file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}
