@@ -14,12 +14,14 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
     auto   A    = create_random_tensor<TestType>("A", size, size);
     auto   B    = create_random_tensor<TestType>("B", size, size);
     auto   C    = create_tensor_like(A);
+    
+    constexpr double tolerance = (std::is_same_v<RemoveComplexT<TestType>, float>)? 1e-4: 1e-10;
 
     C = A + B;
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) + B(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) + B(i, j), tolerance));
         }
     }
 
@@ -27,7 +29,7 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) - B(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) - B(i, j), tolerance));
         }
     }
 
@@ -35,7 +37,7 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) * B(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) * B(i, j), tolerance));
         }
     }
 
@@ -43,7 +45,7 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) / B(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) / B(i, j), tolerance));
         }
     }
 
@@ -51,14 +53,14 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(-A(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(-A(i, j), tolerance));
         }
     }
 
     C = TestType(2.0) * A;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j), tolerance));
         }
     }
 
@@ -66,14 +68,14 @@ TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel((A(i, j) + B(i, j)) / (A(i, j) * B(i, j)), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel((A(i, j) + B(i, j)) / (A(i, j) * B(i, j)), tolerance));
         }
     }
 
     C = TestType(2.0) * A + B;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j) + B(i, j), 1e-10));
+            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j) + B(i, j), tolerance));
         }
     }
 }

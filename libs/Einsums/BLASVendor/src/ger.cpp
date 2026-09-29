@@ -24,21 +24,26 @@ extern void FC_GLOBAL(zgeru, ZGERU)(int_t *, int_t *, std::complex<double> *, st
 
 namespace {
 void ger_parameter_check(int_t m, int_t n, int_t inc_x, int_t inc_y, int_t lda) {
-    char buf[256];
+    char buf[256] = {0};
     if (m < 0) {
-        throw std::runtime_error(fmt::format_to(buf, "einsums::backend::vendor::ger: m ({}) is less than zero.", m));
+        fmt::format_to(buf, "einsums::backend::vendor::ger: m ({}) is less than zero.", m);
+        throw std::runtime_error(buf);
     }
     if (n < 0) {
-        throw std::runtime_error(fmt::format_to(buf, "einsums::backend::vendor::ger: n ({}) is less than zero.", n));
+        fmt::format_to(buf, "einsums::backend::vendor::ger: n ({}) is less than zero.", n);
+        throw std::runtime_error(buf);
     }
     if (inc_x == 0) {
-        throw std::runtime_error(fmt::format_to(buf, "einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x));
+        fmt::format_to(buf, "einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x);
+        throw std::runtime_error(buf);
     }
     if (inc_y == 0) {
-        throw std::runtime_error(fmt::format_to(buf, "einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y));
+        fmt::format_to(buf, "einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y);
+        throw std::runtime_error(buf);
     }
     if (lda < std::max(int_t{1}, n)) {
-        throw std::runtime_error(fmt::format_to(buf, "einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n));
+        fmt::format_to(buf, "einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n);
+        throw std::runtime_error(buf);
     }
 }
 } // namespace
