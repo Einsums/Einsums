@@ -24,11 +24,17 @@
 #include <H5Ppublic.h>
 #include <H5Spublic.h>
 #include <H5Tpublic.h>
+#include <bit>
+#include <complex>
 #include <cstdio>
 #include <mutex>
 #include <source_location>
 #include <stdexcept>
 #include <string>
+
+#if __has_include(<unistd.h>)
+#    include <unistd.h>
+#endif
 
 namespace einsums {
 
@@ -36,7 +42,56 @@ namespace detail {
 
 EINSUMS_EXPORT bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id);
 
+/**
+ * @brief Creates a guaranteed-unique name for a temporary tensor.
+ *
+ * This function is thread-safe. However, the output is deterministic. It depends on the Einsums_Tensor_vars::temp_counter
+ * which is an atomic value that is updated every time the temp_tensor_name function is called. Since this value always starts
+ * at 0, the output sequence should be predictable. If this becomes an issue in the future, it can be changed.
+ *
+ * @return A unique name for temporary tensors.
+ * @versionadded 2.0.0
+ */
+EINSUMS_EXPORT std::string temp_tensor_name();
+
+template <typename T>
+hid_t hdf5_datatype() {
+#define EINSUMS_HDF5_TYPE_CHOICE(t, out)                                                                                                                       \
+    if constexpr (std::is_same_v<T, t>) {                                                                                                  \
+        return out;                                                                                                                        \
+    }
+
+    EINSUMS_HDF5_TYPE_CHOICE(signed char, H5T_NATIVE_SCHAR)
+    EINSUMS_HDF5_TYPE_CHOICE(signed short int, H5T_NATIVE_SHORT)
+    EINSUMS_HDF5_TYPE_CHOICE(signed int, H5T_NATIVE_INT)
+    EINSUMS_HDF5_TYPE_CHOICE(signed long int, H5T_NATIVE_LONG)
+    EINSUMS_HDF5_TYPE_CHOICE(signed long long int, H5T_NATIVE_LLONG)
+
+    EINSUMS_HDF5_TYPE_CHOICE(unsigned char, H5T_NATIVE_UCHAR)
+    EINSUMS_HDF5_TYPE_CHOICE(unsigned short, H5T_NATIVE_USHORT)
+    EINSUMS_HDF5_TYPE_CHOICE(unsigned int, H5T_NATIVE_UINT)
+    EINSUMS_HDF5_TYPE_CHOICE(unsigned long int, H5T_NATIVE_ULONG)
+    EINSUMS_HDF5_TYPE_CHOICE(unsigned long long int, H5T_NATIVE_ULLONG)
+
+    EINSUMS_HDF5_TYPE_CHOICE(float, H5T_NATIVE_FLOAT)
+    EINSUMS_HDF5_TYPE_CHOICE(double, H5T_NATIVE_DOUBLE)
+    EINSUMS_HDF5_TYPE_CHOICE(long double, H5T_NATIVE_LDOUBLE)
+
+#ifdef H5T_NATIVE_FLOAT_COMPLEX
+    EINSUMS_HDF5_TYPE_CHOICE(std::complex<float>, H5T_NATIVE_FLOAT_COMPLEX);
+    EINSUMS_HDF5_TYPE_CHOICE(std::complex<double>, H5T_NATIVE_DOUBLE_COMPLEX);
+    EINSUMS_HDF5_TYPE_CHOICE(std::complex<long double>, H5T_NATIVE_LDOUBLE_COMPLEX);
+#else
+    EINSUMS_HDF5_TYPE_CHOICE(std::complex<float>, detail::Einsums_Tensor_vars::get_singleton().float_complex_type;);
+    EINSUMS_HDF5_TYPE_CHOICE(std::complex<double>, detail::Einsums_Tensor_vars::get_singleton().double_complex_type;);
+#endif
+
+    return H5I_INVALID_HID;
+
+#undef EINSUMS_HDF5_TYPE_CHOICE
 }
+
+} // namespace detail
 
 /**
  * @struct DiskTensor
@@ -74,35 +129,16 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
     DiskTensor(DiskTensor const &other) : _file{other._file}, _name{other.name()}, _dims{other.dims()}, _size{other.size()} {
         _dataspace = H5Scopy(other._dataspace);
 
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
+
         _existed = false;
 
         _creation_props = H5Pcopy(other._creation_props);
 
         if (_name.size() == 0) {
             // Create temporary names.
-            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
-
-            std::memset(temp_name1, 0, L_tmpnam + 1);
-            std::memset(temp_name2, 0, L_tmpnam + 1);
-
-            std::tmpnam(temp_name1);
-            std::tmpnam(temp_name2);
-
-            auto temp_name1_str = std::string(temp_name1);
-            auto temp_name2_str = std::string(temp_name2);
-
-            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
-
-            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+            auto new_temp1 = fmt::format("/tmp/{}", detail::temp_tensor_name()),
+                 new_temp2 = fmt::format("/tmp/{}", detail::temp_tensor_name());
 
             // Link the temporary dataset into a temporary location.
             auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
@@ -129,17 +165,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
         } else {
             // Create temporary name.
-            char temp_name[L_tmpnam + 1];
 
-            std::memset(temp_name, 0, L_tmpnam + 1);
-
-            std::tmpnam(temp_name);
-
-            auto temp_name_str = std::string(temp_name);
-
-            std::filesystem::path temp_path(std::move(temp_name_str));
-
-            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+            auto new_temp = fmt::format("/tmp/{}", detail::temp_tensor_name());
 
             H5Dflush(other._dataset);
 
@@ -211,15 +238,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             EINSUMS_THROW_EXCEPTION(std::runtime_error, "Dataspace creation failed!");
         }
 
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         // Check to see if the data set exists
         if (detail::verify_exists(file, _name, H5P_DEFAULT)) {
@@ -366,15 +385,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
         _existed     = true;
         _constructed = false;
 
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         if (_file == H5I_INVALID_HID) {
             _file = detail::Einsums_Tensor_vars::get_singleton().hdf5_file;
@@ -384,20 +395,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
         if (_name.size() == 0) {
             // Create temporary names.
-            char temp_name1[L_tmpnam + 1], temp_name2[L_tmpnam + 1];
-
-            std::memset(temp_name1, 0, L_tmpnam + 1);
-            std::memset(temp_name2, 0, L_tmpnam + 1);
-
-            std::tmpnam(temp_name1);
-            std::tmpnam(temp_name2);
-
-            auto temp_name1_str = std::string(temp_name1);
-            auto temp_name2_str = std::string(temp_name2);
-
-            std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
-
-            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+            auto new_temp1 = fmt::format("/tmp/{}", detail::temp_tensor_name()),
+                 new_temp2 = fmt::format("/tmp/{}", detail::temp_tensor_name());
 
             // Link the temporary dataset into a temporary location.
             auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
@@ -424,17 +423,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             H5Ldelete(_file, new_temp2.c_str(), H5P_DEFAULT);
         } else {
             // Create temporary name.
-            char temp_name[L_tmpnam + 1];
-
-            std::memset(temp_name, 0, L_tmpnam + 1);
-
-            std::tmpnam(temp_name);
-
-            auto temp_name_str = std::string(temp_name);
-
-            std::filesystem::path temp_path(std::move(temp_name_str));
-
-            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+            auto new_temp = fmt::format("/tmp/{}", detail::temp_tensor_name());
 
             H5Dflush(other._dataset);
 
@@ -949,17 +938,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     DiskView(einsums::DiskTensor<T, BaseRank> &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
         : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
 
-        _data_type = H5I_INVALID_HID;
-
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         size_t prod = 1;
         for (int i = 0; i < rank; i++) {
@@ -991,17 +970,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     DiskView(einsums::DiskTensor<T, BaseRank> const &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
         : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
 
-        _data_type = H5I_INVALID_HID;
-
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         size_t prod = 1;
         for (int i = 0; i < rank; i++) {
@@ -1034,17 +1003,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     DiskView(einsums::DiskView<T, BaseRank> &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
         : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
 
-        _data_type = H5I_INVALID_HID;
-
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         size_t prod = 1;
         for (int i = 0; i < rank; i++) {
@@ -1075,17 +1034,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     DiskView(einsums::DiskView<T, BaseRank> const &parent, Dim<rank> const &dims, hid_t dataset, hid_t dataspace)
         : _dims(dims), _dataset(dataset), _dataspace(dataspace) {
 
-        _data_type = H5I_INVALID_HID;
-
-        if constexpr (std::is_same_v<T, float>) {
-            _data_type = H5T_NATIVE_FLOAT;
-        } else if constexpr (std::is_same_v<T, double>) {
-            _data_type = H5T_NATIVE_DOUBLE;
-        } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().float_complex_type;
-        } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-            _data_type = detail::Einsums_Tensor_vars::get_singleton().double_complex_type;
-        }
+        _data_type = detail::hdf5_datatype<T>();
 
         size_t prod = 1;
         for (int i = 0; i < rank; i++) {
@@ -1115,7 +1064,27 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Default copy constructor
      */
-    DiskView(DiskView const &) = default;
+    DiskView(DiskView const &other) {
+        _dataspace = H5Scopy(other._dataspace);
+
+        _mem_dataspace = H5Scopy(other._mem_dataspace);
+
+        _dataset = other._dataset;
+
+        _data_type = other._data_type;
+
+        _dims = other._dims;
+
+        _size = other._size;
+
+        _name = other._name;
+
+        _read_only = other._read_only;
+
+        _full_view = other._full_view;
+
+        _constructed = false;
+    }
 
     /**
      * Default move constructor
@@ -1142,7 +1111,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     /**
      * Make the tensor view read only.
      */
-    void set_read_only(bool readOnly) { _readOnly = readOnly; }
+    void set_read_only(bool readOnly) { _read_only = readOnly; }
 
     /**
      * Copy data from a pointer to the view.
@@ -1150,11 +1119,11 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * @attention This is an expert method only. If you are using this, then you must know what you are doing!
      */
     auto operator=(T const *other) -> DiskView & {
-        if (_readOnly) {
+        if (_read_only) {
             EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
         }
 
-        get();
+        std::ignore = get();
 
         std::memcpy(_tensor.data(), other, _tensor.size() * sizeof(T));
 
@@ -1167,7 +1136,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     template <TensorConcept TType>
         requires SameUnderlyingAndRank<TType, DiskView>
     auto operator=(TType const &other) -> DiskView & {
-        if (_readOnly) {
+        if (_read_only) {
             EINSUMS_THROW_EXCEPTION(access_denied, "Attempting to write data to a read only disk view.");
         }
 
@@ -1280,7 +1249,7 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
      * Push any changes to the view to the disk.
      */
     void put() {
-        if (!_readOnly && _constructed) {
+        if (!_read_only && _constructed) {
             _tensor.tensor_from_gpu();
             H5Dwrite(_dataset, _data_type, _mem_dataspace, _dataspace, H5P_DEFAULT, _tensor.data());
         }
@@ -1598,11 +1567,15 @@ struct DiskView final : tensor_base::DiskTensor, design_pats::Lockable<std::recu
     std::string _name{"(unnamed)"};
 
     /**
-     * @var _readOnly
+     * @var _read_only
      *
      * Indicates whether the view is read-only or read-write.
+     *
+     * @versionchangeddesc{2.0.0}
+     *      Changed from `_readOnly` to `_read_only` to be more consistent with naming.
+     * @endversion
      */
-    bool _readOnly{false};
+    bool _read_only{false};
 
     /**
      * @var _full_view

@@ -147,6 +147,12 @@ get_property(
   TARGET tgt::lapack
   PROPERTY VENDOR
 )
+
+if(${_ven} STREQUAL "MKL")
+	target_link_libraries(tgt::lapack INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+endif()
+
+
 get_property(
   _int
   TARGET tgt::lapack
@@ -154,6 +160,12 @@ get_property(
 )
 set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_ill}")
 if((TARGET tgt::blas) AND (TARGET tgt::lapk))
+
+  if(${_ven} STREQUAL "MKL")
+  	target_link_libraries(tgt::blas INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+	target_link_libraries(tgt::lapk INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+  endif()
+  
   get_property(
     _illb
     TARGET tgt::blas
@@ -166,6 +178,7 @@ if((TARGET tgt::blas) AND (TARGET tgt::lapk))
   )
   set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
 endif()
+
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(${PN} DEFAULT_MSG ${PN}_MESSAGE)

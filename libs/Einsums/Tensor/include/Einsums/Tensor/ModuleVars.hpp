@@ -7,7 +7,6 @@
 
 #include <Einsums/Config.hpp>
 
-
 #include <Einsums/Tensor/InitModule.hpp>
 #include <Einsums/TypeSupport/Lockable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
@@ -25,14 +24,16 @@ class EINSUMS_EXPORT Einsums_Tensor_vars final : public design_pats::Lockable<st
 
   public:
     // Put module-global variables here.
-    hid_t hdf5_file;
-    hid_t link_property_list;
+    hid_t hdf5_file{H5I_INVALID_HID};
+    hid_t link_property_list{H5I_INVALID_HID};
 
-    hid_t double_complex_type;
-    hid_t float_complex_type;
+    hid_t double_complex_type{H5I_INVALID_HID};
+    hid_t float_complex_type{H5I_INVALID_HID};
 
     // Used for making temporary disk tensors.
-    std::atomic_int64_t volatile temp_counter;
+    std::atomic_uint64_t volatile temp_counter{0};
+
+    std::string global_file_name{};
 
   private:
     explicit Einsums_Tensor_vars() = default;

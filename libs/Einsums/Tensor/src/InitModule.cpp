@@ -77,6 +77,11 @@ static void create_complex_types() {
     auto &singleton     = einsums::detail::Einsums_Tensor_vars::get_singleton();
     auto &global_config = GlobalConfigMap::get_singleton();
 
+#if defined(H5T_NATIVE_FLOAT_COMPLEX) && defined(H5T_NATIVE_DOUBLE_COMPLEX)
+    singleton.float_complex_type  = H5T_NATIVE_FLOAT_COMPLEX;
+    singleton.double_complex_type = H5T_NATIVE_DOUBLE_COMPLEX;
+#else
+
     singleton.double_complex_type = H5Tcreate(H5T_COMPOUND, 2 * sizeof(double));
     singleton.float_complex_type  = H5Tcreate(H5T_COMPOUND, 2 * sizeof(float));
 
@@ -159,10 +164,15 @@ static void create_complex_types() {
             std::terminate();
         }
     }
+#endif
 }
 
 static void open_complex_types() {
     auto &singleton = einsums::detail::Einsums_Tensor_vars::get_singleton();
+#if defined(H5T_NATIVE_FLOAT_COMPLEX) && defined(H5T_NATIVE_DOUBLE_COMPLEX)
+    singleton.float_complex_type  = H5T_NATIVE_FLOAT_COMPLEX;
+    singleton.double_complex_type = H5T_NATIVE_DOUBLE_COMPLEX;
+#else
 
     singleton.double_complex_type = H5Topen(singleton.hdf5_file, "double-complex", H5P_DEFAULT);
     singleton.float_complex_type  = H5Topen(singleton.hdf5_file, "float-complex", H5P_DEFAULT);
@@ -254,6 +264,7 @@ static void open_complex_types() {
             }
         }
     }
+#endif
 }
 
 void open_hdf5_file(std::string const &fname) {
@@ -343,6 +354,8 @@ void initialize_Einsums_Tensor() {
     auto fname = std::filesystem::path(global_config.get_string("scratch-dir"));
     fname /= global_config.get_string("hdf5-file-name");
 
+    singleton.global_file_name = fname.string();
+
     auto err = H5open();
 
     if (err < 0) {
@@ -361,19 +374,17 @@ void finalize_Einsums_Tensor() {
     auto &singleton     = einsums::detail::Einsums_Tensor_vars::get_singleton();
     auto &global_config = GlobalConfigMap::get_singleton();
 
-    auto fname = std::filesystem::path(global_config.get_string("scratch-dir"));
-    fname /= global_config.get_string("hdf5-file-name");
-
     H5Fclose(singleton.hdf5_file);
 
     if (singleton.hdf5_file != H5I_INVALID_HID && global_config.get_bool("delete-hdf5-files", true)) {
-        H5Fdelete(fname.c_str(), H5P_DEFAULT);
+        H5Fdelete(singleton.global_file_name.c_str(), H5P_DEFAULT);
     }
 
     if (singleton.link_property_list != H5I_INVALID_HID) {
         H5Pclose(singleton.link_property_list);
     }
 
+#if !defined(H5T_NATIVE_FLOAT_COMPLEX) || !defined(H5T_NATIVE_DOUBLE_COMPLEX)
     if (singleton.double_complex_type != H5I_INVALID_HID) {
         H5Tclose(singleton.double_complex_type);
     }
@@ -381,6 +392,7 @@ void finalize_Einsums_Tensor() {
     if (singleton.float_complex_type != H5I_INVALID_HID) {
         H5Tclose(singleton.float_complex_type);
     }
+#endif
 
     auto err = H5close();
 

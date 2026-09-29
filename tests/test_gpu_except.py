@@ -2,7 +2,10 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 import pytest
-import einsums as ein
+try :
+    import einsums as ein
+except ModuleNotFoundError :
+    import pyeinsums as ein
 
 @pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "These are GPU tests. Can't test them without a GPU.")
 def test_throw_hip() :

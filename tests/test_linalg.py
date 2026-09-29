@@ -2,7 +2,10 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 import pytest
-import einsums as ein
+try :
+    import einsums as ein
+except ModuleNotFoundError :
+    import pyeinsums as ein
 import numpy as np
 import scipy as sp
 import math
