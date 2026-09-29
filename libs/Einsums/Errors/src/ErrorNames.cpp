@@ -9,7 +9,7 @@
 #include <fmt/format.h>
 
 #include <cstdio>
-#include <Config/FmtAlternatives.hpp>
+#include <Einsums/Config/FmtAlternatives.hpp>
 
 namespace einsums::detail {
 
