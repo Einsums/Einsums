@@ -962,6 +962,7 @@ template <bool ConjA, bool ConjB, TensorConcept AType, TensorConcept BType, type
     requires requires {
         requires InSamePlace<AType, BType>;
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
+        requires !SmartPointer<CType>;
     }
 void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UAB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B,

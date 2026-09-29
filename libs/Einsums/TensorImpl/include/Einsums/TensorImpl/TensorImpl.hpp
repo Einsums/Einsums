@@ -384,32 +384,32 @@ struct TensorImpl final {
     /**
      * @brief Get the pointer being wrapped.
      */
-    constexpr pointer data() noexcept { return _ptr; }
+    [[nodiscard]] constexpr pointer data() noexcept { return _ptr; }
 
     /**
      * @brief Get the pointer being wrapped.
      */
-    constexpr const_pointer data() const noexcept { return _ptr; }
+    [[nodiscard]] constexpr const_pointer data() const noexcept { return _ptr; }
 
     /**
      * @brief Get the rank of the tensor.
      */
-    constexpr size_t rank() const noexcept { return _rank; }
+    [[nodiscard]] constexpr size_t rank() const noexcept { return _rank; }
 
     /**
      * @brief Get the dimensions of the tensor.
      */
-    constexpr BufferVector<size_t> const &dims() const noexcept { return _dims; }
+    [[nodiscard]] constexpr BufferVector<size_t> const &dims() const noexcept { return _dims; }
 
     /**
      * @brief Get the strides of the tensor.
      */
-    constexpr BufferVector<size_t> const &strides() const noexcept { return _strides; }
+    [[nodiscard]] constexpr BufferVector<size_t> const &strides() const noexcept { return _strides; }
 
     /**
      * @brief Get the size of the tensor.
      */
-    constexpr size_t size() const noexcept { return _size; }
+    [[nodiscard]] constexpr size_t size() const noexcept { return _size; }
 
     /**
      * @brief Change the pointer being wrapped by the tensor.
@@ -427,7 +427,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr pointer data(MultiIndex &&...index) {
+    [[nodiscard]] constexpr pointer data(MultiIndex &&...index) {
         if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (sizeof...(MultiIndex) > _rank) {
@@ -450,7 +450,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr const_pointer data(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr const_pointer data(MultiIndex &&...index) const {
         if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (sizeof...(MultiIndex) > _rank) {
@@ -474,7 +474,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr pointer data_no_check(MultiIndex &&...index) {
+    [[nodiscard]] constexpr pointer data_no_check(MultiIndex &&...index) {
         if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (sizeof...(MultiIndex) > _rank) {
@@ -498,7 +498,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr const_pointer data_no_check(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr const_pointer data_no_check(MultiIndex &&...index) const {
         if (sizeof...(MultiIndex) < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (sizeof...(MultiIndex) > _rank) {
@@ -521,7 +521,7 @@ struct TensorImpl final {
      */
     template <Container Index>
         requires(!std::is_same_v<Range, Index>)
-    constexpr pointer data(Index const &index) {
+    [[nodiscard]] constexpr pointer data(Index const &index) {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -544,7 +544,7 @@ struct TensorImpl final {
      */
     template <Container Index>
         requires(!std::is_same_v<Range, Index>)
-    constexpr const_pointer data(Index const &index) const {
+    [[nodiscard]] constexpr const_pointer data(Index const &index) const {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -568,7 +568,7 @@ struct TensorImpl final {
      */
     template <Container Index>
         requires(!std::is_same_v<Range, Index>)
-    constexpr pointer data_no_check(Index const &index) {
+    [[nodiscard]] constexpr pointer data_no_check(Index const &index) {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -592,7 +592,7 @@ struct TensorImpl final {
      */
     template <Container Index>
         requires(!std::is_same_v<Range, Index>)
-    constexpr const_pointer data_no_check(Index const &index) const {
+    [[nodiscard]] constexpr const_pointer data_no_check(Index const &index) const {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -614,7 +614,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
-    constexpr pointer data(std::initializer_list<IntType> const &index) {
+    [[nodiscard]] constexpr pointer data(std::initializer_list<IntType> const &index) {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -636,7 +636,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
-    constexpr const_pointer data(std::initializer_list<IntType> const &index) const {
+    [[nodiscard]] constexpr const_pointer data(std::initializer_list<IntType> const &index) const {
         if (index.size() < _rank) {
             EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to data!");
         } else if (index.size() > _rank) {
@@ -659,7 +659,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
-    constexpr pointer data_no_check(std::initializer_list<IntType> const &index) {
+    [[nodiscard]] constexpr pointer data_no_check(std::initializer_list<IntType> const &index) {
 
         return _ptr + indices_to_sentinel(_strides, index);
     }
@@ -673,7 +673,7 @@ struct TensorImpl final {
      * @param index The indices to use for the offset.
      */
     template <std::integral IntType>
-    constexpr const_pointer data_no_check(std::initializer_list<IntType> const &index) const {
+    [[nodiscard]] constexpr const_pointer data_no_check(std::initializer_list<IntType> const &index) const {
 
         return _ptr + indices_to_sentinel(_strides, index);
     }
@@ -685,7 +685,7 @@ struct TensorImpl final {
      *
      * @param i The axis to check.
      */
-    constexpr size_t dim(std::integral auto i) const {
+    [[nodiscard]] constexpr size_t dim(std::integral auto i) const {
         if (_ptr == nullptr) {
             return 0;
         }
@@ -712,7 +712,7 @@ struct TensorImpl final {
      *
      * @param i The axis to check.
      */
-    constexpr size_t stride(std::integral auto i) const {
+    [[nodiscard]] constexpr size_t stride(std::integral auto i) const {
         if (_rank == 0) {
             return 0;
         }
@@ -737,7 +737,7 @@ struct TensorImpl final {
      * For a tensor to be contiguous in memory, there must not be
      * any data outside of any dimension. Views are often not contiguous, though they sometimes can be.
      */
-    constexpr bool is_contiguous() const {
+    [[nodiscard]] constexpr bool is_contiguous() const {
         if (_rank == 0) {
             return true;
         }
@@ -753,7 +753,7 @@ struct TensorImpl final {
      *
      * @param[out] incx If not nullptr, this will be set to contain the spacing between items.
      */
-    bool is_totally_vectorable(size_t *incx = nullptr) const {
+    [[nodiscard]] bool is_totally_vectorable(size_t *incx = nullptr) const {
         if (_rank == 0) {
             if (incx != nullptr) {
                 *incx = 0;
@@ -786,7 +786,7 @@ struct TensorImpl final {
      *
      * @param[out] lda The leading dimension which can be passed into gemm and similar calls.
      */
-    bool is_gemmable(size_t *lda = nullptr) const {
+    [[nodiscard]] bool is_gemmable(size_t *lda = nullptr) const {
         if (_rank != 2) {
             return false;
         } else if (_strides[0] != 1 && _strides[1] != 1) {
@@ -804,7 +804,7 @@ struct TensorImpl final {
     /**
      * @brief Get the smallest stride for the tensor.
      */
-    constexpr size_t get_incx() const {
+    [[nodiscard]] constexpr size_t get_incx() const {
         if (_rank == 0) {
             return 0;
         } else if (_rank == 1) {
@@ -817,12 +817,12 @@ struct TensorImpl final {
     /**
      * @brief Get the smallest stride for the tensor. Equivalent to get_incx.
      */
-    constexpr size_t get_incy() const { return get_incx(); }
+    [[nodiscard]] constexpr size_t get_incy() const { return get_incx(); }
 
     /**
      * @brief Gets the largest stride for a rank-2 tensor only.
      */
-    constexpr size_t get_lda() const {
+    [[nodiscard]] constexpr size_t get_lda() const {
         if (_rank != 2) {
             EINSUMS_THROW_EXCEPTION(rank_error, "Can not get the leading dimension of a tensor whose rank is not 2!");
         } else {
@@ -833,12 +833,12 @@ struct TensorImpl final {
     /**
      * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda
      */
-    constexpr size_t get_ldb() const { return get_lda(); }
+    [[nodiscard]] constexpr size_t get_ldb() const { return get_lda(); }
 
     /**
      * @brief Gets the largest stride for a rank-2 tensor only. Equivalent to get_lda.
      */
-    constexpr size_t get_ldc() const { return get_lda(); }
+    [[nodiscard]] constexpr size_t get_ldc() const { return get_lda(); }
 
     /**
      * @brief Checks to see if a tensor is general row-major.
@@ -846,7 +846,7 @@ struct TensorImpl final {
      * Rank-1 tensors are always both row-major and column-major, so don't assume the two
      * are logically exclusive.
      */
-    constexpr bool is_row_major() const {
+    [[nodiscard]] constexpr bool is_row_major() const {
         if (_rank <= 1) {
             return true;
         } else {
@@ -860,7 +860,7 @@ struct TensorImpl final {
      * Rank-1 tensors are always both row-major and column-major, so don't assume the two
      * are logically exclusive.
      */
-    constexpr bool is_column_major() const {
+    [[nodiscard]] constexpr bool is_column_major() const {
         if (_rank <= 1) {
             return true;
         } else {
@@ -935,13 +935,13 @@ struct TensorImpl final {
     /**
      * @brief Checks to see if the pointer is associated.
      */
-    constexpr bool is_empty_view() const noexcept { return _ptr == nullptr; }
+    [[nodiscard]] constexpr bool is_empty_view() const noexcept { return _ptr == nullptr; }
 
     // Subscript.
 
-    constexpr reference subscript() noexcept { return *_ptr; }
+    [[nodiscard]] constexpr reference subscript() noexcept { return *_ptr; }
 
-    constexpr const_reference subscript() const noexcept { return *_ptr; }
+    [[nodiscard]] constexpr const_reference subscript() const noexcept { return *_ptr; }
 
     /**
      * @brief Subscript the tensor.
@@ -950,7 +950,7 @@ struct TensorImpl final {
      */
     template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr reference subscript(MultiIndex &&...index) {
+    [[nodiscard]] constexpr reference subscript(MultiIndex &&...index) {
         return *data(std::forward<MultiIndex>(index)...);
     }
 
@@ -961,7 +961,7 @@ struct TensorImpl final {
      */
     template <bool IgnoreRemoveRange = false, typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr const_reference subscript(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr const_reference subscript(MultiIndex &&...index) const {
         return *data(std::forward<MultiIndex>(index)...);
     }
 
@@ -975,7 +975,7 @@ struct TensorImpl final {
             requires std::is_integral_v<typename MultiIndex::value_type>;
             requires !std::is_base_of_v<Range, MultiIndex>;
         }
-    constexpr reference subscript(MultiIndex const &index) {
+    [[nodiscard]] constexpr reference subscript(MultiIndex const &index) {
         return *data(index);
     }
 
@@ -989,7 +989,7 @@ struct TensorImpl final {
             requires std::is_integral_v<typename MultiIndex::value_type>;
             requires !std::is_base_of_v<Range, MultiIndex>;
         }
-    constexpr const_reference subscript(MultiIndex const &index) const {
+    [[nodiscard]] constexpr const_reference subscript(MultiIndex const &index) const {
         return *data(index);
     }
 
@@ -1000,7 +1000,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr reference subscript_no_check(MultiIndex &&...index) {
+    [[nodiscard]] constexpr reference subscript_no_check(MultiIndex &&...index) {
         return *data_no_check(std::forward<MultiIndex>(index)...);
     }
 
@@ -1011,7 +1011,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ... && true)
-    constexpr const_reference subscript_no_check(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr const_reference subscript_no_check(MultiIndex &&...index) const {
         return *data_no_check(std::forward<MultiIndex>(index)...);
     }
 
@@ -1025,7 +1025,7 @@ struct TensorImpl final {
             requires std::is_integral_v<typename MultiIndex::value_type>;
             requires !std::is_same_v<Range, MultiIndex>;
         }
-    constexpr reference subscript_no_check(MultiIndex const &index) {
+    [[nodiscard]] constexpr reference subscript_no_check(MultiIndex const &index) {
         return *data_no_check(index);
     }
 
@@ -1039,7 +1039,7 @@ struct TensorImpl final {
             requires std::is_integral_v<typename MultiIndex::value_type>;
             requires !std::is_same_v<Range, MultiIndex>;
         }
-    constexpr const_reference subscript_no_check(MultiIndex const &index) const {
+    [[nodiscard]] constexpr const_reference subscript_no_check(MultiIndex const &index) const {
         return *data_no_check(index);
     }
 
@@ -1049,7 +1049,7 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <bool IgnoreRemoveRange = false, std::integral IntType>
-    constexpr reference subscript(std::initializer_list<IntType> const &index) {
+    [[nodiscard]] constexpr reference subscript(std::initializer_list<IntType> const &index) {
         return *data(index);
     }
 
@@ -1059,7 +1059,7 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <bool IgnoreRemoveRange = false, std::integral IntType>
-    constexpr const_reference subscript(std::initializer_list<IntType> const &index) const {
+    [[nodiscard]] constexpr const_reference subscript(std::initializer_list<IntType> const &index) const {
         return *data(index);
     }
 
@@ -1069,7 +1069,7 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <std::integral IntType>
-    constexpr reference subscript_no_check(std::initializer_list<IntType> const &index) {
+    [[nodiscard]] constexpr reference subscript_no_check(std::initializer_list<IntType> const &index) {
         return *data_no_check(index);
     }
 
@@ -1079,7 +1079,7 @@ struct TensorImpl final {
      * @param index The indices for the subscript.
      */
     template <std::integral IntType>
-    constexpr const_reference subscript_no_check(std::initializer_list<IntType> const &index) const {
+    [[nodiscard]] constexpr const_reference subscript_no_check(std::initializer_list<IntType> const &index) const {
         return *data_no_check(index);
     }
 
@@ -1099,7 +1099,7 @@ struct TensorImpl final {
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<T> subscript(MultiIndex &&...index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript(MultiIndex &&...index) {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         adjust_ranges<0>(index_tuple);
@@ -1132,7 +1132,7 @@ struct TensorImpl final {
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<T> const subscript(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript(MultiIndex &&...index) const {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         adjust_ranges<0>(index_tuple);
@@ -1160,7 +1160,7 @@ struct TensorImpl final {
      */
     template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<T> subscript(MultiIndex const &index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript(MultiIndex const &index) {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1187,7 +1187,7 @@ struct TensorImpl final {
      */
     template <bool IgnoreRemoveRange = false, Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<T> const subscript(MultiIndex const &index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript(MultiIndex const &index) const {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1212,7 +1212,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    constexpr TensorImpl<T> subscript(std::initializer_list<Range> const &index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript(std::initializer_list<Range> const &index) {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1238,7 +1238,7 @@ struct TensorImpl final {
      * @param index The slice parameters for the view.
      */
     template <bool IgnoreRemoveRange = false>
-    constexpr TensorImpl<T> const subscript(std::initializer_list<Range> const &index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript(std::initializer_list<Range> const &index) const {
         BufferVector<Range> index_list{index.begin(), index.end()};
         adjust_ranges(index_list);
 
@@ -1270,7 +1270,7 @@ struct TensorImpl final {
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<T> subscript_no_check(MultiIndex &&...index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript_no_check(MultiIndex &&...index) {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         BufferVector<size_t> new_dims, new_strides;
@@ -1301,7 +1301,7 @@ struct TensorImpl final {
                      ... && true);
             requires(!std::is_integral_v<std::remove_cvref_t<MultiIndex>> || ... || false);
         }
-    constexpr TensorImpl<T> const subscript_no_check(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript_no_check(MultiIndex &&...index) const {
         auto index_tuple = std::make_tuple(std::forward<MultiIndex>(index)...);
 
         BufferVector<size_t> new_dims, new_strides;
@@ -1327,7 +1327,7 @@ struct TensorImpl final {
      */
     template <Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<T> subscript_no_check(MultiIndex const &index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript_no_check(MultiIndex const &index) {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
@@ -1351,7 +1351,7 @@ struct TensorImpl final {
      */
     template <Container MultiIndex>
         requires(std::is_base_of_v<Range, typename MultiIndex::value_type>)
-    constexpr TensorImpl<T> const subscript_no_check(MultiIndex const &index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript_no_check(MultiIndex const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
@@ -1373,7 +1373,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    constexpr TensorImpl<T> subscript_no_check(std::initializer_list<Range> const &index) {
+    [[nodiscard]] constexpr TensorImpl<T> subscript_no_check(std::initializer_list<Range> const &index) {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
@@ -1395,7 +1395,7 @@ struct TensorImpl final {
      *
      * @param index The slice parameters for the view.
      */
-    constexpr TensorImpl<T> const subscript_no_check(std::initializer_list<Range> const &index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const subscript_no_check(std::initializer_list<Range> const &index) const {
         BufferVector<size_t> new_dims, new_strides;
 
         new_dims.reserve(_rank);
@@ -1410,12 +1410,12 @@ struct TensorImpl final {
         }
     }
 
-    constexpr TensorImpl<T> transpose_view() {
+    [[nodiscard]] constexpr TensorImpl<T> transpose_view() {
         return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
                              BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
     }
 
-    constexpr TensorImpl<T> const transpose_view() const {
+    [[nodiscard]] constexpr TensorImpl<T> const transpose_view() const {
         return TensorImpl<T>(_ptr, BufferVector<size_t>(_dims.rbegin(), _dims.rend()),
                              BufferVector<size_t>(_strides.rbegin(), _strides.rend()));
     }
@@ -1426,7 +1426,7 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already row major.
      */
-    constexpr TensorImpl<T> to_row_major() {
+    [[nodiscard]] constexpr TensorImpl<T> to_row_major() {
         if (stride(0) >= stride(-1)) {
             return *this;
         } else {
@@ -1440,7 +1440,7 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already column major.
      */
-    constexpr TensorImpl<T> to_column_major() {
+    [[nodiscard]] constexpr TensorImpl<T> to_column_major() {
         if (stride(0) <= stride(-1)) {
             return *this;
         } else {
@@ -1454,7 +1454,7 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already row major.
      */
-    constexpr TensorImpl<T> const to_row_major() const {
+    [[nodiscard]] constexpr TensorImpl<T> const to_row_major() const {
         if (stride(0) >= stride(-1)) {
             return *this;
         } else {
@@ -1468,7 +1468,7 @@ struct TensorImpl final {
      * This does not permute the data. It only reverses the dimensions and strides,
      * and only if the tensor is not already column major.
      */
-    constexpr TensorImpl<T> const to_column_major() const {
+    [[nodiscard]] constexpr TensorImpl<T> const to_column_major() const {
         if (stride(0) <= stride(-1)) {
             return *this;
         } else {
@@ -1485,7 +1485,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<MultiIndex> && ... && true)
-    constexpr TensorImpl<T> tie_indices(MultiIndex &&...index) {
+    [[nodiscard]] constexpr TensorImpl<T> tie_indices(MultiIndex &&...index) {
         if constexpr (sizeof...(MultiIndex) <= 1) {
             return *this;
         } else {
@@ -1575,7 +1575,7 @@ struct TensorImpl final {
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<MultiIndex> && ... && true)
-    constexpr TensorImpl<T> const tie_indices(MultiIndex &&...index) const {
+    [[nodiscard]] constexpr TensorImpl<T> const tie_indices(MultiIndex &&...index) const {
         if constexpr (sizeof...(MultiIndex) <= 1) {
             return *this;
         } else {
@@ -1661,7 +1661,7 @@ struct TensorImpl final {
 
     void unlock() const { _mutex.unlock(); }
 
-    bool try_lock() const { return _mutex.try_lock(); }
+    [[nodiscard]] bool try_lock() const { return _mutex.try_lock(); }
 
 #ifdef EINSUMS_COMPUTE_CODE
     void lock() { _mutex.lock(); }
@@ -1671,7 +1671,7 @@ struct TensorImpl final {
         _core_modify_count++;
     }
 
-    bool try_lock() { return _mutex.try_lock(); }
+    [[nodiscard]] bool try_lock() { return _mutex.try_lock(); }
 
     void tensor_to_gpu() const {
         if (_gpu_memory.expired()) {
@@ -1793,7 +1793,7 @@ struct TensorImpl final {
         return cached_gpu_memory;
     }
 
-    gpu::GPUPointer<T> get_gpu_pointer() {
+    [[nodiscard]] gpu::GPUPointer<T> get_gpu_pointer() {
         if (_gpu_memory.expired()) {
             return nullptr;
         } else {
@@ -1802,7 +1802,7 @@ struct TensorImpl final {
         }
     }
 
-    gpu::GPUPointer<T const> get_gpu_pointer() const {
+    [[nodiscard]] gpu::GPUPointer<T const> get_gpu_pointer() const {
         if (_gpu_memory.expired()) {
             return nullptr;
         } else {
@@ -1810,9 +1810,9 @@ struct TensorImpl final {
         }
     }
 
-    GPUPromise get_gpu_memory() const { return _gpu_memory; }
+    [[nodiscard]] GPUPromise get_gpu_memory() const { return _gpu_memory; }
 
-    bool gpu_is_expired() const { return _gpu_memory.expired(); }
+    [[nodiscard]] bool gpu_is_expired() const { return _gpu_memory.expired(); }
 
     void set_gpu_memory(GPULock const &other) const { _gpu_memory = other; }
 
@@ -1829,9 +1829,9 @@ struct TensorImpl final {
     constexpr void                  tensor_from_gpu() const {}
     [[nodiscard]] constexpr GPULock gpu_cache_tensor() const { return 0; }
     [[nodiscard]] constexpr GPULock gpu_cache_tensor_nowrite() const { return 0; }
-    constexpr GPULock               get_gpu_pointer() const { return 0; }
-    constexpr GPUPromise            get_gpu_memory() const { return 0; }
-    constexpr bool                  gpu_is_expired() const { return true; }
+    [[nodiscard]] constexpr GPULock    get_gpu_pointer() const { return 0; }
+    [[nodiscard]] constexpr GPUPromise get_gpu_memory() const { return 0; }
+    [[nodiscard]] constexpr bool       gpu_is_expired() const { return true; }
     template <typename Ignore>
     constexpr void set_gpu_memory(Ignore const &) const {}
 

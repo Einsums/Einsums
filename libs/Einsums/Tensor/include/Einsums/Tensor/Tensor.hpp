@@ -448,7 +448,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      *
      * @return T* A pointer to the data.
      */
-    Pointer data() { return _impl.data(); }
+    [[nodiscard]] Pointer data() { return _impl.data(); }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -458,7 +458,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      *
      * @return const T* An immutable pointer to the data.
      */
-    ConstPointer data() const { return _impl.data(); }
+    [[nodiscard]] ConstPointer data() const { return _impl.data(); }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -476,7 +476,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto data(MultiIndex &&...index) -> Pointer {
+    [[nodiscard]] auto data(MultiIndex &&...index) -> Pointer {
 #if !defined(DOXYGEN)
         assert(sizeof...(MultiIndex) <= Rank);
 
@@ -497,7 +497,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto operator()(MultiIndex &&...index) const -> ConstReference {
+    [[nodiscard]] auto operator()(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return _impl.subscript(std::forward<MultiIndex>(index)...);
@@ -514,7 +514,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      * @return const T&
      */
     template <Container Index>
-    auto subscript(Index const &index) const -> ConstReference {
+    [[nodiscard]] auto subscript(Index const &index) const -> ConstReference {
         return _impl.subscript_no_check(index);
     }
 
@@ -530,7 +530,7 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto subscript(MultiIndex &&...index) const -> ConstReference {
+    [[nodiscard]] auto subscript(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
@@ -950,35 +950,35 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     /**
      * Get the dimension of the tensor along a given axis.
      */
-    size_t dim(int d) const { return _impl.dim(d); }
+    [[nodiscard]] size_t dim(int d) const { return _impl.dim(d); }
 
     /**
      * Get all the dimensions of the tensor.
      */
-    Dim<Rank> const &dims() const { return _dim_array; }
+    [[nodiscard]] Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the internal vector containing the tensor's data.
      */
-    auto vector_data() const -> Vector const & { return _data; }
+    [[nodiscard]] auto vector_data() const -> Vector const & { return _data; }
 
     /// @copydoc GeneralTensor<T,Rank, Alloc>::vector_data() const
-    auto vector_data() -> Vector & { return _data; }
+    [[nodiscard]] auto vector_data() -> Vector & { return _data; }
 
     /**
      * Get the stride along a given axis.
      */
-    size_t stride(int d) const { return _impl.stride(d); }
+    [[nodiscard]] size_t stride(int d) const { return _impl.stride(d); }
 
     /**
      * Get the strides of this tensor.
      */
-    Stride<Rank> const &strides() const { return _stride_array; }
+    [[nodiscard]] Stride<Rank> const &strides() const { return _stride_array; }
 
     /**
      * Flatten out the tensor.
      */
-    auto to_rank_1_view() const -> TensorView<T, 1> {
+    [[nodiscard]] auto to_rank_1_view() const -> TensorView<T, 1> {
         Dim<1> dim{size()};
 
         return TensorView<T, 1>{*this, dim};
@@ -992,12 +992,12 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     /**
      * Indicates that the tensor is contiguous.
      */
-    bool full_view_of_underlying() const noexcept { return true; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const { return _name; };
+    [[nodiscard]] std::string const &name() const { return _name; };
 
     /**
      * Set the name of the tensor.
@@ -1007,40 +1007,40 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     /**
      * Get the implementation of the tensor.
      */
-    detail::TensorImpl<T> &impl() { return _impl; }
+    [[nodiscard]] detail::TensorImpl<T> &impl() { return _impl; }
 
     /**
      * Get the implementation of the tensor.
      */
-    detail::TensorImpl<T> const &impl() const { return _impl; }
+    [[nodiscard]] detail::TensorImpl<T> const &impl() const { return _impl; }
 
-    bool is_row_major() const { return _impl.is_row_major(); }
+    [[nodiscard]] bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const { return _impl.is_column_major(); }
+    [[nodiscard]] bool is_column_major() const { return _impl.is_column_major(); }
 
-    TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
+    [[nodiscard]] TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
+    [[nodiscard]] TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
+    [[nodiscard]] TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
+    [[nodiscard]] TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
+    [[nodiscard]] TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
 
-    TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
+    [[nodiscard]] TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
 
-    bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
+    [[nodiscard]] bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
 
-    bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
+    [[nodiscard]] bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
+    [[nodiscard]] TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
+    [[nodiscard]] TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
@@ -1048,21 +1048,21 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
 
     void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+    [[nodiscard]] auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    [[nodiscard]] bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   private:
     std::string _name{"(unnamed)"};
@@ -1141,12 +1141,12 @@ struct GeneralTensor<T, 0, Alloc> final : tensor_base::CoreTensor,
     /**
      * Get the pointer to the data stored by this tensor.
      */
-    T *data() { return &_data; }
+    [[nodiscard]] T *data() { return &_data; }
 
     /**
      * @copydoc GeneralTensor<T,0,Alloc>::data()
      */
-    T const *data() const { return &_data; }
+    [[nodiscard]] T const *data() const { return &_data; }
 
     /**
      * Copy assignment.
@@ -1195,7 +1195,7 @@ struct GeneralTensor<T, 0, Alloc> final : tensor_base::CoreTensor,
     /**
      * Get the name of the tensor.
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * Set the name of the tensor.
@@ -1205,27 +1205,27 @@ struct GeneralTensor<T, 0, Alloc> final : tensor_base::CoreTensor,
     /**
      * Get the dimension of the tensor. Always returns 1.
      */
-    size_t dim(int) const { return 1; }
+    [[nodiscard]] size_t dim(int) const { return 1; }
 
     /**
      * Get the dimensions of the tensor. The result is empty.
      */
-    Dim<0> dims() const { return Dim{}; }
+    [[nodiscard]] Dim<0> dims() const { return Dim{}; }
 
     /**
      * Indicates that the tensor is contiguous.
      */
-    bool full_view_of_underlying() const noexcept { return true; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * Get the stride of the tensor. Always returns 1.
      */
-    size_t stride(int d) const { return 0; }
+    [[nodiscard]] size_t stride(int d) const { return 0; }
 
     /**
      * Get the strides of the tensor. The result is empty.
      */
-    Stride<0> strides() const { return Stride{}; }
+    [[nodiscard]] Stride<0> strides() const { return Stride{}; }
 
   private:
     /**
@@ -1693,7 +1693,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, std::remove_cvref_t<MultiIndex>...> || AtLeastOneOfType<Range, std::remove_cvref_t<MultiIndex>...>)
-    auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
+    [[nodiscard]] auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
                                                                 count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -1704,7 +1704,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
-    auto operator()(MultiIndex &&...index) const
+    [[nodiscard]] auto operator()(MultiIndex &&...index) const
         -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -1715,7 +1715,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
-    auto subscript(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    [[nodiscard]] auto subscript(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
@@ -1725,7 +1725,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
-    auto subscript(MultiIndex &&...index) const
+    [[nodiscard]] auto subscript(MultiIndex &&...index) const
         -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> const {
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -1743,7 +1743,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto subscript(MultiIndex &&...index) const -> ConstReference {
+    [[nodiscard]] auto subscript(MultiIndex &&...index) const -> ConstReference {
         static_assert(sizeof...(MultiIndex) == Rank);
         return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
     }
@@ -1757,7 +1757,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename... MultiIndex>
         requires(std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)
-    auto subscript(MultiIndex &&...index) -> Reference {
+    [[nodiscard]] auto subscript(MultiIndex &&...index) -> Reference {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return _impl.subscript_no_check(std::forward<MultiIndex>(index)...);
@@ -1772,7 +1772,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
-    auto subscript(std::array<int_type, Rank> const &index) const -> ConstReference {
+    [[nodiscard]] auto subscript(std::array<int_type, Rank> const &index) const -> ConstReference {
         return _impl.subscript_no_check(index);
     }
 
@@ -1785,7 +1785,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      */
     template <typename int_type>
         requires(std::is_integral_v<int_type>)
-    auto subscript(std::array<int_type, Rank> const &index) -> Reference {
+    [[nodiscard]] auto subscript(std::array<int_type, Rank> const &index) -> Reference {
         return _impl.subscript_no_check(index);
     }
 
@@ -1832,12 +1832,12 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @param d The axis to query.
      */
-    size_t dim(int d) const { return _impl.dim(d); }
+    [[nodiscard]] size_t dim(int d) const { return _impl.dim(d); }
 
     /**
      * Get the dimension of the original tensor along a given axis.
      */
-    size_t source_dim(int d) const {
+    [[nodiscard]] size_t source_dim(int d) const {
         int temp = d;
         if (temp < 0) {
             temp += Rank;
@@ -1854,17 +1854,17 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get the dimensions of the view.
      */
-    Dim<Rank> const &dims() const { return _dim_array; }
+    [[nodiscard]] Dim<Rank> const &dims() const { return _dim_array; }
 
     /**
      * Get the dimensions of the original tensor.
      */
-    Dim<Rank> const &source_dims() const { return _source_dims; }
+    [[nodiscard]] Dim<Rank> const &source_dims() const { return _source_dims; }
 
     /**
      * Get the name of the view.
      */
-    std::string const &name() const { return _name; }
+    [[nodiscard]] std::string const &name() const { return _name; }
 
     /**
      * Set the name of the view.
@@ -1878,17 +1878,17 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
      *
      * @param d The axis to query.
      */
-    size_t stride(int d) const { return _impl.stride(d); }
+    [[nodiscard]] size_t stride(int d) const { return _impl.stride(d); }
 
     /**
      * Get the strides of the tensor.
      */
-    Stride<Rank> const &strides() const noexcept { return _stride_array; }
+    [[nodiscard]] Stride<Rank> const &strides() const noexcept { return _stride_array; }
 
     /**
      * Get the offset of the view along a given axis.
      */
-    size_t offset(int d) const {
+    [[nodiscard]] size_t offset(int d) const {
         int temp = d;
         if (temp < 0) {
             temp += Rank;
@@ -1905,14 +1905,14 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Get the offsets of the tensor.
      */
-    Offset<Rank> offsets() const noexcept { return _offsets; }
+    [[nodiscard]] Offset<Rank> offsets() const noexcept { return _offsets; }
 
     /**
      * Flatten the view.
      *
      * @warning Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!
      */
-    auto to_rank_1_view() const -> TensorView<T, 1> {
+    [[nodiscard]] auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
             return *this;
         } else {
@@ -1933,50 +1933,50 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     /**
      * Check whether the view has all elements of the tensor it is viewing.
      */
-    bool full_view_of_underlying() const noexcept { return _impl.is_contiguous(); }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept { return _impl.is_contiguous(); }
 
     /**
      * Get the number of elements in the view.
      */
-    size_t size() const { return _impl.size(); }
+    [[nodiscard]] size_t size() const { return _impl.size(); }
 
     /**
      * Get the underlying implementation details.
      */
-    detail::TensorImpl<T> &impl() noexcept { return _impl; }
+    [[nodiscard]] detail::TensorImpl<T> &impl() noexcept { return _impl; }
 
     /**
      * Get the underlying implementation details.
      */
-    detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
+    [[nodiscard]] detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
-    bool is_row_major() const { return _impl.is_row_major(); }
+    [[nodiscard]] bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const { return _impl.is_column_major(); }
+    [[nodiscard]] bool is_column_major() const { return _impl.is_column_major(); }
 
-    TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
+    [[nodiscard]] TensorView<T, Rank> transpose_view() { return TensorView<T, Rank>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
+    [[nodiscard]] TensorView<T, Rank> const transpose_view() const { return TensorView<T, Rank>(_impl.transpose_view()); }
 
-    TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
+    [[nodiscard]] TensorView<T, Rank> to_row_major() { return TensorView<T, Rank>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
+    [[nodiscard]] TensorView<T, Rank> const to_row_major() const { return TensorView<T, Rank>(_impl.to_row_major()); }
 
-    TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
+    [[nodiscard]] TensorView<T, Rank> to_column_major() { return TensorView<T, Rank>(_impl.to_column_major()); }
 
-    TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
+    [[nodiscard]] TensorView<T, Rank> const to_column_major() const { return TensorView<T, Rank>(_impl.to_column_major()); }
 
-    bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
+    [[nodiscard]] bool is_gemmable(size_t *lda = nullptr) const { return _impl.is_gemmable(lda); }
 
-    bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
+    [[nodiscard]] bool is_totally_vectorable(size_t *incx = nullptr) const { return _impl.is_totally_vectorable(incx); }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
+    [[nodiscard]] TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&...index) {
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
+    [[nodiscard]] TensorView<T, Rank - sizeof...(MultiIndex) + 1> const tie_indices(MultiIndex &&...index) const {
         return TensorView<T, Rank - sizeof...(MultiIndex) + 1>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
@@ -1984,21 +1984,21 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+    [[nodiscard]] auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    [[nodiscard]] bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   private:
     /**
