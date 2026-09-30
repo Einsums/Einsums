@@ -31,5 +31,5 @@ int einsums::init_Einsums_Utilities() {
 }
 
 void einsums::initialize_Einsums_Utilities() {
-    einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+	;   
 }

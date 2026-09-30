@@ -54,9 +54,9 @@ TEMPLATE_TEST_CASE("Test memcpy", "[gpu][memory]", double, std::complex<double>)
 
     for (int i = 0; i < transfer.size(); i++) {
         if constexpr (IsComplexV<TestType>) {
-            transfer[i] = {random_dist(einsums::random_engine), random_dist(einsums::random_engine)};
+            transfer[i] = {random_dist(einsums::random_engine()), random_dist(einsums::random_engine())};
         } else {
-            transfer[i] = random_dist(einsums::random_engine);
+            transfer[i] = random_dist(einsums::random_engine());
         }
     }
 

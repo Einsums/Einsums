@@ -9,6 +9,7 @@ dependencies:
   - cxx-compiler
   - ninja
   - lcov
+  - llvm-tools
   - pre-commit
   # Prebuilts to save einsums the work
   - cpp-argparse

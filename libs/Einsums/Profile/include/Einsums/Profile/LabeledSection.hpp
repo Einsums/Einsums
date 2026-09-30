@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Preprocessor/Stringify.hpp>
 #include <Einsums/Profile/Section.hpp>
 
 #include <fmt/format.h>
@@ -15,11 +16,11 @@
  * Constructs a label that includes the encompassing namespace and function names.
  * This macro also includes an extra label that will be appended to the section name.
  */
-#define LabeledSection1(x) const Section _section(fmt::format("{} {}", __func__, x))
+#define LabeledSection1(x) const Section _section(std::string(EINSUMS_PP_STRINGIFY(__func__)) + (x))
 
 /**
  * @brief Convenience wrapper to Section.
  *
  * Constructs a label that includes the encompassing namespace and function names.
  */
-#define LabeledSection0() const Section _section(fmt::format("{}", __func__))
+#define LabeledSection0() const Section _section(EINSUMS_PP_STRINGIFY(__func__))

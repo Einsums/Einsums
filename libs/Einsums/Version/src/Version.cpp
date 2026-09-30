@@ -14,11 +14,16 @@
 #include <sstream>
 #include <string>
 
+#define VERSION_MAJOR_STR EINSUMS_PP_STRINGIFY(EINSUMS_VERSION_MAJOR)
+#define VERSION_MINOR_STR EINSUMS_PP_STRINGIFY(EINSUMS_VERSION_MINOR)
+#define VERSION_PATCH_STR EINSUMS_PP_STRINGIFY(EINSUMS_VERSION_PATCH)
+
 ///////////////////////////////////////////////////////////////////////////////
 namespace einsums {
 
 std::string full_version_as_string() {
-    return fmt::format("{}.{}.{}", EINSUMS_VERSION_MAJOR, EINSUMS_VERSION_MINOR, EINSUMS_VERSION_PATCH);
+    // Do it this way so that it doesn't call a constexpr function. Windows struggles with constexpr strings it seems.
+    return std::string{VERSION_MAJOR_STR "." VERSION_MINOR_STR "." VERSION_PATCH_STR};
 }
 
 std::string full_build_string() {
@@ -46,19 +51,34 @@ std::string configuration_string() {
 }
 
 std::string build_string() {
-    return fmt::format("v{}{}, Git: {:.10}", full_version_as_string(), EINSUMS_VERSION_TAG, EINSUMS_HAVE_GIT_COMMIT);
+    // This needs to be done like this so that the build string isn't evaluated as constexpr.
+    // The Windows CRT struggles with copying constexpr strings it seems.
+
+    char git_string[] = EINSUMS_HAVE_GIT_COMMIT;
+
+    if (std::strlen(git_string) >= 10) {
+        git_string[10] = '\0';
+    }
+
+    return std::string{"v" VERSION_MAJOR_STR "." VERSION_MINOR_STR "." VERSION_PATCH_STR EINSUMS_VERSION_TAG ", Git: "} + git_string;
 }
 
 std::string complete_version() {
-    std::string version = fmt::format("Version:\n"
-                                      "  Einsums: {}\n"
-                                      "\n"
-                                      "Build:\n"
-                                      "  Type: {}\n"
-                                      "  Date: {}\n",
-                                      build_string(), build_type(), build_date_time());
+    std::string out;
 
-    return version;
+    auto runtime_format = fmt::runtime("Version:\n"
+                                       "  Einsums: {}\n"
+                                       "\n"
+                                       "Build:\n"
+                                       "  Type: {}\n"
+                                       "  Date: {}\n");
+
+    size_t out_size = fmt::formatted_size(runtime_format, build_string(), build_type(), build_date_time());
+
+    out.resize(out_size);
+
+    fmt::format_to(out.begin(), runtime_format, build_string(), build_type(), build_date_time());
+    return out;
 }
 
 std::string build_date_time() {

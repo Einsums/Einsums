@@ -2158,8 +2158,7 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(std::string const &name, Args... args) {
-    EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
+auto create_tensor(std::string const &name, Args &&...args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
@@ -2187,8 +2186,8 @@ auto create_tensor(std::string const &name, Args... args) {
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, std::integral... Args>
-auto create_tensor(Args... args) {
-    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
+auto create_tensor(Args &&...args) {
+    return Tensor<Type, sizeof...(Args)>{"Temporary", std::forward<Args>(args)...};
 }
 
 namespace detail {
@@ -2266,14 +2265,14 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                 oss << "              ";
                 if constexpr (std::is_floating_point_v<T>) {
                     if (std::abs(value) < 1.0E-4) {
-                        oss << fmt::format("{:14.4e} ", value);
+                        oss << einsums::detail::corrected_format("{:14.4e} ", value);
                     } else {
-                        oss << fmt::format("{:14.8f} ", value);
+                        oss << einsums::detail::corrected_format("{:14.8f} ", value);
                     }
                 } else if constexpr (IsComplexV<T>) {
-                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                    oss << einsums::detail::corrected_format("({:14.8f} + {:14.8f}i)", value.real(), value.imag());
                 } else
-                    oss << fmt::format("{:14} ", value);
+                    oss << einsums::detail::corrected_format("{:14} ", value);
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
@@ -2298,35 +2297,37 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            tmp << fmt::format("{}", fmt::join(target_combination, ", "));
+                            tmp << einsums::detail::corrected_format("{}", fmt::join(target_combination, ", "));
                             if (final_dim >= j + options.width)
-                                oss << fmt::format(
-                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
+                                oss << einsums::detail::corrected_format(
+                                    "{:<14}", einsums::detail::corrected_format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
+                                                                                j + options.width - 1, ndigits));
                             else
-                                oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
+                                oss << einsums::detail::corrected_format(
+                                    "{:<14}", einsums::detail::corrected_format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
+                                                                                final_dim - 1, ndigits));
                         }
                         auto new_tuple = std::tuple_cat(target_combination, std::tuple(j));
                         T    value     = std::apply(A, new_tuple);
                         if (std::abs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                                oss << "\x1b[0;37;41m" << einsums::detail::corrected_format("{:14.8f} ", value) << "\x1b[0m";
                             else if constexpr (IsComplexV<T>)
-                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
-                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
+                                oss << "\x1b[0;37;41m("
+                                    << einsums::detail::corrected_format("{:14.8f} + {:14.8f}i)", value.real(), value.imag()) << "\x1b[0m";
                             else
-                                oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
+                                oss << "\x1b[0;37;41m" << einsums::detail::corrected_format("{:14d} ", value) << "\x1b[0m";
                         } else {
                             if constexpr (std::is_floating_point_v<T>) {
                                 if (std::abs(value) < 1.0E-4) {
-                                    oss << fmt::format("{:14.4e} ", value);
+                                    oss << einsums::detail::corrected_format("{:14.4e} ", value);
                                 } else {
-                                    oss << fmt::format("{:14.8f} ", value);
+                                    oss << einsums::detail::corrected_format("{:14.8f} ", value);
                                 }
                             } else if constexpr (IsComplexV<T>) {
-                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                                oss << einsums::detail::corrected_format("({:14.8f} + {:14.8f}i)", value.real(), value.imag());
                             } else
-                                oss << fmt::format("{:14} ", value);
+                                oss << einsums::detail::corrected_format("{:14} ", value);
                         }
                         if (j % options.width == options.width - 1 && j != final_dim - 1) {
                             oss << "\n";
@@ -2344,29 +2345,28 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
 
                 for (size_t item = 0; item < elements; item++) {
                     std::ostringstream oss;
-                    oss << "(";
-                    oss << fmt::format("{}, ", item);
-                    oss << "): ";
+                    oss << einsums::detail::corrected_format("({}):, ", item);
 
                     T value = A(item);
                     if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
-                            oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
+                            oss << einsums::detail::corrected_format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
                         else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
+                            oss << einsums::detail::corrected_format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f}i)",
+                                                                     value.real(), value.imag());
                         } else
-                            oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
+                            oss << einsums::detail::corrected_format(fg(color::white) | bg(color::red), "{:14} ", value);
                     } else {
                         if constexpr (std::is_floating_point_v<T>)
                             if (std::abs(value) < 1.0E-4) {
-                                oss << fmt::format("{:14.4e} ", value);
+                                oss << einsums::detail::corrected_format("{:14.4e} ", value);
                             } else {
                                 oss << fmt::format("{:14.8f} ", value);
                             }
                         else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                            oss << einsums::detail::corrected_format("({:14.8f} + {:14.8f}i)", value.real(), value.imag());
                         } else
-                            oss << fmt::format("{:14} ", value);
+                            oss << einsums::detail::corrected_format("{:14} ", value);
                     }
 
                     fprintln(fp, "{}", oss.str());

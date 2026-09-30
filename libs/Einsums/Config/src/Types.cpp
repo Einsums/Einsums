@@ -57,6 +57,22 @@ bool GlobalConfigMap::get_bool(std::string const &key, bool dephault) const {
     }
 }
 
+void GlobalConfigMap::set_string(std::string const &key, std::string const &value) {
+    str_map_->get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_int(std::string const &key, std::int64_t value) {
+    int_map_->get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_double(std::string const &key, double value) {
+    double_map_->get_value()[key] = value;
+}
+
+void GlobalConfigMap::set_bool(std::string const &key, bool value) {
+    double_map_->get_value()[key] = value;
+}
+
 std::shared_ptr<ConfigMap<std::string>> GlobalConfigMap::get_string_map() {
     return str_map_;
 }

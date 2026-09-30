@@ -37,8 +37,12 @@ template <size_t Rank>
 static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
     std::FILE *input = std::fopen(fname.c_str(), "r");
 
-    char buffer[1024] = {0};
-    int  line_num     = 0;
+    if (input == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not read file!");
+    }
+
+    char                   buffer[1024] = {0};
+    int                    line_num = 0;
 
     while (!std::feof(input)) {
         line_num++;

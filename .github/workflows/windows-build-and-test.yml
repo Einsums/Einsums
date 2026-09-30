@@ -5,6 +5,14 @@ on:
       build_ref:
         type: string
         required: false
+      build_cache_suffix:
+        type: string
+        required: false
+        default: "default"
+      build_cache_size:
+        type: string
+        required: false
+        default: 2G
       build_configure_extra_args:
         type: string
         required: false
@@ -16,23 +24,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [ RelWithDebInfo ]
+        build_type: [ RelWithDebInfo, Debug ]
 
     name: "clang-cl • openblas • ${{ matrix.build_type }}"
     runs-on: windows-2022
+    env:
+      CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
+      CCACHE_MAXSIZE: ${{ inputs.build_cache_size }}
     defaults:
       run:
         shell: bash -el {0}
     steps:
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.build_ref }}
           path: src
+          
+      - name: Cache Build Cache
+        uses: actions/cache@v6
+        with:
+          path: build_cache_${{ inputs.build_cache_suffix }}
+          key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-
+
 
       # ---- Conda environment setup ----
       - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           activate-environment: einsums-env
@@ -44,12 +62,17 @@ jobs:
       - name: Merge Conda YAML files
         working-directory: src/devtools/conda-envs
         run: python merge_yml.py windows openblas
+        
+      - name: Get Week
+        id: get-date
+        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Cache Conda env
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{steps.get-date.outputs.week}}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}
         id: cache
 
       - name: Update environment
@@ -88,11 +111,13 @@ jobs:
             -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
             -D CMAKE_C_COMPILER="%CC%" ^
             -D CMAKE_CXX_COMPILER="%CXX%" ^
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache ^
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache ^
             -D CMAKE_PREFIX_PATH="%CONDA_PREFIX%\Library" ^
-            -D EINSUMS_BUILD_PYTHON=OFF ^
+            -D EINSUMS_BUILD_PYTHON=ON ^
             -D EINSUMS_WITH_TESTS=ON ^
-            -D EINSUMS_WITH_EXAMPLES=ON ^
-            -D EINSUMS_WITH_BACKTRACES=OFF ^
+            -D EINSUMS_WITH_EXAMPLES=OFF ^
+            -D EINSUMS_WITH_BACKTRACES=ON ^
             -D EINSUMS_SHOW_WARNING=OFF ^
             -D CMAKE_INSTALL_PREFIX="%GITHUB_WORKSPACE%\installed" ^
             ${{ inputs.build_configure_extra_args }}
@@ -113,3 +138,21 @@ jobs:
           rem DLL search path: Einsums, spdlog, conda, mingw64 runtime
           set "PATH=%GITHUB_WORKSPACE%\build\${{ matrix.build_type }}\bin;%GITHUB_WORKSPACE%\build\_deps\spdlog-build;%CONDA_PREFIX%\Library\bin;%CONDA_PREFIX%\Library\mingw64\bin;%PATH%"
           ctest -j4 --output-on-failure
+
+      - name: Install
+        shell: cmd
+        working-directory: "${{github.workspace}}/build"
+        run: |
+          call conda activate einsums-env
+          cmake --install . --prefix %GITHUB_WORKSPACE%\installed
+
+      - name: Test (pytest) - unit tests
+        shell: cmd
+        working-directory: "${{github.workspace}}/installed/lib"
+        run: |
+          call conda activate einsums-env
+          set "PYTHONPATH=${{github.workspace}}\installed\lib;${{github.workspace}}\installed\lib\einsums;%PYTHONPATH%;%CONDA_PREFIX%/lib"
+          set "PATH=%PATH%;${{github.workspace}}\installed\bin"
+          echo "%PATH%"
+          echo "%PYTHONPATH%"
+          pytest --rootdir "${{github.workspace}}\installed\lib\einsums" -m "not slow"

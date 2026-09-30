@@ -49,13 +49,10 @@ void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &parser) {
 }
 
 void initialize_Einsums_GPUMemory() {
-    EINSUMS_LOG_TRACE("initializing Einsums/GPUMemory");
-
     gpu::detail::Einsums_GPUMemory_vars::get_singleton().reset_curr_size();
 }
 
 void finalize_Einsums_GPUMemory() {
-    EINSUMS_LOG_TRACE("finalizing module Einsums/GPUMemory");
 }
 
 } // namespace einsums

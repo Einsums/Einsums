@@ -149,17 +149,9 @@ struct unit_circle_distribution<std::complex<T>> {
 } // namespace detail
 
 /**
- * @property random_engine
  *
- * @brief The global random engine for random number generation.
+ * @brief Get the thread-local random engine for random number generation.
  */
-EINSUMS_EXPORT extern std::default_random_engine random_engine;
-
-/**
- * @brief Set the seed of the random number generator.
- *
- * @param seed The new seed for the random number generator.
- */
-EINSUMS_EXPORT void seed_random(std::default_random_engine::result_type seed);
+EINSUMS_EXPORT std::default_random_engine &random_engine();
 
 } // namespace einsums

@@ -5,19 +5,34 @@
 
 #pragma once
 
-#include <Einsums/Config/Alias.hpp>
-#include <Einsums/Config/BranchHints.hpp>
 #include <Einsums/Config/CompilerSpecific.hpp>
-#include <Einsums/Config/Debug.hpp>
-#include <Einsums/Config/Defines.hpp>
 #include <Einsums/Config/ExportDefinitions.hpp>
-#include <Einsums/Config/ForceInline.hpp>
-#include <Einsums/Config/Namespace.hpp>
-#include <Einsums/Config/Types.hpp>
-#include <Einsums/Config/Version.hpp>
-#include <Einsums/Config/FmtAlternatives.hpp>
-#include <Einsums/Config/PosixAlternatives.hpp>
 
-#if !defined(EINSUMS_ZERO)
-#    define EINSUMS_ZERO (1.0e-10)
+#ifdef EINSUMS_WINDOWS
+#    include <process.h>
+#    include <stdlib.h>
+#else
+#    include <unistd.h>
 #endif
+
+namespace einsums {
+#ifdef EINSUMS_WINDOWS
+
+[[nodiscard]] inline int getpid() {
+    return ::_getpid();
+}
+
+[[nodiscard]] int EINSUMS_EXPORT getppid();
+
+#else
+
+[[nodiscard]] inline int getpid() {
+    return ::getpid();
+}
+
+[[nodiscard]] inline int getppid() {
+    return ::getppid();
+}
+
+#endif
+} // namespace einsums

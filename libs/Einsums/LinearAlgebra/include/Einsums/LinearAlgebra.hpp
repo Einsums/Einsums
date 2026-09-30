@@ -178,7 +178,7 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection1(fmt::format("<TransA={}>", TransA));
+    LabeledSection1(einsums::detail::corrected_format("<TransA={}>", TransA));
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
 }
@@ -219,7 +219,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
     }
 void syev(AType *A, WType *W) {
 
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    LabeledSection1(einsums::detail::corrected_format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
@@ -236,7 +236,7 @@ template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorC
         requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
-    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
+    LabeledSection1(einsums::detail::corrected_format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
     detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
@@ -249,7 +249,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    LabeledSection1(einsums::detail::corrected_format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     detail::heev<ComputeEigenvectors>(A, W);
 }
 

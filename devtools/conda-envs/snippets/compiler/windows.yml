@@ -4,3 +4,4 @@ channels:
   - nodefaults
 dependencies:
   - clangdev
+  - pywin32

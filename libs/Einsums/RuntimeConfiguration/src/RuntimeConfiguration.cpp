@@ -101,7 +101,7 @@ void RuntimeConfiguration::pre_initialize() {
     std::vector<std::string> lines = {
         // clang-format off
         "system:",
-        "    pid: " + std::to_string(getpid()),
+        "    pid: " + std::to_string(einsums::getpid()),
         "    executable_prefix: " + detail::get_executable_prefix(),
         "einsums:",
         "    master_yaml_file: ${system.executable_prefix}"
@@ -185,10 +185,10 @@ RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentPa
 		global_bools["install-signal-handlers"] = false;
 #endif
 
-        argument_parser->add_argument("--einsums:no-attach-debugger")
-            .default_value(true)
-            .implicit_value(false)
-            .help("do not provide mechanism to attach debugger on detected errors")
+        argument_parser->add_argument("--einsums:attach-debugger")
+            .default_value(false)
+            .implicit_value(true)
+            .help("provide mechanism to attach debugger on detected errors")
             .store_into(global_bools["attach-debugger"]);
 
         argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")

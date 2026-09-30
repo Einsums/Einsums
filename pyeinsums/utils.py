@@ -19,7 +19,6 @@ except ImportError :
 
 import numpy as np
 
-
 def labeled_section(arg: typing.Union[str, typing.Callable]):
     """
     Decorates a function. Add a line to the timer report for profiling the function.

@@ -112,14 +112,56 @@ class WithinRelMatcher : public Catch::Matchers::MatcherGenericBase {
     double   eps_;
 };
 
+enum ComplexBehavior {
+    EUCLIDEAN,    // Uses the Euclidean norm as the absolute value.
+    ELEMENTAL_ABS // Uses abs(re) + abs(im) as the absolute value.
+};
+
+template <typename TestType>
+class WithinAbsMatcher : public Catch::Matchers::MatcherGenericBase {
+  public:
+    WithinAbsMatcher(TestType value, double eps, ComplexBehavior behavior = EUCLIDEAN) : target_{value}, eps_{eps}, behavior_{behavior} {}
+
+    bool match(TestType value) const {
+        if constexpr (IsComplexV<TestType>) {
+            RemoveComplexT<TestType> diff;
+
+            switch (behavior_) {
+            case EUCLIDEAN:
+                diff = std::abs(value - target_);
+                break;
+            case ELEMENTAL_ABS:
+                diff = std::abs(std::real(value) - std::real(target_)) + std::abs(std::imag(value) - std::imag(target_));
+                break;
+            }
+            return diff <= eps_;
+        } else {
+            return std::abs(value - target_) <= eps_;
+        }
+    }
+
+  private:
+    TestType        target_;
+    double          eps_;
+    ComplexBehavior behavior_;
+};
+
 #ifdef __cpp_deduction_guides
 template <typename TestType>
 WithinRelMatcher(TestType, double) -> WithinRelMatcher<TestType>;
+
+template <typename TestType>
+WithinAbsMatcher(TestType, double, ComplexBehavior) -> WithinAbsMatcher<TestType>;
 #endif
 
 template <typename TestType>
 WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance) {
     return WithinRelMatcher(reference, tolerance);
+}
+
+template <typename TestType>
+WithinAbsMatcher<std::remove_cvref_t<TestType>> CheckWithinAbs(TestType reference, double tolerance, ComplexBehavior behavior = EUCLIDEAN) {
+    return WithinAbsMatcher(reference, tolerance, behavior);
 }
 
 } // namespace einsums

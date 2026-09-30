@@ -15,7 +15,7 @@ static std::string result_string;
 
 void test_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
     using namespace einsums;
-    INFO("Assertion failed. Making string.");
+
     std::ostringstream result;
     result << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
@@ -24,7 +24,16 @@ void test_assertion_handler(std::source_location const &loc, char const *expr, s
         result << "\n";
     }
 
-    result << "\n" << util::backtrace() << "\n";
+#ifdef EINSUMS_HAVE_BACKTRACES
+    std::string backtrace;
+
+    result << "\n";
+
+    util::print_backtrace(result);
+
+    result << "\n";
+
+#endif
 
     result_string = result.str();
 }

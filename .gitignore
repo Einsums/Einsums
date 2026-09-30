@@ -82,3 +82,4 @@ conda.yml
 
 # Profiling files.
 *profile.txt*
+/.pytest_cache/

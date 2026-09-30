@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
+#include <Einsums/Config/ExportDefinitions.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra.hpp>
@@ -15,6 +16,8 @@
 #include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+void EINSUMS_EXPORT export_LinearAlgebra(pybind11::module_ &mod);
 
 namespace einsums {
 namespace python {

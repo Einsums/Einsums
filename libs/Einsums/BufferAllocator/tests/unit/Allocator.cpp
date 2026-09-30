@@ -13,7 +13,7 @@ TEMPLATE_TEST_CASE("Allocations", "[memory]", double, void, std::complex<double>
 
     {
         auto &config = GlobalConfigMap::get_singleton();
-        auto lock = std::lock_guard(config);
+        auto  lock   = std::lock_guard(config);
 
         config.get_string_map()->get_value()["buffer-size"] = "4MB"; // Set to a reasonable number of bytes.
     }
@@ -34,6 +34,8 @@ TEMPLATE_TEST_CASE("Allocations", "[memory]", double, void, std::complex<double>
         REQUIRE_NOTHROW(ptr = alloc.allocate(101));
 
         REQUIRE(ptr != nullptr);
+
+        EINSUMS_LOG_DEBUG("Pointer is at {}.", static_cast<void const *>(ptr));
 
         REQUIRE_NOTHROW(alloc.deallocate(ptr, 101));
 

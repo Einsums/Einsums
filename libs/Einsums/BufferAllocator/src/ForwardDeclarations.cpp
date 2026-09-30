@@ -18,13 +18,13 @@ static void check_requirements() {
     static_assert(requirement);
 }
 
-#ifndef WINDOWS
+#ifndef EINSUMS_WINDOWS
 
-template struct EINSUMS_EXPORT BufferAllocator<void>;
-template struct EINSUMS_EXPORT BufferAllocator<float>;
-template struct EINSUMS_EXPORT BufferAllocator<double>;
-template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
-template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
+template struct BufferAllocator<void>;
+template struct BufferAllocator<float>;
+template struct BufferAllocator<double>;
+template struct BufferAllocator<std::complex<float>>;
+template struct BufferAllocator<std::complex<double>>;
 
 #endif
 

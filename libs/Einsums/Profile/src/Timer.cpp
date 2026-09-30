@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile/Timer.hpp>
 
@@ -63,8 +65,9 @@ void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
     if (timer != root.get()) {
         std::string buffer;
         if (timer->total_calls != 0) {
-            buffer = fmt::format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time), timer->total_calls,
-                                 duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
+            buffer =
+                einsums::detail::corrected_format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time),
+                                                  timer->total_calls, duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
         } else {
             buffer = "total_calls == 0!!!";
         }
@@ -89,7 +92,7 @@ void print_timer_info(TimerDetail const *timer, std::FILE *fp) { // NOLINT
     }
 }
 
-static bool is_init = false;
+static std::atomic_bool is_init = false;
 
 } // namespace detail
 
@@ -130,10 +133,29 @@ void finalize() {
 }
 
 void report(std::string const &fname, bool append) {
-    std::FILE *fp = std::fopen(fname.c_str(), append ? "w+" : "w");
+    std::FILE *fp = std::fopen(fname.c_str(), append ? "a+" : "w+");
+
+    if (fp == nullptr) {
+        EINSUMS_LOG_ERROR("Error while opening the profile file.");
+
+        auto errno_1 = errno;
+
+        char *error_str = std::strerror(errno_1);
+
+        if (error_str == nullptr) {
+            EINSUMS_LOG_ERROR("Error while creating the error report for opening the profile file.");
+            EINSUMS_THROW_EXCEPTION(
+                std::runtime_error,
+                "Could not open file! When processing fopen error, another error occurred! Second error code is error {}.",
+                static_cast<int>(errno_1), static_cast<int>(errno));
+        }
+
+        EINSUMS_LOG_ERROR("Could not open file: {}", error_str);
+
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "Could not open file: {}", error_str);
+    }
 
     detail::print_timer_info(detail::root.get(), fp);
-
     std::fflush(fp);
     std::fclose(fp);
 }
@@ -147,7 +169,7 @@ void push(std::string name) {
 
     if (omp_get_thread_num() == 0) {
         if (omp_in_parallel()) {
-            name = fmt::format("{} (master thread only)", name);
+            name += " (master thread only)";
         }
 
         if (!current_timer) {

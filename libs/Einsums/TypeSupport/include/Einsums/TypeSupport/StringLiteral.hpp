@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstdlib>
+
 #include <fmt/format.h>
 
 #include <algorithm>
