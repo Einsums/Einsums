@@ -83,10 +83,14 @@ void register_args(argparse::ArgumentParser &parser) {
         .help("The number of trials for each step in the calculation.")
         .store_into(global_ints["t"]);
 
-    parser.add_argument("-c").flag().store_into(global_bools["c"]);
+    parser.add_argument("-c")
+        .flag()
+        .store_into(global_bools["c"])
+        .help("If present, print the profiling data in comma-separated form for easy copying into a spread sheet (like "
+              "einsums_profiling.ods)");
 }
 
-int         main(int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp parallel
     {
 #pragma omp single

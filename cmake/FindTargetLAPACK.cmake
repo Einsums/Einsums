@@ -161,6 +161,7 @@ get_property(
 
 if(${_ven} STREQUAL "MKL")
   target_link_libraries(tgt::lapack INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+  target_link_libraries(einsums_base_libraries INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
 endif()
 
 set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_ill}")
