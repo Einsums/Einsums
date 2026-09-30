@@ -79,7 +79,6 @@ foreach(lib ${EINSUMS_LIBS})
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
   
-
   if(WIN32)
     target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
   endif()
@@ -192,6 +191,10 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 
     # adds some RPATH and link flags
     einsums_extend_with_python(${lib})
+    
+    if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+      target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
+    endif()
 
     install(
       TARGETS ${lib}

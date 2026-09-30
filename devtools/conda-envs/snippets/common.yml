@@ -15,9 +15,9 @@ dependencies:
   - cpp-argparse
   - catch2
   - fftw
-  - fmt=11
+  - fmt
   - cpptrace
-  - spdlog
+  - spdlog>=1.17
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib
   - hdf5<2
