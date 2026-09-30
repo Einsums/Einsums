@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 
-#include <windows.h>
+#include <Windows.h>
 #include <windef.h>
 #include <basetsd.h>
 #include <winnt.h>

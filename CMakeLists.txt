@@ -820,7 +820,7 @@ if(EINSUMS_WITH_EXAMPLES)
 endif()
 
 # For some reason, Windows doesn't always provide all types.
-if(MSVC)
+if(WIN32)
   einsums_add_config_test(EINSUMS_WINDOWS_HAS_TYPES SOURCE ${CMAKE_PROJECT_DIR}/cmake/tests/windows_needs_types.cpp)
 endif()
 

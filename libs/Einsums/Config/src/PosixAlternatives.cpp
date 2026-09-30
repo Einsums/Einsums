@@ -4,14 +4,6 @@
 //----------------------------------------------------------------------------------------------
 
 #ifdef EINSUMS_WINDOWS
-// This needs to be before everything.
-
-// #    ifdef _M_AMD64
-// #        define _AMD64_
-// #    elif defined(_M_ARM)
-// #        define _ARM_
-// #    endif
-
 #    include <Windows.h>
 #    include <basetsd.h>
 #    include <windef.h>
@@ -28,8 +20,6 @@
 #include <cstdio>
 #include <cstring>
 
-namespace einsums {
-
 #ifdef EINSUMS_WINDOWS
 
 #    ifndef EINSUMS_WINDOWS_HAS_TYPES
@@ -39,11 +29,11 @@ extern "C" BOOL WINAPI CloseHandle(HANDLE hObject);
 
 #    endif
 
-// #    include <errhandlingapi.h>
-// #    include <handleapi.h>
 #    include <stdexcept>
 #    include <tlhelp32.h>
 #endif
+
+namespace einsums {
 
 #ifdef EINSUMS_WINDOWS
 
