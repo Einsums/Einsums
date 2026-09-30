@@ -78,10 +78,6 @@ foreach(lib ${EINSUMS_LIBS})
   if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
   endif()
-  
-  if(WIN32)
-    target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
-  endif()
 
   if(EINSUMS_WITH_BACKTRACES)
     # Copy the cpptrace.dll on windows to the same directory as the executable for your_target. Not
@@ -156,10 +152,6 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 
     target_compile_definitions(${lib} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
     
-    if(WIN32)
-      target_compile_definitions(${lib} PUBLIC _CRT_SECURE_NO_WARNINGS=1)
-    endif()
-
     if(UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
         target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
     endif()

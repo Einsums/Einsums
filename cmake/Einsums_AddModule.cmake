@@ -139,15 +139,6 @@ function(einsums_add_module libname modulename)
   einsums_append_coverage_compiler_flags_to_target(
     ${libname}_${modulename} ${module_public_keyword}
   )
-  
-  
-  
-  if(NOT "${module_library_type}" STREQUAL "INTERFACE")
-    if(WIN32)
-      target_compile_definitions(${libname}_${modulename} PRIVATE _CRT_SECURE_NO_WARNINGS)
-    endif()
-    target_compile_definitions(${libname}_${modulename} PRIVATE EINSUMS_EXPORTS)
-  endif()
 
   if(EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES)
     # verify that all dependencies are from the same module category
