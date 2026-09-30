@@ -89,7 +89,7 @@ The following shows the difference in overall performance as the number of orbit
 ![einsums Growth](/docs/sphinx/_static/index-images/Performance_comp.png)
 
 These timings were computed on a system with  an Intel Core i7-13700K with 32 GB of DDR5 RAM and an
-AMD Radeon 7900X graphics card running Debian 12, kernel version 6.1.
+AMD Radeon 7900X graphics card running Debian 13, kernel version 6.12, and compiled with GCC 15.2.0.
 
 W Intermediates in CCD
 ```C++
