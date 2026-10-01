@@ -26,11 +26,9 @@ namespace einsums::detail {
 void *allocate(size_t n) {
     void *ptr = nullptr;
 
-    constexpr size_t alignment = 64;
-    constexpr size_t mask      = alignment - 1;
-    size_t const     remainder = n & mask;
-    size_t const     rounding  = (remainder == 0) ? 0 : alignment;
-    size_t const     rounded_n = (n & ~mask) + rounding;
+    constexpr size_t alignment  = 64;
+    size_t const     modified_n = n + alignment - 1;
+    size_t const     rounded_n  = modified_n & ~static_cast<size_t>(alignment - 1);
 
 #if __cpp_lib_int_pow2 >= 202002L
     static_assert(std::has_single_bit(alignment));
