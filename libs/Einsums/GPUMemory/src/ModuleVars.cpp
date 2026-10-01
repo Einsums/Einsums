@@ -5,6 +5,7 @@
 
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/GPUMemory/ModuleVars.hpp>
+#include <Einsums/Errors/Error.hpp>
 
 namespace einsums::gpu::detail {
 

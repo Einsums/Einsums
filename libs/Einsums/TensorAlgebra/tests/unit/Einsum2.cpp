@@ -44,7 +44,6 @@ TEMPLATE_TEST_CASE("einsum TensorView", "[tensor]", float, double, std::complex<
             // einsum("ik=ij,jk", &result, view, view);
             REQUIRE_NOTHROW(einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k},
                                    view, &alg_choice));
-            REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view

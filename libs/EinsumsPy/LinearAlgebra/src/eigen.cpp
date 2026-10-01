@@ -102,37 +102,6 @@ void syev(std::string const &jobz, py::buffer &A, py::buffer &W) {
     }
 }
 
-template <NotComplex T>
-void geev_work(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<AddComplexT<T>> &W,
-               einsums::detail::TensorImpl<AddComplexT<T>> *vl, einsums::detail::TensorImpl<AddComplexT<T>> *vr) {
-    Tensor<T, 2> vl_tens, vr_tens;
-
-    einsums::detail::TensorImpl<T> *vl_impl = nullptr, *vr_impl = nullptr;
-
-    if (vl != nullptr) {
-        vl_tens = Tensor<T, 2>("left eigenvectors", vl->dim(0), vl->dim(1));
-        vl_impl = &(vl_tens.impl());
-    }
-
-    if (vr != nullptr) {
-        vr_tens = Tensor<T, 2>("right eigenvectors", vr->dim(0), vr->dim(1));
-        vr_impl = &(vr_tens.impl());
-    }
-
-    einsums::linear_algebra::detail::geev(&A, &W, vl_impl, vr_impl);
-
-    if (vl != nullptr || vr != nullptr) {
-        einsums::linear_algebra::detail::process_geev_vectors(W, vl_impl, vr_impl, vl, vr);
-    }
-}
-
-template <Complex T>
-void geev_work(einsums::detail::TensorImpl<T> &A, einsums::detail::TensorImpl<T> &W, einsums::detail::TensorImpl<T> *vl,
-               einsums::detail::TensorImpl<T> *vr) {
-
-    einsums::linear_algebra::detail::geev(&A, &W, vl, vr);
-}
-
 template <typename T>
 void geev_setup(py::buffer &A, py::buffer &W, pybind11::buffer *Vl_or_none, pybind11::buffer *Vr_or_none) {
 
@@ -150,7 +119,7 @@ void geev_setup(py::buffer &A, py::buffer &W, pybind11::buffer *Vl_or_none, pybi
         Vr_ptr  = &Vr_tens;
     }
 
-    geev_work<T>(A_tens, W_tens, Vl_ptr, Vr_ptr);
+    einsums::linear_algebra::detail::geev(&A_tens, &W_tens, Vl_ptr, Vr_ptr);
 }
 
 void geev(py::buffer &A, py::buffer &W, std::variant<pybind11::buffer, pybind11::none> &Vl_or_none,

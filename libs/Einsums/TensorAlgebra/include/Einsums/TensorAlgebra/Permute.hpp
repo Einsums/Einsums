@@ -201,7 +201,7 @@ void permute(T beta, std::tuple<CIndices...> const &C_indices, einsums::detail::
 template <bool ConjA = false, typename T>
 void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T> *C, T alpha, std::string const &A_indices,
              einsums::detail::TensorImpl<T> const &A) {
-    LabeledSection1((std::abs(beta) > EINSUMS_ZERO)
+    LabeledSection((std::abs(beta) > EINSUMS_ZERO)
                         ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
                                       C->name(), C_indices)
                         : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));

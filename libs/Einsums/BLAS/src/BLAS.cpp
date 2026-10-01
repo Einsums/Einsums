@@ -436,6 +436,38 @@ auto zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::
     return vendor::zungqr(m, n, k, a, lda, tau);
 }
 
+auto sgelqf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t {
+    return vendor::sgelqf(m, n, a, lda, tau);
+}
+
+auto dgelqf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t {
+    return vendor::dgelqf(m, n, a, lda, tau);
+}
+
+auto cgelqf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t {
+    return vendor::cgelqf(m, n, a, lda, tau);
+}
+
+auto zgelqf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t {
+    return vendor::zgelqf(m, n, a, lda, tau);
+}
+
+auto sorglq(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t {
+    return vendor::sorglq(m, n, k, a, lda, tau);
+}
+
+auto dorglq(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t {
+    return vendor::dorglq(m, n, k, a, lda, tau);
+}
+
+auto cunglq(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau) -> int_t {
+    return vendor::cunglq(m, n, k, a, lda, tau);
+}
+
+auto zunglq(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t {
+    return vendor::zunglq(m, n, k, a, lda, tau);
+}
+
 void scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {
     vendor::scopy(n, x, inc_x, y, inc_y);
 }

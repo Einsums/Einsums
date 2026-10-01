@@ -54,15 +54,23 @@ void heev_strided_test() {
 
     TensorView<T, 2> A{data.data(), Dim<2>{3, 3}, Stride<2>{6, 2}};
 
-    Tensor<T, 2> A2{"test", 3, 3}, A3{true, "test 2", 3, 3};
+    Tensor<T, 2> A2{false, "test", 3, 3}, A3{true, "test 2", 3, 3};
 
     A2 = A;
     A3 = A;
+
+    println(A);
+    println(A2);
+    println(A3);
 
     einsums::linear_algebra::heev(&A2, &b);
     einsums::linear_algebra::heev(&A3, &b);
 
     einsums::linear_algebra::heev(&A, &b);
+
+    println(A);
+    println(A2);
+    println(A3);
 
     // Sometimes 0.0 will be reported as -0.0 therefore we test the Abs of the first two
     CHECK_THAT(b(0), Catch::Matchers::WithinAbs(0.0, 0.00001));

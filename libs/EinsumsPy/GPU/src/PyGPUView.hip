@@ -4,6 +4,7 @@
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 
 #include <EinsumsPy/GPU/PyGPUView.hpp>
 #include <hip/hip_common.h>
@@ -17,7 +18,7 @@ using namespace einsums::python;
 
 struct MappingList;
 
-static std::mutex   __constructor_lock;
+static std::mutex                   __constructor_lock;
 static std::shared_ptr<MappingList> __singleton{nullptr};
 
 // Subject. Observed by PyGPUView.
@@ -59,7 +60,7 @@ struct MappingList final {
         bool has_refs() const { return _observers.size() > 0; }
 
         bool observed_by(PyGPUView &observer) const {
-            for (const auto &item : _observers) {
+            for (auto const &item : _observers) {
                 if (item == &observer) {
                     return true;
                 }
@@ -75,7 +76,7 @@ struct MappingList final {
     std::list<MappingData> _pointers;
     std::recursive_mutex   _lock;
 
-    MappingList()  = default;
+    MappingList() = default;
 
     void refresh_list() {
         auto guard = std::lock_guard(_lock);
@@ -83,7 +84,7 @@ struct MappingList final {
     }
 
     class PrivateConstructor {
-        public:
+      public:
         PrivateConstructor() = default;
     };
 
@@ -159,19 +160,25 @@ PyGPUView::PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode) {
 
     _mode = mode;
 
-    if (_mode == detail::COPY) {
-        hip_catch(hipMalloc((void **)&_dev_data, buffer_info.strides[0] * buffer_info.shape[0]));
+    size_t size;
+    if (_rank > 1) {
+        size = std::max(buffer_info.strides[0] * buffer_info.shape[0], buffer_info.strides[_rank - 1] * buffer_info.shape[_rank - 1]);
+    } else {
+        size = buffer_info.strides[0] * buffer_info.shape[0];
+    }
 
-        hip_catch(
-            hipMemcpy((void *)_dev_data, (void const *)_host_data, buffer_info.strides[0] * buffer_info.shape[0], hipMemcpyHostToDevice));
+    if (_mode == detail::COPY) {
+        hip_catch(hipMalloc((void **)&_dev_data, size));
+
+        hip_catch(hipMemcpy((void *)_dev_data, (void const *)_host_data, size, hipMemcpyHostToDevice));
     } else if (_mode == detail::MAP) {
-        _dev_data = MappingList::get_singleton()->attach(*this, _host_data, buffer_info.strides[0] * buffer_info.shape[0]);
+        _dev_data = MappingList::get_singleton()->attach(*this, _host_data, size);
     } else if (_mode == detail::DEVICE_TENSOR) {
         EINSUMS_THROW_EXCEPTION(
             enum_error, "Can not use DEVICE_TENSOR mode with buffer object. Only used to convert einsums::DeviceTensor to PyGPUView.");
     }
 
-    _alloc_size = buffer_info.strides[0] * buffer_info.shape[0];
+    _alloc_size = size;
     _num_items  = 1;
     for (auto dim : buffer_info.shape) {
         _num_items *= dim;
@@ -194,16 +201,44 @@ PyGPUView::PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode) {
 PyGPUView::~PyGPUView() {
     if (_mode == detail::COPY) {
         // Don't copy before. There is no guarantee that the host data is still valid.
-        hip_catch(hipFree(_dev_data));
+        try {
+            hip_catch(hipFree(_dev_data));
+        } catch (ErrorInvalidValue &) {
+            EINSUMS_LOG_WARN(
+                "GPUView attempted to free an invalid data pointer! This may be because it was already freed, or it was mapped "
+                "rather than copied. The address is {}. Ignoring error for now.",
+                fmt::ptr(_dev_data));
+        }
     } else if (_mode == detail::MAP) {
         MappingList::get_singleton()->detach(*this);
     } else if (_mode == detail::DEVICE_TENSOR) {
-        hip_catch(hipFree(_gpu_strides));
+        try {
+            hip_catch(hipFree(_gpu_strides));
+        } catch (ErrorInvalidValue &) {
+            EINSUMS_LOG_WARN(
+                "GPUView attempted to free an invalid stride pointer! This may be because it was already freed, or it was mapped "
+                "rather than copied. The address is {}. Ignoring error for now.",
+                fmt::ptr(_gpu_strides));
+        }
     }
 
     if (_mode != detail::DEVICE_TENSOR) {
-        hip_catch(hipFree(_gpu_dims));
-        hip_catch(hipFree(_gpu_strides));
+        try {
+            hip_catch(hipFree(_gpu_dims));
+        } catch (ErrorInvalidValue &) {
+            EINSUMS_LOG_WARN(
+                "GPUView attempted to free an invalid dimension pointer! This may be because it was already freed, or it was mapped "
+                "rather than copied. The address is {}. Ignoring error for now.",
+                fmt::ptr(_gpu_dims));
+        }
+        try {
+            hip_catch(hipFree(_gpu_strides));
+        } catch (ErrorInvalidValue &) {
+            EINSUMS_LOG_WARN(
+                "GPUView attempted to free an invalid stride pointer! This may be because it was already freed, or it was mapped "
+                "rather than copied. The address is {}. Ignoring error for now.",
+                fmt::ptr(_gpu_strides));
+        }
     }
 }
 
@@ -279,12 +314,14 @@ size_t PyGPUView::itemsize() const noexcept {
 }
 
 void PyGPUView::update_H2D() {
+    einsums::gpu::stream_wait();
     if (_mode == detail::COPY) {
         hip_catch(hipMemcpy(_dev_data, _host_data, _alloc_size, hipMemcpyHostToDevice));
     }
 }
 
 void PyGPUView::update_D2H() {
+    einsums::gpu::stream_wait();
     if (_mode == detail::COPY) {
         hip_catch(hipMemcpy(_host_data, _dev_data, _alloc_size, hipMemcpyDeviceToHost));
     }

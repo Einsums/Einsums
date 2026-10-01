@@ -6,7 +6,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3), C("C", DEV_ONLY, 3, 3);
 
@@ -63,7 +62,6 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3);
 
@@ -82,7 +80,6 @@ TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double,
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 1> A("A", DEV_ONLY, 3), B("B", DEV_ONLY, 3);
     DeviceTensor<TestType, 2> C("C", DEV_ONLY, 3, 3);
@@ -107,7 +104,6 @@ TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float,
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3);
     DeviceTensor<TestType, 1> B("B", DEV_ONLY, 3);
@@ -141,7 +137,6 @@ TEMPLATE_TEST_CASE("GPU scale", "[gpu][linear-algebra]", float, double, std::com
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3);
 
@@ -164,7 +159,6 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
     using namespace einsums;
     using namespace einsums::detail;
     using namespace einsums::gpu;
-    using namespace einsums::gpu::detail;
 
     DeviceTensor<double, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3), C("C", DEV_ONLY, 3, 3);
 

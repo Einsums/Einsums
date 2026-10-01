@@ -146,7 +146,7 @@ void gemm(char transA, char transB, U const alpha, AType const &A, BType const &
     int x_size = C->grid_size(0), y_size = C->grid_size(1), z_size = A.grid_size(tA ? 0 : 1);
 
 // For every block in C, do matrix multiplication.
-#pragma omp parallel for collapse(2)
+//#pragma omp parallel for collapse(2)
     for (int i = 0; i < x_size; i++) {
         for (int j = 0; j < y_size; j++) {
             if (C->has_zero_size(i, j)) {

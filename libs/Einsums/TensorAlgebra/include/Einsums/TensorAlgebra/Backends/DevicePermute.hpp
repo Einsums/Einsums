@@ -9,6 +9,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
 

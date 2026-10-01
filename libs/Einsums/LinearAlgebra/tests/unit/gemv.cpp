@@ -28,10 +28,18 @@ void test_gemv() {
     x.vector_data() = temp;
 
     einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{154.0, 352.0, 550.0}));
+    if (A.impl().is_column_major()) {
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{154.0, 352.0, 550.0}));
+    } else {
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{330.0, 396.0, 462.0}));
+    }
 
     einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{330.0, 396.0, 462.0}));
+    if (A.impl().is_column_major()) {
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{330.0, 396.0, 462.0}));
+    } else {
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{154.0, 352.0, 550.0}));
+    }
 }
 
 TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {

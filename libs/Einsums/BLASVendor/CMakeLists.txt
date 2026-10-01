@@ -19,6 +19,7 @@ set(BLASVendorSources
     dot.cpp
     gees.cpp
     geev.cpp
+    gelqf.cpp
     gemm.cpp
     gemv.cpp
     geqrf.cpp
@@ -32,6 +33,7 @@ set(BLASVendorSources
     lacgv.cpp
     lange.cpp
     lassq.cpp
+    orglq.cpp
     orgqr.cpp
     scal.cpp
     syev.cpp

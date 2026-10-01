@@ -1598,6 +1598,30 @@ struct DeviceTensor<T, 0>
         return out;
     }
 
+    bool is_row_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return true;
+        } else if (stride(0) == stride(-1)) {
+            return (dim(0) > dim(-1));
+        } else {
+            return false;
+        }
+    }
+
+    bool is_column_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return false;
+        } else if (stride(0) == stride(-1)) {
+            return !(dim(0) > dim(-1));
+        } else {
+            return true;
+        }
+    }
+
   private:
     /**
      * @property _name
@@ -2142,6 +2166,30 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
         einsums::DeviceTensor<T, rank> temp(*this);
 
         return (einsums::Tensor<T, rank>)temp;
+    }
+
+    bool is_row_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return true;
+        } else if (stride(0) == stride(-1)) {
+            return (dim(0) > dim(-1));
+        } else {
+            return false;
+        }
+    }
+
+    bool is_column_major() const {
+        if (Rank < 2) {
+            return true;
+        } else if (stride(0) > stride(-1)) {
+            return false;
+        } else if (stride(0) == stride(-1)) {
+            return !(dim(0) > dim(-1));
+        } else {
+            return true;
+        }
     }
 
   private:

@@ -12,6 +12,8 @@
 #include <complex>
 #include <string>
 
+#include "Einsums/Config/CompilerSpecific.hpp"
+
 namespace einsums {
 
 /**
@@ -36,12 +38,12 @@ namespace einsums {
  *
  * @versionadded{1.0.0}
  */
-template <typename T = double, bool RowMajor = false, typename... MultiIndex>
+template <typename T = double, bool RowMajor = einsums::row_major_default, typename... MultiIndex>
 auto create_incremented_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     Stride<sizeof...(MultiIndex)> index_strides;
-    size_t                        elements = dims_to_strides(A.dims(), index_strides);
+    size_t                        elements = dims_to_strides(A.dims(), index_strides, true);
 
     for (size_t item = 0; item < elements; item++) {
         size_t sentinel;

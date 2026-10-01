@@ -21,6 +21,7 @@
 #include <map>
 #include <set>
 #include <source_location>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <unordered_set>
@@ -210,9 +211,13 @@ struct BufferAllocator {
             return true;
         }
 
-        auto &vars = detail::Einsums_BufferAllocator_vars::get_singleton();
+        try {
+            auto &vars = detail::Einsums_BufferAllocator_vars::get_singleton();
 
-        return vars.request_bytes(n * type_size);
+            return vars.request_bytes(n * type_size);
+        } catch (std::runtime_error &) {
+            return false;
+        }
     }
 
     /**
@@ -231,9 +236,12 @@ struct BufferAllocator {
             return;
         }
 
-        auto &vars = detail::Einsums_BufferAllocator_vars::get_singleton();
-
-        vars.release_bytes(n * type_size);
+        try {
+            auto &vars = detail::Einsums_BufferAllocator_vars::get_singleton();
+            vars.release_bytes(n * type_size);
+        } catch (std::runtime_error &) {
+            return;
+        }
     }
 
     /**
@@ -265,7 +273,13 @@ struct BufferAllocator {
      *
      * @versionadded{1.1.0}
      */
-    [[nodiscard]] size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
+    [[nodiscard]] size_type max_size() const {
+        try {
+            return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size;
+        } catch (std::runtime_error &) {
+            return 0;
+        }
+    }
 
     /**
      * @brief Query the number of elements the allocator has free.
@@ -277,7 +291,13 @@ struct BufferAllocator {
      * @versionadded{1.1.0}
      */
     [[nodiscard]] size_type available_size() const {
-        return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+       
+        try {
+            return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+   
+        } catch (std::runtime_error &) {
+            return 0;
+        }
     }
 
     /**

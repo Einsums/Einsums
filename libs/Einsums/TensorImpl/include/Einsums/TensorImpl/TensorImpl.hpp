@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "Einsums/Concepts/Complex.hpp"
+#include "Einsums/Config/CompilerSpecific.hpp"
 #include "Einsums/Print.hpp"
 
 namespace einsums {
@@ -98,7 +99,7 @@ struct TensorImpl final {
     /**
      * @brief Default constructor.
      */
-    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{false} {};
+    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{row_major_default} {};
 
     /**
      * @brief Copy constructor.
@@ -164,7 +165,7 @@ struct TensorImpl final {
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
     template <Container Dims>
-    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = false)
+    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = row_major_default)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
@@ -214,7 +215,7 @@ struct TensorImpl final {
      * @param dims The dimensions of the tensor.
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
-    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = false)
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = row_major_default)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
@@ -709,6 +710,8 @@ struct TensorImpl final {
         if (_rank != 2) {
             return false;
         } else if (_strides[0] != 1 && _strides[1] != 1) {
+            return false;
+        } else if (_strides[0] == _strides[1]) {
             return false;
         } else {
             if (lda != nullptr) {

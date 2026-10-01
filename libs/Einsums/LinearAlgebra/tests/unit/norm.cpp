@@ -23,7 +23,11 @@ void norm_test() {
 
     T result = linear_algebra::norm(linear_algebra::Norm::ONE, A);
 
-    CHECK_THAT(result, Catch::Matchers::WithinRel(33.0, 0.1));
+    if (A.impl().is_row_major()) {
+        REQUIRE_THAT(result, Catch::Matchers::WithinRel(15.0, 0.1));
+    } else {
+        REQUIRE_THAT(result, Catch::Matchers::WithinRel(33.0, 0.1));
+    }
 }
 
 TEST_CASE("norm") {

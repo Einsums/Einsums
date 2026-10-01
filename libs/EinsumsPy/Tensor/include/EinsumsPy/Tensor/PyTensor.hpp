@@ -166,7 +166,7 @@ class EINSUMS_EXPORT PyTensorIterator {
             _curr_index = other.size() - 1;
         }
 
-        dims_to_strides(other.dims(), _index_strides);
+        dims_to_strides(other.dims(), _index_strides, true);
     }
 
     /**
@@ -183,7 +183,7 @@ class EINSUMS_EXPORT PyTensorIterator {
             _curr_index = other.size() - 1;
         }
 
-        dims_to_strides(other.dims(), _index_strides);
+        dims_to_strides(other.dims(), _index_strides, true);
     }
 
     /**

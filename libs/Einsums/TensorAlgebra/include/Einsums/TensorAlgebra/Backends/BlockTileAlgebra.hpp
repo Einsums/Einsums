@@ -41,7 +41,7 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
 
     auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();
 
-    dims_to_strides(unique_grid, unique_strides);
+    dims_to_strides(unique_grid, unique_strides, true);
 
     std::array<int, ARank> A_index_table;
     std::array<int, BRank> B_index_table;

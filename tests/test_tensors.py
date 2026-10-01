@@ -48,20 +48,38 @@ def test_creation(tensor_type):
     B_strides = B.strides()
     C_strides = C.strides()
 
-    assert A_strides[0] == 1
-    assert A_strides[1] == 3
-    assert A.stride(0) == 1
-    assert A.stride(1) == 3
+    if A.is_row_major():
+        assert A_strides[0] == 3
+        assert A_strides[1] == 1
+        assert A.stride(0) == 3
+        assert A.stride(1) == 1
+    else:
+        assert A_strides[0] == 1
+        assert A_strides[1] == 3
+        assert A.stride(0) == 1
+        assert A.stride(1) == 3
 
-    assert B_strides[0] == 1
-    assert B_strides[1] == 3
-    assert B.stride(0) == 1
-    assert B.stride(1) == 3
+    if B.is_row_major():
+        assert B_strides[0] == 3
+        assert B_strides[1] == 1
+        assert B.stride(0) == 3
+        assert B.stride(1) == 1
+    else:
+        assert B_strides[0] == 1
+        assert B_strides[1] == 3
+        assert B.stride(0) == 1
+        assert B.stride(1) == 3
 
-    assert C_strides[0] == 1
-    assert C_strides[1] == 3
-    assert C.stride(0) == 1
-    assert C.stride(1) == 3
+    if C.is_row_major():
+        assert C_strides[0] == 3
+        assert C_strides[1] == 1
+        assert C.stride(0) == 3
+        assert C.stride(1) == 1
+    else:
+        assert C_strides[0] == 1
+        assert C_strides[1] == 3
+        assert C.stride(0) == 1
+        assert C.stride(1) == 3
 
     assert A.get_name() == "A"
     assert A.name == "A"
@@ -379,15 +397,27 @@ def test_view_creation():
     A_strides = A_view.strides()
     B_strides = B_view.strides()
 
-    assert A_strides[0] == 1
-    assert A_strides[1] == 5
-    assert A_view.stride(0) == 1
-    assert A_view.stride(1) == 5
+    if A_view.is_row_major():
+        assert A_strides[0] == 5
+        assert A_strides[1] == 1
+        assert A_view.stride(0) == 5
+        assert A_view.stride(1) == 1
+    else:
+        assert A_strides[0] == 1
+        assert A_strides[1] == 5
+        assert A_view.stride(0) == 1
+        assert A_view.stride(1) == 5
 
-    assert B_strides[0] == 1
-    assert B_strides[1] == 5
-    assert B_view.stride(0) == 1
-    assert B_view.stride(1) == 5
+    if B_view.is_row_major():
+        assert B_strides[0] == 5
+        assert B_strides[1] == 1
+        assert B_view.stride(0) == 5
+        assert B_view.stride(1) == 1
+    else:
+        assert B_strides[0] == 1
+        assert B_strides[1] == 5
+        assert B_view.stride(0) == 1
+        assert B_view.stride(1) == 5
 
     A_view.set_name("A view")
     assert A_view.get_name() == "A view"

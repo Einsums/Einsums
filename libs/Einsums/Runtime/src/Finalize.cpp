@@ -13,6 +13,7 @@
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
+#include <H5public.h>
 #include <cstdlib>
 
 namespace einsums {

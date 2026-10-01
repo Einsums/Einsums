@@ -722,6 +722,28 @@ auto ztrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, std::complex<d
             int_t ldb, std::complex<double> *c, int_t ldc, double *scale) -> int_t;
 
 /**
+ * Perform QR decomposition.
+ *
+ * @param[in] m The number of rows in the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[inout] a The matrix to decompose. On exit, the R matrix is above the diagonal and the reflection vectors are below the diagonal.
+ * @param[in] lda The leading dimension of the matrix.
+ * @param[out] tau The scale factors for the Householder reflectors.
+ *
+ * @return 0 on success. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was
+ * invalid.
+ *
+ * @versionadded{1.0.0}
+ */
+auto sgeqrf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
+/// @copydoc sgeqrf
+auto dgeqrf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
+/// @copydoc sgeqrf
+auto cgeqrf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
+/// @copydoc sgeqrf
+auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
+
+/**
  * Extract the Q matrix from a QR decomposition.
  *
  * @param[in] m The number of rows in the input matrix.
@@ -744,7 +766,7 @@ auto cungqr(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::c
 auto zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t;
 
 /**
- * Perform QR decomposition.
+ * Perform LQ decomposition.
  *
  * @param[in] m The number of rows in the input matrix.
  * @param[in] n The number of columns in the input matrix.
@@ -757,13 +779,35 @@ auto zungqr(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::
  *
  * @versionadded{1.0.0}
  */
-auto sgeqrf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
-/// @copydoc sgeqrf
-auto dgeqrf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
-/// @copydoc sgeqrf
-auto cgeqrf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
-/// @copydoc sgeqrf
-auto zgeqrf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
+auto sgelqf(int_t m, int_t n, float *a, int_t lda, float *tau) -> int_t;
+/// @copydoc sgelqf
+auto dgelqf(int_t m, int_t n, double *a, int_t lda, double *tau) -> int_t;
+/// @copydoc sgelqf
+auto cgelqf(int_t m, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *tau) -> int_t;
+/// @copydoc sgelqf
+auto zgelqf(int_t m, int_t n, std::complex<double> *a, int_t lda, std::complex<double> *tau) -> int_t;
+
+/**
+ * Extract the Q matrix from a LQ decomposition.
+ *
+ * @param[in] m The number of rows in the input matrix.
+ * @param[in] n The number of columns in the input matrix.
+ * @param[in] k The number of elementary reflectors used to decompose the matrix.
+ * @param[inout] a The input matrix after being processed by sgelqf. On exit, it will contain the Q matrix.
+ * @param[in] lda The leading dimension of the matrix.
+ * @param[in] tau The scale factors for the elementary reflectors used in the decomposition.
+ *
+ * @return 0 on success. If negative, one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.
+ *
+ * @versionadded{1.0.0}
+ */
+auto sorglq(int_t m, int_t n, int_t k, float *a, int_t lda, float const *tau) -> int_t;
+/// @copydoc sorglq
+auto dorglq(int_t m, int_t n, int_t k, double *a, int_t lda, double const *tau) -> int_t;
+/// @copydoc sorglq
+auto cunglq(int_t m, int_t n, int_t k, std::complex<float> *a, int_t lda, std::complex<float> const *tau) -> int_t;
+/// @copydoc sorglq
+auto zunglq(int_t m, int_t n, int_t k, std::complex<double> *a, int_t lda, std::complex<double> const *tau) -> int_t;
 
 /**
  * Copy one vector to another.

@@ -26,7 +26,7 @@ int init_Einsums_BufferAllocator() {
 
     if (!is_initialized) {
         einsums::register_arguments(einsums::add_Einsums_BufferAllocator_arguments);
-        einsums::register_startup_function(einsums::initialize_Einsums_BufferAllocator);
+        einsums::register_pre_startup_function(einsums::initialize_Einsums_BufferAllocator);
         einsums::register_shutdown_function(einsums::finalize_Einsums_BufferAllocator);
         is_initialized = true;
     }
@@ -50,7 +50,8 @@ EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments() {
 }
 
 void initialize_Einsums_BufferAllocator() {
-    /// @todo Fill in.
+    // Create the singleton instance early.
+    auto &singleton = detail::Einsums_BufferAllocator_vars::get_singleton();
 }
 
 void finalize_Einsums_BufferAllocator() {
