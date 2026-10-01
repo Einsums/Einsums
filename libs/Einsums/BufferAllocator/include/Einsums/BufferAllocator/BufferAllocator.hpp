@@ -10,6 +10,7 @@
 #pragma once
 
 #include <Einsums/Config.hpp>
+#include <Einsums/Logging.hpp>
 
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
 #include <Einsums/Errors.hpp>

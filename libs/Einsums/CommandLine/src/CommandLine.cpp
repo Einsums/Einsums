@@ -31,4 +31,17 @@ std::shared_ptr<ExclusiveCategory> make_yes_no(Flag &yes_flag, Flag &no_flag, bo
     return out;
 }
 
+std::unique_ptr<Builtins> &Builtins::get_underlying_unique_pointer() {
+    static std::unique_ptr<Builtins> instance{nullptr};
+
+    if (!instance) {
+        instance = std::make_unique<Builtins>(PrivateConstructorStuff());
+    }
+    return instance;
+}
+
+Builtins &Builtins::get_singleton() {
+    return *get_underlying_unique_pointer();
+}
+
 } // namespace einsums::cl

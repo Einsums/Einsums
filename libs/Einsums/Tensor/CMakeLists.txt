@@ -16,9 +16,11 @@ set(TensorHeaders
     Einsums/Tensor/TiledTensor.hpp
     Einsums/Tensor/Backends/TiledTensorBase.hpp
     Einsums/Tensor/Backends/TiledTensorPrint.hpp
+    Einsums/Tensor/InitModule.hpp
+    Einsums/Tensor/ModuleVars.hpp
 )
 
-set(TensorSources TensorDefs.cpp Requirements.cpp)
+set(TensorSources TensorDefs.cpp Requirements.cpp ModuleVars.cpp InitModule.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   set_source_files_properties(TensorDefs.cpp PROPERTIES LANGUAGE CXX)

@@ -70,7 +70,7 @@ TEMPLATE_TEST_CASE("Tiled Tensors", "[linear-algebra]", float, double, std::comp
                 continue;
             }
 
-            if (random(einsums::random_engine) == 1) {
+            if (random(einsums::random_engine()) == 1) {
                 A.tile(i, j) = create_random_tensor<TestType>("A tile", A.tile_size(0)[i], A.tile_size(1)[j]);
             }
         }

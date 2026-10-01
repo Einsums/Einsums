@@ -341,11 +341,12 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    std::string description = std::abs(UC_prefactor) > EINSUMS_ZERO
-                                  ? feinsums::detail::corrected_format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(),
-                                                A_indices, UC_prefactor, C->name(), C_indices)
-                                  : einsums::detail::corrected_format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices);
-    LabeledSection(fmt::runtime(description));
+    if (std::abs(UC_prefactor) > EINSUMS_ZERO) {
+        LabeledSection(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices, UC_prefactor,
+                       C->name(), C_indices);
+    } else {
+        LabeledSection(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices);
+    }
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;

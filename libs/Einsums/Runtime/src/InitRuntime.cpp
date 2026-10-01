@@ -111,8 +111,6 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     }
 
     {
-        auto &global_config = GlobalConfigMap::get_singleton();
-
         auto global_strings = global_config.get_string_map();
         auto global_bools   = global_config.get_bool_map();
         auto global_doubles = global_config.get_double_map();

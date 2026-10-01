@@ -63,8 +63,12 @@ struct Registry {
     std::list<ExclusiveCategory *> exclusions;
 
     static Registry &instance() {
-        static Registry R;
-        return R;
+        static std::unique_ptr<Registry> R{nullptr};
+
+        if (!R) {
+            R = std::make_unique<Registry>();
+        }
+        return *R;
     }
 
     void add_option(OptionBase *o) { options.push_back(o); }
@@ -187,11 +191,13 @@ struct OptionBase {
     OptionBase(StringRef longName, std::initializer_list<char> shorts, StringRef helpText, OptionCategory *cat)
         : long_name(longName.s), short_names(shorts), help(helpText.s), category(cat) {
         Registry::instance().add_option(this);
+        std::cout << "Option: " << longName.s << std::endl;
     }
 
     OptionBase(StringRef positional_name, Positional, StringRef helpText)
         : long_name(positional_name.s), help(helpText.s), is_positional(true) {
         Registry::instance().add_option(this);
+        std::cout << "Option: " << positional_name.s << std::endl;
     }
 
     virtual ~OptionBase() = default;
@@ -757,18 +763,20 @@ struct Alias : OptionBase {
 // -------------------------- Built-ins ----------------------------------- //
 
 struct Builtins {
+    EINSUMS_SINGLETON_DEF(Builtins);
+  public:
     OptionCategory cat{"Help"};
     Flag           help{"help", {'h'}, "Show this help message and exit", cat};
     Flag           version{"version", {}, "Show version and exit", cat};
+    
+    static std::unique_ptr<Builtins> &get_underlying_unique_pointer();
+
+  private:
     Builtins() {
         help.value_expected    = ValueExpected::ValueDisallowed;
         version.value_expected = ValueExpected::ValueDisallowed;
     }
 };
-inline Builtins &builtins() {
-    static Builtins B;
-    return B;
-}
 
 // -------------------------- Config reader -------------------------------- //
 
@@ -990,12 +998,15 @@ inline void print_help(std::string_view prog) {
 inline ParseResult parse_internal(std::vector<std::string> const &args, char const *programName, std::string_view version,
                                   std::map<std::string, std::string, std::less<>> *config,
                                   std::vector<std::string>                        *unknown_args = nullptr) {
-    Builtins                 _;
+    Builtins                 &ref = Builtins::get_singleton();
     GlobalConfigMapLockScope __;
     std::string              prog = programName ? programName : (!args.empty() ? args[0] : "Einsums");
 
     for (auto *o : Registry::instance().options) {
-        o->finalize_default();
+        std::printf("option pointer: %p\n", static_cast<void *>(o));
+        if (o != nullptr) {
+            o->finalize_default();
+        }
     }
 
     // Apply config first (defaults < config < CLI)

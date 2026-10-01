@@ -33,6 +33,8 @@ class EINSUMS_EXPORT Einsums_Tensor_vars final : public design_pats::Lockable<st
 
     // Used for making temporary disk tensors.
     std::atomic_int64_t volatile temp_counter;
+    
+    std::string get_temp_name();
 
   private:
     explicit Einsums_Tensor_vars() = default;

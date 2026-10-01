@@ -408,14 +408,6 @@ class EINSUMS_EXPORT GlobalConfigMap {
      */
     void set_bool(std::string const &key, bool value);
 
-    void set_string(std::string const &key, std::string const &value);
-
-    void set_int(std::string const &key, std::int64_t value);
-
-    void set_double(std::string const &key, double value);
-
-    void set_bool(std::string const &key, bool value);
-
     /**
      * @brief Returns the map containing string options.
      *
@@ -476,10 +468,6 @@ class EINSUMS_EXPORT GlobalConfigMap {
               bool double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
               bool bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); }>
     void attach(T &obs) {
-        constexpr bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
-                       int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
-                       double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
-                       bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); };
         if constexpr (string_requirement) {
             str_map_->attach(obs);
         }

@@ -203,7 +203,8 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
     GeneralTensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...},
+                                        GlobalConfigMap::get_singleton().get_bool("row-major")) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -365,7 +366,8 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      *
      * @param other The tensor view to copy.
      */
-    GeneralTensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    GeneralTensor(TensorView<T, rank> const &other)
+        : _name{other.name()}, _impl(nullptr, other.dims(), GlobalConfigMap::get_singleton().get_bool("row-major")) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -1694,7 +1696,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, std::remove_cvref_t<MultiIndex>...> || AtLeastOneOfType<Range, std::remove_cvref_t<MultiIndex>...>)
     [[nodiscard]] auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
-                                                                count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
+                                                                              count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
@@ -1715,7 +1717,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
-    [[nodiscard]] auto subscript(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    [[nodiscard]] auto subscript(MultiIndex &&...index)
+        -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
@@ -2388,7 +2391,7 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                     } else {
                         oss << einsums::detail::corrected_format("{:14.8f} ", value);
                     }
-                } else if constexpr (IsComplexV<T>) {
+                } else if constexpr (IsComplexV<typename AType::ValueType>) {
                     oss << einsums::detail::corrected_format("({:14.8f} + {:14.8f}i)", value.real(), value.imag());
                 } else
                     oss << einsums::detail::corrected_format("{:14} ", value);

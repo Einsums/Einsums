@@ -1039,35 +1039,34 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 #    if defined(EINSUMS_HAVE_PROFILER)
         _section = std::make_unique<profile::ScopedZone>(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? einsums::detail::corrected_format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
-                                                    UAB_prefactor, A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(),
-                                                    C_indices)
-                : einsums::detail::corrected_format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor,
-                                                    A.name(), A_indices, B.name(), B_indices),
+                ? einsums::detail::corrected_format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "{}"{})", C->name(), C_indices,
+                                                    UAB_prefactor, (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "",
+                                                    (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : "", UC_prefactor,
+                                                    C->name(), C_indices)
+                : einsums::detail::corrected_format(R"(einsum: "{}"{} = {} {}"{}"{}{} * {}"{}"{}{})", C->name(), C_indices, UAB_prefactor,
+                                                    (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
+                                                    B.name(), B_indices, (ConjB) ? ")" : ""),
             __FILE__, __LINE__, __func__);
 #    endif
     } else {
-        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                             ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices,
-                                                                 UAB_prefactor, A.name(), A_indices, B.name(), B_indices, UC_prefactor,
-                                                                 C_indices)
-                             : einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor,
-                                                                 A.name(), A_indices, B.name(), B_indices));
-        // look
-        _section.reset(new Section(std::fabs(UC_prefactor) > EINSUMS_ZERO
-                                       ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices,
-                                                                           UAB_prefactor, A.name(), A_indices, B.name(), B_indices,
-                                                                           UC_prefactor, C_indices)
-                                       : einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices,
-                                                                           UAB_prefactor, A.name(), A_indices, B.name(), B_indices)));
+        EINSUMS_LOG_DEBUG(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                              ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices,
+                                                                  UAB_prefactor, (ConjA) ? "conj(" : "", A.name(), A_indices,
+                                                                  (ConjA) ? ")" : "", (ConjB) ? "conj(" : "", B.name(), B_indices,
+                                                                  (ConjB) ? ")" : "", UC_prefactor, C_indices)
+                              : einsums::detail::corrected_format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor,
+                                                                  (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "",
+                                                                  (ConjB) ? "conj(" : "", B.name(), B_indices, (ConjB) ? ")" : ""));
 
 #    if defined(EINSUMS_HAVE_PROFILER)
         _section = std::make_unique<profile::ScopedZone>(
             std::fabs(UC_prefactor) > EINSUMS_ZERO
-                ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
-                                                    A_indices, B.name(), B_indices, UC_prefactor, C_indices)
-                : einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices,
-                                                    B.name(), B_indices),
+                ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{} + {} "C"{})", C_indices, UAB_prefactor,
+                                                    (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
+                                                    B.name(), B_indices, (ConjB) ? ")" : "", UC_prefactor, C_indices)
+                : einsums::detail::corrected_format(R"(einsum: "C"{} = {} {}"{}"{}{} * {}"{}"{}{})", C_indices, UAB_prefactor,
+                                                    (ConjA) ? "conj(" : "", A.name(), A_indices, (ConjA) ? ")" : "", (ConjB) ? "conj(" : "",
+                                                    B.name(), B_indices, (ConjB) ? ")" : ""),
             __FILE__, __LINE__, __func__);
 #    endif
     }

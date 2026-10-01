@@ -39,28 +39,29 @@ int finalize() {
         auto &global_config = GlobalConfigMap::get_singleton();
 
 #if defined(EINSUMS_HAVE_PROFILER)
-    if (global_config.get_bool("profiler-report")) {
-        std::ofstream out(global_config.get_string("profiler-filename"),
-                          global_config.get_bool("profiler-append") ? std::ios::ate : std::ios::trunc);
-        profile::Profiler::instance().print(global_config.get_bool("profiler-detailed"), out);
-    }
+        if (global_config.get_bool("profiler-report")) {
+            std::ofstream out(global_config.get_string("profiler-filename"),
+                              global_config.get_bool("profiler-append") ? std::ios::ate : std::ios::trunc);
+            profile::Profiler::instance().print(global_config.get_bool("profiler-detailed"), out);
+        }
 #endif
 
-    // this function destroys the runtime.
-    rt.deinit_global_data();
+        // this function destroys the runtime.
+        rt.deinit_global_data();
 
-    // This is the only explicit finalization routine. This is because the runtime depends on the
-    // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
-    // This would cause a dependency error.
-    // profile::finalize();
+        // This is the only explicit finalization routine. This is because the runtime depends on the
+        // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
+        // This would cause a dependency error.
+        // profile::finalize();
 
-    // Free lost pointers.
-    for (auto fn : detail::__deleters) {
-        fn();
+        // Free lost pointers.
+        for (auto fn : detail::__deleters) {
+            fn();
+        }
+
+        detail::__deleters.clear();
     }
 
-    detail::__deleters.clear();
-    
     return EXIT_SUCCESS;
 }
 

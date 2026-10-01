@@ -35,6 +35,8 @@ namespace einsums {
 
 namespace detail {
 
+static bool args_added = false;
+
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {
     EINSUMS_SINGLETON_DEF(ArgumentList)
 
@@ -160,16 +162,16 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
     auto &global_ints    = global_config.get_int_map()->get_value();
     auto &global_doubles = global_config.get_double_map()->get_value();
     auto &global_bools   = global_config.get_bool_map()->get_value();
-    {
+    if (!detail::args_added) {
         std::scoped_lock lock{*global_config.get_string_map(), *global_config.get_int_map(), *global_config.get_double_map(),
                               *global_config.get_bool_map()};
 
         // These options are static but all use Location to initialize the
         // members of the parent class.
         static cl::OptionCategory debugCategory("Debug");
-        static cl::Flag           noInstallSignalHandlers("einsums:debug:no-install-signal-handlers", {}, "Do not install signal handlers",
-                                                          debugCategory, cl::Location(global_bools["install-signal-handlers"]), cl::Default(true),
-                                                          cl::ImplicitValue(false));
+        static cl::Flag noInstallSignalHandlers("einsums:debug:no-install-signal-handlers", {}, "Do not install signal handlers",
+                                                debugCategory, cl::Location(global_bools["install-signal-handlers"]), cl::Default(true),
+                                                cl::ImplicitValue(false));
 
         static cl::Flag noAttachDebugger("einsums:debug:no-attach-debugger", {},
                                          "Do not provide a mechanism to attach a debugger on detected errors", debugCategory,
@@ -198,8 +200,8 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
                                               cl::Default(std::string("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")));
 
         static cl::OptionCategory profileCategory("Profile");
-        static cl::Flag           noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report", profileCategory,
-                                                  cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
+        static cl::Flag noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report", profileCategory,
+                                        cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
 
         static cl::Opt<std::string> profileFilename("einsums:profile:filename", {}, "Generate profile filename", profileCategory,
                                                     cl::Location(global_strings["profiler-filename"]),
@@ -213,7 +215,7 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
                                         cl::Location(global_bools["profiler-detailed"]), cl::Default(false), cl::ImplicitValue(true));
     }
 
-    {
+    if (!detail::args_added) {
         auto &argument_list = detail::ArgumentList::get_singleton();
 
         auto lock = std::lock_guard(argument_list);
@@ -223,6 +225,8 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
             func();
         }
     }
+
+    detail::args_added = true;
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
@@ -237,6 +241,7 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
         if (!pr.ok) {
             std::exit(pr.exit_code);
         }
+
         return unknown_args;
     } catch (std::exception const &) {
         std::exit(1);

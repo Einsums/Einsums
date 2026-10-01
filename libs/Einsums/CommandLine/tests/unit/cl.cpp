@@ -12,8 +12,14 @@
 using namespace einsums::cl;
 
 struct CLITestFixture {
-    CLITestFixture() { Registry::instance().clear_for_tests(); }
-    ~CLITestFixture() { Registry::instance().clear_for_tests(); }
+    CLITestFixture() {
+        Registry::instance().clear_for_tests();
+        Builtins::get_underlying_unique_pointer().reset();
+    }
+    ~CLITestFixture() {
+        Registry::instance().clear_for_tests();
+        Builtins::get_underlying_unique_pointer().reset();
+    }
 };
 
 static std::vector<std::string> to_args(std::initializer_list<char const *> il) {
