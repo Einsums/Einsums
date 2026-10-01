@@ -18,12 +18,11 @@
 #    include <hip/hip_runtime_api.h>
 #endif
 
+#include <H5Lpublic.h>
 #include <complex>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <H5Lpublic.h>
 
 namespace einsums {
 

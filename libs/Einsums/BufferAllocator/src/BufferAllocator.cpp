@@ -11,13 +11,13 @@
 
 namespace einsums::detail {
 
-void* allocate(size_t n) {
+void *allocate(size_t n) {
     void *ptr = nullptr;
 
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
     ptr = mi_malloc_aligned(n, 64);
 #elif defined(_ISOC11_SOURCE) || (__STDC_VERSION__ >= 201112L)
-    ptr = std::aligned_alloc(64, n );
+    ptr = std::aligned_alloc(64, n);
 #else
     // returns zero on success, or an error value. On Linux (and other systems), p is not modified on failure.
     if (posix_memalign(&ptr, 64, n) != 0) {
@@ -27,7 +27,7 @@ void* allocate(size_t n) {
     return ptr;
 }
 
-void deallocate(void* p) {
+void deallocate(void *p) {
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
     mi_free(p);
 #else
@@ -35,4 +35,4 @@ void deallocate(void* p) {
 #endif
 }
 
-}
+} // namespace einsums::detail

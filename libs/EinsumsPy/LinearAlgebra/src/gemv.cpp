@@ -38,14 +38,12 @@ void gemv(std::string const &transA, py::object const &alpha, pybind11::buffer c
                                 A_info.format, B_info.format, C_info.format);
     }
 
-    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(),
-                           [&]() {
-                               auto A_tens = buffer_to_tensor<Float>(A);
-                               auto B_tens = buffer_to_tensor<Float>(B);
-                               auto C_tens = buffer_to_tensor<Float>(C);
-                               einsums::linear_algebra::detail::gemv(transA[0], alpha.cast<Float>(), A_tens, B_tens, beta.cast<Float>(),
-                                                                     &C_tens);
-                           }())
+    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(), [&]() {
+        auto A_tens = buffer_to_tensor<Float>(A);
+        auto B_tens = buffer_to_tensor<Float>(B);
+        auto C_tens = buffer_to_tensor<Float>(C);
+        einsums::linear_algebra::detail::gemv(transA[0], alpha.cast<Float>(), A_tens, B_tens, beta.cast<Float>(), &C_tens);
+    }())
     else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemv on floating point matrices! Got type {}.", A_info.format);
     }

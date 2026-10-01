@@ -735,7 +735,7 @@ void impl_strided_syev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     T *diag = work, *subdiag = work + dim;
 
     if (dim == 1) {
-        W->subscript(0) = A->subscript(0, 0);
+        W->subscript(0)    = A->subscript(0, 0);
         A->subscript(0, 0) = T{1.0};
     } else if (dim == 2) {
         work[0]            = A->subscript(0, 0);
@@ -827,7 +827,7 @@ void impl_strided_heev(char jobz, einsums::detail::TensorImpl<T> *A, einsums::de
     RemoveComplexT<T> *diag = rwork, *subdiag = rwork + dim;
 
     if (dim == 1) {
-        W->subscript(0) = std::real(A->subscript(0, 0));
+        W->subscript(0)    = std::real(A->subscript(0, 0));
         A->subscript(0, 0) = T{1.0};
     } else if (dim == 2) {
         RemoveComplexT<T> a = std::real(A->subscript(0, 0)), c = std::real(A->subscript(1, 1));

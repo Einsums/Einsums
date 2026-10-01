@@ -1,6 +1,9 @@
 # Copyright (c) The Einsums Developers. All rights reserved.
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 # -----------------------------
 # Options affecting formatting.
 # -----------------------------
@@ -90,7 +93,7 @@ with section("format"):
 with section("markup"):
     # If comment markup is enabled, don't reflow any comment block which matches
     # this (regex) pattern.  Default is `None` (disabled).
-    literal_comment_pattern = None
+    literal_comment_pattern = r'^\s*#:'
 
     # If a comment line starts with at least this many consecutive hash
     # characters, then don't lstrip() them off.  This allows for lazy hash rulers

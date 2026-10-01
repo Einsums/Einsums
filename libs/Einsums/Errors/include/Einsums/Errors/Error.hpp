@@ -273,12 +273,12 @@ struct hip_exception : std::exception {
         message += hipGetErrorString(error);
     }
 
-    /**
-     * @brief Return the error string.
-     *
-     * @versionadded{1.0.0}
-     */
-    #    ifdef DOXYGEN
+/**
+ * @brief Return the error string.
+ *
+ * @versionadded{1.0.0}
+ */
+#    ifdef DOXYGEN
     char const *what() const noexcept override;
 #    else
     char const *what() const EINSUMS_TRANSACTION_SAFE_DYN noexcept override { return message.c_str(); }

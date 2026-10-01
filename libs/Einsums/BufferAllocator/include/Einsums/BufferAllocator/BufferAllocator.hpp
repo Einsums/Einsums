@@ -34,15 +34,14 @@
 #    include <tracy/Tracy.hpp>
 #endif
 
-
 namespace einsums {
 
 namespace detail {
 
 EINSUMS_EXPORT void *allocate(size_t n);
-EINSUMS_EXPORT void deallocate(void*);
+EINSUMS_EXPORT void  deallocate(void *);
 
-}
+} // namespace detail
 /**
  * @struct BufferAllocator
  *
@@ -176,7 +175,7 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(detail::allocate(n*type_size));
+        out = static_cast<pointer>(detail::allocate(n * type_size));
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
                 std::runtime_error,
@@ -291,10 +290,10 @@ struct BufferAllocator {
      * @versionadded{1.1.0}
      */
     [[nodiscard]] size_type available_size() const {
-       
+
         try {
             return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
-   
+
         } catch (std::runtime_error &) {
             return 0;
         }

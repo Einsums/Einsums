@@ -18,9 +18,11 @@ set(doxygen_definition_list
 
 set(SPHINX_PYTHON_DEPENDS)
 
-if(EINSUMS_BUILD_PYTHON)
-  set(SPHINX_PYTHON_DEPENDS EinsumsPy)
+if (NOT EINSUMS_BUILD_PYTHON)
+  einsums_error("Building documentation requires Python to be enabled")
 endif()
+
+set(SPHINX_PYTHON_DEPENDS EinsumsPy)
 
 foreach(doxygen_predef ${doxygen_definition_list})
   set(doxygen_definitions "${doxygen_definitions} \"${doxygen_predef}\"")

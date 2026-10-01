@@ -12,7 +12,7 @@
  *
  * @versionadded{1.0.0}
  */
-#define EINSUMS_PP_STRINGIFY(a)  EINSUMS_PP_STRINGIFY2(a)
+#define EINSUMS_PP_STRINGIFY(a) EINSUMS_PP_STRINGIFY2(a)
 
 /**
  * Converts its argument into a string. Second level because of macro weirdness.

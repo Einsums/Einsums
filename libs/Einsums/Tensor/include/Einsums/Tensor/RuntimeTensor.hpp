@@ -665,13 +665,9 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
     virtual detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
-    bool is_row_major() const {
-        return _impl.is_row_major();
-    }
+    bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const {
-        return _impl.is_column_major();
-    }
+    bool is_column_major() const { return _impl.is_column_major(); }
 
   protected:
     BufferVector<T> _data{};
@@ -1252,13 +1248,9 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
 
     virtual detail::TensorImpl<T> const &impl() const { return _impl; }
 
-    bool is_row_major() const {
-        return _impl.is_row_major();
-    }
+    bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const {
-        return _impl.is_column_major();
-    }
+    bool is_column_major() const { return _impl.is_column_major(); }
 
   protected:
     /**

@@ -79,9 +79,7 @@ other system-level dependencies to build it on your system.
     * fmtlib >= 11
 
     * Catch2 >= 3
-    
-    * p-ranav/argparse
-    
+
     * gabime/spdlog >= 1
 
     * HDF5 for disk operations.
@@ -105,9 +103,7 @@ other system-level dependencies to build it on your system.
 
     * pybind11 for the Python extension module.
 
-    * SciPy for the Python tests.
-
-    * NumPy for the Python tests.
+    * NumPy and SciPy for the Python tests.
 
 
   .. tab-item:: Linux

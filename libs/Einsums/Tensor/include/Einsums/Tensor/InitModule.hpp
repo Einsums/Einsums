@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -36,4 +36,4 @@ static int initialize_module_Einsums_Tensor = setup_Einsums_Tensor();
 
 }
 
-}
+} // namespace einsums

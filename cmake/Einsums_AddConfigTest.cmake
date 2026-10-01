@@ -5,6 +5,150 @@
 
 include(CheckLibraryExists)
 
+#:
+#: .. cmake:command:: einsums_add_config_test
+#:
+#:    Configure–time probe that compiles (and optionally runs) a tiny test to set a cache variable.
+#:
+#:    This helper performs a feature/availability check by generating or loading a small source,
+#:    compiling it (and optionally executing it), then setting the named cache variable to the
+#:    boolean result. It can also inject follow‑up compile definitions on success and raise a
+#:    fatal error when required checks fail.
+#:
+#:    **Signature**
+#:    ``einsums_add_config_test(<variable>
+#:        [FILE] [EXECUTE] [GPU] [NOT_REQUIRED]
+#:        [SOURCE <code-or-path>] [ROOT <dir>]
+#:        [CMAKECXXFEATURE <feature>] [CHECK_CXXSTD <int>] [EXTRA_MSG <text>]
+#:        [CXXFLAGS <...>]
+#:        [INCLUDE_DIRECTORIES <...>]
+#:        [LINK_DIRECTORIES <...>]
+#:        [COMPILE_DEFINITIONS <...>]
+#:        [LIBRARIES <...>]
+#:        [ARGS <...>]
+#:        [DEFINITIONS <...>]
+#:        [REQUIRED <error-message>]
+#:    )``
+#:
+#:    **Positional Argument**
+#:    - ``variable`` *(required)*:
+#:      The name of the cache variable to set (boolean). Also used as a prefix for
+#:      auto‑generated artifact names and per‑test variables (e.g., ``<variable>_RESULT``).
+#:
+#:    **Boolean Options**
+#:    - ``FILE``: Treat ``SOURCE`` as a file path (see *Source selection*). Otherwise, the
+#:      literal contents of ``SOURCE`` are written into a generated test file.
+#:    - ``EXECUTE``: After compiling, run the test program via :cmake:command:`try_run` and
+#:      only succeed if it **compiles** and **returns 0**. Without this flag, only compilation
+#:      via :cmake:command:`try_compile` is required.
+#:    - ``GPU``: Generate a ``.cu`` test file instead of ``.cpp`` when writing from literal
+#:      source (affects only the file extension and CUDA parameters).
+#:    - ``NOT_REQUIRED``: Suppress hard failure even if the check is marked ``REQUIRED``.
+#:
+#:    **One‑value Keywords**
+#:    - ``SOURCE``:
+#:      * If ``FILE`` is set, a relative path (to ``ROOT`` or project) of a source file to test.
+#:      * Otherwise, a literal source **snippet** (string) to be written to a temp file.
+#:    - ``ROOT``: Root directory used with ``FILE`` mode. If given, the source is resolved as
+#:      ``<ROOT>/share/${PROJECT_NAME}/<SOURCE>``; otherwise ``${PROJECT_SOURCE_DIR}/<SOURCE>``.
+#:    - ``CMAKECXXFEATURE``: Name of a CMake C++ compile feature (e.g., ``cxx_constexpr``).
+#:      If present in :cmake:variable:`CMAKE_CXX_COMPILE_FEATURES` and the variable is not
+#:      pre‑set and ``GPU`` is not used, the check is considered an immediate success without
+#:      compiling.
+#:    - ``CHECK_CXXSTD``: Minimum C++ standard required (integer). If this value is **greater**
+#:      than :cmake:variable:`EINSUMS_WITH_CXX_STANDARD`, the test is skipped: the cache variable
+#:      (if set) is unset and the function returns early.
+#:    - ``EXTRA_MSG``: Extra text appended to the status line printed for this test.
+#:
+#:    **Multi‑value Keywords**
+#:    - ``CXXFLAGS``: Extra compiler flags for the test; combined with a strictness flag
+#:      (``/WX`` on MSVC or ``-Werror`` otherwise).
+#:    - ``INCLUDE_DIRECTORIES``: Additional include search paths.
+#:    - ``LINK_DIRECTORIES``: Additional link directories.
+#:    - ``COMPILE_DEFINITIONS``: Extra preprocessor definitions (without ``-D``).
+#:    - ``LIBRARIES``: Libraries/targets to link the test against.
+#:    - ``ARGS``: Runtime arguments passed when ``EXECUTE`` is enabled.
+#:    - ``DEFINITIONS``: On **success**, each item is forwarded to
+#:      :cmake:command:`einsums_add_config_define` to set global config defines.
+#:    - ``REQUIRED``: If provided and the test fails, emit its string as a fatal error (unless
+#:      ``NOT_REQUIRED`` is set).
+#:
+#:    **Behavior**
+#:    1. **Early standard gate** — If ``CHECK_CXXSTD`` is set and exceeds
+#:       :cmake:variable:`EINSUMS_WITH_CXX_STANDARD`, unset any pre‑existing cache for
+#:       ``<variable>``, log a note, and return.
+#:    2. **CMake feature fast‑path** — If ``<variable>`` is **not** already defined, ``GPU`` is
+#:       **off**, and ``CMAKECXXFEATURE`` is present in
+#:       :cmake:variable:`CMAKE_CXX_COMPILE_FEATURES`, set the result to success without compiling.
+#:    3. **Source selection**
+#:       - *FILE mode*: Resolve ``SOURCE`` via ``ROOT`` (if provided) or project source dir.
+#:       - *Literal mode*: Write ``SOURCE`` into a generated test file under
+#:         ``${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/``, using ``.cu`` if
+#:         ``GPU`` is set, otherwise ``.cpp``.
+#:    4. **Compilation environment**
+#:       - Collect current directory ``INCLUDE_DIRECTORIES``, ``LINK_DIRECTORIES``,
+#:         and ``COMPILE_DEFINITIONS``; merge with user‑supplied lists.
+#:       - Append global compile **flags** from the Einsums properties
+#:         ``EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC`` and ``EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE``
+#:         (excluding generator expressions) into the definitions string passed to the test
+#:         compiler invocation.
+#:       - Apply strict warnings as errors (``/WX`` or ``-Werror``) and append ``CXXFLAGS``.
+#:       - When not executing, pass CUDA standard parameters if
+#:         ``EINSUMS_WITH_CUDA`` is enabled and the compiler is **not** NVHPC.
+#:    5. **Run the check**
+#:       - With ``EXECUTE`` (and not cross‑compiling): use :cmake:command:`try_run`; success
+#:         requires both successful compilation and exit code 0.
+#:       - Without ``EXECUTE``: use :cmake:command:`try_compile`; success requires compilation.
+#:    6. **Result handling**
+#:       - Set ``<variable>`` (CACHE INTERNAL BOOL) to the outcome.
+#:       - Print a concise status line (with ``EXTRA_MSG`` when provided).
+#:       - On **success**, forward each item in ``DEFINITIONS`` to
+#:         :cmake:command:`einsums_add_config_define`.
+#:       - On **failure** and if ``REQUIRED`` is provided (and ``NOT_REQUIRED`` is **not** set),
+#:         log the compiler output via ``einsums_warn`` and then abort with ``einsums_error``.
+#:
+#:    **Side effects**
+#:    - Creates files under ``${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests``.
+#:    - May update/consume Einsums global properties of compile flags.
+#:    - Adjusts ``CMAKE_CXX_FLAGS`` (and ``CMAKE_CUDA_FLAGS`` / ``CMAKE_HIP_FLAGS`` stanzas) for
+#:      the duration of the probe invocation.
+#:
+#:    **Examples**
+#:    Compile‑only check with a literal snippet:
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_config_test(HAS_STD_BIT_CAST
+#:         SOURCE "#include <bit>\nint main(){ (void)std::bit_cast<unsigned>(0u); return 0; }"
+#:         CHECK_CXXSTD 20
+#:         CMAKECXXFEATURE cxx_std_20
+#:         DEFINITIONS EINSUMS_HAS_STD_BIT_CAST
+#:         REQUIRED "C++20 bit_cast is required for this build configuration."
+#:       )
+#:
+#:    Execute a tiny program and use its exit status:
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_config_test(HAS_WORKING_PTHREADS
+#:         EXECUTE
+#:         SOURCE "int main(){ return 0; }"
+#:         LIBRARIES Threads::Threads
+#:         EXTRA_MSG "link and run"
+#:         REQUIRED "Pthreads support is required."
+#:       )
+#:
+#:    Test from a file path under project sources:
+#:    .. code-block:: cmake
+#:
+#:       einsums_add_config_test(HAS_VENDOR_FOO FILE
+#:         SOURCE "cmake/tests/has_vendor_foo.cpp"
+#:         CXXFLAGS "-DUSE_VENDOR_FOO"
+#:       )
+#:
+#:    **See also**
+#:    - :cmake:command:`try_compile`, :cmake:command:`try_run`
+#:    - :cmake:variable:`CMAKE_CXX_COMPILE_FEATURES`
+#:    - :cmake:command:`einsums_add_config_define`
+#:    - :cmake:variable:`EINSUMS_WITH_CXX_STANDARD`
 function(einsums_add_config_test variable)
   set(options FILE EXECUTE GPU NOT_REQUIRED)
   set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD EXTRA_MSG)

@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
+
 #include <span>
 
 #include <Einsums/Testing.hpp>

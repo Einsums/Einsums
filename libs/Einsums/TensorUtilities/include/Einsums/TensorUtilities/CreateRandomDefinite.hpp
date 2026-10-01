@@ -44,7 +44,7 @@ auto create_random_definite(std::string const &name, int rows, int cols, RemoveC
     }
     Tensor<T, 2> Evecs("name", rows, cols);
 
-    Tensor<T, 2>             Temp = Evecs;
+    Tensor<T, 2>              Temp = Evecs;
     BufferVector<blas::int_t> pivs;
 
     // Make sure the eigenvectors are non-singular.

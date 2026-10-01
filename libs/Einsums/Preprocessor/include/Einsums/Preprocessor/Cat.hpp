@@ -13,7 +13,7 @@
  *
  * @versionadded{1.0.0}
  */
-#define EINSUMS_PP_CAT(a, b)   EINSUMS_PP_CAT_I(a, b)
+#define EINSUMS_PP_CAT(a, b) EINSUMS_PP_CAT_I(a, b)
 
 /**
  * Concatenates its arguments. Inner level because of macro weirdness.

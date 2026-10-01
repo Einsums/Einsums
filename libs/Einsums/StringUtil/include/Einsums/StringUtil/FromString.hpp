@@ -28,8 +28,8 @@ struct from_string_impl {
      *
      * @param value The string to read.
      * @param target The output variable.
- *
- * @versionadded{1.0.0}
+     *
+     * @versionadded{1.0.0}
      */
     template <typename Char>
     static void call(std::basic_string<Char> const &value, T &target) {

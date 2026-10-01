@@ -8,6 +8,62 @@ include(CMakeParseArguments)
 
 set(EINSUMS_OPTION_CATEGORIES "Generic" "Build Targets" "Profiling" "Debugging")
 
+#:
+#: .. cmake:command:: einsums_option
+#:
+#:    Declare a project option with optional dependency, category, advanced flag, and string choices.
+#:
+#:    A unified wrapper around :cmake:command:`option`, :cmake:command:`cmake_dependent_option`, and
+#:    cache variables for non‑BOOL types. It also records the option in Einsums’ metadata and stores
+#:    its category for later documentation/UX.
+#:
+#:    **Signature**
+#:    ``einsums_option(<option> <type> <description> <default>
+#:        [ADVANCED]
+#:        [CATEGORY <name>]
+#:        [DEPENDS <expr>]
+#:        [STRINGS <v1;v2;...>]
+#:    )``
+#:
+#:    **Positional arguments**
+#:    - ``option`` *(required)*: Cache variable name (e.g., ``EINSUMS_WITH_CUDA``).
+#:    - ``type`` *(required)*: One of CMake’s cache types (e.g., ``BOOL``, ``STRING``, ``PATH``, ``FILEPATH``).
+#:    - ``description`` *(required)*: Help text shown in GUIs and cache tools.
+#:    - ``default`` *(required)*: Default value for the cache entry.
+#:
+#:    **Options / keywords**
+#:    - ``ADVANCED`` *(switch)*: Marks the cache entry as advanced.
+#:    - ``CATEGORY <name>``: Logical grouping for this option (defaults to ``Generic``). Stored in
+#:      the internal cache variable ``<option>Category``.
+#:    - ``DEPENDS <expr>``: For ``BOOL`` options, creates a :cmake:command:`cmake_dependent_option`
+#:      gated by the given CMake expression ; for non‑BOOL types this is **invalid** and triggers an error.
+#:    - ``STRINGS <v1;v2;...>``: For ``STRING`` type only, sets the allowed values list shown in GUIs.
+#:
+#:    **Behavior**
+#:    - If ``type`` is ``BOOL``:
+#:      - Without ``DEPENDS`` → defines a normal :cmake:command:`option`.
+#:      - With ``DEPENDS`` → defines a :cmake:command:`cmake_dependent_option` with the provided guard.
+#:    - If ``type`` is **not** ``BOOL``:
+#:      - Fails if ``DEPENDS`` was provided.
+#:      - Ensures a cache entry of the given ``type`` exists with ``description`` and ``default``.
+#:        If a non‑cache variable with the same name exists, it is replaced by a cache entry.
+#:      - If ``STRINGS`` is given and ``type`` is ``STRING``, applies the choices to the cache entry; otherwise errors.
+#:    - Applies ``ADVANCED`` (if present) to the cache entry.
+#:    - Appends the option name to the global property ``EINSUMS_MODULE_CONFIG_EINSUMS``.
+#:    - Stores the option’s category in the internal cache variable ``<option>Category`` (default ``Generic`` or provided ``CATEGORY``).
+#:
+#:    **Examples**
+#:    .. code-block:: cmake
+#:
+#:       # Simple boolean option
+#:       einsums_option(EINSUMS_WITH_CUDA BOOL "Enable CUDA backends" OFF)
+#:
+#:       # Dependent boolean option (only visible when profiling is enabled)
+#:       einsums_option(EINSUMS_WITH_PAPI BOOL "Enable PAPI profiling" OFF DEPENDS EINSUMS_WITH_PROFILING)
+#:
+#:       # String option with choices, marked advanced, categorized under "Build Targets"
+#:       einsums_option(EINSUMS_BACKEND STRING "Select default backend" "cpu"
+#:         STRINGS "cpu;cuda;hip" CATEGORY "Build Targets" ADVANCED)
 macro(einsums_option option type description default)
   set(options ADVANCED)
   set(one_value_args CATEGORY DEPENDS)

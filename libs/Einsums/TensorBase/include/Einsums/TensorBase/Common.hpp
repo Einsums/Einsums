@@ -288,8 +288,8 @@ struct Range : std::array<std::int64_t, 2> {
  * this vector where it will be treated as if it were a single index. If the elements in the range are not the same, such as
  * <tt>RemovableRange{0, 1}</tt>, then it behaves exactly the same as a regular Range. The removable part is a hint to the functions that
  * look for them that they can be removed if needed.
-     *
-     * @versionadded{2.0.0}
+ *
+ * @versionadded{2.0.0}
  */
 struct RemovableRange : Range {
     /**

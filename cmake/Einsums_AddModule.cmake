@@ -7,6 +7,159 @@ include(Einsums_ExportTargets)
 include(Einsums_WriteModuleHeader)
 include(Einsums_CodeCoverage)
 
+#:
+#: .. cmake:command:: einsums_add_module
+#:
+#:    Define and integrate an Einsums **module** (``<libname>_<modulename>``) with generated headers,
+#:    dependency wiring, IDE grouping, install/export rules, and optional config files.
+#:
+#:    A module is either an **OBJECT** library (when sources are provided) or an **INTERFACE** library
+#:    (header‑only). It is linked into the parent library ``<libname>`` and can depend on other modules,
+#:    external targets, and private objects.
+#:
+#:    **Signature**
+#:    ``einsums_add_module(<libname> <modulename>
+#:        [BASE_LIBNAME <name>]
+#:        [CONFIG_FILES]
+#:        [SOURCES <...>]
+#:        [HEADERS <...>]
+#:        [OBJECTS <...>]
+#:        [PRIVATE_DEPENDENCIES <targets...>]
+#:        [DEPENDENCIES <targets...>]
+#:        [MODULE_DEPENDENCIES <libname_foo libname_bar ...>]
+#:        [CMAKE_SUBDIRS <dirs...>]
+#:    )``
+#:
+#:    **Positional arguments**
+#:    - ``libname`` *(required)*:
+#:      Logical parent library to which this module will be attached (e.g., ``einsums``).
+#:    - ``modulename`` *(required)*:
+#:      Module identifier (e.g., ``Tensor``). The created target is ``<libname>_<modulename>``.
+#:
+#:    **Options / Keywords**
+#:    - ``BASE_LIBNAME <name>``:
+#:      When generating installed header paths, use this base namespace instead of ``<libname>``.
+#:      (Defaults to ``<libname>``.)
+#:
+#:    - ``CONFIG_FILES`` *(switch)*:
+#:      Also emit project‑wide config headers (in addition to per‑module headers):
+#:      - ``<build>/include/<PROJECT_NAME>/Config/Version.hpp`` from
+#:        ``cmake/templates/ConfigVersion.hpp.in``.
+#:      - ``<build>/include/<PROJECT_NAME>/Config/Defines.hpp`` using
+#:        :cmake:command:`einsums_write_config_defines_file` with the default namespace and the
+#:        template ``cmake/templates/ConfigDefines.hpp.in``.
+#:
+#:    - ``SOURCES <...>``:
+#:      Source file names **relative** to the module ``src`` root (see *Layout*).
+#:    - ``HEADERS <...>``:
+#:      Header file names **relative** to the module ``include`` root. These are used for grouping
+#:      and for generating a convenience umbrella header.
+#:    - ``OBJECTS <...>``:
+#:      Extra object files/targets to link **privately** into the module.
+#:
+#:    - ``PRIVATE_DEPENDENCIES <targets...>``:
+#:      Targets linked privately to ``<libname>_<modulename>``.
+#:    - ``DEPENDENCIES <targets...>``:
+#:      Targets linked with module’s public keyword (``PUBLIC`` for object modules, ``INTERFACE`` for
+#:      header‑only modules).
+#:    - ``MODULE_DEPENDENCIES <libname_foo ...>``:
+#:      Other *modules* this one depends on. When :cmake:variable:`EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES`
+#:      is ON, the function validates that listed modules belong to the same category set.
+#:
+#:    - ``CMAKE_SUBDIRS <dirs...>``:
+#:      Subdirectories to add via :cmake:command:`add_subdirectory` (e.g., nested components/tests).
+#:
+#:    **Layout & paths**
+#:    - ``SOURCE_ROOT`` is fixed to ``<module dir>/src``
+#:    - ``HEADER_ROOT`` is fixed to ``<module dir>/include``
+#:    - ``SOURCES``/``HEADERS`` are **prepended** with these roots internally.
+#:
+#:    **Generated headers**
+#:    - **Per‑module defines header**:
+#:      ``<build>/include/<BASE_LIBNAME>/<modulename>/Defines.hpp`` created via
+#:      :cmake:command:`einsums_write_config_defines_file(NAMESPACE <MODULENAME_UPPER>)`.
+#:    - **Per‑module umbrella header**:
+#:      ``<build>/include/<BASE_LIBNAME>/<modulename>.hpp`` created via
+#:      :cmake:command:`einsums_write_module_header(NAMESPACE <MODULENAME_UPPER>)`.
+#:    - The function also removes stale (“zombie”) generated headers under
+#:      ``<build>/include`` that are no longer part of this module’s output.
+#:
+#:    **Target type**
+#:    - If any ``SOURCES`` are provided → module is an **OBJECT** library; public keyword = ``PUBLIC``.
+#:    - If no sources are provided → module is an **INTERFACE** library; public keyword = ``INTERFACE``.
+#:
+#:    **Target creation & wiring**
+#:    - Creates ``add_library(<libname>_<modulename> <OBJECT|INTERFACE> ...)`` with sources/objects.
+#:    - Appends code‑coverage flags via :cmake:command:`einsums_append_coverage_compiler_flags_to_target`
+#:      using the module’s public keyword.
+#:    - Links, in order:
+#:      - ``MODULE_DEPENDENCIES`` (public/interface as appropriate),
+#:      - ``DEPENDENCIES`` (public/interface),
+#:      - ``PRIVATE_DEPENDENCIES`` (private),
+#:      - Always links ``einsums_public_flags`` and ``einsums_base_libraries`` with the module’s
+#:        public/interface keyword; if the module is **OBJECT**, also links
+#:        ``einsums_private_flags`` privately.
+#:    - Sets include dirs (build + install interfaces), including the generated include tree.
+#:    - If precompiled headers are enabled (``EINSUMS_WITH_PRECOMPILED_HEADERS``), reuses
+#:      ``einsums_precompiled_headers``.
+#:    - For **OBJECT** modules, defines an export macro:
+#:      Derives ``<MACRO_LIB_NAME>_EXPORTS`` from ``<libname>`` and applies it privately to the module.
+#:
+#:    **IDE grouping & properties**
+#:    - Source groups are created for headers, sources, and generated files via
+#:      :cmake:command:`einsums_add_source_group`.
+#:    - For non‑interface modules:
+#:      - Places target under folder ``Core/Modules/<LibnameCapitalized>``.
+#:      - Enables :cmake:prop_tgt:`POSITION_INDEPENDENT_CODE`.
+#:      - Enables Unity build/markers when ``EINSUMS_WITH_UNITY_BUILD`` is ON.
+#:      - On MSVC, configures compile PDB name/output directories for Debug/RelWithDebInfo.
+#:
+#:    **Install & export**
+#:    - Installs the module target (library/archive/runtime) and exports it via
+#:      :cmake:command:`einsums_export_internal_targets`.
+#:    - Installs public **source headers** from the module’s ``include/`` and the **generated headers**
+#:      from ``<build>/include/<BASE_LIBNAME>``.
+#:    - On MSVC, installs compile PDBs for Debug/RelWithDebInfo (if present).
+#:
+#:    **Integration with parent library**
+#:    - Links the parent ``<libname>`` **PUBLIC** to ``<libname>_<modulename>``.
+#:    - Links the parent ``<libname>`` **PRIVATE** to any listed ``OBJECTS``.
+#:
+#:    **Book‑keeping & summary**
+#:    - Marks the module enabled by appending ``<BASENAME_UPPER>_<modulename>`` to the cached list
+#:      :cmake:variable:`EINSUMS_ENABLED_MODULES`.
+#:    - Optionally adds extra subdirectories from ``CMAKE_SUBDIRS``.
+#:    - Prints a configuration summary via :cmake:command:`einsums_create_configuration_summary`.
+#:
+#:    **Environment/toggles referenced**
+#:    - ``EINSUMS_WITH_CHECK_MODULE_DEPENDENCIES``, ``EINSUMS_WITH_UNITY_BUILD``,
+#:      ``EINSUMS_WITH_PRECOMPILED_HEADERS``.
+#:
+#:    **Example**
+#:    .. code-block:: cmake
+#:
+#:       # In einsums/modules/tensor/CMakeLists.txt
+#:       einsums_add_module(einsums Tensor
+#:         SOURCES
+#:           tensor/core.cpp
+#:           tensor/ops.cpp
+#:         HEADERS
+#:           einsums/Tensor/core.hpp
+#:           einsums/Tensor/ops.hpp
+#:         MODULE_DEPENDENCIES
+#:           einsums_LinearAlgebra
+#:         DEPENDENCIES
+#:           fmt::fmt Eigen3::Eigen
+#:         PRIVATE_DEPENDENCIES
+#:           einsums_internal_helpers
+#:         CMAKE_SUBDIRS tests
+#:         CONFIG_FILES
+#:       )
+#:
+#:    This creates the target ``einsums_Tensor`` (OBJECT lib), generates
+#:    ``<build>/include/einsums/Tensor/Defines.hpp`` and ``<build>/include/einsums/Tensor.hpp``,
+#:    wires dependencies, installs public/generated headers, exports/installs the target, and links
+#:    it into the parent ``einsums`` library.
 function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
