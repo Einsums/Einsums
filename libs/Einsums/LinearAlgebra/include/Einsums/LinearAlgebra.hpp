@@ -313,7 +313,7 @@ template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typenam
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection("<transA={}>", transA);
+    LabeledSection("gemv<transA={}>", transA);
 
     detail::gemv(transA, alpha, A, z, beta, y);
 }
@@ -365,7 +365,11 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires !Complex<AType>;
     }
 void syev(AType *A, WType *W) {
+<<<<<<< HEAD
     LabeledSection1(einsums::detail::corrected_format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+=======
+    LabeledSection("syev<ComputeEigenvectors={}>", ComputeEigenvectors);
+>>>>>>> a9b0e8dc (Some updates to CMake and the Profiler. (#207))
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
@@ -408,7 +412,11 @@ template <MatrixConcept AType, VectorConcept WType, typename LVecPtr, typename R
 void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
     char jobvl = (lvecs == nullptr) ? 'n' : 'v';
     char jobvr = (rvecs == nullptr) ? 'n' : 'v';
+<<<<<<< HEAD
     LabeledSection1(einsums::detail::corrected_format("<jobvl = {}, jobvr = {}>", jobvl, jobvr));
+=======
+    LabeledSection("geev<jobvl = {}, jobvr = {}>", jobvl, jobvr);
+>>>>>>> a9b0e8dc (Some updates to CMake and the Profiler. (#207))
 
     detail::geev(A, W, lvecs, rvecs);
 }
@@ -461,7 +469,11 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
+<<<<<<< HEAD
     LabeledSection1(einsums::detail::corrected_format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+=======
+    LabeledSection("heev<ComputeEigenvectors={}>", ComputeEigenvectors);
+>>>>>>> a9b0e8dc (Some updates to CMake and the Profiler. (#207))
     detail::heev<ComputeEigenvectors>(A, W);
 }
 

@@ -29,6 +29,7 @@
 #include <concepts>
 #include <mutex>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace einsums {
@@ -42,7 +43,7 @@ namespace tensor_base {
  *
  * @tparam TensorType The underlying storage type.
  * @tparam T The type of data being stored.
- * @tparam Rank The tensor rank.
+ * @tparam rank The tensor rank.
  */
 template <typename T, size_t rank, typename TensorType>
 struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
@@ -571,7 +572,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
  * Tensors of this class have large blocks that are rigorously zero. These blocks need to line up on a grid.
  */
 template <typename T, size_t Rank>
-struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
+struct TiledTensor final : tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
   protected:
     /**
      * @brief Construct a new tile in the set of tiles at the given position.
@@ -647,8 +648,8 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
      * @param copy The tensor to copy.
      */
     template <TiledTensorConcept TensorOther>
-        requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>)
-    TiledTensor<T, Rank> &operator=(TensorOther const &copy) {
+        requires(SameUnderlyingAndRank<TiledTensor, TensorOther>)
+    TiledTensor &operator=(TensorOther const &copy) {
         this->zero();
         this->_tile_sizes   = copy.tile_sizes();
         this->_tile_offsets = copy.tile_offsets();
@@ -685,7 +686,7 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
  * views of BlockTensors when the view is not hypersquare.
  */
 template <typename T, size_t Rank>
-struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
+struct TiledTensorView final : tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
   private:
     /**
      * @property _full_view_of_underlying
@@ -741,7 +742,7 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      */
     TiledTensorView(TiledTensorView<T, Rank> const &other) = default;
 
-    ~TiledTensorView() = default;
+    ~TiledTensorView() override = default;
 
     /**
      * @brief Checks to see if the view sees all of the data in the tensor.
@@ -771,7 +772,7 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
 
 #ifdef EINSUMS_COMPUTE_CODE
 template <typename T, size_t Rank>
-struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
+struct TiledDeviceTensor final : tensor_base::TiledTensor<T, Rank, einsums::DeviceTensor<T, Rank>>, tensor_base::DeviceTensorBase {
   private:
     /**
      * @property _mode

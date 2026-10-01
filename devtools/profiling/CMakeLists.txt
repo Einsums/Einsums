@@ -3,16 +3,39 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+# In your subproject's CMakeLists.txt
+if (NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(PROFILING_IS_SUBDIR TRUE)
+else ()
+    set(PROFILING_IS_SUBDIR FALSE)
+endif ()
+
 cmake_minimum_required(VERSION 3.24)
 
-project(profile_test C CXX Fortran)
+project(profile_test C CXX)
 
-find_package(Einsums 1 REQUIRED)
+# Set Fortran as optional
+enable_language(Fortran OPTIONAL)
+
+# Check if the Fortran compiler was found
+if (CMAKE_Fortran_COMPILER)
+    message(STATUS "Fortran compiler found: ${CMAKE_Fortran_COMPILER}")
+    set(EINSUMS_HAVE_FORTRAN TRUE)
+else ()
+    message(STATUS "No Fortran compiler found; Fortran components will be disabled")
+    set(EINSUMS_HAVE_FORTRAN FALSE)
+endif ()
+
+if (NOT PROFILING_IS_SUBDIR)
+    find_package(Einsums 2 REQUIRED)
+endif ()
 
 add_executable(profile_for_loop profile_for_loop.c)
 target_link_libraries(profile_for_loop PRIVATE m)
 
+if (EINSUMS_HAVE_FORTRAN)
 add_executable(profile_fort_loop profile_fort_loop.f03)
+endif ()
 
 add_executable(profile_einsums profile_einsums.cpp)
 target_link_libraries(profile_einsums PRIVATE Einsums::Einsums)

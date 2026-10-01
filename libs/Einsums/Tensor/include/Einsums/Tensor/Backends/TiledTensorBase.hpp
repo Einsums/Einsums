@@ -13,7 +13,7 @@ template <typename T, size_t rank, typename TensorType>
 template <ContainerOrInitializer... Sizes>
     requires(!ContainerOrInitializer<typename Sizes::value_type> && ... && true)
 TiledTensor<T, rank, TensorType>::TiledTensor(std::string name, Sizes const &...sizes)
-    : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
+    : _name(std::move(name)), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
     static_assert(sizeof...(Sizes) == rank || sizeof...(Sizes) == 1);
 
     _size = 1;
@@ -60,7 +60,7 @@ template <typename T, size_t rank, typename TensorType>
 template <Container ContainerType>
     requires(Container<typename ContainerType::value_type> && std::is_integral_v<typename ContainerType::value_type::value_type>)
 TiledTensor<T, rank, TensorType>::TiledTensor(std::string name, ContainerType const &sizes)
-    : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
+    : _name(std::move(name)), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
     if (sizes.size() != rank) {
         EINSUMS_THROW_EXCEPTION(num_argument_error, "Wrong number of grid sizes passed to TiledTensor constructor!");
     }

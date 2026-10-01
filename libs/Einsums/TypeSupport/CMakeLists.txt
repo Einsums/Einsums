@@ -15,6 +15,7 @@ set(TypeSupportHeaders
     Einsums/TypeSupport/Lockable.hpp
     Einsums/TypeSupport/Singleton.hpp
     Einsums/TypeSupport/TypeSwitch.hpp
+        Einsums/TypeSupport/InsertionOrderedMap.hpp
 )
 
 set(TypeSupportSources)

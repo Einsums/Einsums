@@ -28,7 +28,7 @@ export(
 install(
   EXPORT einsums_internal_targets
   NAMESPACE EinsumsInternal::
-  FILE einsums_internal_targets.cmake
+        FILE EinsumsInternalTargets.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
 )
 
