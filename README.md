@@ -21,7 +21,6 @@ The following libraries are also required, but will be fetched if they can not b
 
 * fmtlib >= 11
 * Catch2 >= 3
-* Einsums/h5cpp
 * p-ranav/argparse
 * gabime/spdlog >= 1
 

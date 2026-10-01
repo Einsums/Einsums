@@ -16,7 +16,7 @@ set(TensorTests
     FunctionTensor.cpp
     TiledTensor.cpp
     Tensor.cpp
-)
+ Disk.cpp)
 
 foreach(test ${TensorTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example

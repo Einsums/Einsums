@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include <H5Lpublic.h>
+
 namespace einsums {
 
 TENSOR_DEFINE_RANK(BlockTensor, 2)
@@ -30,7 +32,7 @@ TENSOR_DEFINE_RANK(BlockTensor, 3)
 TENSOR_DEFINE_RANK(BlockTensor, 4)
 
 TENSOR_DEFINE(DiskTensor)
-TENSOR_DEFINE_DISK_VIEW(DiskView)
+TENSOR_DEFINE(DiskView)
 
 TENSOR_DEFINE_RANK(Tensor, 0)
 TENSOR_DEFINE(Tensor)
@@ -50,5 +52,30 @@ template class RuntimeTensorView<double>;
 template class RuntimeTensorView<std::complex<float>>;
 template class RuntimeTensorView<std::complex<double>>;
 #endif
+
+namespace detail {
+bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
+    if (path.length() <= 1) {
+        return true;
+    }
+
+    std::string temp_path;
+
+    temp_path.reserve(path.length());
+
+    for (auto ch : path) {
+        if (ch == '/' && temp_path.length() > 0) {
+            auto res = H5Lexists(loc_id, temp_path.c_str(), lapl_id);
+
+            if (res <= 0) {
+                return false;
+            }
+        }
+        temp_path.push_back(ch);
+    }
+
+    return H5Lexists(loc_id, temp_path.c_str(), lapl_id) > 0;
+}
+} // namespace detail
 
 } // namespace einsums

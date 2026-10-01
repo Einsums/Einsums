@@ -30,8 +30,8 @@ TEMPLATE_TEST_CASE("TUCKER 1", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test1, test1_ho_svd);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.178837));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.178837);
 
     result   = tucker_ho_oi(test1, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
@@ -41,8 +41,8 @@ TEMPLATE_TEST_CASE("TUCKER 1", "[decomposition]", float, double) {
 
     diff = rmsd(test1, test1_ho_oi);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.173911));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.173911);
 }
 
 TEMPLATE_TEST_CASE("TUCKER 2", "[decomposition]", float, double) {
@@ -65,8 +65,8 @@ TEMPLATE_TEST_CASE("TUCKER 2", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test2, test2_ho_svd);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.110250));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.110250);
 
     result   = tucker_ho_oi(test2, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
@@ -76,8 +76,8 @@ TEMPLATE_TEST_CASE("TUCKER 2", "[decomposition]", float, double) {
 
     diff = rmsd(test2, test2_ho_oi);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.108301));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.108301);
 }
 
 TEMPLATE_TEST_CASE("TUCKER 3", "[decomposition]", float, double) {
@@ -102,8 +102,8 @@ TEMPLATE_TEST_CASE("TUCKER 3", "[decomposition]", float, double) {
 
     TestType diff = rmsd(test3, test3_ho_svd);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.196843));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.196843);
 
     result   = tucker_ho_oi(test3, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
@@ -113,6 +113,6 @@ TEMPLATE_TEST_CASE("TUCKER 3", "[decomposition]", float, double) {
 
     diff = rmsd(test3, test3_ho_oi);
 
-    REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.192402));
+    REQUIRE(diff >= 0.0);
+    REQUIRE(diff <= 0.192402);
 }

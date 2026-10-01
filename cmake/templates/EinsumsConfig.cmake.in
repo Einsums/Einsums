@@ -17,7 +17,6 @@ get_filename_component(_einsums_root_dir "${CMAKE_CURRENT_LIST_DIR}/../../.." AB
 list(APPEND CMAKE_PREFIX_PATH "${_einsums_root_dir}/lib")
 
 # include external targets
-include("${CMAKE_CURRENT_LIST_DIR}/EinsumsH5cppTarget.cmake")
 # include exported targets
 include("${CMAKE_CURRENT_LIST_DIR}/einsums_internal_targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsTargets.cmake")

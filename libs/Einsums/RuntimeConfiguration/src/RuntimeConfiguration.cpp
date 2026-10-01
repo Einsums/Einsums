@@ -32,6 +32,7 @@
 #endif
 
 namespace einsums {
+
 namespace detail {
 
 struct EINSUMS_EXPORT ArgumentList final : design_pats::Lockable<std::mutex> {

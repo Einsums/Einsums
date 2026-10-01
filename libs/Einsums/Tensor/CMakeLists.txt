@@ -8,7 +8,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(TensorHeaders
     Einsums/Tensor/BlockTensor.hpp
     Einsums/Tensor/DiskTensor.hpp
-    Einsums/Tensor/H5.hpp
     Einsums/Tensor/Tensor.hpp
     Einsums/Tensor/TensorForward.hpp
     Einsums/Tensor/ArithmeticTensor.hpp
@@ -44,7 +43,7 @@ einsums_add_module(
   Einsums Tensor
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  DEPENDENCIES Einsums::h5cpp ${TensorGPUDeps}
+  DEPENDENCIES tgt::hdf5 ZLIB::ZLIB ${TensorGPUDeps}
   MODULE_DEPENDENCIES
     Einsums_BLAS
     Einsums_BufferAllocator
@@ -58,6 +57,7 @@ einsums_add_module(
     Einsums_TypeSupport
     Einsums_Profile
     Einsums_Print
+    Einsums_Runtime
     Einsums_Utilities
     ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests

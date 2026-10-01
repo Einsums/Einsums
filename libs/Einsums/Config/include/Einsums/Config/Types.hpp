@@ -9,6 +9,8 @@
 #include <Einsums/TypeSupport/Observable.hpp>
 #include <Einsums/TypeSupport/Singleton.hpp>
 
+#include <fmt/format.h>
+
 #include <cstdint>
 #include <list>
 #include <memory>

@@ -22,7 +22,7 @@ einsums_add_module(
   Einsums Runtime
   SOURCES ${RuntimeSources}
   HEADERS ${RuntimeHeaders}
-  DEPENDENCIES Einsums::h5cpp
+  DEPENDENCIES tgt::hdf5 ZLIB::ZLIB
   MODULE_DEPENDENCIES
     Einsums_Assertion
     Einsums_Config

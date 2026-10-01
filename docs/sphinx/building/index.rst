@@ -66,8 +66,6 @@ other system-level dependencies to build it on your system.
 
     * Catch2 >= 3
     
-    * Einsums/h5cpp
-    
     * p-ranav/argparse
     
     * gabime/spdlog >= 1
