@@ -7,7 +7,7 @@
 
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
@@ -121,7 +121,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
         // Diagonalize fold squared (akin to SVD)
         linear_algebra::syev(&fold_squared, &S);
 
-        // // Reorder into row major form
+        // Reorder into row major form
         Tensor U = create_tensor<TType>("Left Singular Vectors", m, m);
         permute(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
 
@@ -142,10 +142,6 @@ auto initialize_cp(std::vector<Tensor<TType, 2>, Alloc> &folds, size_t rank) -> 
             /// @todo Need to padd U up to rank
             Tensor<TType, 2> Unew  = create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
-
-            EINSUMS_LOG_DEBUG("m: {}", m);
-
-            // println(Unew);
 
             // Need to save the factors
             factors.push_back(Unew);

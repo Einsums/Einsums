@@ -5,7 +5,7 @@
 
 #pragma once
 #include <Einsums/BLAS.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
 namespace einsums {

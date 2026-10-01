@@ -30,6 +30,7 @@ foreach(example_program ${example_programs})
     FOLDER "Examples/Modules/TensorAlgebra"
     NOINSTALL
   )
+  target_include_directories(TA_${example_program} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
   einsums_add_example_target_dependencies("Modules.Einsums.TensorAlgebra" TA_${example_program})
 

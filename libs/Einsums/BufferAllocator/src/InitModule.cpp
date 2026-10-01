@@ -38,8 +38,9 @@ EINSUMS_EXPORT void add_Einsums_BufferAllocator_arguments() {
     auto &global_config = GlobalConfigMap::get_singleton();
     auto &global_string = global_config.get_string_map()->get_value();
 
+    static cl::OptionCategory bufferCategory("Buffer Allocator");
     static cl::Opt<std::string> bufferSize("einsums:buffer-size", {}, "Total size of buffers allocated for tensor contractions",
-                                           cl::Location(global_string["buffer-size"]), cl::Default(std::string("4MB")));
+                                           bufferCategory, cl::Location(global_string["buffer-size"]), cl::Default(std::string("4MB")));
 
     global_config.attach(detail::Einsums_BufferAllocator_vars::update_max_size);
 

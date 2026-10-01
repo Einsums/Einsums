@@ -7,7 +7,7 @@
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -30,4 +30,4 @@ void zlacgv(int_t n, std::complex<double> *x, int_t incx) {
     FC_GLOBAL(zlacgv, ZLACGV)(&n, x, &incx);
 }
 
-}
+} // namespace einsums::blas::vendor

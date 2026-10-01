@@ -8,22 +8,22 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(LinearAlgebraHeaders EinsumsPy/LinearAlgebra/LinearAlgebra.hpp)
 
 set(LinearAlgebraSources
-        Export.cpp
-        sum_square.cpp
-        gemm.cpp
-        gemv.cpp
-        eigen.cpp
-        solver.cpp
-        scale.cpp
-        dot.cpp
-        helpers.cpp
-        axpy.cpp
-        ger.cpp
-        factor.cpp
-        norm.cpp
-        svd.cpp
-        det.cpp
-        direct_product.cpp
+    Export.cpp
+    sum_square.cpp
+    gemm.cpp
+    gemv.cpp
+    eigen.cpp
+    solver.cpp
+    scale.cpp
+    dot.cpp
+    helpers.cpp
+    axpy.cpp
+    ger.cpp
+    factor.cpp
+    norm.cpp
+    svd.cpp
+    det.cpp
+    direct_product.cpp
 )
 
 include(Einsums_AddModule)
@@ -38,6 +38,7 @@ einsums_add_module(
     Einsums_TypeSupport
     Einsums_Config
     EinsumsPy_Tensor
+    Einsums_HPTT
     Einsums_TensorAlgebra
     Einsums_LinearAlgebra
   CMAKE_SUBDIRS examples tests

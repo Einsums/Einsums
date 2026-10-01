@@ -64,6 +64,9 @@ void init_logging(RuntimeConfiguration &config) {
     sinks.clear();
 
     sinks.push_back(get_spdlog_sink(global_config.get_string("log-destination")));
+#if defined(EINSUMS_HAVE_TRACY)
+    sinks.push_back(get_spdlog_sink("tracy"));
+#endif
 
     // Set log pattern
 

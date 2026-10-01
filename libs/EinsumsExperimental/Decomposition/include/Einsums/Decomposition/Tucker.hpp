@@ -8,7 +8,7 @@
 #include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
@@ -18,7 +18,7 @@ namespace einsums::decomposition {
 
 template <TensorConcept TTensor, ContainerOf<TensorLike<TTensor, ValueTypeT<TTensor>, 2>> Factors>
 auto tucker_reconstruct(TTensor const &g_tensor, Factors const &factors) -> TTensor {
-    LabeledSection0();
+    LabeledSection(__func__;
 
     // Dimension workspace for temps
     Dim dims_buffer = g_tensor.dims();
@@ -175,7 +175,7 @@ auto tucker_ho_svd(TTensor<TType, TRank> const &tensor, Ranks &ranks) -> std::tu
 template <template <typename, size_t> typename TTensor, size_t TRank, ContainerOf<size_t> Ranks, typename TType = double>
 auto tucker_ho_oi(TTensor<TType, TRank> const &tensor, Ranks &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::tuple<TTensor<TType, TRank>, BufferVector<Tensor<TType, 2>>> {
-    LabeledSection0();
+    LabeledSection0(__func__);
 
     // Use HO SVD as a starting guess
     auto ho_svd_guess = tucker_ho_svd(tensor, ranks);

@@ -5,12 +5,10 @@
 
 #pragma once
 
-#include <Einsums/BufferAllocator/InitModule.hpp>
+#include <Einsums/Config.hpp>
+
 #include <Einsums/BufferAllocator/ModuleVars.hpp>
-#include <Einsums/Errors/Error.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/Logging.hpp>
-#include <Einsums/StringUtil/MemoryString.hpp>
+#include <Einsums/Errors.hpp>
 
 #include <complex>
 #include <cstdlib>
@@ -27,8 +25,19 @@
 #    include <malloc.h>
 #endif
 
+#if defined(EINSUMS_HAVE_TRACY)
+#    include <tracy/Tracy.hpp>
+#endif
+
+
 namespace einsums {
 
+namespace detail {
+
+EINSUMS_EXPORT void *allocate(size_t n);
+EINSUMS_EXPORT void deallocate(void*);
+
+}
 /**
  * @struct BufferAllocator
  *
@@ -48,7 +57,6 @@ namespace einsums {
  */
 template <typename T>
 struct BufferAllocator {
-  public:
     /**
      * @typedef pointer
      *
@@ -139,14 +147,17 @@ struct BufferAllocator {
                                     n, n * type_size, available_size(), max_size());
         }
 
-        out = static_cast<pointer>(std::malloc(n * type_size));
-
+        out = static_cast<pointer>(detail::allocate(n*type_size));
         if (out == nullptr) {
             EINSUMS_THROW_EXCEPTION(
                 std::runtime_error,
                 "Could not allocate enough memory for buffers. Requested {} elements or {} bytes, but malloc returned a null pointer.", n,
                 n * type_size);
         }
+
+#if defined(EINSUMS_HAVE_TRACY)
+        TracyAlloc(out, n * type_size);
+#endif
 
         return out;
     }
@@ -204,7 +215,10 @@ struct BufferAllocator {
         release(n);
 
         if (p != nullptr) {
-            std::free(static_cast<void *>(p));
+#if defined(EINSUMS_HAVE_TRACY)
+            TracyFree(p);
+#endif
+            detail::deallocate(p);
         }
     }
 
@@ -215,7 +229,7 @@ struct BufferAllocator {
      *
      * @return The number of elements specified by the buffer size option.
      */
-    size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
+    [[nodiscard]] size_type max_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_max_size() / type_size; }
 
     /**
      * @brief Query the number of elements the allocator has free.
@@ -224,7 +238,9 @@ struct BufferAllocator {
      *
      * @return The number of elements available to allocate.
      */
-    size_type available_size() const { return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size; }
+    [[nodiscard]] size_type available_size() const {
+        return detail::Einsums_BufferAllocator_vars::get_singleton().get_available() / type_size;
+    }
 
     /**
      * @brief Test whether two buffer allocators are the same.

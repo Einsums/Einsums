@@ -7,7 +7,7 @@
 
 #include <H5Fpublic.h>
 #include <type_traits>
-#include "Einsums/LinearAlgebra.hpp"
+#include <Einsums/LinearAlgebra.hpp>
 
 #include <Einsums/Testing.hpp>
 

@@ -3,6 +3,7 @@ Checks: >
   performance-*,
   misc-*,
   -misc-non-private-member-variables-in-classes,
+  -misc-include-cleaner,
   modernize-*,
   bugprone-*,
   -bugprone-reserved-identifier,

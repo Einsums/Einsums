@@ -200,7 +200,7 @@ template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typenam
         requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(char transA, U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    LabeledSection1(fmt::format("<transA={}>", transA));
+    LabeledSection("<transA={}>", transA);
 
     detail::gemv(transA, alpha, A, z, beta, y);
 }
@@ -240,7 +240,6 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires !Complex<AType>;
     }
 void syev(AType *A, WType *W) {
-
     LabeledSection1(einsums::detail::corrected_format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     detail::syev<ComputeEigenvectors>(A, W);
 }

@@ -25,11 +25,6 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All rights reserved.
-// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
-
 // This file written by the Einsums team.
 
 #pragma once

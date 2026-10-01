@@ -1,8 +1,9 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
+#include <Einsums/Profile.hpp>
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Config/Debug.hpp>
 #include <Einsums/Config/FmtAlternatives.hpp>
@@ -71,7 +72,10 @@ int einsums_main(int argc, char *const *const argv) {
                 einsums::random_engine().seed(seed);
             }
 
-            result = session.run();
+            {
+                LabeledSection("einsums_main");
+                result = session.run();
+            }
             einsums::finalize();
         }
     }

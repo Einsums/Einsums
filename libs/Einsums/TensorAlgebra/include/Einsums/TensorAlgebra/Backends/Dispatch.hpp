@@ -4,13 +4,13 @@
 //----------------------------------------------------------------------------------------------
 
 #pragma once
-#include <Einsums/Errors/Error.hpp>
 #ifndef DOXYGEN
 
 #    include <Einsums/Config.hpp>
 
 #    include <Einsums/Concepts/SubscriptChooser.hpp>
 #    include <Einsums/Concepts/TensorConcepts.hpp>
+#    include <Einsums/Errors/Error.hpp>
 #    include <Einsums/LinearAlgebra.hpp>
 #    include <Einsums/Logging.hpp>
 #    include <Einsums/Print.hpp>
@@ -26,13 +26,14 @@
 #    if defined(EINSUMS_COMPUTE_CODE)
 #        include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
 #    endif
-#    include <Einsums/Profile/Timer.hpp>
+#    include <Einsums/Profile.hpp>
 
 #    include <algorithm>
 #    include <cmath>
 #    include <complex>
 #    include <cstddef>
 #    include <cstdlib>
+#    include <memory>
 #    include <stdexcept>
 #    include <string>
 #    include <tuple>
@@ -750,7 +751,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         retval                    = DOT;
     } else if constexpr (einsum_is_direct_product<ConjA, ConjB>(C_indices, A_indices, B_indices)) {
         if constexpr (!DryRun) {
-            profile::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
+            LabeledSection("element-wise multiplication");
 
             linear_algebra::direct_product(AB_prefactor, A, B, C_prefactor, C);
         }
@@ -808,7 +809,9 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     EINSUMS_LOG_TRACE("BEGIN: einsum");
-    std::unique_ptr<Section> _section;
+#    if defined(EINSUMS_HAVE_PROFILER)
+    std::unique_ptr<profile::ScopedZone> _section;
+#    endif
     if constexpr (IsTensorV<CType>) {
         EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? einsums::detail::corrected_format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
@@ -823,6 +826,16 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                                                            B_indices, UC_prefactor, C->name(), C_indices)
                                        : einsums::detail::corrected_format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices,
                                                                            UAB_prefactor, A.name(), A_indices, B.name(), B_indices)));
+#    if defined(EINSUMS_HAVE_PROFILER)
+        _section = std::make_unique<profile::ScopedZone>(
+            std::fabs(UC_prefactor) > EINSUMS_ZERO
+                ? einsums::detail::corrected_format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices,
+                                                    UAB_prefactor, A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(),
+                                                    C_indices)
+                : einsums::detail::corrected_format(R"(einsums: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor,
+                                                    A.name(), A_indices, B.name(), B_indices),
+            __FILE__, __LINE__, __func__);
+#    endif
     } else {
         EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
                              ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices,
@@ -837,6 +850,16 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                                                                            UC_prefactor, C_indices)
                                        : einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices,
                                                                            UAB_prefactor, A.name(), A_indices, B.name(), B_indices)));
+
+#    if defined(EINSUMS_HAVE_PROFILER)
+        _section = std::make_unique<profile::ScopedZone>(
+            std::fabs(UC_prefactor) > EINSUMS_ZERO
+                ? einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(),
+                                                    A_indices, B.name(), B_indices, UC_prefactor, C_indices)
+                : einsums::detail::corrected_format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices,
+                                                    B.name(), B_indices),
+            __FILE__, __LINE__, __func__);
+#    endif
     }
 
     CDataType const  C_prefactor  = UC_prefactor;
@@ -862,23 +885,24 @@ void einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 auto testA = Tensor<ADataType, ARank>(A);
                 auto testB = Tensor<BDataType, BRank>(B);
                 {
-                detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB);
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices,
+                                                              testB);
                 }
             } else if constexpr (!einsums::detail::IsBasicTensorV<AType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
                 {
-                detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B);
                 }
             } else if constexpr (!einsums::detail::IsBasicTensorV<BType>) {
                 auto testB = Tensor<BDataType, BRank>(B);
                 {
-                detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB);
                 }
             } else {
                 // Perform the einsum using only the generic algorithm
                 // #pragma omp task depend(in: A, B) depend(inout: testC)
                 {
-                detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+                    detail::einsum<true, false, ConjA, ConjB>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
                 }
                 // #pragma omp taskwait depend(in: testC)
             }

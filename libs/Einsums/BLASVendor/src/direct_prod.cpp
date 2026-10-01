@@ -8,7 +8,7 @@
 #include <Einsums/BLASVendor/Defines.hpp>
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 namespace einsums::blas::vendor {
 
@@ -16,7 +16,7 @@ void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, 
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks    = n / 64;
         auto remaining = n % 64;
-        auto offset = 64 * blocks;
+        auto offset    = 64 * blocks;
 
         if (blocks != 0) {
             EINSUMS_OMP_PARALLEL_FOR
@@ -40,7 +40,7 @@ void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks    = n / 64;
         auto remaining = n % 64;
-        auto offset = 64 * blocks;
+        auto offset    = 64 * blocks;
 
         if (blocks != 0) {
             EINSUMS_OMP_PARALLEL_FOR
@@ -65,7 +65,7 @@ void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, 
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks    = n / 64;
         auto remaining = n % 64;
-        auto offset = 64 * blocks;
+        auto offset    = 64 * blocks;
 
         if (blocks != 0) {
             EINSUMS_OMP_PARALLEL_FOR
@@ -90,7 +90,7 @@ void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x
     if (incx == 1 && incy == 1 && incz == 1) {
         auto blocks    = n / 64;
         auto remaining = n % 64;
-        auto offset = 64 * blocks;
+        auto offset    = 64 * blocks;
 
         if (blocks != 0) {
             EINSUMS_OMP_PARALLEL_FOR

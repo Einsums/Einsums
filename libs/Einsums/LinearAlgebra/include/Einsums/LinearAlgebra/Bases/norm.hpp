@@ -6,7 +6,7 @@
 #pragma once
 #include <Einsums/BLAS.hpp>
 #include <Einsums/BLASVendor.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
 #include "Einsums/LinearAlgebra/Bases/sum_square.hpp"

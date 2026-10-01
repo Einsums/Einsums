@@ -7,7 +7,7 @@
 
 #include <Einsums/BLASVendor/Vendor.hpp>
 #include <Einsums/Print.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
+#include <Einsums/Profile.hpp>
 
 #include "Common.hpp"
 
@@ -21,26 +21,22 @@ extern void FC_GLOBAL(zcopy, ZCOPY)(int_t *, std::complex<double> const *, int_t
 }
 
 void scopy(int_t n, float const *x, int_t inc_x, float *y, int_t inc_y) {
-    LabeledSection0();
-
+    LabeledSection("scopy");
     FC_GLOBAL(scopy, SCOPY)(&n, x, &inc_x, y, &inc_y);
 }
 
 void dcopy(int_t n, double const *x, int_t inc_x, double *y, int_t inc_y) {
-    LabeledSection0();
-
+    LabeledSection("dcopy");
     FC_GLOBAL(dcopy, DCOPY)(&n, x, &inc_x, y, &inc_y);
 }
 
 void ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<float> *y, int_t inc_y) {
-    LabeledSection0();
-
+    LabeledSection("ccopy");
     FC_GLOBAL(ccopy, CCOPY)(&n, x, &inc_x, y, &inc_y);
 }
 
 void zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y) {
-    LabeledSection0();
-
+    LabeledSection("zcopy");
     FC_GLOBAL(zcopy, ZCOPY)(&n, x, &inc_x, y, &inc_y);
 }
 
