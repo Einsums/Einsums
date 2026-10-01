@@ -275,12 +275,12 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
     /**
      * @brief Get the pointer to the stored data.
      */
-    Pointer data() noexcept { return _data.data(); }
+    [[nodiscard]] Pointer data() noexcept { return _data.data(); }
 
     /**
      * @copydoc data()
      */
-    ConstPointer data() const noexcept { return _data.data(); }
+    [[nodiscard]] ConstPointer data() const noexcept { return _data.data(); }
 
     /**
      * @brief Get the pointer to the stored data starting at the given index.
@@ -288,7 +288,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param index A collection of integers to use as the index.
      */
     template <Container Storage>
-    Pointer data(Storage const &index) {
+    [[nodiscard]] Pointer data(Storage const &index) {
         return _impl.data(index);
     }
 
@@ -298,7 +298,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param index A collection of integers to use as the index.
      */
     template <Container Storage>
-    ConstPointer data(Storage const &index) const {
+    [[nodiscard]] ConstPointer data(Storage const &index) const {
         return _impl.data(index);
     }
 
@@ -338,7 +338,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param args A collection of integers to use as the index.
      */
     template <std::integral... Args>
-    Pointer data(Args &&...args) {
+    [[nodiscard]] Pointer data(Args &&...args) {
         return _impl.data(std::forward<Args>(args)...);
     }
 
@@ -348,7 +348,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param args A collection of integers to use as the index.
      */
     template <std::integral... Args>
-    ConstPointer data(Args &&...args) const {
+    [[nodiscard]] ConstPointer data(Args &&...args) const {
         return _impl.data(std::forward<Args>(args)...);
     }
 
@@ -358,7 +358,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param args A collection of integers to use as the index.
      */
     template <std::integral... Args>
-    Pointer data(Args const &...args) {
+    [[nodiscard]] Pointer data(Args const &...args) {
         return _impl.data(args...);
     }
 
@@ -368,7 +368,7 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      * @param args A collection of integers to use as the index.
      */
     template <std::integral... Args>
-    ConstPointer data(Args const &...args) const {
+    [[nodiscard]] ConstPointer data(Args const &...args) const {
         return _impl.data(args...);
     }
 
@@ -669,39 +669,39 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
      *
      * @param d The axis to query. Negative values will wrap around.
      */
-    virtual size_t dim(int d) const { return _impl.dim(d); }
+    [[nodiscard]] virtual size_t dim(int d) const { return _impl.dim(d); }
 
     /**
      * @brief Get the dimensions of the tensor.
      */
-    virtual BufferVector<size_t> dims() const noexcept { return _impl.dims(); }
+    [[nodiscard]] virtual BufferVector<size_t> dims() const noexcept { return _impl.dims(); }
 
     /**
      * @brief Return the vector containing the data stored by the tensor.
      */
-    virtual Vector const &vector_data() const { return _data; }
+    [[nodiscard]] virtual Vector const &vector_data() const { return _data; }
 
     /**
      * @brief Return the vector containing the data stored by the tensor.
      */
-    virtual Vector &vector_data() { return _data; }
+    [[nodiscard]] virtual Vector &vector_data() { return _data; }
 
     /**
      * @brief Get the stride along a given axis.
      *
      * @param d The axis to query. Negative values will wrap around.
      */
-    virtual size_t stride(int d) const { return _impl.stride(d); }
+    [[nodiscard]] virtual size_t stride(int d) const { return _impl.stride(d); }
 
     /**
      * @brief Return the strides of the tensor.
      */
-    virtual BufferVector<size_t> strides() const noexcept { return _impl.strides(); }
+    [[nodiscard]] virtual BufferVector<size_t> strides() const noexcept { return _impl.strides(); }
 
     /**
      * @brief Create a rank-1 view of the tensor.
      */
-    virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
+    [[nodiscard]] virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
         std::vector<size_t> dim{size()};
 
         return RuntimeTensorView<T>{*this, dim};
@@ -710,19 +710,19 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
     /**
      * @brief Returns the linear size of the tensor.
      */
-    virtual auto size() const -> size_t { return _data.size(); }
+    [[nodiscard]] virtual auto size() const -> size_t { return _data.size(); }
 
     /**
      * @brief Returns whether the tensor sees all of the underlying data.
      *
      * This type of tensor will always see all of its underlying data, so this will always be true.
      */
-    virtual bool full_view_of_underlying() const noexcept { return true; }
+    [[nodiscard]] virtual bool full_view_of_underlying() const noexcept { return true; }
 
     /**
      * @brief Get the rank of the tensor.
      */
-    virtual size_t rank() const noexcept { return _impl.rank(); }
+    [[nodiscard]] virtual size_t rank() const noexcept { return _impl.rank(); }
 
     /**
      * @brief Set the name of the tensor.
@@ -734,35 +734,35 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
     /**
      * @brief Get the name of the tensor.
      */
-    virtual std::string const &name() const noexcept { return this->_name; }
+    [[nodiscard]] virtual std::string const &name() const noexcept { return this->_name; }
 
-    virtual detail::TensorImpl<T> &impl() noexcept { return _impl; }
+    [[nodiscard]] virtual detail::TensorImpl<T> &impl() noexcept { return _impl; }
 
-    virtual detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
+    [[nodiscard]] virtual detail::TensorImpl<T> const &impl() const noexcept { return _impl; }
 
-    bool is_row_major() const { return _impl.is_row_major(); }
+    [[nodiscard]] bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const { return _impl.is_column_major(); }
+    [[nodiscard]] bool is_column_major() const { return _impl.is_column_major(); }
 
-    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
+    [[nodiscard]] RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
+    [[nodiscard]] RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
+    [[nodiscard]] RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
+    [[nodiscard]] RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
+    [[nodiscard]] RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
-    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
+    [[nodiscard]] RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
     template <std::integral... MultiIndex>
-    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+    [[nodiscard]] RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
         return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+    [[nodiscard]] RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
         return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
@@ -770,21 +770,21 @@ struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
 
     void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+    [[nodiscard]] auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    [[nodiscard]] bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   protected:
     Vector _data{};
@@ -947,18 +947,18 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     /**
      * @brief Return a pointer to the beginning of the data.
      */
-    Pointer data() { return _impl.data(); }
+    [[nodiscard]] Pointer data() { return _impl.data(); }
 
     /**
      * @brief Return a pointer to the beginning of the data.
      */
-    ConstPointer data() const { return _impl.data(); }
+    [[nodiscard]] ConstPointer data() const { return _impl.data(); }
 
     /**
      * @brief Return a pointer to the data starting at the given index.
      */
     template <Container Storage>
-    Pointer data(Storage const &index) {
+    [[nodiscard]] Pointer data(Storage const &index) {
         return _impl.data(index);
     }
 
@@ -966,7 +966,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @brief Return a pointer to the data starting at the given index.
      */
     template <Container Storage>
-    ConstPointer data(Storage const &index) const {
+    [[nodiscard]] ConstPointer data(Storage const &index) const {
         return _impl.data(index);
     }
 
@@ -1032,7 +1032,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param args The indices for the starting point.
      */
     template <std::integral... Args>
-    Pointer data(Args &&...args) {
+    [[nodiscard]] Pointer data(Args &&...args) {
         _impl.data(std::forward<Args>(args)...);
     }
 
@@ -1042,7 +1042,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param args The indices for the starting point.
      */
     template <std::integral... Args>
-    ConstPointer data(Args &&...args) const {
+    [[nodiscard]] ConstPointer data(Args &&...args) const {
         _impl.data(std::forward<Args>(args)...);
     }
 
@@ -1052,7 +1052,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param args The indices for the starting point.
      */
     template <std::integral... Args>
-    Pointer data(Args const &...args) {
+    [[nodiscard]] Pointer data(Args const &...args) {
         _impl.data(args...);
     }
 
@@ -1062,7 +1062,7 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param args The indices for the starting point.
      */
     template <std::integral... Args>
-    ConstPointer data(Args const &...args) const {
+    [[nodiscard]] ConstPointer data(Args const &...args) const {
         _impl.data(args...);
     }
 
@@ -1314,31 +1314,31 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      *
      * @param d The axis to query. Negative indices will be wrapped around.
      */
-    virtual auto dim(int d) const -> size_t { return _impl.dim(d); }
+    [[nodiscard]] virtual auto dim(int d) const -> size_t { return _impl.dim(d); }
 
     /**
      * @brief Gets the dimensions of the tensor.
      */
-    virtual auto dims() const noexcept -> BufferVector<size_t> { return _impl.dims(); }
+    [[nodiscard]] virtual auto dims() const noexcept -> BufferVector<size_t> { return _impl.dims(); }
 
     /**
      * @brief Gets the stride of the tensor along the given axis.
      *
      * @param d The axis to query. Negative indices will be wrapped around.
      */
-    virtual auto stride(int d) const -> size_t { return _impl.stride(d); }
+    [[nodiscard]] virtual auto stride(int d) const -> size_t { return _impl.stride(d); }
 
     /**
      * @brief Gets the strides of the tensor.
      */
-    virtual auto strides() const noexcept -> BufferVector<size_t> { return _impl.strides(); }
+    [[nodiscard]] virtual auto strides() const noexcept -> BufferVector<size_t> { return _impl.strides(); }
 
     /**
      * @brief Gets the rank-1 veiw of the tensor.
      *
      * This does not work well for tensor views due to the variation in strides.
      */
-    virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
+    [[nodiscard]] virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
         std::vector<size_t> dim{_impl.size()};
 
         return RuntimeTensorView<T>{*this, dim};
@@ -1347,17 +1347,17 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     /**
      * @brief Returns the linear size of the tensor.
      */
-    virtual auto size() const noexcept -> size_t { return _impl.size(); }
+    [[nodiscard]] virtual auto size() const noexcept -> size_t { return _impl.size(); }
 
     /**
      * @brief Checks whether the tensor sees all of the underlying data.
      */
-    virtual bool full_view_of_underlying() const noexcept { return _impl.is_contiguous(); }
+    [[nodiscard]] virtual bool full_view_of_underlying() const noexcept { return _impl.is_contiguous(); }
 
     /**
      * @brief Returns the name of the tensor.
      */
-    virtual std::string const &name() const { return _name; };
+    [[nodiscard]] virtual std::string const &name() const { return _name; };
 
     /**
      * @brief Sets the name of the tensor.
@@ -1369,38 +1369,38 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
     /**
      * @brief Gets the rank of the tensor.
      */
-    virtual size_t rank() const noexcept { return _impl.rank(); }
+    [[nodiscard]] virtual size_t rank() const noexcept { return _impl.rank(); }
 
     /**
      * @brief Gets the implementation details.
      */
-    virtual detail::TensorImpl<T> &impl() { return _impl; }
+    [[nodiscard]] virtual detail::TensorImpl<T> &impl() { return _impl; }
 
-    virtual detail::TensorImpl<T> const &impl() const { return _impl; }
+    [[nodiscard]] virtual detail::TensorImpl<T> const &impl() const { return _impl; }
 
-    bool is_row_major() const { return _impl.is_row_major(); }
+    [[nodiscard]] bool is_row_major() const { return _impl.is_row_major(); }
 
-    bool is_column_major() const { return _impl.is_column_major(); }
+    [[nodiscard]] bool is_column_major() const { return _impl.is_column_major(); }
 
-    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
+    [[nodiscard]] RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
+    [[nodiscard]] RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
 
-    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
+    [[nodiscard]] RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
+    [[nodiscard]] RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
 
-    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
+    [[nodiscard]] RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
-    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
+    [[nodiscard]] RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
 
     template <std::integral... MultiIndex>
-    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+    [[nodiscard]] RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
         return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
     template <std::integral... MultiIndex>
-    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+    [[nodiscard]] RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
         return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
     }
 
@@ -1408,21 +1408,21 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
 
     void tensor_from_gpu() { _impl.tensor_from_gpu(); }
 
-    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+    [[nodiscard]] auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
 
-    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+    [[nodiscard]] auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
 
-    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+    [[nodiscard]] auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
 
-    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+    [[nodiscard]] auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
 
-    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+    [[nodiscard]] bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
 
   protected:
     /**

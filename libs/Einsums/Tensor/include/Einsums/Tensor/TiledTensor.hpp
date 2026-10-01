@@ -171,7 +171,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == rank)
-    bool has_tile(MultiIndex... index) const;
+    [[nodiscard]] bool has_tile(MultiIndex... index) const;
 
     /**
      * Returns the tile coordinates of a given tensor index.
@@ -181,7 +181,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == rank)
-    std::array<int, rank> tile_of(MultiIndex... index) const;
+    [[nodiscard]] std::array<int, rank> tile_of(MultiIndex... index) const;
 
     /**
      * Returns whether a tile exists at a given position, and if it is filled.
@@ -191,7 +191,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <typename Storage>
         requires(!std::integral<Storage>)
-    bool has_tile(Storage index) const;
+    [[nodiscard]] bool has_tile(Storage index) const;
 
     /**
      * Returns the tile coordinates of a given tensor index.
@@ -201,7 +201,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <typename Storage>
         requires(!std::integral<Storage>)
-    std::array<int, rank> tile_of(Storage index) const;
+    [[nodiscard]] std::array<int, rank> tile_of(Storage index) const;
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
@@ -398,7 +398,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     /**
      * Returns the tile offsets.
      */
-    std::array<std::vector<int>, rank> tile_offsets() const;
+    [[nodiscard]] std::array<std::vector<int>, rank> tile_offsets() const;
 
     /**
      * Returns the tile offsets along a given dimension.
@@ -406,12 +406,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_offset(int i = 0) const;
+    [[nodiscard]] std::vector<int> tile_offset(int i = 0) const;
 
     /**
      * Returns the tile sizes.
      */
-    std::array<std::vector<int>, rank> tile_sizes() const;
+    [[nodiscard]] std::array<std::vector<int>, rank> tile_sizes() const;
 
     /**
      * Returns the tile sizes along a given dimension.
@@ -419,12 +419,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_size(int i = 0) const;
+    [[nodiscard]] std::vector<int> tile_size(int i = 0) const;
 
     /**
      * Get a reference to the tile map.
      */
-    map_type const &tiles() const;
+    [[nodiscard]] map_type const &tiles() const;
 
     /**
      * Get a reference to the tile map.
@@ -434,7 +434,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     /**
      * Get the name.
      */
-    virtual std::string const &name() const;
+    [[nodiscard]] virtual std::string const &name() const;
 
     /**
      * Sets the name.
@@ -446,39 +446,39 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     /**
      * Gets the size of the tensor.
      */
-    size_t size() const;
+    [[nodiscard]] size_t size() const;
 
     /**
      * Gets the number of possible tiles, empty and filled.
      */
-    size_t grid_size() const;
+    [[nodiscard]] size_t grid_size() const;
 
     /**
      * Gets the number of possible tiles along an axis, empty and filled.
      */
-    size_t grid_size(int i) const;
+    [[nodiscard]] size_t grid_size(int i) const;
 
     /**
      * Gets the number of filled tiles.
      */
-    size_t num_filled() const;
+    [[nodiscard]] size_t num_filled() const;
 
     /**
      * @brief Indicates whether the tensor sees all of the underlying elements, or could if all blocks were filled.
      */
-    virtual bool full_view_of_underlying() const;
+    [[nodiscard]] virtual bool full_view_of_underlying() const;
 
     /**
      * @brief Get the dimension along a given axis.
      *
      * @param d The axis to query.
      */
-    size_t dim(int d) const;
+    [[nodiscard]] size_t dim(int d) const;
 
     /**
      * @brief Get the dimensions
      */
-    Dim<rank> dims() const;
+    [[nodiscard]] Dim<rank> dims() const;
 
     /**
      * Check to see if the given tile has zero size.
@@ -488,7 +488,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <std::integral... Index>
         requires(sizeof...(Index) == rank)
-    bool has_zero_size(Index... index) const;
+    [[nodiscard]] bool has_zero_size(Index... index) const;
 
     /**
      * Check to see if the given tile has zero size.
@@ -498,7 +498,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <typename Storage>
         requires(!std::integral<Storage>)
-    bool has_zero_size(Storage const &index) const;
+    [[nodiscard]] bool has_zero_size(Storage const &index) const;
 
     /**
      * Convert to the underlying tensor type.
