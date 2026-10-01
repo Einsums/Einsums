@@ -20,4 +20,3 @@ Bug Fixes
 * Fixed a race condition in most of the GPU linear algebra functions.
 * Removed assertions in the device tensor headers and replaced them with if statements.
 * Fixed a bug in the Python in-core dot product contraction where the :code:`AB_prefactor` was not actually used.
-

@@ -10,14 +10,14 @@
 Einsums's Documentation
 #######################
 
-.. toctree:: 
+.. toctree::  
    :maxdepth: 3
    :hidden:
 
    User Guide <user/index>
    Building from source <building/index>
+   Developers' Guide </libs/overview>
    Changelog <changelogs/index>
-   Devolpers' Guide </libs/overview>
 
 **Version**: |release|
 

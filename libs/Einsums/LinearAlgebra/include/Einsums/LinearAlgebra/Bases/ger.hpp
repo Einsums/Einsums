@@ -7,6 +7,10 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/hipBLAS.hpp>
+#endif
+
 namespace einsums::linear_algebra::detail {
 
 template <typename T>
@@ -18,6 +22,26 @@ void impl_ger(T alpha, einsums::detail::TensorImpl<T> const &x, einsums::detail:
     if (x.dim(0) != a.dim(0) || y.dim(0) != a.dim(1)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the tensors passed to ger are incompatible!");
     }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    // Check if A is on the GPU. If so, then use the GPU algorithm.
+    if (a.get_gpu_pointer()) {
+        try {
+            auto A_lock = a.gpu_cache_tensor();
+            auto X_lock = x.gpu_cache_tensor();
+            auto Y_lock = y.gpu_cache_tensor();
+
+            if (a.get_gpu_pointer() && x.get_gpu_pointer() && y.get_gpu_pointer()) {
+                blas::gpu::ger(x.dim(0), y.dim(0), alpha, x.get_gpu_pointer().get(), 1, y.get_gpu_pointer().get(), 1,
+                               a.get_gpu_pointer().get(), a.dim(0));
+                return;
+            }
+        } catch (std::exception &) {
+            // Something happened. Do the CPU algorithm.
+        }
+    }
+#endif
+
     if (a.is_gemmable()) {
         if (a.is_column_major()) {
             blas::ger(a.dim(0), a.dim(1), alpha, x.data(), x.get_incx(), y.data(), y.get_incy(), a.data(), a.get_lda());
@@ -59,6 +83,31 @@ void impl_gerc(T alpha, einsums::detail::TensorImpl<T> const &x, einsums::detail
     if (x.dim(0) != a.dim(0) || y.dim(0) != a.dim(1)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The dimensions of the tensors passed to ger are incompatible!");
     }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    // Check if A is on the GPU. If so, then use the GPU algorithm.
+    if (a.get_gpu_pointer()) {
+        try {
+            auto A_lock = a.gpu_cache_tensor();
+            auto X_lock = x.gpu_cache_tensor();
+            auto Y_lock = y.gpu_cache_tensor();
+
+            if (a.get_gpu_pointer() && x.get_gpu_pointer() && y.get_gpu_pointer()) {
+                if constexpr (IsComplexV<T>) {
+                    blas::gpu::gerc(x.dim(0), y.dim(0), alpha, x.get_gpu_pointer().get(), 1, y.get_gpu_pointer().get(), 1,
+                                    a.get_gpu_pointer().get(), a.dim(0));
+                } else {
+                    blas::gpu::ger(x.dim(0), y.dim(0), alpha, x.get_gpu_pointer().get(), 1, y.get_gpu_pointer().get(), 1,
+                                   a.get_gpu_pointer().get(), a.dim(0));
+                }
+                return;
+            }
+        } catch (std::exception &) {
+            // Something happened. Do the CPU algorithm.
+        }
+    }
+#endif
+
     if (a.is_gemmable()) {
         if (a.is_column_major()) {
             blas::gerc(a.dim(0), a.dim(1), alpha, x.data(), x.get_incx(), y.data(), y.get_incy(), a.data(), a.get_lda());

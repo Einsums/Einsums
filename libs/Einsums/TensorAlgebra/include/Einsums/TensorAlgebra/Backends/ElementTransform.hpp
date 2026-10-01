@@ -73,15 +73,13 @@ auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
     }
 }
 
-template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
-          typename MultiOperator, typename T>
-    requires requires {
-        requires(CoreRankTensor<MultiTensors<T, Rank>, Rank, T> && ... && CoreRankTensor<CType<T, Rank>, Rank, T>);
-        requires(!CollectedTensorConcept<MultiTensors<T, Rank>> && ... && !CollectedTensorConcept<CType<T, Rank>>);
-        requires BasicTensorConcept<CType<T, Rank>>;
-    }
-auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
+template <CoreBasicTensorConcept CType, CoreBasicTensorConcept... MultiTensors, typename MultiOperator>
+    requires requires { requires SameUnderlyingAndRank<CType, MultiTensors...>; }
+auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
     LabeledSection0();
+
+    constexpr size_t Rank = CType::Rank;
+    using T               = typename CType::ValueType;
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != tensors.dims()) || ...)) {

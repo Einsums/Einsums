@@ -43,7 +43,11 @@ void add_Einsums_GPUMemory_arguments() {
     static cl::OptionCategory   GPUAllocatorCategory("GPU Buffer Allocator");
     static cl::Opt<std::string> bufferSize("einsums:gpu-buffer-size", {}, "Total size of GPU buffers allocated for tensor contractions.",
                                            GPUAllocatorCategory, cl::Location(global_string["gpu-buffer-size"]),
-                                           cl::Default(std::string("4MB")));
+                                           cl::Default(std::string("128MB")));
+    static cl::Opt<std::string> workSize(
+        "einsums:gpu-work-size", {},
+        "Size of individual work buffers for GPU operations. Defaults to 2MB since this is the maximum for many HIP library operations.",
+        GPUAllocatorCategory, cl::Location(global_string["gpu-work-size"]), cl::Default(std::string("2MB")));
 
     global_config.attach(gpu::detail::Einsums_GPUMemory_vars::update_max_size);
 }

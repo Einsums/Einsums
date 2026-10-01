@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
+#include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 
 #include <cstddef>
@@ -51,8 +52,8 @@ constexpr T compute_arithmetic(T scalar, MultiIndex... inds) {
     return scalar;
 }
 
-template <typename T1, template <typename, size_t> typename TensorType, typename T, size_t Rank, typename... MultiIndex>
-T compute_arithmetic(TensorType<T, Rank> const *tensor, MultiIndex... inds) {
+template <typename T, TensorConcept TensorType, typename... MultiIndex>
+inline T compute_arithmetic(TensorType const *tensor, MultiIndex... inds) {
     return (*tensor)(inds...);
 }
 
@@ -204,47 +205,64 @@ struct ArithmeticTensor : tensor_base::CoreTensor {
             return einsums::ArithmeticTensor<T, Rank, name, const std::tuple<Args1...> *, const std::tuple<Args2...> *>(                   \
                 std::make_tuple(name(), left.get_tuple(), right.get_tuple()), left.dims());                                                \
         }                                                                                                                                  \
-        template <template <typename, size_t> typename LeftType, typename T, size_t Rank, typename... RightArgs>                           \
-        auto operator op(const LeftType<T, Rank> &left, const einsums::ArithmeticTensor<T, Rank, RightArgs...> &right)                     \
-            ->einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, const std::tuple<RightArgs...> *> {                      \
-            return einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, const std::tuple<RightArgs...> *>(                  \
+        template <einsums::CoreBasicTensorConcept LeftType, typename T, size_t Rank, typename... RightArgs>                                \
+            requires requires {                                                                                                            \
+                requires std::is_same_v<typename LeftType::ValueType, T>;                                                                  \
+                requires LeftType::Rank == Rank;                                                                                           \
+            }                                                                                                                              \
+        auto operator op(const LeftType &left, const einsums::ArithmeticTensor<T, Rank, RightArgs...> &right)                              \
+            ->einsums::ArithmeticTensor<T, Rank, name, const LeftType *, const std::tuple<RightArgs...> *> {                               \
+            return einsums::ArithmeticTensor<T, Rank, name, const LeftType *, const std::tuple<RightArgs...> *>(                           \
                 std::make_tuple(name(), &left, right.get_tuple()), left.dims());                                                           \
         }                                                                                                                                  \
-        template <template <typename, size_t> typename RightType, typename T, size_t Rank, typename... LeftArgs>                           \
-        auto operator op(const einsums::ArithmeticTensor<T, Rank, LeftArgs...> &left, const RightType<T, Rank> &right)                     \
-            ->einsums::ArithmeticTensor<T, Rank, name, const std::tuple<LeftArgs...> *, const RightType<T, Rank> *> {                      \
-            return einsums::ArithmeticTensor<T, Rank, name, const std::tuple<LeftArgs...> *, const RightType<T, Rank> *>(                  \
+        template <einsums::CoreBasicTensorConcept RightType, typename T, size_t Rank, typename... LeftArgs>                                \
+            requires requires {                                                                                                            \
+                requires std::is_same_v<typename RightType::ValueType, T>;                                                                 \
+                requires RightType::Rank == Rank;                                                                                          \
+            }                                                                                                                              \
+        auto operator op(const einsums::ArithmeticTensor<T, Rank, LeftArgs...> &left, const RightType &right)                              \
+            ->einsums::ArithmeticTensor<T, Rank, name, const std::tuple<LeftArgs...> *, const RightType *> {                               \
+            return einsums::ArithmeticTensor<T, Rank, name, const std::tuple<LeftArgs...> *, const RightType *>(                           \
                 std::make_tuple(name(), left.get_tuple(), &right), left.dims());                                                           \
         }                                                                                                                                  \
-        template <template <typename, size_t> typename LeftType, template <typename, size_t> typename RightType, typename T, size_t Rank>  \
-        auto operator op(const LeftType<T, Rank> &left, const RightType<T, Rank> &right)                                                   \
-            ->einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, const RightType<T, Rank> *> {                            \
-            return einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, const RightType<T, Rank> *>(                        \
+        template <einsums::CoreBasicTensorConcept LeftType, einsums::CoreBasicTensorConcept RightType>                                     \
+            requires requires {                                                                                                            \
+                requires std::is_same_v<typename LeftType::ValueType, typename RightType::ValueType>;                                      \
+                requires LeftType::Rank == RightType::Rank;                                                                                \
+            }                                                                                                                              \
+        auto operator op(const LeftType &left, const RightType &right)                                                                     \
+            ->einsums::ArithmeticTensor<typename LeftType::ValueType, LeftType::Rank, name, const LeftType *, const RightType *> {         \
+            return einsums::ArithmeticTensor<typename LeftType::ValueType, LeftType::Rank, name, const LeftType *, const RightType *>(     \
                 std::make_tuple(name(), &left, &right), left.dims());                                                                      \
         }                                                                                                                                  \
         template <typename T, size_t Rank, typename... Args1>                                                                              \
+            requires(!einsums::TensorConcept<T>)                                                                                           \
         auto operator op(const einsums::ArithmeticTensor<T, Rank, Args1...> &left, T &&right)                                              \
             ->einsums::ArithmeticTensor<T, Rank, name, const std::tuple<Args1...> *, T> {                                                  \
             return einsums::ArithmeticTensor<T, Rank, name, const std::tuple<Args1...> *, T>(                                              \
                 std::make_tuple(name(), left.get_tuple(), right), left.dims());                                                            \
         }                                                                                                                                  \
-        template <template <typename, size_t> typename LeftType, typename T, size_t Rank>                                                  \
-        auto operator op(const LeftType<T, Rank> &left, T &&right)                                                                         \
-            ->einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, T> {                                                     \
-            return einsums::ArithmeticTensor<T, Rank, name, const LeftType<T, Rank> *, T>(std::make_tuple(name(), &left, right),           \
-                                                                                          left.dims());                                    \
+        template <einsums::CoreBasicTensorConcept LeftType, typename T>                                                                    \
+            requires(!einsums::TensorConcept<T>)                                                                                           \
+        auto operator op(const LeftType &left, T &&right)                                                                                  \
+            ->einsums::ArithmeticTensor<typename LeftType::ValueType, LeftType::Rank, name, const LeftType *,                              \
+                                        typename LeftType::ValueType> {                                                                    \
+            return einsums::ArithmeticTensor<typename LeftType::ValueType, LeftType::Rank, name, const LeftType *,                         \
+                                             typename LeftType::ValueType>(std::make_tuple(name(), &left, right), left.dims());            \
         }                                                                                                                                  \
         template <typename T, size_t Rank, typename... Args2>                                                                              \
+            requires(!einsums::TensorConcept<T>)                                                                                           \
         auto operator op(T &&left, const einsums::ArithmeticTensor<T, Rank, Args2...> &right)                                              \
             ->einsums::ArithmeticTensor<T, Rank, name, T, const std::tuple<Args2...> *> {                                                  \
             return einsums::ArithmeticTensor<T, Rank, name, T, const std::tuple<Args2...> *>(                                              \
                 std::make_tuple(name(), left, right.get_tuple()), right.dims());                                                           \
         }                                                                                                                                  \
-        template <template <typename, size_t> typename RightType, typename T, size_t Rank>                                                 \
-        auto operator op(T &&left, const RightType<T, Rank> &right)                                                                        \
-            ->einsums::ArithmeticTensor<T, Rank, name, T, const RightType<T, Rank> *> {                                                    \
-            return einsums::ArithmeticTensor<T, Rank, name, T, const RightType<T, Rank> *>(std::make_tuple(name(), left, &right),          \
-                                                                                           right.dims());                                  \
+        template <einsums::CoreBasicTensorConcept RightType, typename T>                                                                   \
+            requires(!einsums::TensorConcept<T>)                                                                                           \
+        auto operator op(T &&left, const RightType &right)                                                                                 \
+            ->einsums::ArithmeticTensor<typename RightType::ValueType, RightType::Rank, name, T, const RightType *> {                      \
+            return einsums::ArithmeticTensor<typename RightType::ValueType, RightType::Rank, name, T, const RightType *>(                  \
+                std::make_tuple(name(), left, &right), right.dims());                                                                      \
         }
 
 OPERATOR(+, einsums::detail::AdditionOp)
@@ -261,10 +279,10 @@ auto operator-(einsums::ArithmeticTensor<T, Rank, Args...> const &&tensor)
         std::make_tuple(einsums::detail::SubtractionOp(), tensor.get_tuple()));
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto operator-(TensorType<T, Rank> const &tensor)
-    -> einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, TensorType<T, Rank> const *> {
-    return einsums::ArithmeticTensor<T, Rank, einsums::detail::SubtractionOp, TensorType<T, Rank> const *>(
+template <einsums::CoreTensorConcept TensorType>
+auto operator-(TensorType const &tensor)
+    -> einsums::ArithmeticTensor<typename TensorType::ValueType, TensorType::Rank, einsums::detail::SubtractionOp, TensorType const *> {
+    return einsums::ArithmeticTensor<typename TensorType::ValueType, TensorType::Rank, einsums::detail::SubtractionOp, TensorType const *>(
         std::make_tuple(einsums::detail::SubtractionOp(), &tensor), tensor.dims());
 }
 

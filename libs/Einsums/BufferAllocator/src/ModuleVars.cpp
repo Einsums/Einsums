@@ -8,6 +8,8 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/StringUtil/MemoryString.hpp>
 
+#include <omp.h>
+
 namespace einsums::detail {
 
 EINSUMS_SINGLETON_IMPL(Einsums_BufferAllocator_vars)
@@ -21,6 +23,14 @@ void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::stri
 
     if (singleton._max_size == 0) {
         singleton._max_size = std::allocator_traits<std::allocator<uint8_t>>::max_size(std::allocator<uint8_t>());
+    }
+
+    auto const &work_buffer = options.at("work-buffer-size");
+
+    singleton._work_buffer = string_util::memory_string(work_buffer);
+
+    if (singleton._work_buffer == 0) {
+        singleton._work_buffer = singleton._max_size / 8 / omp_get_num_threads();
     }
 }
 
@@ -36,6 +46,9 @@ bool Einsums_BufferAllocator_vars::request_bytes(size_t bytes) {
     auto lock = std::lock_guard(_lock);
 
     if (bytes + _curr_size > _max_size) {
+        EINSUMS_LOG_WARN("An allocator attempted to request too much memory! Einsums currently has {} bytes allocated to it, of which {} "
+                         "are in use. The requested allocation would require {} more bytes for a total of {} bytes.",
+                         _max_size, _curr_size, bytes, bytes + _curr_size);
         return false;
     }
 
@@ -58,6 +71,10 @@ size_t Einsums_BufferAllocator_vars::get_available() const {
         return 0;
     }
     return _max_size - _curr_size;
+}
+
+size_t Einsums_BufferAllocator_vars::get_work_buffer_size() const {
+    return _work_buffer;
 }
 
 } // namespace einsums::detail

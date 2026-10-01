@@ -18,6 +18,10 @@
 #include <string>
 #include <type_traits>
 
+#ifdef EINSUMS_COMPUTE_DEVICE_CODE
+#    include <cassert>
+#endif
+
 namespace einsums::detail {
 
 /**

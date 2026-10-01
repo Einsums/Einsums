@@ -9,6 +9,7 @@
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra/Base.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Utilities/InCollection.hpp>
 
@@ -21,7 +22,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/typing.h>
 
-#include "Einsums/LinearAlgebra/Base.hpp"
 #include "macros.hpp"
 
 namespace py = pybind11;

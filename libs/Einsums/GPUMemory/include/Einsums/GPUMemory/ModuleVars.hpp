@@ -74,6 +74,24 @@ class EINSUMS_EXPORT Einsums_GPUMemory_vars final : public design_pats::Lockable
      */
     size_t get_max_size() const;
 
+    /**
+     * @brief Gets the number of bytes available.
+     *
+     * @return The number of bytes available.
+     *
+     * @versionadded{2.0.0}
+     */
+    size_t get_available() const;
+
+    /**
+     * @brief Gets the recommended size of a work buffer.
+     *
+     * @return The number of bytes available.
+     *
+     * @versionadded{2.0.0}
+     */
+    size_t get_work_size() const;
+
   private:
     explicit Einsums_GPUMemory_vars() = default;
 
@@ -88,6 +106,11 @@ class EINSUMS_EXPORT Einsums_GPUMemory_vars final : public design_pats::Lockable
      * @brief The current number of allocated bytes.
      */
     size_t curr_size_;
+
+    /**
+     * @brief The recommended work buffer size for GPU operations.
+     */
+    size_t work_size_;
 };
 } // namespace detail
 } // namespace gpu

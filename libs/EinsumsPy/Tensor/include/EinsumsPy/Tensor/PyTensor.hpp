@@ -8,6 +8,7 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Tensor/RuntimeTensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 #include <Einsums/TensorUtilities.hpp>
 
 #include <memory>
@@ -19,8 +20,6 @@
 #include <pybind11/stl.h>
 #include <source_location>
 #include <stdexcept>
-
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 namespace einsums::python {
 

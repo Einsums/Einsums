@@ -7,6 +7,7 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/NamedRequirements.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
@@ -20,8 +21,6 @@
 #include <omp.h>
 #include <random>
 #include <string>
-
-#include "Einsums/Config/CompilerSpecific.hpp"
 
 namespace einsums {
 

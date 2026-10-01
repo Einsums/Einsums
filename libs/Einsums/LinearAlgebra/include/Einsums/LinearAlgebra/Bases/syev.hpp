@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #pragma once
+#include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/LinearAlgebra/Bases/high_precision.hpp>
@@ -13,8 +14,6 @@
 #include <fmt/ranges.h>
 
 #include <stdexcept>
-
-#include "Einsums/BLAS.hpp"
 
 namespace einsums {
 namespace linear_algebra {

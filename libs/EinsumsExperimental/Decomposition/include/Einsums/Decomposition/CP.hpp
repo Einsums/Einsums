@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Concepts/NamedRequirements.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Profile.hpp>
@@ -12,8 +13,6 @@
 #include <Einsums/TensorAlgebra.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
-
-#include "Einsums/Concepts/NamedRequirements.hpp"
 
 namespace einsums::decomposition {
 

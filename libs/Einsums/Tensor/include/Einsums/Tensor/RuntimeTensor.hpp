@@ -17,10 +17,8 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-
-#include "Einsums/Config/Types.hpp"
-#include "Einsums/TensorImpl/TensorImpl.hpp"
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
+#include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <hip/hip_common.h>
@@ -40,23 +38,33 @@
 namespace einsums {
 
 /**
- * @class RuntimeTensor
+ * @class GeneralRuntimeTensor
  *
  * @brief Represents a tensor whose properties can be determined at runtime but not compile time.
  *
- * This kind of tensor is unable to be used in many of the
+ * This kind of tensor is unable to be used in many of the same ways as a tensor with compile-time rank. It is mostly used for communication
+ * with the Python interface.
  *
  * @tparam T The data type stored by the tensor.
+ * @tparam Alloc The allocator used for the internal data.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *      This used to be RuntimeTensor. An allocator parameter was added, and RuntimeTensor is now an alias to this with the standard
+ *      allocator.
+ * @endversion
  */
-template <typename T>
-struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTensorNoType, design_pats::Lockable<std::recursive_mutex> {
+template <typename T, typename Alloc>
+struct GeneralRuntimeTensor : public tensor_base::CoreTensor,
+                              tensor_base::RuntimeTensorNoType,
+                              design_pats::Lockable<std::recursive_mutex> {
   public:
     /**
      * @typedef Vector
      *
      * @brief Represents how the data is stored in the tensor.
      */
-    using Vector = BufferVector<std::remove_cv_t<T>>;
+    using Vector = std::vector<std::remove_cv_t<T>, Alloc>;
 
     /**
      * @typedef ValueType
@@ -93,12 +101,23 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      */
     using ConstReference = typename detail::TensorImpl<T>::const_reference;
 
-    RuntimeTensor() noexcept = default;
+    GeneralRuntimeTensor() noexcept = default;
 
     /**
      * @brief Default copy constructor.
      */
-    RuntimeTensor(RuntimeTensor<T> const &copy) : _impl(copy.impl()), _data(copy.vector_data()) { _impl.set_data(_data.data()); }
+    GeneralRuntimeTensor(GeneralRuntimeTensor<T, Alloc> const &copy) : _impl(copy.impl()), _data(copy.vector_data()) {
+        _impl.set_data(_data.data());
+    }
+
+    /**
+     * @brief Copy with a different allocator.
+     */
+    template <typename Alloc2>
+    GeneralRuntimeTensor(GeneralRuntimeTensor<T, Alloc2> const &copy)
+        : _impl(copy.impl()), _data(copy.vector_data().begin(), copy.vector_data().end()) {
+        _impl.set_data(_data.data());
+    }
 
     /**
      * @brief Create a new runtime tensor with the given name and dimensions.
@@ -107,7 +126,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    RuntimeTensor(std::string name, Dim const &dims, bool row_major) : _name{name}, _impl(nullptr, dims, row_major) {
+    GeneralRuntimeTensor(std::string name, Dim const &dims, bool row_major) : _name{name}, _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -119,7 +138,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit RuntimeTensor(Dim const &dims, bool row_major) : _impl(nullptr, dims, row_major) {
+    explicit GeneralRuntimeTensor(Dim const &dims, bool row_major) : _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -131,16 +150,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major)
-        : RuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
+    GeneralRuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major)
+        : GeneralRuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
 
     /**
      * @brief Create a new runtime tensor with the given dimensions using an initializer list.
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major)
-        : RuntimeTensor(std::vector<size_t>(dims), row_major) {}
+    explicit GeneralRuntimeTensor(std::initializer_list<size_t> dims, bool row_major)
+        : GeneralRuntimeTensor(std::vector<size_t>(dims), row_major) {}
 
     /**
      * @brief Create a new runtime tensor with the given name and dimensions.
@@ -149,7 +168,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    RuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    GeneralRuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -161,7 +180,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit RuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    explicit GeneralRuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -173,16 +192,16 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims)
-        : RuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+    GeneralRuntimeTensor(std::string name, std::initializer_list<size_t> dims)
+        : GeneralRuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
 
     /**
      * @brief Create a new runtime tensor with the given dimensions using an initializer list.
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims)
-        : RuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+    explicit GeneralRuntimeTensor(std::initializer_list<size_t> dims)
+        : GeneralRuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
 
     /**
      * @brief Copy a tensor into a runtime tensor.
@@ -191,8 +210,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param copy The tensor to copy.
      */
-    template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank> const &copy) : _name{copy.name()}, _impl(nullptr, copy.dims(), copy.strides()) {
+    template <size_t Rank, typename Alloc2>
+    GeneralRuntimeTensor(GeneralTensor<T, Rank, Alloc2> const &copy) : _name{copy.name()}, _impl(nullptr, copy.dims(), copy.strides()) {
 
         _data.resize(copy.size());
 
@@ -201,8 +220,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
     }
 
-    template <size_t Rank>
-    RuntimeTensor(Tensor<T, Rank> &&copy) noexcept
+    template <size_t Rank, typename Alloc2>
+    GeneralRuntimeTensor(GeneralTensor<T, Rank, Alloc2> &&copy) noexcept
         : _name{std::move(copy.name())}, _impl{std::move(copy.impl())}, _data{std::move(copy.vector_data())} {
         _impl.set_data(_data.data());
     }
@@ -215,7 +234,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param copy The tensor view to copy.
      */
     template <size_t Rank>
-    RuntimeTensor(TensorView<T, Rank> const &copy) : _impl(nullptr, copy.dims()) {
+    GeneralRuntimeTensor(TensorView<T, Rank> const &copy) : _impl(nullptr, copy.dims()) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -230,7 +249,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param copy The tensor view to copy.
      */
-    RuntimeTensor(RuntimeTensorView<T> const &copy) : _impl(nullptr, copy.dims()) {
+    GeneralRuntimeTensor(RuntimeTensorView<T> const &copy) : _impl(nullptr, copy.dims()) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -239,7 +258,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     }
 
     // HIP clang doesn't like it when this is defaulted.
-    virtual ~RuntimeTensor() {}
+    virtual ~GeneralRuntimeTensor() {}
 
     /**
      * @brief Set all of the data in the tensor to zero.
@@ -426,8 +445,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param other The tensor to copy from.
      */
-    template <size_t Rank>
-    RuntimeTensor<T> &operator=(Tensor<T, Rank> const &other) {
+    template <size_t Rank, typename Alloc2>
+    GeneralRuntimeTensor &operator=(GeneralTensor<T, Rank, Alloc2> const &other) {
         _impl = other.impl();
 
         _data.resize(_impl.size());
@@ -444,8 +463,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param other The tensor to copy from.
      */
-    template <typename TOther, size_t Rank>
-    RuntimeTensor<T> &operator=(Tensor<TOther, Rank> const &other) {
+    template <typename TOther, size_t Rank, typename Alloc2>
+    GeneralRuntimeTensor &operator=(GeneralTensor<TOther, Rank, Alloc2> const &other) {
         _impl = other.impl();
 
         _data.resize(_impl.size());
@@ -463,7 +482,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param other The tensor view to copy from.
      */
     template <typename TOther, size_t Rank>
-    RuntimeTensor<T> &operator=(TensorView<TOther, Rank> const &other) {
+    GeneralRuntimeTensor &operator=(TensorView<TOther, Rank> const &other) {
         _impl = detail::TensorImpl<T>(nullptr, other.dims());
 
         _data.resize(_impl.size());
@@ -480,7 +499,20 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param other The tensor to copy from.
      */
-    RuntimeTensor<T> &operator=(RuntimeTensor<T> const &other) {
+    GeneralRuntimeTensor &operator=(GeneralRuntimeTensor<T, Alloc> const &other) {
+        _impl = other.impl();
+
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+
+        detail::copy_to(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <typename Alloc2>
+    GeneralRuntimeTensor &operator=(GeneralRuntimeTensor<T, Alloc2> const &other) {
         _impl = other.impl();
 
         _data.resize(_impl.size());
@@ -497,7 +529,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param other The tensor view to copy from.
      */
-    virtual RuntimeTensor<T> &operator=(RuntimeTensorView<T> const &other) {
+    virtual GeneralRuntimeTensor &operator=(RuntimeTensorView<T> const &other) {
         _impl = detail::TensorImpl<T>(nullptr, other.dims());
 
         _data.resize(_impl.size());
@@ -514,8 +546,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param other The tensor to copy from.
      */
-    template <typename TOther>
-    RuntimeTensor<T> &operator=(RuntimeTensor<TOther> const &other) {
+    template <typename TOther, typename Alloc2>
+    GeneralRuntimeTensor &operator=(GeneralRuntimeTensor<TOther, Alloc2> const &other) {
         _impl = other.impl();
 
         _data.resize(_impl.size());
@@ -533,7 +565,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param other The tensor view to copy from.
      */
     template <typename TOther>
-    RuntimeTensor<T> &operator=(RuntimeTensorView<TOther> const &other) {
+    GeneralRuntimeTensor &operator=(RuntimeTensorView<TOther> const &other) {
         _impl = detail::TensorImpl<T>(nullptr, other.dims());
 
         _data.resize(_impl.size());
@@ -550,34 +582,34 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param value The value to fill the tensor with.
      */
-    virtual RuntimeTensor<T> &operator=(T value) {
+    virtual GeneralRuntimeTensor &operator=(T value) {
         set_all(value);
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator+=(TOther const &b) {
+    GeneralRuntimeTensor &operator+=(TOther const &b) {
         detail::add_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator-=(TOther const &b) {
+    GeneralRuntimeTensor &operator-=(TOther const &b) {
         detail::sub_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator*=(TOther const &b) {
+    GeneralRuntimeTensor &operator*=(TOther const &b) {
         detail::mult_assign(b, _impl);
 
         return *this;
     }
 
     template <typename TOther>
-    RuntimeTensor<T> &operator/=(TOther const &b) {
+    GeneralRuntimeTensor &operator/=(TOther const &b) {
         detail::div_assign(b, _impl);
 
         return *this;
@@ -587,7 +619,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator+=(TOther const &b) {
+    GeneralRuntimeTensor &operator+=(TOther const &b) {
         detail::add_assign(b.impl(), _impl);
 
         return *this;
@@ -597,7 +629,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator-=(TOther const &b) {
+    GeneralRuntimeTensor &operator-=(TOther const &b) {
         detail::sub_assign(b.impl(), _impl);
 
         return *this;
@@ -607,7 +639,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator*=(TOther const &b) {
+    GeneralRuntimeTensor &operator*=(TOther const &b) {
         detail::mult_assign(b.impl(), _impl);
 
         return *this;
@@ -617,7 +649,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
         requires requires(TOther t) {
             { t.impl() };
         }
-    RuntimeTensor<T> &operator/=(TOther const &b) {
+    GeneralRuntimeTensor &operator/=(TOther const &b) {
         detail::div_assign(b.impl(), _impl);
 
         return *this;
@@ -712,8 +744,50 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 
     bool is_column_major() const { return _impl.is_column_major(); }
 
+    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
+
+    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
+
+    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
+
+    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
+
+    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
+
+    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
+
+    template <std::integral... MultiIndex>
+    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    }
+
+    template <std::integral... MultiIndex>
+    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    }
+
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+
   protected:
-    BufferVector<T> _data{};
+    Vector _data{};
 
     std::string _name{"(unnamed)"};
 
@@ -722,8 +796,8 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
     template <typename TOther>
     friend class RuntimeTensorView;
 
-    template <typename TOther>
-    friend class RuntimeTensor;
+    template <typename TOther, typename Alloc2>
+    friend class GeneralRuntimeTensor;
 };
 
 /**
@@ -818,8 +892,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      * @param strides The new strides for the view.
      * @param offsets The offsets for the view.
      */
-    template <Container Dim, Container Stride, Container Offset>
-    RuntimeTensorView(RuntimeTensor<T> const &other, Dim const &dims, Stride const &strides, Offset const &offsets)
+    template <Container Dim, Container Stride, Container Offset, typename Alloc>
+    RuntimeTensorView(GeneralRuntimeTensor<T, Alloc> const &other, Dim const &dims, Stride const &strides, Offset const &offsets)
         : _impl(const_cast<Pointer>(other.data(offsets)), dims, strides) {}
 
     /**
@@ -847,8 +921,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      *
      * @param copy The tensor to view.
      */
-    template <size_t Rank>
-    RuntimeTensorView(Tensor<T, Rank> const &copy) : _impl(copy.impl()) {}
+    template <size_t Rank, typename Alloc>
+    RuntimeTensorView(GeneralTensor<T, Rank, Alloc> const &copy) : _impl(copy.impl()) {}
 
     /**
      * @brief Creates a view around an implementation.
@@ -1079,6 +1153,19 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         return *this;
     }
 
+    virtual RuntimeTensorView<T> &operator=(BufferRuntimeTensor<T> const &other) {
+        detail::copy_to(other.impl(), _impl);
+
+        return *this;
+    }
+
+    template <typename Alloc>
+    RuntimeTensorView<T> &operator=(GeneralRuntimeTensor<T, Alloc> const &other) {
+        detail::copy_to(other.impl(), _impl);
+
+        return *this;
+    }
+
     /**
      * @brief Copy data from one tensor into this tensor.
      *
@@ -1095,8 +1182,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
      *
      * @param other The tensor to copy from.
      */
-    template <typename TOther>
-    RuntimeTensorView<T> &operator=(RuntimeTensor<TOther> const &other) {
+    template <typename TOther, typename Alloc>
+    RuntimeTensorView<T> &operator=(GeneralRuntimeTensor<TOther, Alloc> const &other) {
         detail::copy_to(other.impl(), _impl);
 
         return *this;
@@ -1212,8 +1299,8 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
         return TensorView<T, Rank>(_impl);
     }
 
-    template <size_t Rank>
-    operator Tensor<T, Rank>() const {
+    template <size_t Rank, typename Alloc>
+    operator GeneralTensor<T, Rank, Alloc>() const {
         if (rank() != Rank) {
             EINSUMS_THROW_EXCEPTION(dimension_error, "Can not convert a rank-{} RuntimeTensorView into a rank-{} TensorView!", rank(),
                                     Rank);
@@ -1295,6 +1382,48 @@ struct RuntimeTensorView : public tensor_base::CoreTensor,
 
     bool is_column_major() const { return _impl.is_column_major(); }
 
+    RuntimeTensorView<T> transpose_view() { return RuntimeTensorView<T>(_impl.transpose_view()); }
+
+    RuntimeTensorView<T> const transpose_view() const { return RuntimeTensorView<T>(_impl.transpose_view()); }
+
+    RuntimeTensorView<T> to_row_major() { return RuntimeTensorView<T>(_impl.to_row_major()); }
+
+    RuntimeTensorView<T> const to_row_major() const { return RuntimeTensorView<T>(_impl.to_row_major()); }
+
+    RuntimeTensorView<T> to_column_major() { return RuntimeTensorView<T>(_impl.to_column_major()); }
+
+    RuntimeTensorView<T> const to_column_major() const { return RuntimeTensorView<T>(_impl.to_column_major()); }
+
+    template <std::integral... MultiIndex>
+    RuntimeTensorView<T> tie_indices(MultiIndex &&...index) {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    }
+
+    template <std::integral... MultiIndex>
+    RuntimeTensorView<T> const tie_indices(MultiIndex &&...index) const {
+        return RuntimeTensorView<T>(_impl.tie_indices(std::forward<MultiIndex>(index)...));
+    }
+
+    void tensor_to_gpu() const { _impl.tensor_to_gpu(); }
+
+    void tensor_from_gpu() { _impl.tensor_from_gpu(); }
+
+    auto gpu_cache_tensor() { return _impl.gpu_cache_tensor(); }
+
+    auto gpu_cache_tensor_nowrite() { return _impl.gpu_cache_tensor_nowrite(); }
+
+    auto gpu_cache_tensor() const { return _impl.gpu_cache_tensor(); }
+
+    auto gpu_cache_tensor_nowrite() const { return _impl.gpu_cache_tensor_nowrite(); }
+
+    auto get_gpu_pointer() { return _impl.get_gpu_pointer(); }
+
+    auto get_gpu_pointer() const { return _impl.get_gpu_pointer(); }
+
+    auto get_gpu_memory() const { return _impl.get_gpu_memory(); }
+
+    bool gpu_is_expired() const { return _impl.gpu_is_expired(); }
+
   protected:
     /**
      * @property _name
@@ -1341,10 +1470,15 @@ void println(AType const &A, einsums::TensorPrintOptions options = {}) {
 #endif
 
 #if !defined(EINSUMS_WINDOWS) && !defined(DOXYGEN)
-extern template class EINSUMS_EXPORT RuntimeTensor<float>;
-extern template class EINSUMS_EXPORT RuntimeTensor<double>;
-extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<float>>;
-extern template class EINSUMS_EXPORT RuntimeTensor<std::complex<double>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<float, std::allocator<float>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<double, std::allocator<double>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<float>, std::allocator<std::complex<float>>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>;
+
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<float, BufferAllocator<float>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<double, BufferAllocator<double>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<float>, BufferAllocator<std::complex<float>>>;
+extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<double>, BufferAllocator<std::complex<double>>>;
 
 extern template class EINSUMS_EXPORT RuntimeTensorView<float>;
 extern template class EINSUMS_EXPORT RuntimeTensorView<double>;

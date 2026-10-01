@@ -13,6 +13,7 @@
 #include <cstdarg>
 #include <cstddef>
 #include <source_location>
+#include <stdexcept>
 #include <tuple>
 #include <type_traits>
 #include <vector>
@@ -637,7 +638,9 @@ template <size_t num_unique_inds, typename... MultiIndex>
 inline size_t indices_to_sentinel_negative_check(std::array<std::int64_t, num_unique_inds> const &unique_strides,
                                                  std::array<std::int64_t, num_unique_inds> const &dims, MultiIndex &&...indices) {
     static_assert(sizeof...(MultiIndex) == num_unique_inds);
-    return detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
+    auto offset = detail::indices_to_sentinel_negative_check<0>(unique_strides, dims, std::forward<MultiIndex>(indices)...);
+
+    return offset;
 }
 
 /**
@@ -723,7 +726,8 @@ size_t dims_to_strides(std::vector<size_t, Alloc1> const &dims, std::vector<size
  */
 template <typename arr_type1, typename arr_type2, size_t Dims>
     requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
-constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out, bool row_major) {
+constexpr size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_type2, Dims> &out,
+                                 bool row_major) {
     size_t stride = 1;
 
     if (row_major) {
@@ -841,7 +845,8 @@ template <typename arr_type2, size_t Dims, typename... TupleDims>
         requires sizeof...(TupleDims) == Dims;
         requires std::is_integral_v<arr_type2>;
     }
-constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out, bool row_major) {
+constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::array<arr_type2, Dims> &out,
+                                 bool row_major) {
 
     if (row_major) {
         return detail::dims_to_strides<0, true>(dims, out);
@@ -873,31 +878,31 @@ constexpr size_t dims_to_strides(std::tuple<TupleDims...> const &dims, std::arra
 }
 
 #ifndef DOXYGEN
-template <int I, typename Head, typename Index>
+template <int __I, typename Head, typename Index>
 int compile_index_table(std::tuple<Head> const &, Index const &, int &out) {
     if constexpr (std::is_same_v<Head, Index>) {
-        out = I;
+        out = __I;
     } else {
         out = -1;
     }
     return 0;
 }
 
-template <int I, typename Head, typename... UniqueIndices, typename Index>
+template <int __I, typename Head, typename... UniqueIndices, typename Index>
 auto compile_index_table(std::tuple<Head, UniqueIndices...> const &, Index const &index, int &out)
     -> std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
     if constexpr (std::is_same_v<Head, Index>) {
-        out = I;
+        out = __I;
     } else {
-        compile_index_table<I + 1>(std::tuple<UniqueIndices...>(), index, out);
+        compile_index_table<__I + 1>(std::tuple<UniqueIndices...>(), index, out);
     }
     return 0;
 }
 
-template <typename... UniqueIndices, typename... Indices, size_t... I>
+template <typename... UniqueIndices, typename... Indices, size_t... __I>
 void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tuple<Indices...> const &to_inds, int *out,
-                         std::index_sequence<I...>) {
-    std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, std::get<I>(to_inds), out[I])...};
+                         std::index_sequence<__I...>) {
+    std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, std::get<__I>(to_inds), out[__I])...};
 }
 #endif
 
@@ -912,10 +917,10 @@ void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tup
 }
 
 #ifndef DOXYGEN
-template <typename... UniqueIndices, typename... Indices, size_t... I>
+template <typename... UniqueIndices, typename... Indices, size_t... __I>
 void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tuple<Indices...> const &to_inds,
-                         std::array<int, sizeof...(Indices)> &out, std::index_sequence<I...>) {
-    std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, std::get<I>(to_inds), out[I])...};
+                         std::array<int, sizeof...(Indices)> &out, std::index_sequence<__I...>) {
+    std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, std::get<__I>(to_inds), out[__I])...};
 }
 
 template <typename... UniqueIndices, typename... Indices>

@@ -13,10 +13,6 @@
 
 #include <tuple>
 
-#ifdef I
-#    undef I
-#endif
-
 namespace einsums::tensor_algebra {
 
 namespace detail {
@@ -41,9 +37,9 @@ enum AlgorithmChoice {
 #if !defined(DOXYGEN)
 namespace detail {
 
-template <size_t Rank, typename... Args, std::size_t... I>
-auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Rank> const &order, std::index_sequence<I...> /*seq*/) {
-    return std::tuple{arguments::get_from_tuple<size_t>(combination, order[I])...};
+template <size_t Rank, typename... Args, std::size_t... __I>
+auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Rank> const &order, std::index_sequence<__I...> /*seq*/) {
+    return std::tuple{arguments::get_from_tuple<size_t>(combination, order[__I])...};
 }
 
 } // namespace detail
@@ -94,9 +90,9 @@ constexpr auto _unique_find_type_with_position() {
     }
 }
 
-template <TensorConcept TensorType, typename... Args, size_t... I>
-auto get_dim_for(TensorType const &tensor, std::tuple<Args...> const &args, std::index_sequence<I...> /*seq*/) {
-    return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
+template <TensorConcept TensorType, typename... Args, size_t... __I>
+auto get_dim_for(TensorType const &tensor, std::tuple<Args...> const &args, std::index_sequence<__I...> /*seq*/) {
+    return std::tuple{tensor.dim(std::get<2 * __I + 1>(args))...};
 }
 
 template <typename T, int Position>
@@ -291,9 +287,9 @@ constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, Tar
 }
 
 #if !defined(DOXYGEN)
-template <typename... PositionsInX, std::size_t... I>
-constexpr auto _contiguous_positions(std::tuple<PositionsInX...> const &x, std::index_sequence<I...> /*unused*/) -> bool {
-    return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ... && true);
+template <typename... PositionsInX, std::size_t... __I>
+constexpr auto _contiguous_positions(std::tuple<PositionsInX...> const &x, std::index_sequence<__I...> /*unused*/) -> bool {
+    return ((std::get<2 * __I + 1>(x) == std::get<2 * __I + 3>(x) - 1) && ... && true);
 }
 #endif
 
@@ -316,7 +312,7 @@ constexpr auto _contiguous_positions(std::tuple<PositionsInX...> const &x, std::
  * And in the second case, the function will return false because the indices of the labels are not contiguous.
  *
  * @tparam PositionsInX
- * @tparam I
+ * @tparam __I
  * @param x
  * @return true
  * @return false
@@ -330,10 +326,10 @@ constexpr auto contiguous_positions(std::tuple<PositionsInX...> const &x) -> boo
     }
 }
 
-template <typename... PositionsInX, typename... PositionsInY, std::size_t... I>
+template <typename... PositionsInX, typename... PositionsInY, std::size_t... __I>
 constexpr auto _is_same_ordering(std::tuple<PositionsInX...> const &positions_in_x, std::tuple<PositionsInY...> const &positions_in_y,
-                                 std::index_sequence<I...> /*unused*/) {
-    return (std::is_same_v<decltype(std::get<2 * I>(positions_in_x)), decltype(std::get<2 * I>(positions_in_y))> && ...);
+                                 std::index_sequence<__I...> /*unused*/) {
+    return (std::is_same_v<decltype(std::get<2 * __I>(positions_in_x)), decltype(std::get<2 * __I>(positions_in_y))> && ...);
 }
 
 template <typename... PositionsInX, typename... PositionsInY>
@@ -348,19 +344,19 @@ constexpr auto is_same_ordering(std::tuple<PositionsInX...> const &positions_in_
     }
 }
 
-template <TensorConcept XType, typename... PositionsInX, size_t... I>
-constexpr auto product_dims(std::tuple<PositionsInX...> const &indices, XType const &X, std::index_sequence<I...> /*unused*/) -> size_t {
-    return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
+template <TensorConcept XType, typename... PositionsInX, size_t... __I>
+constexpr auto product_dims(std::tuple<PositionsInX...> const &indices, XType const &X, std::index_sequence<__I...> /*unused*/) -> size_t {
+    return (X.dim(std::get<2 * __I + 1>(indices)) * ... * 1);
 }
 
-template <TensorConcept XType, typename... PositionsInX, size_t... I>
-constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType const &X, std::index_sequence<I...> /*unused*/) -> bool {
-    return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
+template <TensorConcept XType, typename... PositionsInX, size_t... __I>
+constexpr auto is_same_dims(std::tuple<PositionsInX...> const &indices, XType const &X, std::index_sequence<__I...> /*unused*/) -> bool {
+    return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * __I + 1>(indices))) && ... && 1);
 }
 
-template <typename LHS, typename RHS, std::size_t... I>
-constexpr auto same_indices(std::index_sequence<I...> /*unused*/) {
-    return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
+template <typename LHS, typename RHS, std::size_t... __I>
+constexpr auto same_indices(std::index_sequence<__I...> /*unused*/) {
+    return (std::is_same_v<std::tuple_element_t<__I, LHS>, std::tuple_element_t<__I, RHS>> && ...);
 }
 
 template <TensorConcept XType, typename... PositionsInX>
@@ -570,15 +566,15 @@ auto get_stride_for_index(TensorType const &tensor, size_t index) {
     }
 }
 
-template <size_t N, TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex, size_t... I>
+template <size_t N, TensorConcept TensorType, typename... TensIndexWithPos, typename... OutIndex, size_t... __I>
 auto get_stride_for(TensorType const &tensor, std::tuple<TensIndexWithPos...> const &args, std::tuple<OutIndex...> const &out_indices,
-                    std::array<size_t, sizeof...(OutIndex)> &out, std::index_sequence<I...> const &seq) {
+                    std::array<size_t, sizeof...(OutIndex)> &out, std::index_sequence<__I...> const &seq) {
     if constexpr (N >= sizeof...(OutIndex)) {
         return;
     } else {
         out[N] =
             (get_stride_for_index<std::tuple_element_t<N, std::remove_cvref_t<decltype(out_indices)>>,
-                                  std::tuple_element_t<2 * I, std::remove_cvref_t<decltype(args)>>>(tensor, std::get<2 * I + 1>(args)) +
+                                  std::tuple_element_t<2 * __I, std::remove_cvref_t<decltype(args)>>>(tensor, std::get<2 * __I + 1>(args)) +
              ... + 0);
         get_stride_for<N + 1>(tensor, args, out_indices, out, seq);
     }

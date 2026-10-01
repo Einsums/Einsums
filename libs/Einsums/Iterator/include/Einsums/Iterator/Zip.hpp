@@ -171,24 +171,24 @@ struct ZipIter final {
     constexpr void swap(ZipIter &other) { std::swap(current_, other.current_); }
 
   private:
-    template <size_t... I>
-    constexpr void init_impl(std::tuple<ContainerIters &...> const &containers, std::index_sequence<I...> const &) {
-        current_ = std::make_tuple(std::get<I>(containers).begin()...);
+    template <size_t... __I>
+    constexpr void init_impl(std::tuple<ContainerIters &...> const &containers, std::index_sequence<__I...> const &) {
+        current_ = std::make_tuple(std::get<__I>(containers).begin()...);
     }
 
-    template <size_t... I>
-    constexpr value_type deref_impl(std::index_sequence<I...> const &) const {
-        return value_type(*std::get<I>(current_)...);
+    template <size_t... __I>
+    constexpr value_type deref_impl(std::index_sequence<__I...> const &) const {
+        return value_type(*std::get<__I>(current_)...);
     }
 
-    template <size_t... I>
-    constexpr reference deref_impl_ref(std::index_sequence<I...> const &) {
-        return value_type(*std::get<I>(current_)...);
+    template <size_t... __I>
+    constexpr reference deref_impl_ref(std::index_sequence<__I...> const &) {
+        return value_type(*std::get<__I>(current_)...);
     }
 
-    template <size_t... I>
-    constexpr bool equal_impl(ZipIter const &other, std::index_sequence<I...> const &) const {
-        return ((std::get<I>(current_) == std::get<I>(other.current_)) || ... || false);
+    template <size_t... __I>
+    constexpr bool equal_impl(ZipIter const &other, std::index_sequence<__I...> const &) const {
+        return ((std::get<__I>(current_) == std::get<__I>(other.current_)) || ... || false);
     }
 
     /**
@@ -424,29 +424,29 @@ struct Zip final {
     constexpr bool empty() const { return begin() == end(); }
 
   private:
-    template <size_t... I>
-    constexpr iterator begin_impl(std::index_sequence<I...> const &) {
-        return ZipIter(std::get<I>(containers_).begin()...);
+    template <size_t... __I>
+    constexpr iterator begin_impl(std::index_sequence<__I...> const &) {
+        return ZipIter(std::get<__I>(containers_).begin()...);
     }
 
-    template <size_t... I>
-    constexpr iterator end_impl(std::index_sequence<I...> const &) {
-        return ZipIter(std::get<I>(containers_).end()...);
+    template <size_t... __I>
+    constexpr iterator end_impl(std::index_sequence<__I...> const &) {
+        return ZipIter(std::get<__I>(containers_).end()...);
     }
 
-    template <size_t... I>
-    constexpr const_iterator cbegin_impl(std::index_sequence<I...> const &) const {
-        return ZipIter(std::get<I>(containers_).cbegin()...);
+    template <size_t... __I>
+    constexpr const_iterator cbegin_impl(std::index_sequence<__I...> const &) const {
+        return ZipIter(std::get<__I>(containers_).cbegin()...);
     }
 
-    template <size_t... I>
-    constexpr const_iterator cend_impl(std::index_sequence<I...> const &) const {
-        return ZipIter(std::get<I>(containers_).cend()...);
+    template <size_t... __I>
+    constexpr const_iterator cend_impl(std::index_sequence<__I...> const &) const {
+        return ZipIter(std::get<__I>(containers_).cend()...);
     }
 
-    template <size_t... I>
-    constexpr bool equal_impl(Zip const &other, std::index_sequence<I...> const &) const {
-        return ((std::get<I>(containers_) == std::get<I>(other.containers_)) && ... && true);
+    template <size_t... __I>
+    constexpr bool equal_impl(Zip const &other, std::index_sequence<__I...> const &) const {
+        return ((std::get<__I>(containers_) == std::get<__I>(other.containers_)) && ... && true);
     }
 
     /**

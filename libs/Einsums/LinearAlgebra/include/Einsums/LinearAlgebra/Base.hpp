@@ -10,12 +10,14 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
+#include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/LinearAlgebra/Bases/direct_product.hpp>
 #include <Einsums/LinearAlgebra/Bases/dot.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemm.hpp>
 #include <Einsums/LinearAlgebra/Bases/gemv.hpp>
 #include <Einsums/LinearAlgebra/Bases/ger.hpp>
+#include <Einsums/LinearAlgebra/Bases/norm.hpp>
 #include <Einsums/LinearAlgebra/Bases/sum_square.hpp>
 #include <Einsums/LinearAlgebra/Bases/syev.hpp>
 #include <Einsums/LinearAlgebra/Bases/triangular.hpp>
@@ -23,14 +25,11 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorImpl/TensorImpl.hpp>
+#include <Einsums/TensorImpl/TensorImplOperations.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
 #include <optional>
 #include <stdexcept>
-
-#include "Einsums/Config/CompilerSpecific.hpp"
-#include "Einsums/LinearAlgebra/Bases/norm.hpp"
-#include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
 namespace einsums::linear_algebra::detail {
 
@@ -640,12 +639,16 @@ template <CoreBasicTensorConcept AType, VectorConcept WType, typename LVecPtr, t
 void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs) {
     einsums::detail::TensorImpl<AddComplexT<typename AType::ValueType>> *lvec_ptr = nullptr, *rvec_ptr = nullptr;
 
-    if (lvecs != nullptr) {
-        lvec_ptr = &lvecs->impl();
+    if constexpr (!std::is_null_pointer_v<LVecPtr>) {
+        if (lvecs != nullptr) {
+            lvec_ptr = &lvecs->impl();
+        }
     }
 
-    if (rvecs != nullptr) {
-        rvec_ptr = &rvecs->impl();
+    if constexpr (!std::is_null_pointer_v<RVecPtr>) {
+        if (rvecs != nullptr) {
+            rvec_ptr = &rvecs->impl();
+        }
     }
 
     geev(&A->impl(), &W->impl(), lvec_ptr, rvec_ptr);
@@ -1456,7 +1459,7 @@ auto svd_dd(einsums::detail::TensorImpl<T> const &_A, char job)
         }
     }
 
-    if (std::tolower(job) != 'n' && U.is_row_major()) {
+    if (std::tolower(job) != 'n' && Vt.is_row_major()) {
         U.impl() = U.impl().transpose_view();
         for (size_t i = 0; i < m; i++) {
             for (size_t j = 0; j < i; j++) {

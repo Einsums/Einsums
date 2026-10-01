@@ -9,6 +9,10 @@ set(TensorImplHeaders Einsums/TensorImpl/TensorImpl.hpp Einsums/TensorImpl/Tenso
 
 set(TensorImplSources)
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+set(EinsumsTensorImplGPUDeps Einsums_hipBLASVendor)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TensorImpl
@@ -24,6 +28,8 @@ einsums_add_module(
     Einsums_BufferAllocator
     Einsums_TensorBase
     Einsums_Errors
+    Einsums_BlockManager
+    ${EinsumsTensorImplGPUDeps}
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

@@ -20,6 +20,21 @@
 
 namespace einsums {
 
+template <typename T>
+constexpr double tolerance() {
+    return 1e-6;
+}
+
+template <>
+constexpr double tolerance<float>() {
+    return 1e-2;
+}
+
+template <>
+constexpr double tolerance<std::complex<float>>() {
+    return 1e-2;
+}
+
 /**
  * @struct WithinStrictMatcher
  *
@@ -155,7 +170,7 @@ WithinAbsMatcher(TestType, double, ComplexBehavior) -> WithinAbsMatcher<TestType
 #endif
 
 template <typename TestType>
-WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance) {
+WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance = ::einsums::tolerance<TestType>()) {
     return WithinRelMatcher(reference, tolerance);
 }
 

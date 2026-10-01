@@ -99,11 +99,11 @@ other system-level dependencies to build it on your system.
 
     * HIP for GPU support. If using an Nvidia platform, CUDA is also required.
 
-    * LibreTT for high-performance GPU tensor transposes.
-
     * pybind11 for the Python extension module.
 
     * NumPy and SciPy for the Python tests.
+
+    * LibreTT for GPU tensor transpositions. This may be superceded by hipTensor in the future when it becomes more mature.
 
 
   .. tab-item:: Linux

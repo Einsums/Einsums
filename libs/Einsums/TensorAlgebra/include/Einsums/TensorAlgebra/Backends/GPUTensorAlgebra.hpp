@@ -227,7 +227,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
 
     auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();
 
-    dims_to_strides(unique_dims, unique_strides);
+    size_t elements = dims_to_strides(unique_dims, unique_strides, true);
 
     int A_index_table[sizeof...(AIndices)], B_index_table[sizeof...(BIndices)], C_index_table[sizeof...(CIndices)];
 
@@ -258,7 +258,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                              std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.
-    dim3 threads = block_size(std::get<0>(unique_dims) * unique_strides[0]), grid = blocks(std::get<0>(unique_dims) * unique_strides[0]);
+    dim3 threads = block_size(elements), grid = blocks(elements);
 
     if constexpr (sizeof...(CIndices) != 0) {
         using C_devtype   = typename CType::dev_datatype;
@@ -278,19 +278,18 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
 
         if constexpr (!direct_product_swap) {
             einsum_generic_algorithm_gpu<ConjA, ConjB, C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value,
-                                         CRank, ARank, BRank><<<threads, grid, 0, get_stream()>>>(
-                unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
-                HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(), C->gpu_strides(),
-                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(),
-                B.gpu_dims(), B.gpu_strides(), std::get<0>(unique_dims) * unique_strides[0]);
+                                         CRank, ARank, BRank>
+                <<<grid, threads, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
+                                                     HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(),
+                                                     C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(),
+                                                     A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(), elements);
         } else {
             einsum_generic_algorithm_direct_product_gpu<ConjA, ConjB, C_devtype, A_devtype, B_devtype,
                                                         std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
-                <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
+                <<<grid, threads, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
                                                      HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(),
                                                      C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(),
-                                                     A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
-                                                     std::get<0>(unique_dims) * unique_strides[0]);
+                                                     A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(), elements);
         }
         gpu::stream_wait();
 
@@ -322,10 +321,9 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         }
 
         einsum_generic_zero_rank_gpu<ConjA, ConjB, C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank,
-                                     BRank><<<threads, grid, 0, get_stream()>>>(
+                                     BRank><<<grid, threads, 0, get_stream()>>>(
             unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data, HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor),
-            A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
-            std::get<0>(unique_dims) * unique_strides[0]);
+            A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(), elements);
         gpu::stream_wait();
 
         if constexpr (!einsums::IsTensorV<CType>) {

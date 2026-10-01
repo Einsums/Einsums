@@ -5,14 +5,16 @@
 
 #pragma once
 
+#include <Einsums/Concepts/TensorConcepts.hpp>
+
 #include <cstddef>
 #include <tuple>
 
 namespace einsums::detail {
 
-template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank, typename Tuple, std::size_t... I>
-void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tuple, std::index_sequence<I...>) {
-    tensor(std::get<I>(tuple)...) = value;
+template <TensorConcept TensorType, typename DataType, typename Tuple, std::size_t... __I>
+void set_to(TensorType &tensor, DataType value, Tuple const &tuple, std::index_sequence<__I...>) {
+    tensor(std::get<__I>(tuple)...) = (typename TensorType::ValueType)value;
 }
 
 } // namespace einsums::detail

@@ -33,18 +33,24 @@ TENSOR_DEFINE_RANK(BlockTensor, 4)
 TENSOR_DEFINE(DiskTensor)
 TENSOR_DEFINE(DiskView)
 
-TENSOR_DEFINE_RANK(Tensor, 0)
-TENSOR_DEFINE(Tensor)
+TENSOR_DEFINE_ALLOC_RANK(GeneralTensor, 0, std::allocator)
+TENSOR_ALLOC_DEFINE(GeneralTensor, std::allocator)
+TENSOR_ALLOC_DEFINE(GeneralTensor, BufferAllocator)
 TENSOR_DEFINE(TensorView)
 
 TENSOR_DEFINE(TiledTensor)
 TENSOR_DEFINE(TiledTensorView)
 
 #ifndef EINSUMS_WINDOWS
-template class RuntimeTensor<float>;
-template class RuntimeTensor<double>;
-template class RuntimeTensor<std::complex<float>>;
-template class RuntimeTensor<std::complex<double>>;
+template class GeneralRuntimeTensor<float, std::allocator<float>>;
+template class GeneralRuntimeTensor<double, std::allocator<double>>;
+template class GeneralRuntimeTensor<std::complex<float>, std::allocator<std::complex<float>>>;
+template class GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>;
+
+template class GeneralRuntimeTensor<float, BufferAllocator<float>>;
+template class GeneralRuntimeTensor<double, BufferAllocator<double>>;
+template class GeneralRuntimeTensor<std::complex<float>, BufferAllocator<std::complex<float>>>;
+template class GeneralRuntimeTensor<std::complex<double>, BufferAllocator<std::complex<double>>>;
 
 template class RuntimeTensorView<float>;
 template class RuntimeTensorView<double>;
@@ -52,10 +58,27 @@ template class RuntimeTensorView<std::complex<float>>;
 template class RuntimeTensorView<std::complex<double>>;
 #endif
 
-namespace detail {
-bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
-    if (path.length() <= 1) {
+static bool verify_path(std::string const &path) {
+    if (path.size() == 0) {
         return true;
+    }
+
+    if (path[0] != '/' && path[0] != '.') {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                "The format of the disk tensor name \"{}\" was invalid! It must be formatted as a path.", path);
+    }
+
+    return true;
+}
+
+namespace detail {
+
+bool verify_exists(hid_t loc_id, std::string const &path, hid_t lapl_id) {
+    if (!verify_path(path)) {
+        return false;
+    }
+    if (path.length() == 0) {
+        return false;
     }
 
     std::string temp_path;

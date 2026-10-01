@@ -3,12 +3,13 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Testing.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
-#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 #include <Einsums/TensorUtilities/CreateIdentity.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
+#include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+
+#include <Einsums/Testing.hpp>
 
 TEST_CASE("GPU Identity Tensor", "[tensor]") {
     using namespace einsums;
@@ -196,8 +197,8 @@ TEST_CASE("GPU Subset TensorView", "[tensor]") {
     using namespace einsums::linear_algebra;
 
     SECTION("Subset View 7x7[1,:] -> 1x7") {
-        const size_t size = 7;
-        const size_t row  = 1;
+        size_t const size = 7;
+        size_t const row  = 1;
 
         DeviceTensor<double, 2> I_original{"Original", einsums::detail::DEV_ONLY, size, size};
         I_original              = create_random_tensor("Original", size, size);
@@ -209,8 +210,8 @@ TEST_CASE("GPU Subset TensorView", "[tensor]") {
     }
 
     SECTION("Subset View 7x7x7[4,:,:] -> 7x7") {
-        const size_t size = 7;
-        const size_t d1   = 4;
+        size_t const size = 7;
+        size_t const d1   = 4;
 
         DeviceTensor<double, 3> I_original{"Original", einsums::detail::DEV_ONLY, size, size, size};
         I_original              = create_random_tensor("Original", size, size, size);
@@ -224,9 +225,9 @@ TEST_CASE("GPU Subset TensorView", "[tensor]") {
     }
 
     SECTION("Subset View 7x7x7[4,3,:] -> 7") {
-        const size_t size = 7;
-        const size_t d1   = 4;
-        const size_t d2   = 3;
+        size_t const size = 7;
+        size_t const d1   = 4;
+        size_t const d2   = 3;
 
         DeviceTensor<double, 3> I_original{"Original", einsums::detail::DEV_ONLY, size, size, size};
         I_original              = create_random_tensor("Original", size, size, size);
@@ -238,8 +239,8 @@ TEST_CASE("GPU Subset TensorView", "[tensor]") {
     }
 
     SECTION("Subset View GEMM 7x3x3[4,:,:] -> 3x3") {
-        const size_t d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t d1 = 4;
+        size_t const d1_size = 7, d2_size = 3, d3_size = 3;
+        size_t const d1 = 4;
 
         DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
         original = create_random_tensor("Original", d1_size, d2_size, d3_size);
@@ -320,10 +321,10 @@ TEST_CASE("GPU Subset TensorView", "[tensor]") {
         // 3. Perform GEMM and store result into view [2,:,:] (3x3 view) of tensor
         // 4. Test correctness of the GEMM result and of the data
         //    elements that should not have been touched.
-        const size_t                d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t                d1 = 4;
-        const size_t                e1 = 2;
-        const std::array<size_t, 6> untouched_d1{0, 1, 3, 4, 5, 6};
+        size_t const                d1_size = 7, d2_size = 3, d3_size = 3;
+        size_t const                d1 = 4;
+        size_t const                e1 = 2;
+        std::array<size_t, 6> const untouched_d1{0, 1, 3, 4, 5, 6};
 
         DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
         original = create_random_tensor("Original", d1_size, d2_size, d3_size);
@@ -523,10 +524,10 @@ TEST_CASE("GPU einsum TensorView", "[tensor]") {
     SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
         // Description: Obtain view [4,:,:] (3x3 view) perform GEMM and store result into
         // view [2,:,:] (3x3 view)
-        const size_t                d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t                d1 = 4;
-        const size_t                e1 = 2;
-        const std::array<size_t, 6> untouched1{0, 1, 3, 4, 5, 6};
+        size_t const                d1_size = 7, d2_size = 3, d3_size = 3;
+        size_t const                d1 = 4;
+        size_t const                e1 = 2;
+        std::array<size_t, 6> const untouched1{0, 1, 3, 4, 5, 6};
 
         DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
         original = create_random_tensor("Original", d1_size, d2_size, d3_size);
@@ -905,7 +906,7 @@ TEST_CASE("GPU einsum2") {
         B = create_random_tensor("B", 4, 3, 5);
         C0.zero();
         C1.zero();
-
+        
         REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
         for (size_t i0 = 0; i0 < 3; i0++) {
@@ -1036,8 +1037,8 @@ TEST_CASE("GPU einsum3") {
         DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 3};
         B = create_random_tensor("B", 3, 3);
 
-        auto A_host = (Tensor<double, 4>) A;
-        auto B_host = (Tensor<double, 2>) B;
+        auto A_host = (Tensor<double, 4>)A;
+        auto B_host = (Tensor<double, 2>)B;
 
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B));
 
@@ -1093,7 +1094,7 @@ TEST_CASE("GPU einsum3") {
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 auto vgMO0 = gMO0(i0, j0, All, All);
-                auto vA = A(i0, j0, All, All);
+                auto vA    = A(i0, j0, All, All);
                 einsum(Indices{k, l}, &vgMO0, Indices{p, l}, vA, Indices{p, k}, B);
             }
         }
@@ -1105,7 +1106,7 @@ TEST_CASE("GPU einsum3") {
                         double a = gMO0(i0, j0, k0, l0);
                         double b = gMO1(i0, j0, k0, l0);
 
-                        if(std::abs(a - b) / std::abs(a) > 0.001) {
+                        if (std::abs(a - b) / std::abs(a) > 0.001) {
                             println("Failed at {} {} {} {}", i0, j0, k0, l0);
                         }
                         CHECK_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
@@ -2148,6 +2149,8 @@ TEST_CASE("GPU F12 - V term") {
     einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
     einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
 
+    gpu::device_synchronize();
+
     result.set_all(0.0);
     result2.set_all(0.0);
     for (size_t _i = 0; _i < nocc; _i++) {
@@ -2238,7 +2241,7 @@ TEST_CASE("GPU Khatri-Rao") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    const int _I{8}, _M{4}, _r{16};
+    int const _I{8}, _M{4}, _r{16};
 
     SECTION("einsum") {
 
@@ -2300,7 +2303,7 @@ void einsum_gpu_mixed_test() {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    const auto i_ = 10, j_ = 10, k_ = 10;
+    auto const i_ = 10, j_ = 10, k_ = 10;
 
     auto A  = create_random_gpu_tensor<TA>("A", i_, k_);
     auto B  = create_random_gpu_tensor<TB>("B", k_, j_);
@@ -2350,12 +2353,13 @@ TEST_CASE("GPU einsum-mixed") {
     // }
 }
 
-template <typename T>
-void dot_test() {
+TEMPLATE_TEST_CASE("GPU dot", "[gpu][tensor-algebra]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
     using namespace einsums::linear_algebra;
+
+    using T = TestType;
 
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
@@ -2436,27 +2440,12 @@ void dot_test() {
     }
 }
 
-TEST_CASE("GPU dot") {
-    SECTION("float") {
-        dot_test<float>();
-    }
-    SECTION("double") {
-        dot_test<double>();
-    }
-    SECTION("cfloat") {
-        dot_test<std::complex<float>>();
-    }
-    SECTION("cdouble") {
-        dot_test<std::complex<double>>();
-    }
-}
-
 TEST_CASE("GPU Dot TensorView and Tensor") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    const auto i_ = 10, j_ = 10, k_ = 10, l_ = 2;
+    auto const i_ = 10, j_ = 10, k_ = 10, l_ = 2;
 
     auto A  = create_random_gpu_tensor<double>("A", i_, k_);
     auto B  = create_random_gpu_tensor<double>("B", k_, j_);
@@ -2517,6 +2506,7 @@ TEST_CASE("GPU andy") {
         zero(c);
 
         einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
+        gpu::device_synchronize();
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
@@ -2556,7 +2546,7 @@ TEST_CASE("GPU andy") {
         auto F_TEMP = create_random_gpu_tensor("F_TEMP", proj_rank_, proj_rank_, proj_rank_);
         auto y_aW   = create_random_gpu_tensor("y_aW", nvirt_, proj_rank_);
         auto F_BAR  = DeviceTensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
-        auto F_BAR0 = DeviceTensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
+        auto F_BAR0 = Tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
 
         zero(F_BAR);
         einsum(Indices{index::Q, index::a, index::X}, &F_BAR, Indices{index::Q, index::Y, index::X}, F_TEMP, Indices{index::a, index::Y},

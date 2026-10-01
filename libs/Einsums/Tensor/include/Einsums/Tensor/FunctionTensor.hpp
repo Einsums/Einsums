@@ -350,8 +350,8 @@ struct FunctionTensor : public CoreTensor {
     /**
      * @brief Convert the function tensor into a regular tensor.
      */
-    operator Tensor<T, Rank>() const {
-        Tensor<T, Rank> out(dims());
+    virtual BufferTensor<T, Rank> get() const {
+        BufferTensor<T, Rank> out(dims());
         out.set_name(name());
 
         Stride<Rank> index_strides;
@@ -367,6 +367,10 @@ struct FunctionTensor : public CoreTensor {
         }
 
         return out;
+    }
+
+    operator BufferTensor<T, Rank>() const {
+        return get();
     }
 
     /**
