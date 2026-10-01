@@ -15,7 +15,7 @@ details.
 Public API
 ----------
 
-Here are some of the public symbols that are available to use.
+Here are some of the public symbols that are available to use. More can be found in the :ref:`API reference <modules_Einsums_LinearAlgebra_api>`.
 
 .. cpp:function:: template<TensorConcept AType> void sum_square(const AType &A, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq)
 
@@ -30,10 +30,15 @@ Here are some of the public symbols that are available to use.
 
     Currently only supports :code:`BasicTensor`s of rank 1.
 
-    :param A: The tensor to evaluate.
-    :param scale: The scale factor. It is both an input and output parameter.
-    :param sumsq: The starting point and result. It is both an input and output parameter.
+    :param A[in]: The tensor to evaluate.
+    :param scale[inout]: The scale factor. It is both an input and output parameter.
+    :param sumsq[inout]: The starting point and result. It is both an input and output parameter.
     :tparam AType: The type of the tensor A.
+
+    .. versionadded:: 1.0.0
+
+    .. versionchanged:: 2.0.0
+        This function can now handle general-rank tensors, as well as block and tiled tensors.
 
 .. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U> gemm(U alpha, AType const &A, BType const &B, U beta, CType *C)
 
@@ -53,11 +58,11 @@ Here are some of the public symbols that are available to use.
     * :code:`TiledTensor * TiledTensor = TiledTensor`
     * :code:`OtherTensor * OtherTensor = OtherTensor`
 
-    :param alpha: Scale factor for the matrix product.
-    :param A: The left matrix in the product.
-    :param B: The right matrix in the product.
-    :param beta: The scale factor to apply to the C matrix on input.
-    :param C: The result. If :code:`beta` is not zero, then the value of :code:`C` on input will be scaled and added to the result.
+    :param alpha[in]: Scale factor for the matrix product.
+    :param A[in]: The left matrix in the product.
+    :param B[in]: The right matrix in the product.
+    :param beta[in]: The scale factor to apply to the C matrix on input.
+    :param C[inout]: The result. If :code:`beta` is not zero, then the value of :code:`C` on input will be scaled and added to the result.
 
     :tparam TransA: If true, transpose the A matrix.
     :tparam TransB: If true, transpose the B matrix.
@@ -65,6 +70,47 @@ Here are some of the public symbols that are available to use.
     :tparam BType: The type of the B matrix.
     :tparam CType: The type  of the C matrix.
     :tparam U: The type of the scale factors. It will be converted if needed.
+    
+    :throws rank_error: If the tensor arguments are not rank-2.
+    :throws tensor_compat_error: If the tensor arguments have incompatible dimensions.
+
+    .. versionadded:: 1.0.0
+
+.. cpp:function:: template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U> gemm(char transA, char transB, U alpha, AType const &A, BType const &B, U beta, CType *C)
+
+    Compute the matrix product between two matrices.
+
+    Currently supports the following:
+    
+    For all of these, :code:`U, T = float, double, std::complex<float>, std::complex<double>`.
+
+    For all of these, the rank is always rank 2.
+
+    All of the stored types must match, though the prefactor's type does not. It will be converted
+    to match if it does not.
+
+    * :code:`BasicTensor * BasicTensor = BasicTensor`
+    * :code:`BlockTensor * BlockTensor = BlockTensor`
+    * :code:`TiledTensor * TiledTensor = TiledTensor`
+    * :code:`OtherTensor * OtherTensor = OtherTensor`
+
+    :param transA[in]: Whether to transpose the A matrix. Case insensitive. Can be either 'n', 't', or 'c'.
+    :param transB[in]: Whether to transpose the A matrix. Case insensitive. Can be either 'n', 't', or 'c'.
+    :param alpha[in]: Scale factor for the matrix product.
+    :param A[in]: The left matrix in the product.
+    :param B[in]: The right matrix in the product.
+    :param beta[in]: The scale factor to apply to the C matrix on input.
+    :param C[inout]: The result. If :code:`beta` is not zero, then the value of :code:`C` on input will be scaled and added to the result.
+
+    :tparam AType: The type of the A matrix.
+    :tparam BType: The type of the B matrix.
+    :tparam CType: The type  of the C matrix.
+    :tparam U: The type of the scale factors. It will be converted if needed.
+
+    :throws rank_error: If the tensor arguments are not rank-2.
+    :throws tensor_compat_error: If the tensor arguments have incompatible dimensions.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, typename U> auto gemm(U const alpha, AType const &A, BType const &B) -> RemoveViewT<AType>
 
@@ -73,25 +119,40 @@ Here are some of the public symbols that are available to use.
     value. It supports all the same combinations as the other definition of :code:`gemm`, but if it is passed
     a view, it will remove that view.
 
-    :param alpha: The scale factor on the matrix product.
-    :param A: The left matrix.
-    :param B: The right matrix.
+    :param alpha[in]: The scale factor on the matrix product.
+    :param A[in]: The left matrix.
+    :param B[in]: The right matrix.
+
+    :tparam TransA: Whether to transpose the A matrix.
+    :tparam TransB: Whether to transpose the B matrix.
+
+    :throws rank_error: If the tensor arguments are not rank-2.
+    :throws tensor_compat_error: If the tensor arguments have incompatible dimensions.
+
     :return: The matrix product scaled by :code:`alpha`.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType> void symm_gemm(AType const &A, BType const &B, CType *C)
 
     This function computes :math:`OP(B)^T OP(A) OP(B) = C`. It supports the same arguments
     as :code:`gemm`, since it normally calls :code:`gemm` in the back.
 
-    :param A: The middle tensor.
-    :param B: The tensor that will be multiplied on either side.
-    :param C: The output of the operation.
+    :param A[in]: The middle tensor.
+    :param B[in]: The tensor that will be multiplied on either side.
+    :param C[out]: The output of the operation.
     
     :tparam TransA: Whether to transpose A.
     :tparam TransB: Whether to transpose the second instance of B. The first instance will always be the opposite.
     :tparam AType: The matrix type of A.
     :tparam BType: The matrix type of B.
     :tparam CType: The matrix type of the output.
+
+    :throws rank_error: If the tensor arguments are not rank-2.
+    :throws tensor_compat_error: If the tensor arguments have incompatible dimensions.
+
+    .. versionadded:: 1.0.0
+
 
 .. cpp:function:: template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U> void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
 
@@ -113,17 +174,22 @@ Here are some of the public symbols that are available to use.
     * TiledTensor * TiledTensor = TiledTensor
     * OtherTensor * OtherTensor = OtherTensor
 
-    :param alpha: The scale factor on the product.
-    :param A: The matrix in the product.
-    :param z: The vector in the product.
-    :param beta: The scale factor on the result vector.
-    :param y: The result vector. If :code:`beta` is not zero, then the value of this on entry will be scaled and added to the result.
+    :param alpha[in]: The scale factor on the product.
+    :param A[in]: The matrix in the product.
+    :param z[in]: The vector in the product.
+    :param beta[in]: The scale factor on the result vector.
+    :param y[inout]: The result vector. If :code:`beta` is not zero, then the value of this on entry will be scaled and added to the result.
 
     :tparam TransA: Whether to transpose the matrix.
     :tparam AType: The type of the matrix.
     :tparam XType: The type of the input vector.
     :tparam YType: The type of the output vector.
     :tparam U: The type of the scale factors. If it is not the same as the types stored by the tensors, it will be cast to match.
+
+    :throws rank_error: If the first tensor is not rank-2, or the other tensors are not rank-1.
+    :throws tensor_compat_error: If the tensor arguments have incompatible dimensions.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType> void syev(AType *A, WType *W)
 
@@ -144,6 +210,15 @@ Here are some of the public symbols that are available to use.
     :tparam ComputeEigenvectors: If true, the eigenvectors will overwrite the :code:`A` matrix.
     :tparam AType: The type of the matrix.
     :tparam WType: The type of the vector.
+
+    :throws rank_error: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+    :throws dimension_error: If the matrix input is not square.
+    :throws tensor_compat_error: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+    :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or
+    zero-size tensors.
+    :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType> void heev(AType *A, WType *W)
 
@@ -166,7 +241,16 @@ Here are some of the public symbols that are available to use.
     :tparam AType: The type of the matrix.
     :tparam WType: The type of the vector.
 
-.. cpp:function:: template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType> void geev(AType *A, WType *W, AType *lvecs, AType *rvecs)
+    :throws rank_error: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+    :throws dimension_error: If the matrix input is not square.
+    :throws tensor_compat_error: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+    :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or
+    zero-size tensors.
+    :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+
+    .. versionadded:: 1.0.0
+
+.. cpp:function:: template <MatrixConcept AType, VectorConcept WType> void geev(AType *A, WType *W, AType *lvecs, AType *rvecs)
 
     Compute the eingendecomposition of a general matrix. If a real matrix has a complex eigenvalue, it will
     always come in a conjugate pair. In this case, the columns of the eigenvector matrix will 
@@ -186,24 +270,49 @@ Here are some of the public symbols that are available to use.
     * BasicTensor to BasicTensor
     * BlockTensor to BasicTensor values and BlockTensor vectors
 
-    :param A: The matrix to decompose. It will be overwritten on exit.
-    :param W: The eigenvalues of the matrix.
-    :param lvecs: If specified, it will contain the left eigenvectors.
-    :param rvecs: If specified, it will contain the right eigenvectors.
+    :param A[inout]: The matrix to decompose. It will be overwritten on exit.
+    :param W[out]: The eigenvalues of the matrix.
+    :param lvecs[out]: If specified, it will contain the left eigenvectors.
+    :param rvecs[out]: If specified, it will contain the right eigenvectors.
 
     :tparam ComputeLeftrightEigenvectors: If true, the eigenvectors will be computed.
+        .. versionremoved:: 2.0.0
+
     :tparam AType: The type of the matrix and the vector outputs.
     :tparam WType: The type of the value output.
 
-.. cpp:function:: template<MatrixConcept AType, MatrixConcept BTyep> int gesv(AType *A, BType *B)
+    ::throws rank_error: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+    :throws dimension_error: If the matrix input is not square.
+    :throws tensor_compat_error: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix,
+    or the eigenvector outputs, if not null, do not have the same dimensions as the input.
+    :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or
+    zero-size tensors.
+    :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+
+    .. versionadded:: 1.0.0
+
+    .. versionchanged:: 2.0.0
+        The option to compute eigenvectors is no longer a template argument. It is now decided by whether the appropriate parameter is
+        a null pointer or not. For instance, if :code:`lvecs` is a null pointer then it will not be computed.
+
+.. cpp:function:: template<MatrixConcept AType, TensorConcept BType> int gesv(AType *A, BType *B)
 
     Solves a system of linear equations.
 
-    :param A: The coefficient matrix. On exit, it contains the upper and lower triangular factors. The
+    :param A[inout[]]: The coefficient matrix. On exit, it contains the upper and lower triangular factors, even if the return value is greater than zero. The
     elements of the lower triangular factor are all 1, so they are not stored.
-    :param B: The constant matrix. If this function returns 0, then on exit, this will contain the solutions.
+    :param B[inout]: The constant matrix. If this function returns 0, then on exit, this will contain the solutions.
     :return: If the return value is greater than 0, then the input matrix is singular. If it is less than zero,
     then the input contains an invalid value, such as infinity. If it is zero, then the system could be solved.
+
+    :throws rank_error: If the coefficient matrix is not rank-2 or the result matrix is not rank-1 or rank-2.
+    :throws dimension_error: If the coefficient matrix is not square, or the number of rows of the result matrix is not the same as the number
+    of rows of the coefficient matrix.
+
+    .. versionadded:: 1.0.0
+
+    .. versionchanged:: 2.0.0
+        Fixed a bug with how the matrices were being handled. The B tensor is now able to be a vector as well.
 
 .. cpp:function:: template<TensorConcept AType> void scale(typename AType::ValueType scale, AType *A)
 
@@ -212,10 +321,21 @@ Here are some of the public symbols that are available to use.
     :param scale: The scale factor to apply.
     :param A: The tensor to scale.
 
+    .. versionadded:: 1.0.0
+
 .. cpp:function:: template<MatrixConcept> void scale_row(size_t row, typename AType::ValueType scale, AType *A)
 .. cpp:function:: template<MatrixConcept> void scale_column(size_t col, typename AType::ValueType scale, AType *A)
 
     Scale a row or column of a matrix.
+
+    :param row,col[in]: The row or column to scale.
+    :param scale[in]: The scale factor.
+    :param A[inout]: The matrix to scale.
+
+    :throws std::out_of_range: If the row or column is outside of what the input matrix stores.
+    :throws rank_error: If the input matrix is not rank-2.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template<MatrixConcept AType> auto pow(AType const &a, typename AType::ValueType alpha, \
          typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType>
@@ -223,157 +343,134 @@ Here are some of the public symbols that are available to use.
     Take the matrix power. This is equivalent to diagonalizing the matrix, raising the eigenvalues to the given power,
     then recombining the matrix.
 
-    :param a: The matrix to exponentiate.
-    :param alpha: The power to raise the matrix to.
-    :param cutoff: If an eigenvalue is below this parameter after exponentiation, then set it to be zero.
+    :param a[in]: The matrix to exponentiate.
+    :param alpha[in]: The power to raise the matrix to.
+    :param cutoff[in]: If an eigenvalue is below this parameter after exponentiation, then set it to be zero.
     :return: The result of raising the matrix to a power.
+
+    :throws rank_error: If the inputs have the wrong ranks. The A tensor needs to be rank-2.
+    :throws dimension_error: If the matrix input is not square.
+    :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or
+    zero-size tensors.
+    :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template<TensorConcept AType, TensorConcept BType> auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType>
 
     Compute the dot product between two tensors. This form does not conjugate either element if complex.
 
+    :param A,B[in]: The tensors to dot together.
+    :return: The dot product between the two tensors.
+
+    :throws rank_error: If the input tensors do not have the same rank.
+    :throws dimension_error: If the input tensors do not have the same shape.
+    
+    .. versionadded:: 1.0.0
+
 .. cpp:function:: template<TensorConcept AType, TensorConcept BType> auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType>
 
     Compute the dot product between two tensors. This form conjugates the first parameter if complex.
+
+    :param A,B[in]: The tensors to dot together.
+    :return: The dot product between the two tensors.
+
+    :throws rank_error: If the input tensors do not have the same rank.
+    :throws dimension_error: If the input tensors do not have the same shape.
+    
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template<TensorConcept AType, TensorConcept BType, TensorConcept CType> auto dot(AType const &A, BType const &B, CType const &C) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>
 
     Computes the dot product between three tensors.
 
+    :param A,B,C[in]: The tensors to dot together.
+    :return: The dot product between the three tensors.
+
+    :throws rank_error: If the input tensors do not have the same rank.
+    :throws dimension_error: If the input tensors do not have the same shape.
+    
+    .. versionadded:: 1.0.0
+
 .. cpp:function:: template<TensorConcept XType, TensorConcept YType> void axpy(typename XType::ValueType alpha, XType const &X, YType *Y)
 
     Adds two tensors together. The values from the first tensor will be scaled during addition. 
-    This is equivalent to :math:`Y = aX + Y`.
+    This is equivalent to :math:`\mathbf{Y} = \alpha\mathbf{X} + \mathbf{Y}`.
 
-    :param alpha: The scale factor for the input tensor.
-    :param X: The input tensor.
-    :param Y: The accumulated tensor.
+    :param alpha[in]: The scale factor for the input tensor.
+    :param X[in]: The input tensor.
+    :param Y[out]: The accumulated tensor.
+
+    :throws rank_error: If the tensors do not have the same rank.
+    :throws dimension_error: If the tensors do not have the same shape.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template<TensorConcept XType, TensorConcept YType> void axpby(typename XType::ValueType alpha, XType const &X, typename XType::ValueType beta, YType *Y)
 
     Adds two tensors together. The values from the both tensors will be scaled during addition. 
-    This is equivalent to :math:`Y = aX + bY`.
+    This is equivalent to :math:`\mathbf{Y} = \alpha\mathbf{X} + \beta\mathbf{Y}`.
 
-    :param alpha: The scale factor for the input tensor.
-    :param X: The input tensor.
-    :param beta: The scale factor for the accumulated tensor.
-    :param Y: The accumulated tensor.
+    :param alpha[in]: The scale factor for the input tensor.
+    :param X[in]: The input tensor.
+    :param beta[in]: The scale factor for the accumulated tensor.
+    :param Y[out]: The accumulated tensor.
+
+    :throws rank_error: If the tensors do not have the same rank.
+    :throws dimension_error: If the tensors do not have the same shape.
+
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template<MatrixConcept AType, VectorConcept XYType> void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A)
+.. cpp:function:: template<MatrixConcept AType, VectorConcept XYType> void gerc(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A)
 
-    Computes the outer product of two vectors and adds it to the output tensor. Equivalent to :math:`A = a X Y^T + A`.
+    Computes the outer product of two vectors and adds it to the output tensor. Equivalent to :math:`\mathbf{A} = \alpha\mathbf{XY}^T + \mathbf{A}`,
+    or :math:`\mathbf{A} = \alpha\mathbf{XY}^H + \mathbf{A}` for :cpp:func:`gerc`.
 
-    :param alpha: The amount to scale the outer product.
-    :param X: The left vector.
-    :param Y: The right vector.
-    :param A: The output matrix.
+    :param alpha[in]: The amount to scale the outer product.
+    :param X[in]: The left vector.
+    :param Y[in]: The right vector.
+    :param A[out]: The output matrix.
 
-.. cpp:function:: template<MatrixConcept TensorType> int getrf(TensorType *A, std::vector<blas::int_t> *pivot)
+    :throws rank_error: If the X and Y tensors are not rank-1 or the A tensor is not rank-2.
+    :throws tensor_compat_error: If the number of elements in the X vector is not the same as the number of rows in A, or the number of
+    elements in the Y vector is not the same as the number of columns of A.
 
-    Computes the LU factorization of a general :math:`m` by :math:`n` matrix.
-
-    :param A: The matrix to factorize. On exit, it contains the L and U matrices. The diagonal elements of the
-    L matrix are not stored, since they are all 1.
-    :param pivot: The pivot table. Indicates which rows were swapped.
-    :return: If 0, then the procedure succeded. Otherwise, the procedure failed.
-
-.. cpp:function:: template<MatrixConcept TensorType> itn getri(TensorType *A, std::vector<blas::int_t> const &pivot)
-
-    Computes the inverse of a matrix using the data obtained from :cpp:func:`getrf`.
+    .. versionadded:: 1.0.0
+        Added :cpp:func:`ger`.
+    
+    .. versionadded:: 2.0.0
+        Added :cpp:func:`gerc`.
 
 .. cpp:function:: template<MatrixConcept TensorType> void invert(TensorType *A)
 
     Combines :cpp:func:`getrf` and :cpp:func:`getri` into one function call, calculating the inverse of the matrix.
 
-.. cpp:enum:: Norm : char
+    :param A[inout]: The matrix to invert. On exit, it contains the inverse.
 
-    Allows selecting of the kind of norm to perform.
-
-    .. cpp:enumerator:: Norm::MaxAbs = 'M'
-
-        Use the maximum absolute value of the tensor as the norm.
-
-    .. cpp:enumerator:: Norm::One = '1'
-
-        Use the 1-norm of the matrix, or the maximum column sum.
-
-    .. cpp:enumerator:: Norm::Infinity = 'I'
-
-        Use the infinity norm of the matrix, or the maximum row sum.
-
-    .. cpp:enumerator:: Norm::Frobenius = 'F'
-
-        Use the Frobenius norm of the matrix, or the square root of the sum of squares of the elements.
-
-.. cpp:function:: template<MarixConcept AType> auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType>
-
-    Computes the norm of a matrix. The norm can be selected by the first argument, and can come from 
-    :cpp:enum:`Norm`.
-
-.. cpp:function:: template <TensorConcept AType> auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType>
-
-    Compute the Euclidean norm of a vector. This is the usual geometric norm.
-
-.. cpp:function:: template<MatrixConcept AType> auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>, \
-                                        Tensor<typename AType::ValueType, 2>>
-
-    Compute the singular value decomposition of a matrix. The order of the elements in the returned tuple
-    is the unitary matrix is first, the rectangular diagonal matrix is second, and the other unitary matrix, transposed.
-
-.. cpp:function:: template<MatrixConcept AType> auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2>
-
-    Compute the nullspace of a matrix using singular value decomposition.
-
-.. cpp:enum:: Vectors : char
-
-    Allows selecting of the vectors to use for singular value decomposition.
-
-    .. cpp:enumerator:: Vectors::All = 'A'
-
-        Compute all vectors.
-
-    .. cpp:enumerator:: Vectors::Some = 'S'
-
-        Computes only some of the vectors. The number computed is the same as the smallest dimension
-        of the input matrix.
-
-    .. cpp:enumerator:: Vectors::Overwrite = 'O'
-
-        Overwrites the input matrix with some of the vectors.
-
-    .. cpp:enumerator:: Vectors::None = 'N'
-
-        None of the vectors are computed.
-
-.. cpp:function:: template<MatrixConcept AType> auto svd_dd(AType const &_A, Vectors job = Vectors::All) \
-    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>, \
-                  Tensor<typename AType::ValueType, 2>> 
-
-    Compute the singular value decomposition of a matrix, optionally selecting the vectors to compute.
-
-.. cpp:function:: template<MatrixConcept AType> auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>>
-
-    Compute the QR decomposition of the input matrix. The output is what is needed to pass into later functions.
-    The upper trapezoid of the tensor in the first part of the tuple is the R matrix.
-
-.. cpp:function:: template<MatrixConcept AType, VectorConcept TauType> auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType, 2>
-
-    Use the data from :cpp:func:`qr` to compute the Q matrix.
+    :throws rank_error: If the input is not a matrix.
+    :throws dimension_error: If the matrix is not square.
+    :throws std::runtime_error: If the matrix is singular.
+    
+    .. versionadded:: 1.0.0
 
 .. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T> void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C)
 
     Compute the direct product. This is essentially the element-wise product between two matrices.
 
+    :param alpha[in]: The scale factor for the product.
+    :param A,B[in]: The tensors to multiply.
+    :param beta[in]: The scale factor for the accumulation tensor.
+    :param C[out]: The accumulation tensor.
+
+    .. versionadded:: 1.0.0
+
 .. cpp:function:: template <MatrixConcept AType> typename AType::ValueType det(AType const &A)
 
     Computes the determinant of a matrix.
 
-.. todo::
+    :param A[in]: The matrix to analyze.
+    
+    :return: The determinant of the matrix.
 
-    A few functions have not been documented because the author of this page was unsure about the concepts,
-    and could not explain them.
-
-    * :code:`truncated_svd`
-    * :code:`truncated_syev`
-    * :code:`pseudoinverse`
-    * :code:`solve_continuous_lyapunov`
+    .. versionadded:: 1.0.0

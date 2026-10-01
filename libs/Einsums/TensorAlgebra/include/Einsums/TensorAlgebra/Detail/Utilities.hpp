@@ -750,13 +750,20 @@ using CUniqueT = typename CUnique<T>::type;
  */
 template <typename First, typename... Args>
 struct Reverse {
+    /**
+     * @typedef type
+     *
+     * The tuple type with the elements in reverse.
+     */
     using type = decltype(std::tuple_cat(std::declval<typename Reverse<Args...>::type>(), std::declval<std::tuple<First>>()));
 };
 
+#ifndef DOXYGEN
 template <typename First>
 struct Reverse<First> {
     using type = std::tuple<First>;
 };
+#endif
 
 /**
  * @typedef ReverseT

@@ -16,6 +16,8 @@ namespace einsums {
  * @tparam Args The types to compare against.
  *
  * @return The number of Args that match the T type.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, typename... Args>
 constexpr auto count_of_type(/*Args... args*/) {

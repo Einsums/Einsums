@@ -40,26 +40,40 @@ The logging facilities for Einsums are available in Python.
 
     Each of these levels also has a specialized call.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: log_trace(message: str)
 
     Logs a trace message. Only shows up when Einsums is built in the Debug configuration.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: log_debug(message: str)
 
     Logs a debug message. Only shows up when Einsums is built in the Debug configuration.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: log_info(message: str)
 
     Logs an informational message.
+
+    .. versionadded:: 1.1.0
 
 .. py:function:: log_warn(message: str)
 
     Logs a warning.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: log_error(message: str)
 
     Logs an error.
 
+    .. versionadded:: 1.1.0
+
 .. py:function:: log_critical(message: str)
 
     Logs a critical message.
+
+    .. versionadded:: 1.1.0

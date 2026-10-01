@@ -25,6 +25,10 @@ namespace string_util {
  * platform dependent, but is considered to be the size of @c size_t , which is
  * usually 8 bytes on 64-bit systems.
  * Both comma and period decimals are recognized.
+ *
+ * @versionadded{1.1.0}
+ *
+ * @throws std::runtime_error If the string is improperly formatted.
  */
 EINSUMS_EXPORT size_t memory_string(std::string const &mem_spec);
 } // namespace string_util

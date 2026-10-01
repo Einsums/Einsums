@@ -24,22 +24,21 @@ This module contains many functions and classes implemented in C++.
 
     :return: :code:`True` if GPU capabilities are enabled.
 
-.. py:function:: __initialize()
+    .. versionadded:: 1.0.0
+
+.. py:function:: initialize()
 
     Initializes the Einsums library. This is an internal function that is called automatically. 
-    It does not need to be called directly, and instead it is called when you import :code:`einsums`. 
+    It does not need to be called directly, and instead it is called when you import :code:`einsums`.
 
-.. py:function:: finalize(arg: bool | str)
+    .. versionadded:: 1.0.0
 
-    Finalize the Einsums library, optionally printing timing info. See :py:func:`einsums.set_finalize_arg`
-    to change how the module calls this function. This does not need to be called directly, as it is
+.. py:function:: finalize()
+
+    Finalize the Einsums library, optionally printing timing info. This does not need to be called directly, as it is
     registered with the :code:`atexit` module. 
 
-.. py:function:: get_buffer_format(buffer) -> str
-
-    Get the format string for a buffer as seen from C++.
-
-    :param buffer: The buffer object to query.
+    .. versionadded:: 1.0.0
 
 
 .. toctree::

@@ -33,20 +33,19 @@ auto get_handler() -> assertion_handler_type & {
 } // namespace
 
 void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
-    std::cerr << complete_version() << std::endl << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
+    std::ostringstream err_str;
+    err_str << complete_version() << std::endl << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
-        std::cerr << " (" << msg << ")" << std::endl;
+        err_str << " (" << msg << ")" << std::endl;
     } else {
-        std::cerr << std::endl;
+        err_str << std::endl;
     }
 
-    std::cerr << std::endl;
+    err_str << std::endl;
+     einsums::util::print_backtrace(err_str);
+     err_str << std::endl;
 
-    einsums::util::print_backtrace(std::cerr);
-
-    std::cerr << std::endl;
-
-    std::exit(EXIT_FAILURE);
+    throw assertion_error(err_str.str());
 }
 
 void set_assertion_handler(assertion_handler_type handler_) {
@@ -59,10 +58,10 @@ void set_assertion_handler(assertion_handler_type handler_) {
     }
 }
 
-void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept {
+void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) {
     std::lock_guard lock(handler_mutex);
 
-#ifdef EINSUMS_DEBUG
+#        ifdef EINSUMS_DEBUG
     std::cout << complete_version() << std::endl;
     std::cout << loc.function_name() << ": " << loc.line() << ": Assertion '" << expr << "' failed";
     if (!msg.empty()) {
@@ -70,7 +69,7 @@ void handle_assert(std::source_location const &loc, char const *expr, std::strin
     } else {
         std::cout << std::endl;
     }
-#endif
+#    endif
 
     if (handler == nullptr) {
         handler = default_assertion_handler;

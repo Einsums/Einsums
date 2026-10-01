@@ -61,6 +61,8 @@ constexpr inline std::array<std::remove_cv_t<NewT>, N> convert_array_impl(std::a
  * @tparam T The type of the input.
  * @param value The value to copy.
  * @return A tuple consisting of copies of the passed value.
+ *
+ * @versionadded{1.1.0}
  */
 template <size_t N, typename T>
 constexpr auto create_tuple(T const &value) {
@@ -74,6 +76,8 @@ constexpr auto create_tuple(T const &value) {
  * @tparam T The array type, such as std::array or std::vector.
  * @param arr The array to copy.
  * @return A tuple whose elements match the passed array.
+ *
+ * @versionadded{1.1.0}
  */
 template <size_t N, typename T>
 constexpr auto create_tuple_from_array(T const &arr) {
@@ -90,6 +94,8 @@ constexpr auto create_tuple_from_array(T const &arr) {
  * @tparam OldN The size of the input array.
  * @param old_array The array to slice.
  * @return An array containing the first several elements of the input array.
+ *
+ * @versionadded{1.1.0}
  */
 template <size_t NewN, typename T, size_t OldN>
     requires(OldN >= NewN)
@@ -107,6 +113,8 @@ constexpr std::array<T, NewN> slice_array(std::array<T, OldN> const &old_array) 
  * @tparam OldN The size of the input array.
  * @param old_array The array to slice.
  * @return An array containing the first several elements of the input array.
+ *
+ * @versionadded{1.1.0}
  */
 template <size_t NewN, typename T, size_t OldN>
     requires(OldN >= NewN)
@@ -121,6 +129,8 @@ constexpr std::array<T, NewN> slice_array(std::array<T, OldN> &&old_array) {
  * @tparam TupleTypes The types of the tuple's elements.
  * @param tuple The tuple to cast.
  * @return An array whose elements are cast from the input tuple's elements.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, typename... TupleTypes>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
@@ -135,6 +145,8 @@ constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(st
  * @tparam TupleTypes The types of the tuple's elements.
  * @param tuple The tuple to cast.
  * @return An array whose elements are cast from the input tuple's elements.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename T, typename... TupleTypes>
     requires(std::is_convertible_v<TupleTypes, T> && ...)
@@ -150,6 +162,8 @@ constexpr inline std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(st
  * @tparam N The number of elements.
  * @param arr The array to cast.
  * @return A new array whose elements have been cast from the input array.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename NewT, typename OldT, size_t N>
     requires(std::is_convertible_v<OldT, NewT>)

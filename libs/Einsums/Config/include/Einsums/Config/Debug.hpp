@@ -7,8 +7,10 @@
 
 #if defined(DOXYGEN)
 /// Defined if Einsums is compiled in debug mode.
+/// @versionadded{1.0.1}
 #    define EINSUMS_DEBUG
 /// Evaluates to ``debug`` if compiled in debug mode, ``release`` otherwise.
+/// @versionadded{1.0.1}
 #    define EINSUMS_BUILD_TYPE
 #else
 

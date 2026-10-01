@@ -36,6 +36,15 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         Type  work_query;                                                                                                                  \
         FC_GLOBAL(lcletter##gesdd, UCLETTER##GESDD)                                                                                        \
         (&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &work_query, &lwork, nullptr, &info);                                              \
+        if (info < 0) {                                                                                                                    \
+            EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
+                             "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
+                             print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
+        } else if (info > 0) {                                                                                                             \
+            EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
         lwork = (int)work_query;                                                                                                           \
                                                                                                                                            \
         /* Allocate work array */                                                                                                          \
@@ -51,7 +60,7 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
             EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
                              "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
                              print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
-        } else {                                                                                                                           \
+        } else if (info > 0) {                                                                                                             \
             EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
             return info;                                                                                                                   \
         }                                                                                                                                  \
@@ -86,6 +95,15 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
         /* Query optimal working array(s) */                                                                                               \
         FC_GLOBAL(lc##gesdd, UC##GESDD)                                                                                                    \
         (&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &work_query, &lwork, rwork.data(), iwork.data(), &info);                           \
+        if (info < 0) {                                                                                                                    \
+            EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
+                             "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
+                             print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
+        } else if (info > 0) {                                                                                                             \
+            EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
+            return info;                                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
         lwork = (int)(work_query.real());                                                                                                  \
                                                                                                                                            \
         work.resize(lwork);                                                                                                                \
@@ -97,7 +115,7 @@ extern void FC_GLOBAL(cgesdd, CGESDD)(char *, int_t *, int_t *, std::complex<flo
             EINSUMS_LOG_WARN("The {} parameter to gesdd was invalid! 1: (jobz) {}, 2: (m) {}, 3: (n) {}, 5: (lda) {}, 8: (ldu) {}, 10: "   \
                              "(ldvt) {}, 12: (lwork) {}.",                                                                                 \
                              print::ordinal(-info), jobz, m, n, lda, ldu, ldvt, lwork);                                                    \
-        } else {                                                                                                                           \
+        } else if (info > 0) {                                                                                                             \
             EINSUMS_LOG_WARN("gesdd lapack routine failed. info {}", info);                                                                \
             return info;                                                                                                                   \
         }                                                                                                                                  \

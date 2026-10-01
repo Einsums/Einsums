@@ -203,7 +203,7 @@ void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
 template <unsigned int N, typename... List>
 constexpr auto get_n(std::tuple<List...> const &);
 
-/**
+/*
  * Returns the mode-`mode` unfolding of `tensor` with modes startng at `0`
  *
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``

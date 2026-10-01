@@ -19,6 +19,10 @@ namespace einsums {
  * @struct ZipIter
  *
  * @brief An iterator that iterates over several containers simultaneously.
+ *
+ * @tparam ContainerIters A list of container and iterable types that this will zip over.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename... ContainerIters>
 struct ZipIter final {
@@ -27,6 +31,8 @@ struct ZipIter final {
      * @typedef difference_type
      *
      * @brief The type indicating the distance between two iterators.
+     *
+     * @versionadded{1.1.0}
      */
     using difference_type = ptrdiff_t;
 
@@ -34,6 +40,8 @@ struct ZipIter final {
      * @typedef value_type
      *
      * @brief The values returned by the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     using value_type = std::tuple<typename std::iterator_traits<ContainerIters>::reference...>;
 
@@ -41,6 +49,8 @@ struct ZipIter final {
      * @typedef reference
      *
      * @brief Modifiable version of the return value of the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     using reference = std::tuple<typename std::iterator_traits<ContainerIters>::reference...>;
 
@@ -48,21 +58,29 @@ struct ZipIter final {
      * @typedef iterator_category
      *
      * @brief Indicates that this is a forward iterator.
+     *
+     * @versionadded{1.1.0}
      */
     using iterator_category = std::forward_iterator_tag;
 
     /**
      * @brief Default constructor.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter() : current_{} {}
 
     /**
      * @brief Copy constructor.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter(ZipIter const &other) : current_{other.current_} {}
 
     /**
      * @brief Copy assignment.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter &operator=(ZipIter const &other) {
         current_ = other.current_;
@@ -71,6 +89,8 @@ struct ZipIter final {
 
     /**
      * @brief Initialize the iterator with the given iterators.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter(std::tuple<ContainerIters &...> const &containers) {
         init_impl(containers, std::make_index_sequence<sizeof...(ContainerIters)>());
@@ -78,21 +98,29 @@ struct ZipIter final {
 
     /**
      * @brief Initialize the iterator with the given iterators.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter(ContainerIters const &...containers) : current_{containers...} {}
 
     /**
      * @brief Dereference the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr value_type operator*() const { return deref_impl(std::make_index_sequence<sizeof...(ContainerIters)>()); }
 
     /**
      * @brief Dereference the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr reference operator*() { return deref_impl_ref(std::make_index_sequence<sizeof...(ContainerIters)>()); }
 
     /**
      * @brief Increment the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter &operator++() {
         for_sequence<sizeof...(ContainerIters)>([this](auto n) { std::get<(size_t)n>(current_)++; });
@@ -101,6 +129,8 @@ struct ZipIter final {
 
     /**
      * @brief Increment the iterator.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr ZipIter &operator++(int) {
         for_sequence<sizeof...(ContainerIters)>([this](auto n) { std::get<(size_t)n>(current_)++; });
@@ -113,6 +143,8 @@ struct ZipIter final {
      * This uses an or mask to make sure that we don't go past any of the ends of any of the
      * iterators. If we used an and mask and we compared with the iterator containing the ends
      * of the containers, then comparison will fail if any iterator is not finished.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator==(ZipIter const &other) const {
         return equal_impl(other, std::make_index_sequence<sizeof...(ContainerIters)>());
@@ -124,6 +156,8 @@ struct ZipIter final {
      * This uses an and mask to make sure that we don't go past any of the ends of any of the
      * iterators. If we used an or mask and we compared with the iterator containing the ends
      * of the containers, then comparison will fail if any iterator is not finished.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator!=(ZipIter const &other) const {
         return !equal_impl(other, std::make_index_sequence<sizeof...(ContainerIters)>());
@@ -131,6 +165,8 @@ struct ZipIter final {
 
     /**
      * @brief Swap the contents of two iterators.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr void swap(ZipIter &other) { std::swap(current_, other.current_); }
 
@@ -155,6 +191,11 @@ struct ZipIter final {
         return ((std::get<I>(current_) == std::get<I>(other.current_)) || ... || false);
     }
 
+    /**
+     * @brief Holds the current value.
+     *
+     * @versionadded{1.1.0}
+     */
     std::tuple<ContainerIters...> current_;
 };
 
@@ -162,6 +203,8 @@ struct ZipIter final {
  * @struct Zip
  *
  * @brief Works like Python's @c zip() function.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename... Containers>
 struct Zip final {
@@ -170,6 +213,8 @@ struct Zip final {
      * @typedef value_type
      *
      * @brief The type of data this zip holds.
+     *
+     * @versionadded{1.1.0}
      */
     using value_type = std::tuple<typename Containers::reference...>;
 
@@ -177,6 +222,8 @@ struct Zip final {
      * @typedef reference
      *
      * @brief A reference to the value type.
+     *
+     * @versionadded{1.1.0}
      */
     using reference = std::tuple<typename Containers::reference...> &;
 
@@ -184,6 +231,8 @@ struct Zip final {
      * @typedef const_reference
      *
      * @brief A const reference to the value type.
+     *
+     * @versionadded{1.1.0}
      */
     using const_reference = std::tuple<typename Containers::const_reference...> const &;
 
@@ -191,6 +240,8 @@ struct Zip final {
      * @typedef iterator
      *
      * @brief The iterator type.
+     *
+     * @versionadded{1.1.0}
      */
     using iterator = ZipIter<decltype(std::declval<Containers>().begin())...>;
 
@@ -198,6 +249,8 @@ struct Zip final {
      * @typedef const_iterator
      *
      * @brief The const iterator type.
+     *
+     * @versionadded{1.1.0}
      */
     using const_iterator = ZipIter<typename Containers::const_iterator...> const;
 
@@ -205,6 +258,8 @@ struct Zip final {
      * @typedef difference_type
      *
      * @brief The type for distances between objects.
+     *
+     * @versionadded{1.1.0}
      */
     using difference_type = ptrdiff_t;
 
@@ -212,26 +267,36 @@ struct Zip final {
      * @typedef size_type
      *
      * @brief The type used for container sizes.
+     *
+     * @versionadded{1.1.0}
      */
     using size_type = size_t;
 
     /**
      * @brief Default constructor.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr Zip() = default;
 
     /**
      * @brief Copy constructor.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr Zip(Zip const &other) : containers_{other.containers_} {};
 
     /**
      * @brief Initialize the zip object.
+     *
+     * @versionadded{1.1.0}
      */
-    constexpr Zip(Containers &...containers) : containers_(std::tie(containers...)){};
+    constexpr Zip(Containers &...containers) : containers_(std::tie(containers...)) {};
 
     /**
      * @brief Copy assignment.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr Zip &operator=(Zip const &other) {
         containers_ = other.containers_;
@@ -240,36 +305,50 @@ struct Zip final {
 
     /**
      * @brief The iterator pointing to the beginning of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr iterator begin() { return begin_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief The iterator pointing to the end of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr iterator end() { return end_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief The iterator pointing to the beginning of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr const_iterator begin() const { return cbegin_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief The iterator pointing to the end of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr const_iterator end() const { return cend_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief The const iterator pointing to the beginning of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr const_iterator cbegin() const { return cbegin_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief The const iterator pointing to the end of the container.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr const_iterator cend() const { return cend_impl(std::make_index_sequence<sizeof...(Containers)>()); }
 
     /**
      * @brief Compare two zip objects.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator==(Zip<Containers...> const &other) const {
         return equal_impl(other, std::make_index_sequence<sizeof...(Containers)>());
@@ -277,6 +356,8 @@ struct Zip final {
 
     /**
      * @brief Compare two zip objects.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool operator!=(Zip<Containers...> const &other) const {
         return !equal_impl(other, std::make_index_sequence<sizeof...(Containers)>());
@@ -284,11 +365,15 @@ struct Zip final {
 
     /**
      * @brief Swap the contents of two zip objects.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr void swap(Zip &other) { std::swap(containers_, other.containers_); }
 
     /**
      * @brief Get the size of the zip object.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr size_t size() const {
         if constexpr (sizeof...(Containers) == 0) {
@@ -310,6 +395,8 @@ struct Zip final {
 
     /**
      * @brief Get the maximum possible size for the zip object.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr size_t max_size() const {
         if constexpr (sizeof...(Containers) == 0) {
@@ -331,6 +418,8 @@ struct Zip final {
 
     /**
      * @brief Check whether the zip object contains data.
+     *
+     * @versionadded{1.1.0}
      */
     constexpr bool empty() const { return begin() == end(); }
 
@@ -360,6 +449,9 @@ struct Zip final {
         return ((std::get<I>(containers_) == std::get<I>(other.containers_)) && ... && true);
     }
 
+    /**
+     * @brief The containers that this will zip.
+     */
     std::tuple<Containers &...> containers_;
 };
 
@@ -370,10 +462,12 @@ Zip(Containers &...) -> Zip<Containers...>;
 
 } // namespace einsums
 
+namespace std {
 /**
  * @brief Overload for swap.
+ *
+ * @versionadded{1.1.0}
  */
-namespace std {
 template <typename... Containers>
 constexpr void swap(einsums::ZipIter<Containers...> &first, einsums::ZipIter<Containers...> &second) {
     first.swap(second);
@@ -381,6 +475,8 @@ constexpr void swap(einsums::ZipIter<Containers...> &first, einsums::ZipIter<Con
 
 /**
  * @brief Overload for swap.
+ *
+ * @versionadded{1.1.0}
  */
 template <typename... Containers>
 constexpr void swap(einsums::Zip<Containers...> &first, einsums::Zip<Containers...> &second) {

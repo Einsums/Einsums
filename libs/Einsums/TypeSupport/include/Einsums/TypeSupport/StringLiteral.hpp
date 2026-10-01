@@ -23,6 +23,8 @@ namespace einsums {
  * This is needed for the parameters' names in the NamedTuples.
  *
  * @tparam N The size of the string including the null terminator.
+ *
+ * @versionadded{1.0.0}
  */
 template <size_t N>
 struct StringLiteral {
@@ -30,6 +32,8 @@ struct StringLiteral {
      * @brief Constructs a new string literal out of the list of characters.
      *
      * @param chars The characters for the string.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr StringLiteral(auto const... chars) : _arr{chars..., '\0'} {}
 
@@ -37,6 +41,8 @@ struct StringLiteral {
      * @brief Constructs a new string literal out of the list of characters.
      *
      * @param arr The characters for the string.
+     *
+     * @versionadded{1.0.0}
      */
     constexpr StringLiteral(std::array<char, N> const &arr) : _arr(arr) {}
 
@@ -44,19 +50,31 @@ struct StringLiteral {
      * @brief Constructs a new stringn literal out of a string.
      *
      * @param str The string to use for the construction
+     *
+     * @versionadded{1.0.0}
      */
     constexpr StringLiteral(char const (&str)[N]) { std::copy_n(str, N, std::data(_arr)); }
 
-    /// Returns the value as a string
+    /**
+     * Returns the value as a string.
+     *
+     * @versionadded{1.0.0}
+     */
     std::string str() const { return std::string(string_view()); }
 
-    /// Returns the value as a string
+    /**
+     * Returns the value as a string view.
+     *
+     * @versionadded{1.0.0}
+     */
     constexpr std::string_view string_view() const { return std::string_view(std::data(_arr), N - 1); }
 
     /**
      * @property _arr
      *
      * @brief The array containing the string data.
+     *
+     * @versionadded{1.0.0}
      */
     std::array<char, N> _arr{};
 };
@@ -66,6 +84,8 @@ struct StringLiteral {
  *
  * @param _first The first string.
  * @param _second The second string
+ *
+ * @versionadded{1.0.0}
  */
 template <size_t N1, size_t N2>
 constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {
@@ -80,6 +100,8 @@ constexpr bool operator==(StringLiteral<N1> const &_first, StringLiteral<N2> con
  *
  * @param _first The first string.
  * @param _second The second string
+ *
+ * @versionadded{1.0.0}
  */
 template <size_t N1, size_t N2>
 constexpr bool operator!=(StringLiteral<N1> const &_first, StringLiteral<N2> const &_second) {

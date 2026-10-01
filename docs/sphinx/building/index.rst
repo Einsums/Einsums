@@ -32,13 +32,27 @@ other system-level dependencies to build it on your system.
 
 .. note::
 
-   If you are using Conda, you can skip the steps in this section - with the
-   exception of installing the Apple Developer Tools for macOS. All other
-   dependencies will be installed automatically by the
-   ``conda env create -f devtools environment.yml`` command.
+  If you are using Conda, you can skip the steps in this section - with the
+  exception of installing the Apple Developer Tools for macOS. All other
+  dependencies will be installed automatically by the following command:
 
-   If you don't have a conda installation yet, we recommend using
-   Condaforge_; any conda flavor will work though.
+  .. code:: bash
+
+    conda env create -f devtools/conda-envs/basic_einsums.yml
+    conda activate einsums
+
+  For a more personalized conda environment, we suggest using the merge script. The options for the 
+  compiler are ``default``, ``intel``, and ``windows``. The options for the BLAS library are ``openblas`` and ``mkl``.
+  If you plan on building the docs, then you can add the ``--docs`` flag as shown. If not, then this can be omitted.
+
+  .. code:: bash
+
+    python3 devtools/conda-envs/merge_yml.py --output=einsums.yml [--docs] <compiler> <blas>
+    conda env create -f einsums.yml
+    conda activate einsums
+
+  If you don't have a conda installation yet, we recommend using
+  Condaforge_; any conda flavor will work though.
 
 .. tab-set::
 
@@ -133,14 +147,11 @@ Then you will want to do the following:
 
 1. Create a dedicated development environment (conda environment),
 2. Install all needed dependencies (*build*, and also *test*, and *doc*
-   dependencies.
+   dependencies).
 3. Build Einsums.
 
 To create an ``einsums-dev`` development environment with every required and
-optional dependency installed, except for HIP, run::
-
-    conda env create -f devtools/conda-envs/environment.yml
-    conda activate einsums-dev
+optional dependency installed, except for HIP, perform the operations in the previous section.
 
 To build Einsums in an activated development environment, run::
 

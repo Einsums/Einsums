@@ -5,5 +5,22 @@
 
 #pragma once
 
+/**
+ * Concatenates its arguments.
+ *
+ * @param a
+ * @param b The arguments to concatenate.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_PP_CAT(a, b)   EINSUMS_PP_CAT_I(a, b)
+
+/**
+ * Concatenates its arguments. Inner level because of macro weirdness.
+ *
+ * @param a
+ * @param b The arguments to concatenate.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_PP_CAT_I(a, b) a##b

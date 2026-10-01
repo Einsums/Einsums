@@ -23,6 +23,8 @@ namespace hashes {
  * The default implementation is a PJW hash, based on the Wikipedia page.
  *
  * @tparam ContainerType The type of container.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename ContainerType>
 struct container_hash {
@@ -33,8 +35,10 @@ struct container_hash {
     /**
      * Hashes the contents of a container.
      *
-     * @param cont The container to hash.
+     * @param[in] cont The container to hash.
      * @return The container's hash.
+     *
+     * @versionadded{1.0.0}
      */
     size_t operator()(ContainerType const &cont) const {
         size_t hash = 0;

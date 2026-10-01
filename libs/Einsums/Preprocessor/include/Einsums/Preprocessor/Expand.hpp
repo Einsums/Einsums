@@ -5,4 +5,11 @@
 
 #pragma once
 
+/**
+ * Expands into its argument. Needed because of macro weirdness.
+ *
+ * @param X The value to expand to.
+ *
+ * @versionadded{1.0.0}
+ */
 #define EINSUMS_PP_EXPAND(X) X

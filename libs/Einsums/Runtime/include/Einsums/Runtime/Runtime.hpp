@@ -24,6 +24,8 @@ namespace einsums {
  * @struct invalid_runtime_state
  *
  * Indicates that the code is handling data that is uninitialized.
+ *
+ * @versionadded{1.0.0}
  */
 struct EINSUMS_EXPORT invalid_runtime_state : std::runtime_error {
     using std::runtime_error::runtime_error;
@@ -33,6 +35,8 @@ struct EINSUMS_EXPORT invalid_runtime_state : std::runtime_error {
  * @enum RuntimeState
  *
  * @brief Holds the possible states for the runtime.
+ *
+ * @versionadded{1.0.0}
  */
 enum class RuntimeState : std::int8_t {
     Invalid        = -1,      /**< The state is invalid. */
@@ -70,9 +74,11 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
 
     /// The \a EinsumsMainFunctionType is the default function type used as
     /// the main Einsums function.
+    /// @versionadded{1.0.0}
     using EinsumsMainFunctionType = int();
 
     /// Construct a new Einsums runtime instance
+    /// @versionadded{1.0.0}
     Runtime(RuntimeConfiguration &&rtcfg, bool initialize);
 
     RuntimeState state() const;
@@ -92,6 +98,7 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
     /// \note       The difference to a startup function is that all
     ///             pre-startup functions will be (system-wide) executed
     ///             before any startup function.
+    /// @versionadded{1.0.0}
     virtual void add_pre_startup_function(StartupFunctionType f);
 
     /// Add a function to be executed before einsums_main
@@ -99,6 +106,7 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
     /// \param  f   The function 'f' will be called before einsums_main is executed. This is very useful
     ///             to setup the runtime environment of the application
     ///             (install performance counters, etc.)
+    /// @versionadded{1.0.0}
     virtual void add_startup_function(StartupFunctionType f);
 
     /// Add a function to be executed during
@@ -112,6 +120,7 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
     /// \note       The difference to a shutdown function is that all
     ///             pre-shutdown functions will be (system-wide) executed
     ///             before any shutdown function.
+    /// @versionadded{1.0.0}
     virtual void add_pre_shutdown_function(ShutdownFunctionType f);
 
     /// Add a function to be executed during einsums::finalize
@@ -119,6 +128,7 @@ struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mute
     /// \param  f   The function 'f' will be called while einsums::finalize is executed. This is very
     ///             useful to tear down the runtime environment of the
     ///             application (uninstall performance counters, etc.)
+    /// @versionadded{1.0.0}
     virtual void add_shutdown_function(ShutdownFunctionType f);
 
     virtual int run(std::function<EinsumsMainFunctionType> const &func);
@@ -154,16 +164,22 @@ EINSUMS_EXPORT void set_signal_handlers();
 
 /**
  * @brief Returns a reference to the current Runtime structure
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT detail::Runtime &runtime();
 
 /**
  * @brief Returns a pointer to the current Runtime structure.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT detail::Runtime *&runtime_ptr();
 
 /**
  * @brief Gets a reference to the current runtime configuration structure.
+ *
+ * @versionadded{1.0.0}
  */
 EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 
@@ -176,6 +192,7 @@ EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 ///
 /// \note   This function needs to be executed on a pika-thread. It will
 ///         return false otherwise.
+/// @versionadded{1.0.0}
 EINSUMS_EXPORT bool is_running();
 
 } // namespace einsums

@@ -13,6 +13,8 @@ namespace einsums {
  * @brief Represents a case in a type switch.
  *
  * If the type switch matches any of the conditions, then the @c Result parameter will be used.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename Result, typename... Conditions>
 struct Case final {};
@@ -21,13 +23,13 @@ struct Case final {};
  * @struct Default
  *
  * @brief Represents the default case.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename Result>
 struct Default final {};
 
 /**
- * @struct Switch<SwitchType,Cases...>
- *
  * @brief Like a switch statement, but for types!
  *
  * This struct takes in cases and matches the switch to the conditions for each case.
@@ -40,14 +42,27 @@ struct Default final {};
  *
  * @tparam SwitchType The type to compare.
  * @tparam Cases The cases for the switch statement.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename SwitchType, typename... Cases>
 struct Switch final {
+    /**
+     * Function that will fail to compile because the current case is invalid.
+     *
+     * @versionadded{2.0.0}
+     */
     static void func() { static_assert(false, "Type Switch needs cases, or all cases were false!"); }
 
+    /**
+     * The type that this switch evaluates into.
+     *
+     * @versionadded{2.0.0}
+     */
     using type = void;
 };
 
+#ifndef DOXYGEN
 // First possibility: We meet a case, but the switch does not match the first condition.
 // In this case, we get what happens when we check the next condition.
 template <typename SwitchType, typename Result, typename FirstCond, typename... Rest, typename... Cases>
@@ -83,11 +98,14 @@ template <typename SwitchType, typename Result>
 struct Switch<SwitchType, Default<Result>> final {
     using type = Result;
 };
+#endif
 
 /**
  * @typedef SwitchT
  *
  * @brief Equivalent to <tt>typename Switch<...>::type</tt>.
+ *
+ * @versionadded{2.0.0}
  */
 template <typename... Args>
 using SwitchT = typename Switch<Args...>::type;

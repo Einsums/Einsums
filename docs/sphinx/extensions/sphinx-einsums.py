@@ -47,7 +47,11 @@ def autolink_einsums_file(pattern):
 # The text in the rst file should be:
 # :cppreference-generic:`base_path,typename[,shown]`, for instance `thread,barrier`
 def autolink_generic(pattern):
-    def role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    def role(name, rawtext, text, lineno, inliner, options=None, content=None):
+        if options is None :
+            options = {}
+        if content is None :
+            content = []
         text_parts = [p.strip() for p in text.split(',')]
         shown_text = None
         if len(text_parts) >= 3:

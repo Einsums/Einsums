@@ -17,6 +17,8 @@ namespace einsums {
  * @struct from_string_impl
  *
  * @brief Converts a string to a value.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, typename Enable = void>
 struct from_string_impl {
@@ -26,6 +28,8 @@ struct from_string_impl {
      *
      * @param value The string to read.
      * @param target The output variable.
+ *
+ * @versionadded{1.0.0}
      */
     template <typename Char>
     static void call(std::basic_string<Char> const &value, T &target) {
@@ -44,6 +48,8 @@ struct from_string_impl {
  * @return Casts the value into the new type.
  *
  * @throws std::out_of_range Throws this if the value is outside of the representable range of the check type.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, typename U>
 T check_out_of_range(U const &value) {
@@ -69,6 +75,8 @@ T check_out_of_range(U const &value) {
  * @param pos The position to start checking from.
  *
  * @throws std::invalid_argument Throws if there are non-whitespace characters after the requested position.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename Char>
 void check_only_whitespace(std::basic_string<Char> const &s, std::size_t pos) {
@@ -172,6 +180,8 @@ struct from_string_impl<T, std::enable_if_t<std::is_floating_point_v<T>>> {
  *
  * @return The value represented by the input string.
  * @throw bad_lexical_cast Throws if the string could not be converted.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, typename Char>
 T from_string(std::basic_string<Char> const &v) {
@@ -193,7 +203,9 @@ T from_string(std::basic_string<Char> const &v) {
  * @param v The string to convert.
  * @param default_value The default value if the string could not be converted.
  *
- * @return The value represented by the string, orthe default value if the string could not be converted.
+ * @return The value represented by the string, or the default value if the string could not be converted.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T, typename U, typename Char>
 T from_string(std::basic_string<Char> const &v, U &&default_value) {

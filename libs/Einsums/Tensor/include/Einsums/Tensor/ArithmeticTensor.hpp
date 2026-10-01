@@ -47,7 +47,7 @@ struct DivisionOp {};
 
 template <CanBeComplex T, typename... MultiIndex>
 // requires requires { IsComplex<T> || !IsComplex<T>; }
-T compute_arithmetic(T scalar, MultiIndex... inds) {
+constexpr T compute_arithmetic(T scalar, MultiIndex... inds) {
     return scalar;
 }
 

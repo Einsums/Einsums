@@ -16,6 +16,8 @@ namespace details {
  * @brief Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 struct IsSmartPointerHelper : public std::false_type {};
@@ -40,6 +42,8 @@ struct IsSmartPointerHelper<std::weak_ptr<T>> : public std::true_type {};
  * This one removes const and volatile.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 struct IsSmartPointerHelper : public details::IsSmartPointerHelper<typename std::remove_cv<T>::type> {};
@@ -50,6 +54,8 @@ struct IsSmartPointerHelper : public details::IsSmartPointerHelper<typename std:
  * @brief Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 inline constexpr bool IsSmartPointerV = IsSmartPointerHelper<T>::value;
@@ -60,6 +66,8 @@ inline constexpr bool IsSmartPointerV = IsSmartPointerHelper<T>::value;
  * @brief Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept SmartPointer = IsSmartPointerV<T>;
@@ -70,6 +78,8 @@ concept SmartPointer = IsSmartPointerV<T>;
  * @brief The opposite of SmartPointer.
  *
  * @tparam T The type to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T>
 concept NotASmartPointer = !IsSmartPointerV<T>;

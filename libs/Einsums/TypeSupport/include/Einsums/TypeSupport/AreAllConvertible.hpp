@@ -24,6 +24,8 @@ using all_true = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
  *
  * @tparam R The target type. The rest of the parameters should be convertible to this.
  * @tparam Ts The types to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <class R, class... Ts>
 using are_all_convertible = detail::all_true<std::is_convertible_v<Ts, R>...>;
@@ -37,6 +39,8 @@ using are_all_convertible = detail::all_true<std::is_convertible_v<Ts, R>...>;
  *
  * @tparam R The target type. The rest of the parameters should be convertible to this.
  * @tparam Ts The types to test.
+ *
+ * @versionadded{1.0.0}
  */
 template <class R, class... Ts>
 inline constexpr bool are_all_convertible_v = detail::all_true<std::is_convertible_v<Ts, R>...>::value;

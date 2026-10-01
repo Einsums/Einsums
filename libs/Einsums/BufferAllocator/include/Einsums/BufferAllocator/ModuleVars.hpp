@@ -17,8 +17,11 @@
 namespace einsums {
 namespace detail {
 
-/// @todo This class can be freely changed. It is provided as a starting point for your convenience. If not needed, it may be removed.
-
+/**
+ * Contains variables for the BufferAllocator module.
+ *
+ * @versionadded{1.1.0}
+ */
 class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lockable<std::recursive_mutex> {
     EINSUMS_SINGLETON_DEF(Einsums_BufferAllocator_vars)
 
@@ -26,22 +29,43 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
     // Put module-global variables here.
 
     /**
+     * @fn get_singleton()
+     *
+     * Get the single unique instance of this class.
+     *
+     * @return The single unique instance of the class.
+     *
+     * @versionadded{1.1.0}
+     */
+    #ifdef DOXYGEN
+    static Einsums_BufferAllocator_vars &get_singleton();
+    #endif
+
+    /**
      * @brief Requests a number of bytes from the counter.
+     *
+     * @versionadded{1.1.0}
      */
     bool request_bytes(size_t bytes);
 
     /**
      * @brief Releases a number of bytes counter.
+     *
+     * @versionadded{1.1.0}
      */
     void release_bytes(size_t bytes);
 
     /**
      * @brief Update the maximum size of the counter.
+     *
+     * @versionadded{1.1.0}
      */
     static void update_max_size(config_mapping_type<std::string> const &options);
 
     /**
      * @brief Get the maximum size of the counter.
+     *
+     * @versionadded{1.1.0}
      */
     size_t get_max_size() const;
 
@@ -52,15 +76,33 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
 
     /**
      * @brief Get available bytes.
+     *
+     * @versionadded{1.1.0}
      */
     size_t get_available() const;
 
   private:
     explicit Einsums_BufferAllocator_vars() = default;
 
+    /**
+     * The maximum number of bytes available to the buffers.
+     *
+     * @versionadded{1.1.0}
+     */
     size_t _max_size{0};
+
+    /**
+     * The current number of bytes allocated by Einsums.
+     *
+     * @versionadded{1.1.0}
+     */
     size_t _curr_size{0};
 
+    /**
+     * Mutex for avoiding race conditions.
+     *
+     * @versionadded{1.1.0}
+     */
     std::mutex _lock;
 };
 

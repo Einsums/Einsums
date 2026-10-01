@@ -21,7 +21,7 @@ void norm_test() {
 
     A.vector_data() = temp;
 
-    T result = linear_algebra::norm(linear_algebra::Norm::One, A);
+    T result = linear_algebra::norm(linear_algebra::Norm::ONE, A);
 
     CHECK_THAT(result, Catch::Matchers::WithinRel(33.0, 0.1));
 }

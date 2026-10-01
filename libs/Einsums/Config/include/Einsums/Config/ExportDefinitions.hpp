@@ -10,9 +10,11 @@
 #if defined(DOXYGEN)
 /// Marks a class or function to be exported from Einsums or imported if it is
 /// consumed.
+/// @versionadded{1.0.0}
 #    define EINSUMS_EXPORT
 /// Marks a class or function to be exported from EinsumsExperimental or imported if it is
 /// consumed.
+/// @versionadded{1.0.0}
 #    define EINSUMS_EXPERIMENTAL_EXPORT
 #else
 

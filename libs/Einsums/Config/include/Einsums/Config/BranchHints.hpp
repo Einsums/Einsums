@@ -7,9 +7,21 @@
 
 #if defined(DOXYGEN)
 
-/// Hint at the compiler that \c expr is likely to be true.
+/**
+ * Hint at the compiler that \c expr is likely to be true.
+ *
+ * @param expr The expression to hint at.
+ *
+ * @versionadded{1.0.0}
+ */
 #    define EINSUMS_LIKEY(expr)
-/// Hint at the compiler that \c expr is likely to be false.
+/**
+ * Hint at the compiler that \c expr is likely to be false.
+ *
+ * @param expr The expression to hint at.
+ *
+ * @versionadded{1.0.0}
+ */
 #    define EINSUMS_UNLIKELY(expr)
 
 #else

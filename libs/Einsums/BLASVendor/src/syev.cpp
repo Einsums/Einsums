@@ -9,6 +9,8 @@
 #include <Einsums/Print.hpp>
 #include <Einsums/Profile.hpp>
 
+#include <stdexcept>
+
 #include "Common.hpp"
 
 namespace einsums::blas::vendor {

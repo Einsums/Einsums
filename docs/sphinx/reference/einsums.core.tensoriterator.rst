@@ -25,6 +25,8 @@ where :code:`X` is either :code:`F` for single-precision real values, :code:`D` 
 
     Iterator for tensors and tensor views.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: __next__()
 
         Get the next value in the tensor.
@@ -32,11 +34,15 @@ where :code:`X` is either :code:`F` for single-precision real values, :code:`D` 
         :return: The next value in the tensor.
         :raises StopIteration: Raises this when there are no more values to give.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: __iter__()
 
         Get the iterator for this object.
 
         :return: Returns a copy of the object.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: __reversed__()
 
@@ -44,8 +50,12 @@ where :code:`X` is either :code:`F` for single-precision real values, :code:`D` 
 
         :return: The reversed iterator.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: reversed() -> bool
 
         Gives whether the iterator goes forward or backwards.
 
         :return: :code:`True` if the iterator is going in reverse, :code:`False` if it is going forward.
+
+        .. versionadded:: 1.0.0

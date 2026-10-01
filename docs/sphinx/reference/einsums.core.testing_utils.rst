@@ -25,24 +25,34 @@ In order to make testing Einsums smoother, several utilities have been added to 
     to set its properties arbitrarily. This allows us to test code paths that are normally not
     allowed if the data in an object is validated properly, thus improving code coverage.
 
+    .. versionadded:: 1.0.0
+
     .. py:method:: __init__([copy])
 
         Create a new buffer object. Optionally, copy the data from another regular buffer object.
 
         :param copy: The buffer to copy from.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_ptr()
 
         Get the underlying pointer to the data.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: clear_ptr()
 
         Set the pointer in the buffer to the null pointer. This helps to test code when invalid
         addresses are passed in.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_ndim() -> int
 
         Get the number of dimensions.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_ndim(ndim: int)
 
@@ -51,6 +61,8 @@ In order to make testing Einsums smoother, several utilities have been added to 
     
         :param ndim: The new number of dimensions.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: set_ndim_noresize(ndim: int)
 
         Set the number of dimensions, but don't resize anything else. This leaves the buffer in an invalid
@@ -58,9 +70,13 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :param ndim: The new number of dimensions.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_itemsize() -> int
 
         Get the number of bytes in an item.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_itemszie(itemsize: int)
 
@@ -68,9 +84,13 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :param itemsize: The new size of the items.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_format() -> str
 
         Gets the format string.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_format(fmt: str)
 
@@ -81,14 +101,20 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :param str: The new format string.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_dims() -> list[int]
 
         Get the dimensions or shape of the buffer.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_dims(dims: list[int])
 
         Set the dimensions of the buffer. This does not update any of the other data, leaving
         the buffer in an invalid state.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_dim(axis: int, dim: int)
 
@@ -100,14 +126,20 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :raises IndexError: When :code:`axis` is outside of the size of the dimension array.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: get_strides() -> list[int]
 
         Get the strides of the buffer in bytes.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_strides(strides: list[int])
 
         Set the strides of the buffer in bytes. This does not update any of the other data, leaving
         the buffer in an invalid state.
+
+        .. versionadded:: 1.0.0
 
     .. py:method:: set_stride(axis: int, stride: int)
 
@@ -119,6 +151,8 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :raises IndexError: When :code:`axis` is outside of the size of the stride array.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: change_dims_size(new_size: int)
 
         Resizes the dimension array. This does not initialize any values added on to the end.
@@ -126,12 +160,16 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
         :param new_size: The new size for the dimension array.
 
+        .. versionadded:: 1.0.0
+
     .. py:method:: change_strides_size(new_size: int)
 
         Resizes the stride array. This does not initialize any values added on to the end.
         This will leave the buffer in an invalid state. This also doesn't change any other data.
 
         :param new_size: The new size for the stride array.
+
+        .. versionadded:: 1.0.0
 
 .. py:function:: throw_hip(status: int [, throw_success: bool = False])
 
@@ -141,6 +179,8 @@ In order to make testing Einsums smoother, several utilities have been added to 
     :param status: The status value to use for the exception.
     :param throw_success: Whether to throw an exception when passed the success condition.
 
+    .. versionadded:: 1.0.0
+
 .. py:function:: throw_hipblas(status: int [, throw_success: bool = False])
 
     Throws a hipBlas status exception. If :code:`status == 0`, it will not throw :py:class:`einsums.gpu_except.blasSuccess` unless
@@ -149,6 +189,8 @@ In order to make testing Einsums smoother, several utilities have been added to 
     :param status: The status value to use for the exception.
     :param throw_success: Whether to throw an exception when passed the success condition.
 
+    .. versionadded:: 1.0.0
+
 .. py:function:: throw_hipsolver(status: int [, throw_success: bool = False])
 
     Throws a hipSolver status exception. If :code:`status == 0`, it will not throw :py:class:`einsums.gpu_except.solverSuccess` unless
@@ -156,3 +198,5 @@ In order to make testing Einsums smoother, several utilities have been added to 
 
     :param status: The status value to use for the exception.
     :param throw_success: Whether to throw an exception when passed the success condition.
+
+    .. versionadded:: 1.0.0

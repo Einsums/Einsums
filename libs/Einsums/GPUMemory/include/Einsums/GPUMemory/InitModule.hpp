@@ -17,7 +17,7 @@
  */
 
 namespace einsums {
-
+#ifndef DOXYGEN
 EINSUMS_EXPORT int init_Einsums_GPUMemory();
 
 EINSUMS_EXPORT void add_Einsums_GPUMemory_arguments(argparse::ArgumentParser &);
@@ -29,5 +29,6 @@ namespace detail {
 static int initialize_module_Einsums_GPUMemory = init_Einsums_GPUMemory();
 
 }
+#endif
 
 } // namespace einsums

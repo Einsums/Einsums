@@ -12,7 +12,15 @@
 namespace einsums {
 
 /**
- * Computes the RMSD between two tensors of arbitrary dimension
+ * Computes the root-mean-squared-difference between two tensors of arbitrary dimension
+ *
+ * This is equivalent to @f$\sqrt{\frac{1}{n}\sum_{i} \left|A_i - B_i\right|^2}@f$ for rank-1 tensors, and extends to higher-rank tensors.
+ *
+ * @param[in] tensor1,tensor2 The inputs for the RMSD algorithm.
+ *
+ * @return The root-mean-squared-difference between two tensors.
+ *
+ * @versionadded{1.0.0}
  */
 template <TensorConcept AType, TensorConcept BType>
     requires requires {

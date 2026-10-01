@@ -52,6 +52,8 @@ consteval auto get_type_name_string_view() {
  * @brief Turns a type into a string representing its name.
  *
  * @return The string representation of the passed type.
+     *
+     * @versionadded{1.0.0}
  */
 template <typename T>
 consteval auto type_name() {

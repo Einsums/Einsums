@@ -264,8 +264,17 @@ breathe_doxygen_config_options = {
 }
 
 # ! this should work but doesn't. check after updating breathe version.
-# breathe_doxygen_aliases = {
-# }
+breathe_doxygen_aliases = {
+    "rst": r"\verbatim embed:rst:leading-asterisk",
+    "endrst": r"\endverbatim",
+    "versionadded{1}": r"\verbatim embed:rst ^^ .. versionadded:: \1 ^^ \endverbatim",
+    "versionremoved{1}": r"\verbatim embed:rst ^^ .. versionremoved:: \1 ^^ \endverbatim",
+    "versionchanged{1}": r"\verbatim embed:rst ^^ .. versionchanged:: \1 ^^ \endverbatim",
+    "versionaddeddesc{1}": r"\verbatim embed:rst:leading-asterisk .. versionadded:: \1",
+    "versionremoveddesc{1}": r"\verbatim embed:rst:leading-asterisk ^^ .. versionremoved:: \1",
+    "versionchangeddesc{1}": r"\verbatim embed:rst:leading-asterisk ^^ .. versionchanged:: \1",
+    "endversion": r"\endverbatim"
+}
 
 numfig = True
 primary_domain = 'cpp'
@@ -484,3 +493,22 @@ html_search_language = 'en'
 # Files mentioned in this list are used by sphinxcontrib.bibtex extension to generate
 # references/citations
 bibtex_bibfiles = ['references.bib']
+
+nitpick_ignore_regex = {(r"c(pp)?:identifier", r"size_t"),
+    (r"c(pp)?:identifier", "ptrdiff_t"),
+    (r"c(pp)?:identifier", r"u?int(8|16|32|64)_t"),
+    (r"cpp:identifier", r"pybind11(::.*)?"),
+    (r"cpp:identifier", r"_concept"),
+    (r"cpp:identifier", r"HIP.*"),
+    (r"cpp:identifier", r"hip.*_t"),
+    (r"cpp:identifier", r"argparse.*"),
+    (r"cpp:identifier", r".*detail.*"),
+    (r"cpp:identifier", r"hipError.*"),
+    (r"cpp:identifier", r"hipSuccess"),
+    (r"cpp:identifier", r"hip.*Complex"),
+    (r"cpp:identifier", r"dim3")
+    }
+
+suppress_warnings = [
+    "duplicate_declaration.cpp"
+]

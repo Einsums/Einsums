@@ -27,11 +27,13 @@ namespace einsums {
  * by computing @f$P^TDP@f$. If the mean is negative, then the result will be a negative
  * definite matrix.
  *
- * @param name The name for the matrix.
- * @param rows The number of rows.
- * @param cols The number of columns. Should equal the number of rows.
- * @param mean The mean for the eigenvalues. Defaults to 1.
+ * @param[in] name The name for the matrix.
+ * @param[in] rows The number of rows.
+ * @param[in] cols The number of columns. Should equal the number of rows.
+ * @param[in] mean The mean for the eigenvalues. Defaults to 1.
  * @return A new positive definite or negative definite matrix.
+ *
+ * @versionadded{1.0.0}
  */
 template <typename T = double>
 auto create_random_definite(std::string const &name, int rows, int cols, RemoveComplexT<T> mean = RemoveComplexT<T>{1.0}) -> Tensor<T, 2> {

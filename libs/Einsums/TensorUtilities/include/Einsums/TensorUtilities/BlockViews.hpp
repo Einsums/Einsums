@@ -24,10 +24,12 @@ namespace einsums {
  * This will create a view where the first block has been restricted to the top-left 3x3 block and the second has
  * been restricted to the middle 3x3 block.
  *
- * @param tensor The tensor to view.
- * @param spec A vector of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec A vector of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <CoreBlockTensorConcept TensorType, ContainerOf<Range> Spec>
 auto apply_view(TensorType const &tensor, Spec const &spec) {
@@ -81,10 +83,12 @@ auto apply_view(TensorType const &tensor, Spec const &spec) {
  * This will create a view where the first block has been restricted to the first three rows and middle three columns,
  * and the second block has been restricted to the middle three rows and the first three columns.
  *
- * @param tensor The tensor to view.
- * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <CoreBlockTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
@@ -152,10 +156,12 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  * - The (1,0) tile is restricted to the middle 3x3 block.
  * - The (1,1) tile is restricted to the middle three columns and first three rows.
  *
- * @param tensor The tensor to view.
- * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <CoreTiledTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
@@ -222,10 +228,12 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  * This will create a view where the first block has been restricted to the top-left 3x3 block and the second has
  * been restricted to the middle 3x3 block.
  *
- * @param tensor The tensor to view.
- * @param spec A vector of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec A vector of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <DeviceBlockTensorConcept TensorType, ContainerOf<Range> Spec>
 auto apply_view(TensorType const &tensor, Spec const &spec) {
@@ -279,10 +287,12 @@ auto apply_view(TensorType const &tensor, Spec const &spec) {
  * This will create a view where the first block has been restricted to the first three rows and middle three columns,
  * and the second block has been restricted to the middle three rows and the first three columns.
  *
- * @param tensor The tensor to view.
- * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <DeviceBlockTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {
@@ -350,10 +360,12 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
  * - The (1,0) tile is restricted to the middle 3x3 block.
  * - The (1,1) tile is restricted to the middle three columns and first three rows.
  *
- * @param tensor The tensor to view.
- * @param spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
+ * @param[in] tensor The tensor to view.
+ * @param[in] spec Several vectors of ranges that will be passed to the internal tensors to construct the view.
  *
  * @return A TiledTensorView that contains the resulting views.
+ *
+ * @versionadded{1.1.0}
  */
 template <DeviceTiledTensorConcept TensorType, ContainerOf<Range>... ViewSpec>
     requires requires {

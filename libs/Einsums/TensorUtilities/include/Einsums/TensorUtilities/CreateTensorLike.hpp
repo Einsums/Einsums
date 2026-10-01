@@ -23,8 +23,10 @@ namespace einsums {
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param t The provided tensor to copy the dimensions from.
+ * @param[in] t The provided tensor to copy the dimensions from.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -45,9 +47,11 @@ auto create_tensor_like(TensorType<DataType, Rank> const &t) -> Tensor<DataType,
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param tensor The provided tensor to copy the dimensions from.
- * @param mode The storage mode for the tensor. Defaults to device memory.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
+ * @param[in] mode The storage mode for the tensor. Defaults to device memory.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires DeviceRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -66,8 +70,10 @@ auto create_tensor_like(TensorType<DataType, Rank> const &tensor, einsums::detai
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param tensor The provided tensor to copy the dimensions from.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -85,9 +91,11 @@ auto create_tensor_like(TensorType<DataType, Rank> const &tensor) -> BlockTensor
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param tensor The provided tensor to copy the dimensions from.
- * @param mode The storage mode for the new tensor. Defaults to device memory.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
+ * @param[in] mode The storage mode for the new tensor. Defaults to device memory.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -109,9 +117,11 @@ auto create_tensor_like(TensorType<DataType, Rank> const &tensor, einsums::detai
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param name The name of the new tensor.
- * @param t The provided tensor to copy the dimensions from.
+ * @param[in] name The name of the new tensor.
+ * @param[in] t The provided tensor to copy the dimensions from.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -134,10 +144,12 @@ auto create_tensor_like(std::string const name, TensorType<DataType, Rank> const
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param name The name of the new tensor.
- * @param tensor The provided tensor to copy the dimensions from.
- * @param mode The storage mode. Defaults to device memory.
+ * @param[in] name The name of the new tensor.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
+ * @param[in] mode The storage mode. Defaults to device memory.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires DeviceRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -155,9 +167,11 @@ auto create_tensor_like(std::string const name, TensorType<DataType, Rank> const
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param name The name of the new tensor.
- * @param tensor The provided tensor to copy the dimensions from.
+ * @param[in] name The name of the new tensor.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
@@ -172,10 +186,12 @@ auto create_tensor_like(std::string const name, TensorType<DataType, Rank> const
  * @tparam TensorType The basic type of the provided tensor.
  * @tparam DataType The underlying datatype of the provided tensor.
  * @tparam Rank The rank of the provided tensor.
- * @param name The name of the new tensor.
- * @param tensor The provided tensor to copy the dimensions from.
- * @param mode The storage mode for the blocks. Defaults to device memory.
+ * @param[in] name The name of the new tensor.
+ * @param[in] tensor The provided tensor to copy the dimensions from.
+ * @param[in] mode The storage mode for the blocks. Defaults to device memory.
  * @return A new tensor with the same rank and dimensions as the provided tensor.
+ *
+ * @versionadded{1.0.0}
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
