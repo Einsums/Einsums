@@ -200,7 +200,7 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
         static cl::Flag noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report",
                                         profileCategory, cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
 
-        static cl::Opt<std::string> profileFilename("einsums:profile;filename", {}, "Generate profile filename",
+        static cl::Opt<std::string> profileFilename("einsums:profile:filename", {}, "Generate profile filename",
                                                     profileCategory, cl::Location(global_strings["profiler-filename"]),
                                                     cl::Default(std::string("profile.txt")), cl::ValueName("filename"));
 

@@ -45,6 +45,7 @@ std::remove_cvref_t<T> einsums_generic_link_loop(std::tuple<LinkDims...> const &
 
         T sum{0.0};
 
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < curr_dim; i++) {
             for_sequence<sizeof...(LinkPositionInA) / 2>([&](auto n) {
                 if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,
@@ -86,6 +87,7 @@ void einsums_generic_target_loop(std::tuple<TargetDims...> const &target_dims, s
     } else {
         size_t const curr_dim = std::get<I>(target_dims);
 
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < curr_dim; i++) {
             for_sequence<sizeof...(TargetPositionInC) / 2>([&](auto n) {
                 if constexpr (std::is_same_v<std::remove_cvref_t<std::tuple_element_t<2 * decltype(n)::value,

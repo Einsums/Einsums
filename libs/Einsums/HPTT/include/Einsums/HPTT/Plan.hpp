@@ -29,6 +29,7 @@
 
 #include <Einsums/HPTT/ComputeNode.hpp>
 
+#include <memory>
 #include <vector>
 
 namespace hptt {
@@ -52,6 +53,8 @@ class Plan {
      */
     Plan(std::vector<int> loopOrder, std::vector<int> numThreadsAtLoop);
 
+    Plan(std::FILE *fp, bool swap_endian);
+
     ~Plan() = default;
 
     /**
@@ -73,6 +76,8 @@ class Plan {
      * Print the loop order and number of threads for each level of loop.
      */
     void print() const;
+
+    void writeToFile(std::FILE *fp) const;
 
   private:
     /**

@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <vector>
 
+#include "Einsums/HPTT/Files.hpp"
 #include "HPTTTypes.hpp"
 #ifdef _OPENMP
 #    include <omp.h>
@@ -272,6 +273,9 @@ class Transpose {
      * Print information about this transpose operation.
      */
     void print() noexcept;
+
+    void writeToFile(std::FILE *fp) const;
+    Transpose(std::FILE *fp, floatType alpha, floatType const *A, floatType beta, floatType *B);
 
   private:
     /***************************************************
