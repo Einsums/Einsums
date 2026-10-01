@@ -19,23 +19,66 @@ void test_gemv() {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
     REQUIRE((y.dim(0) == 3));
+    VectorData<T> temp = VectorData<T>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
 
-    A.vector_data() = VectorData<T>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    x.vector_data() = VectorData<T>{11.0, 22.0, 33.0};
+    A.vector_data() = temp;
 
-    einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{154.0, 352.0, 550.0}));
+    REQUIRE(A.vector_data().data() == A.impl().data());
+    temp            = VectorData<T>{11.0, 22.0, 33.0};
+    x.vector_data() = temp;
 
     einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
+    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{154.0, 352.0, 550.0}));
+
+    einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
     CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<T>{330.0, 396.0, 462.0}));
 }
 
-TEST_CASE("gemv") {
-    SECTION("float") {
-        test_gemv<float>();
+TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
+    SECTION("Column Major") {
+        Tensor A = create_tensor<TestType, false>("A", 3, 3);
+        Tensor x = create_tensor<TestType, false>("x", 3);
+        Tensor y = create_tensor<TestType, false>("y", 3);
+
+        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+        REQUIRE((x.dim(0) == 3));
+        REQUIRE((y.dim(0) == 3));
+        VectorData<TestType> temp = VectorData<TestType>{TestType{1.0}, TestType{2.0}, TestType{3.0}, TestType{4.0}, TestType{5.0},
+                                                         TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
+
+        A.vector_data() = temp;
+
+        temp            = VectorData<TestType>{TestType{11.0}, TestType{22.0}, TestType{33.0}};
+        x.vector_data() = temp;
+
+        einsums::linear_algebra::gemv<true>(TestType{1.0}, A, x, TestType{0.0}, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<TestType>{TestType{154.0}, TestType{352.0}, TestType{550.0}}));
+
+        einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<TestType>{TestType{330.0}, TestType{396.0}, TestType{462.0}}));
     }
-    SECTION("double") {
-        test_gemv<double>();
+
+    SECTION("Row Major") {
+        Tensor A = create_tensor<TestType, true>("A", 3, 3);
+        Tensor x = create_tensor<TestType, true>("x", 3);
+        Tensor y = create_tensor<TestType, true>("y", 3);
+
+        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+        REQUIRE((x.dim(0) == 3));
+        REQUIRE((y.dim(0) == 3));
+        VectorData<TestType> temp = VectorData<TestType>{TestType{1.0}, TestType{2.0}, TestType{3.0}, TestType{4.0}, TestType{5.0},
+                                                         TestType{6.0}, TestType{7.0}, TestType{8.0}, TestType{9.0}};
+
+        A.vector_data() = temp;
+
+        temp            = VectorData<TestType>{TestType{11.0}, TestType{22.0}, TestType{33.0}};
+        x.vector_data() = temp;
+
+        einsums::linear_algebra::gemv<false>(TestType{1.0}, A, x, TestType{0.0}, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<TestType>{TestType{154.0}, TestType{352.0}, TestType{550.0}}));
+
+        einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
+        CHECK_THAT(y.vector_data(), Catch::Matchers::Equals(VectorData<TestType>{TestType{330.0}, TestType{396.0}, TestType{462.0}}));
     }
 }
 

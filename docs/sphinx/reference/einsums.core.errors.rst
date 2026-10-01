@@ -75,3 +75,9 @@ This page gives the internal errors used by Einsums that are available to Python
 .. py:exception:: enum_error
 
     Indicates that an invalid enumeration value was used.
+
+.. py:exception:: complex_conversion_error
+
+    Thrown when trying to convert a complex number to a real number. Instead, the input
+    data should be transformed into a real value in a way that makes sense for the operation
+    being performed. This is often either the magnitude or the real part.

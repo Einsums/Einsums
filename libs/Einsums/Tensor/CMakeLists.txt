@@ -53,6 +53,7 @@ einsums_add_module(
     Einsums_Iterator
     Einsums_Logging
     Einsums_TensorBase
+    Einsums_TensorImpl
     Einsums_TypeSupport
     Einsums_Profile
     Einsums_Print

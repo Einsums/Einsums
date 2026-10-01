@@ -20,6 +20,9 @@
 #include <EinsumsPy/LinearAlgebra/LinearAlgebra.hpp>
 #include <omp.h>
 
+#include "Einsums/LinearAlgebra.hpp"
+#include "EinsumsPy/Tensor/PyTensor.hpp"
+
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <Einsums/GPUStreams/GPUStreams.hpp>
 #    include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
@@ -529,7 +532,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
             detail::get_dim_ranges_for_many(C_info, _C_permute, A_info, _A_permute, B_info, _B_permute, _num_inds);
         std::vector<size_t> unique_strides, C_index_strides, C_dims(_C_permute.size());
 
-        dims_to_strides(unique_dims, unique_strides);
+        size_t elems = dims_to_strides(unique_dims, unique_strides);
 
         T       *C_data = (T *)C_info.ptr;
         T const *A_data = (T const *)A_info.ptr;
@@ -567,14 +570,14 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
             }
         }
 
-        EINSUMS_OMP_PARALLEL {
-            auto thread = omp_get_thread_num();
-            auto kernel = omp_get_num_threads();
+        //EINSUMS_OMP_PARALLEL {
+            // auto thread = omp_get_thread_num();
+            // auto kernel = omp_get_num_threads();
 
             std::vector<size_t> A_index(_A_permute.size()), B_index(_B_permute.size()), C_index(_C_permute.size()),
                 unique_index(unique_dims.size());
 
-            for (size_t sentinel = thread; sentinel < unique_dims[0] * unique_strides[0]; sentinel += kernel) {
+            for (size_t sentinel = 0; sentinel < elems; sentinel++) {
                 size_t quotient = sentinel;
 
                 for (int i = 0; i < unique_index.size(); i++) {
@@ -598,7 +601,7 @@ class EINSUMS_EXPORT PyEinsumGenericPlan {
 
                 C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
             }
-        }
+        //}
     }
 
   public:
@@ -751,37 +754,12 @@ class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
         if (A_info.ndim != B_info.ndim || A_info.ndim != C_info.ndim || A_info.ndim != this->_num_inds) {
             EINSUMS_THROW_EXCEPTION(num_argument_error, "Tensor ranks do not match the indices!");
         }
-        std::vector<size_t> index_strides(C_info.ndim);
-        size_t              elements = 1;
-        size_t              rank     = A_info.ndim;
 
-        for (int i = A_info.ndim - 1; i >= 0; i--) {
-            index_strides[i] = elements;
-            elements *= A_info.shape[i];
-        }
+        auto A_tens = python::buffer_to_tensor<T>(A);
+        auto B_tens = python::buffer_to_tensor<T>(B);
+        auto C_tens = python::buffer_to_tensor<T>(C);
 
-        T       *C_data = (T *)C_info.ptr;
-        T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < elements; sentinel++) {
-            size_t quotient = sentinel;
-            size_t A_index = 0, B_index = 0, C_index = 0;
-            for (int i = 0; i < rank; i++) {
-                size_t index = quotient / index_strides[i];
-                quotient %= index_strides[i];
-
-                A_index += (A_info.strides[i] / sizeof(T)) * index;
-                B_index += (B_info.strides[i] / sizeof(T)) * index;
-                C_index += (C_info.strides[i] / sizeof(T)) * index;
-            }
-
-            if (C_prefactor == T{0.0}) {
-                C_data[C_index] = AB_prefactor * A_data[A_index] * B_data[B_index];
-            } else {
-                C_data[C_index] = C_prefactor * C_data[C_index] + AB_prefactor * A_data[A_index] * B_data[B_index];
-            }
-        }
+        einsums::linear_algebra::detail::direct_product(AB_prefactor, A_tens, B_tens, C_prefactor, &C_tens);
     }
 
   public:
@@ -871,45 +849,45 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
 
     template <typename T>
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
-        if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
-                      !std::is_same_v<T, std::complex<double>>) {
+        // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
+        //               !std::is_same_v<T, std::complex<double>>) {
             this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
-        } else {
-            pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
+        // } else {
+        //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
-            T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
+        //     T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
 
-            size_t dC0 = 1, dC1 = 1;
+        //     size_t dC0 = 1, dC1 = 1;
 
-            for (auto const i : _CA_target_pos) {
-                dC0 *= C_info.shape[i];
-            }
+        //     for (auto const i : _CA_target_pos) {
+        //         dC0 *= C_info.shape[i];
+        //     }
 
-            for (auto const i : _CB_target_pos) {
-                dC1 *= C_info.shape[i];
-            }
+        //     for (auto const i : _CB_target_pos) {
+        //         dC1 *= C_info.shape[i];
+        //     }
 
-            if (this->_swap_AB) {
-                std::swap(dC0, dC1);
-            }
+        //     if (this->_swap_AB) {
+        //         std::swap(dC0, dC1);
+        //     }
 
-            T *C_data = (T *)C_info.ptr;
+        //     T *C_data = (T *)C_info.ptr;
 
-            if (C_prefactor == T{0.0}) {
-                std::memset(C_data, 0, C_info.shape[0] * C_info.strides[0]);
-            } else if (C_prefactor != T{1.0}) {
-                EINSUMS_OMP_PARALLEL_FOR_SIMD
-                for (size_t i = 0; i < C_info.shape[0] * C_info.strides[0]; i++) {
-                    C_data[i] *= C_prefactor;
-                }
-            }
+        //     if (C_prefactor == T{0.0}) {
+        //         std::memset(C_data, 0, C_info.shape[0] * C_info.strides[0]);
+        //     } else if (C_prefactor != T{1.0}) {
+        //         EINSUMS_OMP_PARALLEL_FOR_SIMD
+        //         for (size_t i = 0; i < C_info.shape[0] * C_info.strides[0]; i++) {
+        //             C_data[i] *= C_prefactor;
+        //         }
+        //     }
 
-            if (this->_swap_AB) {
-                std::swap(A_data, B_data);
-            }
+        //     if (this->_swap_AB) {
+        //         std::swap(A_data, B_data);
+        //     }
 
-            einsums::blas::ger(dC0, dC1, AB_prefactor, A_data, 1, B_data, 1, C_data, dC1);
-        }
+        //     einsums::blas::ger(dC0, dC1, AB_prefactor, A_data, 1, B_data, 1, C_data, dC1);
+        // }
     }
 
   public:
@@ -931,7 +909,7 @@ class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
 class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
   private:
     std::vector<int> _AC_pos, _A_link_pos, _B_link_pos;
-    int              _A_target_last_ind, _A_link_last_ind, _B_link_last_ind, _C_target_last_ind;
+    int              _A_target_last_ind, _A_link_last_ind, _A_target_first_ind, _A_link_first_ind, _B_link_last_ind, _C_target_last_ind;
     bool             _trans_A, _swap_AB;
 
 #ifdef EINSUMS_COMPUTE_CODE
@@ -1010,66 +988,80 @@ class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
 
     template <typename T>
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
-        if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
-                      !std::is_same_v<T, std::complex<double>>) {
+        // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
+        //               !std::is_same_v<T, std::complex<double>>) {
             this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
-        } else {
-            pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
+        // } else {
+        //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
-            if (_swap_AB) {
-                std::swap(A_info, B_info);
-            }
+        //     if (_swap_AB) {
+        //         std::swap(A_info, B_info);
+        //     }
 
-            T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
+        //     auto A_tens = python::buffer_to_tensor<T>(A);
+        //     auto B_tens = python::buffer_to_tensor<T>(B);
+        //     auto C_tens = python::buffer_to_tensor<T>(C);
 
-            size_t dC = 1, dA0 = 1, dA1 = 1, dB = 1, sA0, sA1, sB, sC;
+        //     if (_swap_AB) {
+        //         std::swap(A_tens, B_tens);
+        //     }
 
-            for (int i = 0; i < _AC_pos.size(); i++) {
-                assert(_AC_pos[i] < C_info.ndim);
-                dA0 *= C_info.shape[_AC_pos[i]];
-            }
-            for (int i = 0; i < _AC_pos.size(); i++) {
-                assert(_A_link_pos[i] < A_info.ndim);
-                dA1 *= A_info.shape[_A_link_pos[i]];
-            }
+        //     Dim<2>    dA;
+        //     Dim<1>    dB, dC;
+        //     Stride<2> sA;
+        //     Stride<1> sB, sC;
 
-            assert(_A_target_last_ind < A_info.ndim);
-            assert(_A_link_last_ind < A_info.ndim);
+        //     dA[0] = 1;
+        //     dA[1] = 1;
 
-            sA0 = A_info.strides[_A_target_last_ind] / sizeof(T);
-            sA1 = A_info.strides[_A_link_last_ind] / sizeof(T);
+        //     for (int i = 0; i < _AC_pos.size(); i++) {
+        //         assert(_AC_pos[i] < C_info.ndim);
+        //         dA[0] *= C_info.shape[_AC_pos[i]];
+        //     }
+        //     for (int i = 0; i < _AC_pos.size(); i++) {
+        //         assert(_A_link_pos[i] < A_info.ndim);
+        //         dA[1] *= A_info.shape[_A_link_pos[i]];
+        //     }
 
-            if (_trans_A) {
-                std::swap(dA0, dA1);
-                std::swap(sA0, sA1);
-            }
+        //     if (A_tens.is_row_major()) {
+        //         sA[0] = A_info.strides[_A_target_last_ind] / sizeof(T);
+        //         sA[1] = A_info.strides[_A_link_last_ind] / sizeof(T);
+        //     } else {
+        //         sA[0] = A_info.strides[_A_target_first_ind] / sizeof(T);
+        //         sA[1] = A_info.strides[_A_link_first_ind] / sizeof(T);
+        //     }
 
-            for (int i = 0; i < _B_link_pos.size(); i++) {
-                assert(_B_link_pos[i] < B_info.ndim);
-                dB *= B_info.shape[_B_link_pos[i]];
-            }
+        //     if (_trans_A) {
+        //         std::swap(dA[0], dA[1]);
+        //         std::swap(sA[0], sA[1]);
+        //     }
 
-            sB = B_info.strides[_B_link_last_ind] / sizeof(T);
+        //     dB[0] = B_tens.size();
 
-            for (int i = 0; i < _AC_pos.size(); i++) {
-                assert(_AC_pos[i] < C_info.ndim);
-                dC *= C_info.shape[_AC_pos[i]];
-            }
+        //     sB[0] = B_tens.get_incx();
 
-            assert(_C_target_last_ind < C_info.ndim);
-            sC = C_info.strides[_C_target_last_ind] / sizeof(T);
+        //     dC[0] = C_tens.size();
 
-            T *C_data = (T *)C_info.ptr;
+        //     assert(_C_target_last_ind < C_info.ndim);
+        //     sC[0] = C_tens.get_incx();
 
-            einsums::blas::gemv((_trans_A) ? 'T' : 'N', dA0, dA1, AB_prefactor, A_data, sA0, B_data, sB, C_prefactor, C_data, sC);
-        }
+        //     TensorView<T, 2> const tA{A_tens.data(), dA, sA};
+        //     TensorView<T, 1> const tB{B_tens.data(), dB, sB};
+        //     TensorView<T, 1>       tC{C_tens.data(), dC, sC};
+
+        //     if (_trans_A) {
+        //         linear_algebra::gemv('t', AB_prefactor, tA, tB, C_prefactor, &tC);
+        //     } else {
+        //         linear_algebra::gemv('n', AB_prefactor, tA, tB, C_prefactor, &tC);
+        //     }
+        // }
     }
 
   public:
     PyEinsumGemvPlan() = delete;
     explicit PyEinsumGemvPlan(std::vector<int> const &A_link_pos, std::vector<int> const &B_link_pos, std::vector<int> const &AC_pos,
-                              int A_target_last_ind, int A_link_last_ind, int B_link_last_ind, int C_target_last_ind, bool trans_A,
-                              bool swap_AB, PyEinsumGenericPlan const &plan_base);
+                              int A_target_last_ind, int A_link_last_ind, int A_target_first_ind, int A_link_first_ind, int B_link_last_ind,
+                              int C_target_last_ind, bool trans_A, bool swap_AB, PyEinsumGenericPlan const &plan_base);
     PyEinsumGemvPlan(PyEinsumGemvPlan const &) = default;
     ~PyEinsumGemvPlan()                        = default;
 
@@ -1211,72 +1203,72 @@ class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
 
     template <typename T>
     void execute_imp(T C_prefactor, pybind11::buffer &C, T AB_prefactor, pybind11::buffer const &A, pybind11::buffer const &B) const {
-        if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
-                      !std::is_same_v<T, std::complex<double>>) {
+        // if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
+        //               !std::is_same_v<T, std::complex<double>>) {
             this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
-        } else {
-            pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
+        // } else {
+        //     pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
-            T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
+        //     T const *A_data = (T const *)A_info.ptr, *B_data = (T const *)B_info.ptr;
 
-            size_t dC0 = 1, dC1 = 1, dA0 = 1, dA1 = 1, dB0 = 1, dB1 = 1, sA0, sA1, sB0, sB1, sC0, sC1;
+        //     size_t dC0 = 1, dC1 = 1, dA0 = 1, dA1 = 1, dB0 = 1, dB1 = 1, sA0, sA1, sB0, sB1, sC0, sC1;
 
-            for (int i = 0; i < _AC_inds.size(); i++) {
-                dA0 *= C_info.shape[_AC_inds[i]];
-            }
-            for (int i = 0; i < _AC_inds.size(); i++) {
-                dA1 *= A_info.shape[_A_link_inds[i]];
-            }
+        //     for (int i = 0; i < _AC_inds.size(); i++) {
+        //         dA0 *= C_info.shape[_AC_inds[i]];
+        //     }
+        //     for (int i = 0; i < _AC_inds.size(); i++) {
+        //         dA1 *= A_info.shape[_A_link_inds[i]];
+        //     }
 
-            sA0 = A_info.strides[_A_target_last_ind] / sizeof(T);
-            sA1 = A_info.strides[_A_link_last_ind] / sizeof(T);
+        //     sA0 = A_info.strides[_A_target_last_ind] / sizeof(T);
+        //     sA1 = A_info.strides[_A_link_last_ind] / sizeof(T);
 
-            if (_trans_A) {
-                std::swap(dA0, dA1);
-                std::swap(sA0, sA1);
-            }
+        //     if (_trans_A) {
+        //         std::swap(dA0, dA1);
+        //         std::swap(sA0, sA1);
+        //     }
 
-            for (int i = 0; i < _BC_inds.size(); i++) {
-                dB1 *= C_info.shape[_BC_inds[i]];
-            }
-            for (int i = 0; i < _BC_inds.size(); i++) {
-                dB0 *= B_info.shape[_B_link_inds[i]];
-            }
+        //     for (int i = 0; i < _BC_inds.size(); i++) {
+        //         dB1 *= C_info.shape[_BC_inds[i]];
+        //     }
+        //     for (int i = 0; i < _BC_inds.size(); i++) {
+        //         dB0 *= B_info.shape[_B_link_inds[i]];
+        //     }
 
-            sB1 = B_info.strides[_B_target_last_ind] / sizeof(T);
-            sB0 = B_info.strides[_B_link_last_ind] / sizeof(T);
+        //     sB1 = B_info.strides[_B_target_last_ind] / sizeof(T);
+        //     sB0 = B_info.strides[_B_link_last_ind] / sizeof(T);
 
-            if (_trans_B) {
-                std::swap(dB0, dB1);
-                std::swap(sB0, sB1);
-            }
+        //     if (_trans_B) {
+        //         std::swap(dB0, dB1);
+        //         std::swap(sB0, sB1);
+        //     }
 
-            for (int i = 0; i < _AC_inds.size(); i++) {
-                dC0 *= C_info.shape[_AC_inds[i]];
-            }
+        //     for (int i = 0; i < _AC_inds.size(); i++) {
+        //         dC0 *= C_info.shape[_AC_inds[i]];
+        //     }
 
-            for (int i = 0; i < _BC_inds.size(); i++) {
-                dC1 *= C_info.shape[_BC_inds[i]];
-            }
+        //     for (int i = 0; i < _BC_inds.size(); i++) {
+        //         dC1 *= C_info.shape[_BC_inds[i]];
+        //     }
 
-            sC0 = C_info.strides[_CA_target_last_ind] / sizeof(T);
-            sC1 = C_info.strides[_CB_target_last_ind] / sizeof(T);
+        //     sC0 = C_info.strides[_CA_target_last_ind] / sizeof(T);
+        //     sC1 = C_info.strides[_CB_target_last_ind] / sizeof(T);
 
-            if (_trans_C) {
-                std::swap(dC0, dC1);
-                std::swap(sC0, sC1);
-            }
+        //     if (_trans_C) {
+        //         std::swap(dC0, dC1);
+        //         std::swap(sC0, sC1);
+        //     }
 
-            T *C_data = (T *)C_info.ptr;
+        //     T *C_data = (T *)C_info.ptr;
 
-            if (!_trans_C) {
-                einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data, sB0,
-                                    C_prefactor, C_data, sC0);
-            } else {
-                einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data, sA0,
-                                    C_prefactor, C_data, sC0);
-            }
-        }
+        //     if (!_trans_C) {
+        //         einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data, sB0,
+        //                             C_prefactor, C_data, sC0);
+        //     } else {
+        //         einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data, sA0,
+        //                             C_prefactor, C_data, sC0);
+        //     }
+        // }
     }
 
   public:

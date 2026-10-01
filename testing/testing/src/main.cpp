@@ -51,7 +51,7 @@ extern "C" void __cdecl einsums_invalid_parameter(wchar_t const *const expressio
 #endif
 
 int einsums_main(int argc, char *const *const argv) {
-    int result;
+    int result = 0;
 #pragma omp parallel
     {
 #pragma omp single

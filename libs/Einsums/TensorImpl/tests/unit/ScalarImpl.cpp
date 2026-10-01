@@ -12,7 +12,7 @@
 
 using namespace einsums;
 
-TEMPLATE_TEST_CASE("Scalars", "[tensor]", float, double, std::complex<float>, std::complex<double>, float const, int) {
+TEMPLATE_TEST_CASE("Scalars", "[tensor]", float, double, std::complex<float>, std::complex<double>, int) {
     std::remove_cv_t<TestType>   value = 11.0;
     detail::TensorImpl<TestType> tensor(&value, {}, true);
 

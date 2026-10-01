@@ -223,7 +223,7 @@ void const *PyGPUView::dev_data() const noexcept {
     return _dev_data;
 }
 
-std::vector<size_t> PyGPUView::dims() const noexcept {
+BufferVector<size_t> PyGPUView::dims() const noexcept {
     return _dims;
 }
 
@@ -234,7 +234,7 @@ size_t PyGPUView::dim(int i) const {
     return _dims.at(i);
 }
 
-std::vector<size_t> PyGPUView::strides() const noexcept {
+BufferVector<size_t> PyGPUView::strides() const noexcept {
     return _strides;
 }
 

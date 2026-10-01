@@ -25,7 +25,43 @@
 #include <source_location>
 #include <stdexcept>
 
+#include "Einsums/TensorImpl/TensorImplOperations.hpp"
+
 namespace einsums::python {
+
+template <typename T>
+einsums::detail::TensorImpl<T> buffer_to_tensor(pybind11::buffer &buffer) {
+    pybind11::buffer_info info = buffer.request(true);
+
+    if (!info.item_type_is_equivalent_to<T>()) {
+        EINSUMS_THROW_EXCEPTION(pybind11::value_error, "The buffer format is not what is expected!");
+    }
+
+    BufferVector<size_t> strides(info.ndim);
+
+    for (int i = 0; i < info.ndim; i++) {
+        strides[i] = info.strides[i] / sizeof(T);
+    }
+
+    return einsums::detail::TensorImpl<T>(static_cast<T *>(info.ptr), info.shape, strides);
+}
+
+template <typename T>
+einsums::detail::TensorImpl<T> const buffer_to_tensor(pybind11::buffer const &buffer) {
+    pybind11::buffer_info info = buffer.request(false);
+
+    if (!info.item_type_is_equivalent_to<T>()) {
+        EINSUMS_THROW_EXCEPTION(pybind11::value_error, "The buffer format is not what is expected!");
+    }
+
+    BufferVector<size_t> strides(info.ndim);
+
+    for (int i = 0; i < info.ndim; i++) {
+        strides[i] = info.strides[i] / sizeof(T);
+    }
+
+    return einsums::detail::TensorImpl<T>(static_cast<T *>(info.ptr), info.shape, strides);
+}
 
 // Forward declarations
 #ifndef DOXYGEN
@@ -88,7 +124,7 @@ class EINSUMS_EXPORT PyTensorIterator {
      *
      * @brief Holds information to be able to turn _curr_index into a list of indices that can be passed to the underlying tensor.
      */
-    std::vector<size_t> _index_strides;
+    BufferVector<size_t> _index_strides;
 
     /**
      * @property _tensor
@@ -165,7 +201,7 @@ class EINSUMS_EXPORT PyTensorIterator {
             throw pybind11::stop_iteration();
         }
 
-        std::vector<size_t> ind(_tensor.rank());
+        BufferVector<size_t> ind(_tensor.rank());
 
         sentinel_to_indices(_curr_index, _index_strides, ind);
 
@@ -211,44 +247,13 @@ class PyTensor : public RuntimeTensor<T> {
      * Create a tensor from a Python buffer object.
      */
     PyTensor(pybind11::buffer const &buffer) {
-        auto buffer_info = buffer.request();
+        auto buffer_info = buffer.request(false);
 
-        this->_rank = buffer_info.ndim;
-        this->_dims.resize(this->_rank);
-        this->_strides.resize(this->_rank);
+        this->_data.resize(buffer_info.size);
 
-        size_t new_size = 1;
-        bool   is_view  = false;
-        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
-            this->_dims[i]    = buffer_info.shape[i];
-            this->_strides[i] = new_size;
-            new_size *= this->_dims[i];
+        this->_impl = einsums::detail::TensorImpl<T>(this->_data.data(), buffer_info.shape);
 
-            if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
-                is_view = true;
-            }
-        }
-
-        this->_data.resize(new_size);
-
-        if (buffer_info.item_type_is_equivalent_to<T>()) {
-            T *buffer_data = (T *)buffer_info.ptr;
-            if (is_view) {
-                EINSUMS_OMP_PARALLEL_FOR
-                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
-                    size_t buffer_sent = 0, hold = sentinel;
-                    for (int i = 0; i < this->_rank; i++) {
-                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
-                        hold %= this->_strides[i];
-                    }
-                    this->_data[sentinel] = buffer_data[buffer_sent];
-                }
-            } else {
-                std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
-            }
-        } else {
-            copy_and_cast_assign(buffer_info, is_view);
-        }
+        copy_and_cast_assign(buffer);
     }
 
     virtual ~PyTensor() = default;
@@ -272,12 +277,12 @@ class PyTensor : public RuntimeTensor<T> {
      * @param args The index of the value.
      */
     T &subscript_to_val(pybind11::tuple const &args) {
-        std::vector<size_t> pass(args.size());
+        BufferVector<ptrdiff_t> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
-            pass[i] = pybind11::cast<size_t>(arg);
+            pass[i] = pybind11::cast<ptrdiff_t>(arg);
         }
         return this->operator()(pass);
     }
@@ -288,12 +293,12 @@ class PyTensor : public RuntimeTensor<T> {
      * @param args The index of the value.
      */
     T const &subscript_to_val(pybind11::tuple const &args) const {
-        std::vector<size_t> pass(args.size());
+        BufferVector<ptrdiff_t> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
-            pass[i] = pybind11::cast<size_t>(arg);
+            pass[i] = pybind11::cast<ptrdiff_t>(arg);
         }
         return this->operator()(pass);
     }
@@ -304,13 +309,14 @@ class PyTensor : public RuntimeTensor<T> {
      * @param args The index of the view. Can contain slices.
      */
     RuntimeTensorView<T> subscript_to_view(pybind11::tuple const &args) {
-        std::vector<Range> pass(args.size());
+        BufferVector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
             if (pybind11::isinstance<pybind11::int_>(arg)) {
-                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+                ptrdiff_t ind = pybind11::cast<ptrdiff_t>(arg);
+                pass[i]       = RemovableRange{ind, ind};
             } else if (pybind11::isinstance<pybind11::slice>(arg)) {
                 size_t start, stop, step, slice_length;
                 (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
@@ -329,13 +335,14 @@ class PyTensor : public RuntimeTensor<T> {
      * @param args The index of the view. Can contain slices.
      */
     RuntimeTensorView<T> subscript_to_view(pybind11::tuple const &args) const {
-        std::vector<Range> pass(args.size());
+        BufferVector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
             if (pybind11::isinstance<pybind11::int_>(arg)) {
-                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+                ptrdiff_t ind = pybind11::cast<ptrdiff_t>(arg);
+                pass[i]       = RemovableRange{ind, ind};
             } else if (pybind11::isinstance<pybind11::slice>(arg)) {
                 size_t start, stop, step, slice_length;
                 (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
@@ -403,10 +410,10 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (args.size() < this->_rank) {
+            if (args.size() < this->rank()) {
                 return pybind11::cast(subscript_to_view(args));
             }
-            if (args.size() > this->_rank) {
+            if (args.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < args.size(); i++) {
@@ -440,11 +447,11 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (index.size() < this->_rank) {
+            if (index.size() < this->rank()) {
                 assign_to_view(value, index);
                 return pybind11::cast(subscript_to_view(index));
             }
-            if (index.size() > this->_rank) {
+            if (index.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < index.size(); i++) {
@@ -478,11 +485,11 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (index.size() < this->_rank) {
+            if (index.size() < this->rank()) {
                 assign_to_view(value, index);
                 return pybind11::cast(subscript_to_view(index));
             }
-            if (index.size() > this->_rank) {
+            if (index.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < index.size(); i++) {
@@ -527,7 +534,7 @@ class PyTensor : public RuntimeTensor<T> {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
             }
 
-            std::vector<Range> pass{Range{start, end}};
+            BufferVector<Range> pass{Range{start, end}};
 
             return this->operator()(pass);
         }
@@ -560,7 +567,7 @@ class PyTensor : public RuntimeTensor<T> {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
             }
 
-            std::vector<Range> pass{Range{start, end}};
+            BufferVector<Range> pass{Range{start, end}};
 
             return this->operator()(pass) = value;
         }
@@ -593,7 +600,7 @@ class PyTensor : public RuntimeTensor<T> {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
             }
 
-            std::vector<Range> pass{Range{start, end}};
+            BufferVector<Range> pass{Range{start, end}};
 
             return this->operator()(pass) = value;
         }
@@ -617,10 +624,10 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (this->_rank == 1) {
+            if (this->rank() == 1) {
                 return pybind11::cast(this->operator()(index));
             } else {
-                return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
+                return pybind11::cast(this->operator()(BufferVector<Range>{RemovableRange{index, index}}));
             }
         }
     }
@@ -644,11 +651,11 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
-            if (this->_rank <= 1) {
+            if (this->rank() <= 1) {
                 EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer to a single position!");
             }
 
-            return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
+            return this->operator()(BufferVector<Range>{RemovableRange{index, index}}) = value;
         }
     }
 
@@ -671,13 +678,13 @@ class PyTensor : public RuntimeTensor<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (this->_rank <= 1) {
+            if (this->rank() <= 1) {
                 T &target = this->operator()({index});
                 target    = value;
                 return pybind11::cast(target);
             }
 
-            auto view = this->operator()(std::vector<Range>{Range{-1, index}});
+            auto view = this->operator()(BufferVector<Range>{RemovableRange{index, index}});
             view      = value;
             return pybind11::cast(view);
         }
@@ -692,128 +699,77 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator=(pybind11::buffer const &buffer) {
         auto buffer_info = buffer.request();
 
-        if (this->rank() != buffer_info.ndim) {
-            this->_rank = buffer_info.ndim;
-            this->_dims.resize(this->_rank);
-            this->_strides.resize(this->_rank);
-        }
+        this->_data.resize(buffer_info.size);
 
-        size_t new_size = 1;
-        bool   is_view  = false;
-        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
-            this->_dims[i]    = buffer_info.shape[i];
-            this->_strides[i] = new_size;
-            new_size *= this->_dims[i];
+        this->_impl = einsums::detail::TensorImpl<T>(this->_data.data(), buffer_info.shape);
 
-            if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
-                is_view = true;
-            }
-        }
+        copy_and_cast_assign(buffer);
 
-        if (new_size != this->_data.size()) {
-            this->_data.resize(new_size);
-        }
-
-        if (buffer_info.item_type_is_equivalent_to<T>()) {
-            T *buffer_data = (T *)buffer_info.ptr;
-            if (is_view) {
-                EINSUMS_OMP_PARALLEL_FOR
-                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
-                    size_t buffer_sent = 0, hold = sentinel;
-                    for (int i = 0; i < this->_rank; i++) {
-                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
-                        hold %= this->_strides[i];
-                    }
-                    this->_data[sentinel] = buffer_data[buffer_sent];
-                }
-            } else {
-                std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
-            }
-        } else {
-            copy_and_cast_assign(buffer_info, is_view);
-        }
         return *this;
     }
 
   private:
-#define COPY_CAST_OP(OP, NAME)                                                                                                             \
-    /**                                                                                                                                    \
-     * @brief Copy values from a buffer into this, casting as necessary. Can also perform in-place operations.                             \
-     *                                                                                                                                     \
-     * @param buffer_info The buffer to operate on.                                                                                        \
-     * @param is_view Whether the buffer is a view, which would necessitate involving strides.                                             \
-     */                                                                                                                                    \
-    template <typename TOther>                                                                                                             \
-    void copy_and_cast_imp_##NAME(pybind11::buffer_info const &buffer_info, bool is_view) {                                                \
-        TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
-        if (is_view) {                                                                                                                     \
-            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
-            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
-                size_t buffer_sent = 0, hold = sentinel;                                                                                   \
-                for (int i = 0; i < this->_rank; i++) {                                                                                    \
-                    buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                           \
-                    hold %= this->_strides[i];                                                                                             \
-                }                                                                                                                          \
-                if constexpr (std::is_base_of_v<pybind11::object, TOther>) {                                                               \
-                    this->_data[sentinel] OP pybind11::cast<T>((TOther)buffer_data[buffer_sent]);                                          \
-                } else if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                 \
-                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                               \
-                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    this->_data[sentinel] OP(T) buffer_data[buffer_sent].real();                                                           \
-                } else {                                                                                                                   \
-                    this->_data[sentinel] OP(T) buffer_data[buffer_sent];                                                                  \
-                }                                                                                                                          \
-            }                                                                                                                              \
-        } else {                                                                                                                           \
-            EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                                  \
-            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
-                if constexpr (std::is_base_of_v<pybind11::object, TOther>) {                                                               \
-                    this->_data[sentinel] OP pybind11::cast<T>((TOther)buffer_data[sentinel]);                                             \
-                } else if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                 \
-                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[sentinel];                                                  \
-                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
-                    this->_data[sentinel] OP(T) buffer_data[sentinel].real();                                                              \
-                } else {                                                                                                                   \
-                    this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
-                }                                                                                                                          \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-    }                                                                                                                                      \
-    void copy_and_cast_##NAME(pybind11::buffer_info const &buffer_info, bool is_view) {                                                    \
-        auto format = buffer_info.format;                                                                                                  \
+#define COPY_CAST_OP(OP, NAME, FUNC)                                                                                                       \
+    void copy_and_cast_##NAME(pybind11::buffer const &buffer) {                                                                            \
+        pybind11::buffer_info buffer_info = buffer.request(false);                                                                         \
+        auto                  format      = buffer_info.format;                                                                            \
         if (format.length() > 2) {                                                                                                         \
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can't handle user defined data type {}!", format);                              \
         }                                                                                                                                  \
+        einsums::detail::TensorImpl<int8_t>                    int8tens;                                                                   \
+        einsums::detail::TensorImpl<uint8_t>                   uint8tens;                                                                  \
+        einsums::detail::TensorImpl<int16_t>                   int16tens;                                                                  \
+        einsums::detail::TensorImpl<uint16_t>                  uint16tens;                                                                 \
+        einsums::detail::TensorImpl<int32_t>                   int32tens;                                                                  \
+        einsums::detail::TensorImpl<uint32_t>                  uint32tens;                                                                 \
+        einsums::detail::TensorImpl<int64_t>                   int64tens;                                                                  \
+        einsums::detail::TensorImpl<uint64_t>                  uint64tens;                                                                 \
+        einsums::detail::TensorImpl<float>                     float_tens;                                                                 \
+        einsums::detail::TensorImpl<double>                    double_tens;                                                                \
+        einsums::detail::TensorImpl<long double>               ldouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<float>>       cfloat_tens;                                                                \
+        einsums::detail::TensorImpl<std::complex<double>>      cdouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<long double>> cldouble_tens;                                                              \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int8_t>(buffer_info, is_view);                                                                        \
+            int8tens = buffer_to_tensor<int8_t>(buffer);                                                                                   \
+            FUNC(int8tens, this->impl());                                                                                                  \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint8_t>(buffer_info, is_view);                                                                       \
+            uint8tens = buffer_to_tensor<uint8_t>(buffer);                                                                                 \
+            FUNC(uint8tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int16_t>(buffer_info, is_view);                                                                       \
+            int16tens = buffer_to_tensor<int16_t>(buffer);                                                                                 \
+            FUNC(int16tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint16_t>(buffer_info, is_view);                                                                      \
+            uint16tens = buffer_to_tensor<uint16_t>(buffer);                                                                               \
+            FUNC(uint16tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int32_t>(buffer_info, is_view);                                                                       \
+            int32tens = buffer_to_tensor<int32_t>(buffer);                                                                                 \
+            FUNC(int32tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint32_t>(buffer_info, is_view);                                                                      \
+            uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                               \
+            FUNC(uint32tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int64_t>(buffer_info, is_view);                                                                       \
+            int64tens = buffer_to_tensor<int64_t>(buffer);                                                                                 \
+            FUNC(int64tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint64_t>(buffer_info, is_view);                                                                      \
+            uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                               \
+            FUNC(uint64tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'l':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                copy_and_cast_imp_##NAME<int32_t>(buffer_info, is_view);                                                                   \
+                int32tens = buffer_to_tensor<int32_t>(buffer);                                                                             \
+                FUNC(int32tens, this->impl());                                                                                             \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                copy_and_cast_imp_##NAME<int64_t>(buffer_info, is_view);                                                                   \
+                int64tens = buffer_to_tensor<int64_t>(buffer);                                                                             \
+                FUNC(int64tens, this->impl());                                                                                             \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
@@ -821,37 +777,52 @@ class PyTensor : public RuntimeTensor<T> {
             break;                                                                                                                         \
         case 'L':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                copy_and_cast_imp_##NAME<uint32_t>(buffer_info, is_view);                                                                  \
+                uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                           \
+                FUNC(uint32tens, this->impl());                                                                                            \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                copy_and_cast_imp_##NAME<uint64_t>(buffer_info, is_view);                                                                  \
+                uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                           \
+                FUNC(uint64tens, this->impl());                                                                                            \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
             }                                                                                                                              \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
-            copy_and_cast_imp_##NAME<float>(buffer_info, is_view);                                                                         \
+            float_tens = buffer_to_tensor<float>(buffer);                                                                                  \
+            assert(float_tens.data() == (float *)buffer_info.ptr);                                                                         \
+            FUNC(float_tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'd':                                                                                                                          \
-            copy_and_cast_imp_##NAME<double>(buffer_info, is_view);                                                                        \
+            double_tens = buffer_to_tensor<double>(buffer);                                                                                \
+            assert(double_tens.data() == (double *)buffer_info.ptr);                                                                       \
+            FUNC(double_tens, this->impl());                                                                                               \
             break;                                                                                                                         \
         case 'g':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long double>(buffer_info, is_view);                                                                   \
+            ldouble_tens = buffer_to_tensor<long double>(buffer);                                                                          \
+            FUNC(ldouble_tens, this->impl());                                                                                              \
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
-            switch (format[1]) {                                                                                                           \
-            case 'f':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<float>>(buffer_info, is_view);                                                       \
-                break;                                                                                                                     \
-            case 'd':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<double>>(buffer_info, is_view);                                                      \
-                break;                                                                                                                     \
-            case 'g':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info, is_view);                                                 \
-                break;                                                                                                                     \
-            default:                                                                                                                       \
-                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                 \
-                                        pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                 \
+            if constexpr (!IsComplexV<T>) {                                                                                                \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
+                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
+            } else {                                                                                                                       \
+                switch (format[1]) {                                                                                                       \
+                case 'f':                                                                                                                  \
+                    cfloat_tens = buffer_to_tensor<std::complex<float>>(buffer);                                                           \
+                    FUNC(cfloat_tens, this->impl());                                                                                       \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    cdouble_tens = buffer_to_tensor<std::complex<double>>(buffer);                                                         \
+                    FUNC(cdouble_tens, this->impl());                                                                                      \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    cldouble_tens = buffer_to_tensor<std::complex<long double>>(buffer);                                                   \
+                    FUNC(cldouble_tens, this->impl());                                                                                     \
+                    break;                                                                                                                 \
+                default:                                                                                                                   \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,             \
+                                            pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                             \
+                }                                                                                                                          \
             }                                                                                                                              \
             break;                                                                                                                         \
         default:                                                                                                                           \
@@ -860,11 +831,11 @@ class PyTensor : public RuntimeTensor<T> {
         }                                                                                                                                  \
     }
 
-    COPY_CAST_OP(=, assign)
-    COPY_CAST_OP(+=, add)
-    COPY_CAST_OP(-=, sub)
-    COPY_CAST_OP(*=, mult)
-    COPY_CAST_OP(/=, div)
+    COPY_CAST_OP(=, assign, einsums::detail::copy_to)
+    COPY_CAST_OP(+=, add, einsums::detail::add_assign)
+    COPY_CAST_OP(-=, sub, einsums::detail::sub_assign)
+    COPY_CAST_OP(*=, mult, einsums::detail::mult_assign)
+    COPY_CAST_OP(/=, div, einsums::detail::div_assign)
 #undef COPY_CAST_OP
 
   public:
@@ -899,39 +870,7 @@ class PyTensor : public RuntimeTensor<T> {
             if (this->rank() != buffer_info.ndim) {                                                                                        \
                 EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with buffer object with different rank!");           \
             }                                                                                                                              \
-                                                                                                                                           \
-            bool is_view = false;                                                                                                          \
-            for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                              \
-                if (this->_dims[i] != buffer_info.shape[i]) {                                                                              \
-                    EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform " #OP " with buffer object with different dimensions!");     \
-                }                                                                                                                          \
-                                                                                                                                           \
-                if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {                                                  \
-                    is_view = true;                                                                                                        \
-                }                                                                                                                          \
-            }                                                                                                                              \
-                                                                                                                                           \
-            if (buffer_info.item_type_is_equivalent_to<T>()) {                                                                             \
-                T *buffer_data = (T *)buffer_info.ptr;                                                                                     \
-                if (is_view) {                                                                                                             \
-                    EINSUMS_OMP_PARALLEL_FOR                                                                                               \
-                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                       \
-                        size_t buffer_sent = 0, hold = sentinel;                                                                           \
-                        for (int i = 0; i < this->_rank; i++) {                                                                            \
-                            buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                   \
-                            hold %= this->_strides[i];                                                                                     \
-                        }                                                                                                                  \
-                        this->_data[sentinel] OP buffer_data[buffer_sent];                                                                 \
-                    }                                                                                                                      \
-                } else {                                                                                                                   \
-                    EINSUMS_OMP_PARALLEL_FOR_SIMD                                                                                          \
-                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                       \
-                        this->_data[sentinel] OP buffer_data[sentinel];                                                                    \
-                    }                                                                                                                      \
-                }                                                                                                                          \
-            } else {                                                                                                                       \
-                copy_and_cast_##NAME(buffer_info, is_view);                                                                                \
-            }                                                                                                                              \
+            copy_and_cast_##NAME(buffer);                                                                                                  \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
     }
@@ -953,7 +892,7 @@ class PyTensor : public RuntimeTensor<T> {
     /**
      * @brief Get the dimensions of the tensor.
      */
-    std::vector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, dims); }
+    BufferVector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(BufferVector<size_t>, RuntimeTensor<T>, dims); }
 
     /**
      * @brief Get the vector holding the tensor's data.
@@ -979,7 +918,7 @@ class PyTensor : public RuntimeTensor<T> {
     /**
      * @brief Get the strides of the tensor.
      */
-    std::vector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, strides); }
+    BufferVector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(BufferVector<size_t>, RuntimeTensor<T>, strides); }
 
     /**
      * @brief Create a rank-1 view of the tensor.
@@ -1045,49 +984,38 @@ class PyTensorView : public RuntimeTensorView<T> {
     PyTensorView(pybind11::buffer &buffer) {
         pybind11::buffer_info buffer_info = buffer.request(true);
 
-        if (buffer_info.item_type_is_equivalent_to<T>()) {
-            this->_data = (T *)buffer_info.ptr;
-        } else {
+        if (!buffer_info.item_type_is_equivalent_to<T>()) {
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can not create RuntimeTensorView from buffer whose type does not match!");
         }
 
-        this->_rank = buffer_info.ndim;
-        this->_dims.resize(this->_rank);
-        this->_strides.resize(this->_rank);
-        this->_index_strides.resize(this->_rank);
-        this->_size       = 1;
-        this->_alloc_size = buffer_info.shape[0] * buffer_info.strides[0];
+        BufferVector<size_t> strides(buffer_info.ndim);
 
-        for (int i = this->_rank - 1; i >= 0; i--) {
-            this->_strides[i]       = buffer_info.strides[i] / buffer_info.itemsize;
-            this->_dims[i]          = buffer_info.shape[i];
-            this->_index_strides[i] = this->_size;
-            this->_size *= this->_dims[i];
+        for (int i = 0; i < strides.size(); i++) {
+            strides[i] = buffer_info.strides[i] / sizeof(T);
         }
+
+        this->_impl = einsums::detail::TensorImpl<T>(static_cast<T *>(buffer_info.ptr), buffer_info.shape, strides);
     }
 
+    /**
+     * @brief Create a view of the given buffer.
+     *
+     * @param buffer The buffer to view.
+     */
     PyTensorView(pybind11::buffer const &buffer) {
         pybind11::buffer_info buffer_info = buffer.request(false);
 
-        if (buffer_info.item_type_is_equivalent_to<T>()) {
-            this->_data = (T *)buffer_info.ptr;
-        } else {
+        if (!buffer_info.item_type_is_equivalent_to<T>()) {
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can not create RuntimeTensorView from buffer whose type does not match!");
         }
 
-        this->_rank = buffer_info.ndim;
-        this->_dims.resize(this->_rank);
-        this->_strides.resize(this->_rank);
-        this->_index_strides.resize(this->_rank);
-        this->_size       = 1;
-        this->_alloc_size = buffer_info.shape[0] * buffer_info.strides[0];
+        BufferVector<size_t> strides(buffer_info.ndim);
 
-        for (int i = this->_rank - 1; i >= 0; i--) {
-            this->_strides[i]       = buffer_info.strides[i] / buffer_info.itemsize;
-            this->_dims[i]          = buffer_info.shape[i];
-            this->_index_strides[i] = this->_size;
-            this->_size *= this->_dims[i];
+        for (int i = 0; i < strides.size(); i++) {
+            strides[i] = buffer_info.strides[i] / sizeof(T);
         }
+
+        this->_impl = einsums::detail::TensorImpl<T>(static_cast<T *>(buffer_info.ptr), buffer_info.shape, strides);
     }
 
     virtual ~PyTensorView() = default;
@@ -1111,12 +1039,12 @@ class PyTensorView : public RuntimeTensorView<T> {
      * @param args The indices to use for the subscript.
      */
     T &subscript_to_val(pybind11::tuple const &args) {
-        std::vector<size_t> pass(args.size());
+        BufferVector<ptrdiff_t> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
-            pass[i] = pybind11::cast<size_t>(arg);
+            pass[i] = pybind11::cast<ptrdiff_t>(arg);
         }
         return this->operator()(pass);
     }
@@ -1127,12 +1055,12 @@ class PyTensorView : public RuntimeTensorView<T> {
      * @param args The indices to use for the subscript.
      */
     T const &subscript_to_val(pybind11::tuple const &args) const {
-        std::vector<size_t> pass(args.size());
+        BufferVector<ptrdiff_t> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
-            pass[i] = pybind11::cast<size_t>(arg);
+            pass[i] = pybind11::cast<ptrdiff_t>(arg);
         }
         return this->operator()(pass);
     }
@@ -1143,13 +1071,14 @@ class PyTensorView : public RuntimeTensorView<T> {
      * @param args The indices and slices to use for view creation.
      */
     RuntimeTensorView<T> subscript_to_view(pybind11::tuple const &args) {
-        std::vector<Range> pass(args.size());
+        BufferVector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
             if (pybind11::isinstance<pybind11::int_>(arg)) {
-                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+                ptrdiff_t ind = pybind11::cast<ptrdiff_t>(arg);
+                pass[i]       = RemovableRange{ind, ind};
             } else if (pybind11::isinstance<pybind11::slice>(arg)) {
                 size_t start, stop, step, slice_length;
                 (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
@@ -1168,13 +1097,14 @@ class PyTensorView : public RuntimeTensorView<T> {
      * @param args The indices and slices to use for view creation.
      */
     RuntimeTensorView<T> subscript_to_view(pybind11::tuple const &args) const {
-        std::vector<Range> pass(args.size());
+        BufferVector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
             auto const &arg = args[i];
 
             if (pybind11::isinstance<pybind11::int_>(arg)) {
-                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+                ptrdiff_t ind = pybind11::cast<ptrdiff_t>(arg);
+                pass[i]       = RemovableRange{ind, ind};
             } else if (pybind11::isinstance<pybind11::slice>(arg)) {
                 size_t start, stop, step, slice_length;
                 (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
@@ -1188,12 +1118,48 @@ class PyTensorView : public RuntimeTensorView<T> {
     }
 
     /**
+     * @brief Worker method that creates a view based on the indices and slices passed in.
+     *
+     * @param args The indices and slices to use for view creation.
+     */
+    RuntimeTensorView<T> subscript_to_view(pybind11::slice const &args) {
+        Range pass;
+
+        size_t start, stop, step, slice_length;
+        (pybind11::cast<pybind11::slice>(args)).compute(this->dim(0), &start, &stop, &step, &slice_length);
+        if (step != 1) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with step sizes other than 1!");
+        }
+        pass = Range{start, stop};
+
+        return this->operator()(pass);
+    }
+
+    /**
+     * @brief Worker method that creates a view based on the indices and slices passed in.
+     *
+     * @param args The indices and slices to use for view creation.
+     */
+    RuntimeTensorView<T> subscript_to_view(pybind11::slice const &args) const {
+        Range pass;
+
+        size_t start, stop, step, slice_length;
+        (pybind11::cast<pybind11::slice>(args)).compute(this->dim(0), &start, &stop, &step, &slice_length);
+        if (step != 1) {
+            EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with step sizes other than 1!");
+        }
+        pass = Range{start, stop};
+
+        return this->operator()(pass);
+    }
+
+    /**
      * @brief Set the value at the given point in the tensor to the given value.
      *
      * @param value The new value.
      * @param index Where to set the value.
      */
-    void set_value_at(T value, std::vector<size_t> const &index) {
+    void set_value_at(T value, std::vector<ptrdiff_t> const &index) {
         T &target = this->operator()(index);
         target    = value;
         return target;
@@ -1226,6 +1192,33 @@ class PyTensorView : public RuntimeTensorView<T> {
         this_view = value;
     }
 
+    /**
+     * @brief Copy the data from a buffer into this view.
+     *
+     * Creates a view of part of the tensor using the subscript arguments, then
+     * assigns the buffer to that view.
+     *
+     * @param view The buffer to copy.
+     * @param args The position to copy to.
+     */
+    void assign_to_view(pybind11::buffer const &view, pybind11::slice const &args) {
+        PyTensorView<T> this_view = subscript_to_view(args);
+
+        this_view = view;
+    }
+
+    /**
+     * @brief Fill part of the view with the given value.
+     *
+     * @param value The value to fill the view with.
+     * @param args Indices and slices that determine the part of the view to fill.
+     */
+    void assign_to_view(T value, pybind11::slice const &args) {
+        auto this_view = subscript_to_view(args);
+
+        this_view = value;
+    }
+
   public:
     /**
      * @brief Subscript into the tensor.
@@ -1246,10 +1239,10 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (args.size() < this->_rank) {
+            if (args.size() < this->rank()) {
                 return pybind11::cast(subscript_to_view(args));
             }
-            if (args.size() > this->_rank) {
+            if (args.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < args.size(); i++) {
@@ -1282,11 +1275,11 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (index.size() < this->_rank) {
+            if (index.size() < this->rank()) {
                 assign_to_view(value, index);
                 return pybind11::cast(*this);
             }
-            if (index.size() > this->_rank) {
+            if (index.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < index.size(); i++) {
@@ -1294,7 +1287,8 @@ class PyTensorView : public RuntimeTensorView<T> {
 
                 if (pybind11::isinstance<pybind11::slice>(arg)) {
                     assign_to_view(value, index);
-                    return subscript(index);
+                    pybind11::object out = this->subscript(index);
+                    return out;
                 }
             }
             EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer object to a single position!");
@@ -1319,11 +1313,11 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (index.size() < this->_rank) {
+            if (index.size() < this->rank()) {
                 assign_to_view(value, index);
                 return pybind11::cast(*this);
             }
-            if (index.size() > this->_rank) {
+            if (index.size() > this->rank()) {
                 EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to tensor!");
             }
             for (int i = 0; i < index.size(); i++) {
@@ -1361,13 +1355,13 @@ class PyTensorView : public RuntimeTensorView<T> {
         } else {
             size_t start, end, step, length;
 
-            pybind11::cast<pybind11::slice>(arg).compute(this->_dims[0], &start, &end, &step, &length);
+            pybind11::cast<pybind11::slice>(arg).compute(this->dim(0), &start, &end, &step, &length);
 
             if (step != 1) {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
             }
 
-            std::vector<Range> pass{Range{start, end}};
+            BufferVector<Range> pass{Range{start, end}};
 
             return this->operator()(pass);
         }
@@ -1385,23 +1379,15 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
                 return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
             return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
-            size_t start, end, step, length;
-
-            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
-
-            if (step != 1) {
-                EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
-            }
-
-            std::vector<Range> pass{Range{start, end}};
-
-            return this->operator()(pass) = value;
+            assign_to_view(value, index);
+            RuntimeTensorView<T> out = this->subscript(index);
+            return out;
         }
     }
 
@@ -1431,7 +1417,7 @@ class PyTensorView : public RuntimeTensorView<T> {
                 EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Can not handle slices with steps not equal to 1!");
             }
 
-            std::vector<Range> pass{Range{start, end}};
+            BufferVector<Range> pass{Range{start, end}};
 
             return this->operator()(pass) = value;
         }
@@ -1456,10 +1442,10 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (this->_rank == 1) {
+            if (this->rank() == 1) {
                 return pybind11::cast(this->operator()(index));
             } else {
-                return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
+                return pybind11::cast(this->operator()(BufferVector<Range>{RemovableRange{index, index}}));
             }
         }
     }
@@ -1482,11 +1468,11 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
-            if (this->_rank <= 1) {
+            if (this->rank() <= 1) {
                 EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer to a single position!");
             }
 
-            return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
+            return this->operator()(BufferVector<Range>{RemovableRange{index, index}}) = value;
         }
     }
 
@@ -1508,75 +1494,80 @@ class PyTensorView : public RuntimeTensorView<T> {
             }
             return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
-            if (this->_rank <= 1) {
+            if (this->rank() <= 1) {
                 T &target = this->operator()({index});
                 target    = value;
                 return pybind11::cast(target);
             }
 
-            auto view = this->operator()(std::vector<Range>{Range{-1, index}});
+            auto view = this->operator()(BufferVector<Range>{RemovableRange{index, index}});
             view      = value;
             return pybind11::cast(view);
         }
     }
 
   private:
-#define COPY_CAST_OP(OP, NAME)                                                                                                             \
-    template <typename TOther>                                                                                                             \
-    void copy_and_cast_imp_##NAME(pybind11::buffer_info const &buffer_info) {                                                              \
-        TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                                   \
-            size_t buffer_sent = 0, hold = sentinel, ord = 0;                                                                              \
-            for (int i = 0; i < this->_rank; i++) {                                                                                        \
-                ord += this->_strides[i] * (hold / this->_index_strides[i]);                                                               \
-                buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);                         \
-                hold %= this->_index_strides[i];                                                                                           \
-            }                                                                                                                              \
-            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                                        \
-            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) buffer_data[buffer_sent].real();                                                                    \
-            } else {                                                                                                                       \
-                this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-    }                                                                                                                                      \
-    void copy_and_cast_##NAME(pybind11::buffer_info const &buffer_info) {                                                                  \
-        auto format = buffer_info.format;                                                                                                  \
+#define COPY_CAST_OP(OP, NAME, FUNC)                                                                                                       \
+    void copy_and_cast_##NAME(pybind11::buffer const &buffer) {                                                                            \
+        pybind11::buffer_info buffer_info = buffer.request(false);                                                                         \
+        auto                  format      = buffer_info.format;                                                                            \
         if (format.length() > 2) {                                                                                                         \
             EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can't handle user defined data type {}!", format);                              \
         }                                                                                                                                  \
+        einsums::detail::TensorImpl<int8_t>                    int8tens;                                                                   \
+        einsums::detail::TensorImpl<uint8_t>                   uint8tens;                                                                  \
+        einsums::detail::TensorImpl<int16_t>                   int16tens;                                                                  \
+        einsums::detail::TensorImpl<uint16_t>                  uint16tens;                                                                 \
+        einsums::detail::TensorImpl<int32_t>                   int32tens;                                                                  \
+        einsums::detail::TensorImpl<uint32_t>                  uint32tens;                                                                 \
+        einsums::detail::TensorImpl<int64_t>                   int64tens;                                                                  \
+        einsums::detail::TensorImpl<uint64_t>                  uint64tens;                                                                 \
+        einsums::detail::TensorImpl<float>                     float_tens;                                                                 \
+        einsums::detail::TensorImpl<double>                    double_tens;                                                                \
+        einsums::detail::TensorImpl<long double>               ldouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<float>>       cfloat_tens;                                                                \
+        einsums::detail::TensorImpl<std::complex<double>>      cdouble_tens;                                                               \
+        einsums::detail::TensorImpl<std::complex<long double>> cldouble_tens;                                                              \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int8_t>(buffer_info);                                                                                 \
+            int8tens = buffer_to_tensor<int8_t>(buffer);                                                                                   \
+            FUNC(int8tens, this->impl());                                                                                                  \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint8_t>(buffer_info);                                                                                \
+            uint8tens = buffer_to_tensor<uint8_t>(buffer);                                                                                 \
+            FUNC(uint8tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int16_t>(buffer_info);                                                                                \
+            int16tens = buffer_to_tensor<int16_t>(buffer);                                                                                 \
+            FUNC(int16tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint16_t>(buffer_info);                                                                               \
+            uint16tens = buffer_to_tensor<uint16_t>(buffer);                                                                               \
+            FUNC(uint16tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int32_t>(buffer_info);                                                                                \
+            int32tens = buffer_to_tensor<int32_t>(buffer);                                                                                 \
+            FUNC(int32tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint32_t>(buffer_info);                                                                               \
+            uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                               \
+            FUNC(uint32tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int64_t>(buffer_info);                                                                                \
+            int64tens = buffer_to_tensor<int64_t>(buffer);                                                                                 \
+            FUNC(int64tens, this->impl());                                                                                                 \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<uint64_t>(buffer_info);                                                                               \
+            uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                               \
+            FUNC(uint64tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'l':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                copy_and_cast_imp_##NAME<int32_t>(buffer_info);                                                                            \
+                int32tens = buffer_to_tensor<int32_t>(buffer);                                                                             \
+                FUNC(int32tens, this->impl());                                                                                             \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                copy_and_cast_imp_##NAME<int64_t>(buffer_info);                                                                            \
+                int64tens = buffer_to_tensor<int64_t>(buffer);                                                                             \
+                FUNC(int64tens, this->impl());                                                                                             \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
@@ -1584,37 +1575,50 @@ class PyTensorView : public RuntimeTensorView<T> {
             break;                                                                                                                         \
         case 'L':                                                                                                                          \
             if (buffer_info.itemsize == 4) {                                                                                               \
-                copy_and_cast_imp_##NAME<uint32_t>(buffer_info);                                                                           \
+                uint32tens = buffer_to_tensor<uint32_t>(buffer);                                                                           \
+                FUNC(uint32tens, this->impl());                                                                                            \
             } else if (buffer_info.itemsize == 8) {                                                                                        \
-                copy_and_cast_imp_##NAME<uint64_t>(buffer_info);                                                                           \
+                uint64tens = buffer_to_tensor<uint64_t>(buffer);                                                                           \
+                FUNC(uint64tens, this->impl());                                                                                            \
             } else {                                                                                                                       \
                 EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                                \
                                         "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                    \
             }                                                                                                                              \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
-            copy_and_cast_imp_##NAME<float>(buffer_info);                                                                                  \
+            float_tens = buffer_to_tensor<float>(buffer);                                                                                  \
+            FUNC(float_tens, this->impl());                                                                                                \
             break;                                                                                                                         \
         case 'd':                                                                                                                          \
-            copy_and_cast_imp_##NAME<double>(buffer_info);                                                                                 \
+            double_tens = buffer_to_tensor<double>(buffer);                                                                                \
+            FUNC(double_tens, this->impl());                                                                                               \
             break;                                                                                                                         \
         case 'g':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long double>(buffer_info);                                                                            \
+            ldouble_tens = buffer_to_tensor<long double>(buffer);                                                                          \
+            FUNC(ldouble_tens, this->impl());                                                                                              \
             break;                                                                                                                         \
         case 'Z':                                                                                                                          \
-            switch (format[1]) {                                                                                                           \
-            case 'f':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<float>>(buffer_info);                                                                \
-                break;                                                                                                                     \
-            case 'd':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<double>>(buffer_info);                                                               \
-                break;                                                                                                                     \
-            case 'g':                                                                                                                      \
-                copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info);                                                          \
-                break;                                                                                                                     \
-            default:                                                                                                                       \
-                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                 \
-                                        pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                 \
+            if constexpr (!IsComplexV<T>) {                                                                                                \
+                EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                          \
+                                        "Can not cast complex to real! Perform your preferred cast before hand.");                         \
+            } else {                                                                                                                       \
+                switch (format[1]) {                                                                                                       \
+                case 'f':                                                                                                                  \
+                    cfloat_tens = buffer_to_tensor<std::complex<float>>(buffer);                                                           \
+                    FUNC(cfloat_tens, this->impl());                                                                                       \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    cdouble_tens = buffer_to_tensor<std::complex<double>>(buffer);                                                         \
+                    FUNC(cdouble_tens, this->impl());                                                                                      \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    cldouble_tens = buffer_to_tensor<std::complex<long double>>(buffer);                                                   \
+                    FUNC(cldouble_tens, this->impl());                                                                                     \
+                    break;                                                                                                                 \
+                default:                                                                                                                   \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,             \
+                                            pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                             \
+                }                                                                                                                          \
             }                                                                                                                              \
             break;                                                                                                                         \
         default:                                                                                                                           \
@@ -1623,50 +1627,14 @@ class PyTensorView : public RuntimeTensorView<T> {
         }                                                                                                                                  \
     }
 
-    COPY_CAST_OP(=, assign)
-    COPY_CAST_OP(+=, add)
-    COPY_CAST_OP(-=, sub)
-    COPY_CAST_OP(*=, mult)
-    COPY_CAST_OP(/=, div)
+    COPY_CAST_OP(=, assign, einsums::detail::copy_to)
+    COPY_CAST_OP(+=, add, einsums::detail::add_assign)
+    COPY_CAST_OP(-=, sub, einsums::detail::sub_assign)
+    COPY_CAST_OP(*=, mult, einsums::detail::mult_assign)
+    COPY_CAST_OP(/=, div, einsums::detail::div_assign)
 #undef COPY_CAST_OP
 
   public:
-    /**
-     * @brief Copy the data from a buffer into the view.
-     *
-     * @param buffer The buffer to copy.
-     */
-    PyTensorView<T> &operator=(pybind11::buffer const &buffer) {
-        auto buffer_info = buffer.request();
-
-        if (this->rank() != buffer_info.ndim) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not change the rank of a runtime tensor view when assigning!");
-        }
-
-        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
-            if (this->_dims[i] != buffer_info.shape[i]) {
-                EINSUMS_THROW_EXCEPTION(dimension_error, "Can not assign buffer to runtime tensor view with different shapes!");
-            }
-        }
-
-        if (buffer_info.item_type_is_equivalent_to<T>()) {
-            T *buffer_data = (T *)buffer_info.ptr;
-            EINSUMS_OMP_PARALLEL_FOR
-            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
-                size_t buffer_sent = 0, hold = sentinel, ord = 0;
-                for (int i = 0; i < this->_rank; i++) {
-                    ord += this->_strides[i] * (hold / this->_index_strides[i]);
-                    buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);
-                    hold %= this->_index_strides[i];
-                }
-                this->_data[ord] = buffer_data[buffer_sent];
-            }
-        } else {
-            copy_and_cast_assign(buffer_info);
-        }
-        return *this;
-    }
-
 #define OPERATOR(OP, NAME, OPNAME)                                                                                                         \
     template <typename TOther>                                                                                                             \
     RuntimeTensorView<T> &operator OP(TOther const &other) {                                                                               \
@@ -1676,6 +1644,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     RuntimeTensorView<T> &operator OP(RuntimeTensor<TOther> const &other) {                                                                \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
+                                                                                                                                           \
     template <typename TOther>                                                                                                             \
     RuntimeTensorView<T> &operator OP(RuntimeTensorView<TOther> const &other) {                                                            \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
@@ -1693,42 +1662,112 @@ class PyTensorView : public RuntimeTensorView<T> {
             return pybind11::detail::cast_safe<RuntimeTensorView<T> &>(std::move(o));                                                      \
         } else {                                                                                                                           \
             auto buffer_info = buffer.request();                                                                                           \
+            if (buffer_info.ndim == 0) {                                                                                                   \
+                if (buffer_info.format.length() == 0 || buffer_info.format.length() > 2) {                                                 \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle user defined buffer format \"{}\"!",                  \
+                                            buffer_info.format);                                                                           \
+                }                                                                                                                          \
+                switch (buffer_info.format[0]) {                                                                                           \
+                case 'b':                                                                                                                  \
+                    *this OP einsums::detail::convert<int8_t, T>(*static_cast<int8_t *>(buffer_info.ptr));                                 \
+                    break;                                                                                                                 \
+                case 'B':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint8_t, T>(*static_cast<uint8_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'h':                                                                                                                  \
+                    *this OP einsums::detail::convert<int16_t, T>(*static_cast<int16_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'H':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint16_t, T>(*static_cast<uint16_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'i':                                                                                                                  \
+                    *this OP einsums::detail::convert<int32_t, T>(*static_cast<int32_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'I':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint32_t, T>(*static_cast<uint32_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'q':                                                                                                                  \
+                    *this OP einsums::detail::convert<int64_t, T>(*static_cast<int64_t *>(buffer_info.ptr));                               \
+                    break;                                                                                                                 \
+                case 'Q':                                                                                                                  \
+                    *this OP einsums::detail::convert<uint64_t, T>(*static_cast<uint64_t *>(buffer_info.ptr));                             \
+                    break;                                                                                                                 \
+                case 'l':                                                                                                                  \
+                    if (buffer_info.itemsize == 4) {                                                                                       \
+                        *this OP einsums::detail::convert<int32_t, T>(*static_cast<int32_t *>(buffer_info.ptr));                           \
+                    } else if (buffer_info.itemsize == 8) {                                                                                \
+                        *this OP einsums::detail::convert<int64_t, T>(*static_cast<int64_t *>(buffer_info.ptr));                           \
+                    } else {                                                                                                               \
+                        EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                        \
+                                                "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");            \
+                    }                                                                                                                      \
+                    break;                                                                                                                 \
+                case 'L':                                                                                                                  \
+                    if (buffer_info.itemsize == 4) {                                                                                       \
+                        *this OP einsums::detail::convert<uint32_t, T>(*static_cast<uint32_t *>(buffer_info.ptr));                         \
+                    } else if (buffer_info.itemsize == 8) {                                                                                \
+                        *this OP einsums::detail::convert<uint64_t, T>(*static_cast<uint64_t *>(buffer_info.ptr));                         \
+                    } else {                                                                                                               \
+                        EINSUMS_THROW_EXCEPTION(std::runtime_error,                                                                        \
+                                                "Something's wrong with your system! Python ints are neither 32 nor 64 bits!");            \
+                    }                                                                                                                      \
+                    break;                                                                                                                 \
+                case 'f':                                                                                                                  \
+                    *this OP einsums::detail::convert<float, T>(*static_cast<float *>(buffer_info.ptr));                                   \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    *this OP einsums::detail::convert<double, T>(*static_cast<double *>(buffer_info.ptr));                                 \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    *this OP einsums::detail::convert<long double, T>(*static_cast<long double *>(buffer_info.ptr));                       \
+                    break;                                                                                                                 \
+                case 'Z':                                                                                                                  \
+                    if constexpr (!IsComplexV<T>) {                                                                                        \
+                        EINSUMS_THROW_EXCEPTION(complex_conversion_error,                                                                  \
+                                                "Can not cast complex to real! Perform your preferred cast before hand.");                 \
+                    } else {                                                                                                               \
+                        switch (buffer_info.format[1]) {                                                                                   \
+                        case 'f':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<float>, T>(                                                     \
+                                *static_cast<std::complex<float> *>(buffer_info.ptr));                                                     \
+                            break;                                                                                                         \
+                        case 'd':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<double>, T>(                                                    \
+                                *static_cast<std::complex<double> *>(buffer_info.ptr));                                                    \
+                            break;                                                                                                         \
+                        case 'g':                                                                                                          \
+                            *this OP einsums::detail::convert<std::complex<long double>, T>(                                               \
+                                *static_cast<std::complex<long double> *>(buffer_info.ptr));                                               \
+                            break;                                                                                                         \
+                        default:                                                                                                           \
+                            EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle complex buffer format \"{}\"!",               \
+                                                    buffer_info.format);                                                                   \
+                        }                                                                                                                  \
+                    }                                                                                                                      \
+                default:                                                                                                                   \
+                    EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Could not handle user-defined buffer format \"{}\"!",                  \
+                                            buffer_info.format);                                                                           \
+                }                                                                                                                          \
+                return *this;                                                                                                              \
+            }                                                                                                                              \
                                                                                                                                            \
             if (this->rank() != buffer_info.ndim) {                                                                                        \
-                EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with buffer object with different rank!");           \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                               \
+                                        "Can not perform " #OP " with buffer object with different rank! Got {}, needed {}.",              \
+                                        buffer_info.ndim, this->rank());                                                                   \
             }                                                                                                                              \
-            for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                              \
-                if (this->_dims[i] != buffer_info.shape[i]) {                                                                              \
-                    EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform " #OP " with buffer object with different dimensions!");     \
-                }                                                                                                                          \
-            }                                                                                                                              \
-                                                                                                                                           \
-            if (buffer_info.item_type_is_equivalent_to<T>()) {                                                                             \
-                T *buffer_data = (T *)buffer_info.ptr;                                                                                     \
-                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
-                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                           \
-                    size_t buffer_sent = 0, hold = sentinel, ord = 0;                                                                      \
-                    for (int i = 0; i < this->_rank; i++) {                                                                                \
-                        ord += this->_strides[i] * (hold / this->_index_strides[i]);                                                       \
-                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);                 \
-                        hold %= this->_index_strides[i];                                                                                   \
-                    }                                                                                                                      \
-                    this->_data[ord] OP buffer_data[buffer_sent];                                                                          \
-                }                                                                                                                          \
-            } else {                                                                                                                       \
-                copy_and_cast_##NAME(buffer_info);                                                                                         \
-            }                                                                                                                              \
+            copy_and_cast_##NAME(buffer);                                                                                                  \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
     }
 
+    OPERATOR(=, assign, operator=)
     OPERATOR(*=, mult, operator*=)
     OPERATOR(/=, div, operator/=)
     OPERATOR(+=, add, operator+=)
     OPERATOR(-=, sub, operator-=)
 
 #undef OPERATOR
-
     /**
      * @brief Get the dimension along a given axis.
      *
@@ -1739,7 +1778,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     /**
      * @brief Get the dimensions of the view.
      */
-    std::vector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, dims); }
+    BufferVector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(BufferVector<size_t>, RuntimeTensorView<T>, dims); }
 
     /**
      * @brief Get the stride along a given axis.
@@ -1751,7 +1790,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     /**
      * @brief Get the strides of the view.
      */
-    std::vector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, strides); }
+    BufferVector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(BufferVector<size_t>, RuntimeTensorView<T>, strides); }
 
     /**
      * @brief Check whether the view sees all of the data of the tensor it views.

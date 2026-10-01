@@ -20,8 +20,8 @@
 #include <tuple>
 namespace einsums::tensor_algebra::detail {
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BlockTensorConcept BType,
+          BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires(std::tuple_size_v<IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>> != 0)
 auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
@@ -46,12 +46,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         if (A.block_dim(i) == 0 || B.block_dim(i) == 0 || C->block_dim(i) == 0) {
             continue;
         }
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i],
+                                                             B_indices, B[i]);
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BlockTensorConcept BType,
+          BasicTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires requires {
         requires(std::tuple_size_v<IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>> != 0);
         requires CType::Rank >= 1;
@@ -81,8 +82,8 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         }
         std::array<Range, CType::Rank> view_index;
         view_index.fill(A.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index)), AB_prefactor, A_indices, A[i],
-                                               B_indices, B[i]);
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(std::apply(*C, view_index)), AB_prefactor, A_indices,
+                                                             A[i], B_indices, B[i]);
     }
 }
 
@@ -103,8 +104,8 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
 //     static_assert(false, "Needs to be implemented.");
 // }
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
                                                 typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -140,7 +141,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                 continue;
             }
             CDataType tempC;
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType{0.0}, C_indices, &tempC, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType{0.0}, C_indices, &tempC, AB_prefactor, A_indices, A[i],
+                                                                 B_indices, B[i]);
             temp[omp_get_thread_num()] += (CDataType)tempC;
         }
 
@@ -167,7 +169,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                 continue;
             }
             CType temp_c = *C;
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i],
+                                                                 B_indices, B[i]);
             temp += (CDataType)temp_c;
         }
         *C += temp;
@@ -176,8 +179,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #endif
 }
 
-template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BasicTensorConcept AType, BlockTensorConcept BType,
+          BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires(VectorConcept<AType>)
 auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -203,13 +206,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         }
         std::array<Range, AType::Rank> view_index;
         view_index.fill(B.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, std::apply(A, view_index),
-                                               B_indices, B[i]);
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices,
+                                                             std::apply(A, view_index), B_indices, B[i]);
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BasicTensorConcept AType, BlockTensorConcept BType,
+          BasicTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires requires {
         requires VectorConcept<AType>;
         requires CType::Rank > 0;
@@ -229,13 +232,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         view_index_c.fill(B.block_range(i));
         std::array<Range, AType::Rank> view_index_a;
         view_index_a.fill(B.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices,
-                                               std::apply(A, view_index_a), B_indices, B[i]);
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor,
+                                                             A_indices, std::apply(A, view_index_a), B_indices, B[i]);
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BasicTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires(VectorConcept<AType>)
 auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -258,8 +261,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             }
             std::array<Range, AType::Rank> view_index;
             view_index.fill(B.block_range(i));
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices,
-                                                   std::apply(A, view_index), B_indices, B[i]);
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor,
+                                                                 A_indices, std::apply(A, view_index), B_indices, B[i]);
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -290,8 +293,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             CType                          temp_c = *C;
             std::array<Range, AType::Rank> view_index;
             view_index.fill(B.block_range(i));
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, std::apply(A, view_index),
-                                                   B_indices, B[i]);
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices,
+                                                                 std::apply(A, view_index), B_indices, B[i]);
             temp += (CDataType)temp_c;
         }
         *C += temp;
@@ -300,8 +303,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 #endif
 }
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BasicTensorConcept BType,
+          BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires(VectorConcept<BType>)
 auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -327,13 +330,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         }
         std::array<Range, BType::Rank> view_index;
         view_index.fill(A.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices,
-                                               std::apply(B, view_index));
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i],
+                                                             B_indices, std::apply(B, view_index));
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BasicTensorConcept BType,
+          BasicTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
     requires requires {
         requires CType::Rank > 0;
         requires VectorConcept<BType>;
@@ -353,13 +356,13 @@ auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::t
         view_index_c.fill(A.block_range(i));
         std::array<Range, BType::Rank> view_index_b;
         view_index_b.fill(A.block_range(i));
-        einsum<OnlyUseGenericAlgorithm, false>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices, A[i],
-                                               B_indices, std::apply(B, view_index_b));
+        einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor,
+                                                             A_indices, A[i], B_indices, std::apply(B, view_index_b));
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, ScalarConcept CType, typename... CIndices,
-          typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, bool ConjA, bool ConjB, BlockTensorConcept AType, BasicTensorConcept BType, ScalarConcept CType,
+          typename... CIndices, typename... AIndices, typename... BIndices>
     requires(VectorConcept<BType>)
 auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
@@ -382,8 +385,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             }
             std::array<Range, BType::Rank> view_index;
             view_index.fill(A.block_range(i));
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i],
-                                                   B_indices, std::apply(B, view_index));
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor,
+                                                                 A_indices, A[i], B_indices, std::apply(B, view_index));
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -414,8 +417,8 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             CType                          temp_c = *C;
             std::array<Range, BType::Rank> view_index;
             view_index.fill(A.block_range(i));
-            einsum<OnlyUseGenericAlgorithm, false>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices,
-                                                   std::apply(B, view_index));
+            einsum<OnlyUseGenericAlgorithm, false, ConjA, ConjB>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i],
+                                                                 B_indices, std::apply(B, view_index));
             temp += temp_c;
         }
         *C += temp;

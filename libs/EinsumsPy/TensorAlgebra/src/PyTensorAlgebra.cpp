@@ -57,11 +57,13 @@ PyEinsumGerPlan::PyEinsumGerPlan(std::vector<int> const &CA_target_pos, std::vec
 }
 
 PyEinsumGemvPlan::PyEinsumGemvPlan(std::vector<int> const &A_link_inds, std::vector<int> const &B_link_inds,
-                                   std::vector<int> const &AC_inds, int A_target_last_ind, int A_link_last_ind, int B_link_last_ind,
-                                   int C_target_last_ind, bool trans_A, bool swap_AB, PyEinsumGenericPlan const &plan_base)
+                                   std::vector<int> const &AC_inds, int A_target_last_ind, int A_link_last_ind, int A_target_first_ind,
+                                   int A_link_first_ind, int B_link_last_ind, int C_target_last_ind, bool trans_A, bool swap_AB,
+                                   PyEinsumGenericPlan const &plan_base)
     : PyEinsumGenericPlan(plan_base), _A_link_pos{A_link_inds}, _B_link_pos{B_link_inds}, _AC_pos{AC_inds}, _trans_A{trans_A},
       _A_link_last_ind{A_link_last_ind}, _A_target_last_ind{A_target_last_ind}, _B_link_last_ind{B_link_last_ind},
-      _C_target_last_ind{C_target_last_ind}, _swap_AB{swap_AB} {
+      _C_target_last_ind{C_target_last_ind}, _swap_AB{swap_AB}, _A_target_first_ind{A_target_first_ind},
+      _A_link_first_ind{A_link_first_ind} {
 }
 
 PyEinsumGemmPlan::PyEinsumGemmPlan(std::vector<int> const &A_link_inds, std::vector<int> const &B_link_inds,
@@ -310,6 +312,16 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
                                                        return a.second < b.second;
                                                    })
                                       ->second,
+                A_target_first_ind = std::min_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
+                                                      [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
+                                                          return a.second < b.second;
+                                                      })
+                                         ->second,
+                A_link_first_ind = std::min_element(link_position_in_A.cbegin(), link_position_in_A.cend(),
+                                                    [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
+                                                        return a.second < b.second;
+                                                    })
+                                       ->second,
                 B_link_last_ind = std::max_element(link_position_in_B.cbegin(), link_position_in_B.cend(),
                                                    [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
                                                        return a.second < b.second;
@@ -361,8 +373,8 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
                 }
             }
 
-            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, B_link_last_ind,
-                                                 C_target_last_ind, trans_A, swap_AB, base);
+            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, A_target_first_ind,
+                                                 A_link_first_ind, B_link_last_ind, C_target_last_ind, trans_A, swap_AB, base);
         } else {
             std::vector<int> A_link_inds, B_link_inds, AC_inds;
             A_link_inds.reserve(link_position_in_B.size());
@@ -378,6 +390,16 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
                                                        return a.second < b.second;
                                                    })
                                       ->second,
+                A_target_first_ind = std::min_element(target_position_in_B.cbegin(), target_position_in_B.cend(),
+                                                      [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
+                                                          return a.second < b.second;
+                                                      })
+                                         ->second,
+                A_link_first_ind = std::min_element(link_position_in_B.cbegin(), link_position_in_B.cend(),
+                                                    [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
+                                                        return a.second < b.second;
+                                                    })
+                                       ->second,
                 B_link_last_ind = std::max_element(link_position_in_A.cbegin(), link_position_in_A.cend(),
                                                    [](std::pair<char, size_t> const &a, std::pair<char, size_t> const &b) -> bool {
                                                        return a.second < b.second;
@@ -429,8 +451,8 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
                 }
             }
 
-            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, B_link_last_ind,
-                                                 C_target_last_ind, trans_A, swap_AB, base);
+            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, A_target_first_ind,
+                                                 A_link_first_ind, B_link_last_ind, C_target_last_ind, trans_A, swap_AB, base);
         }
     } else if (is_gemm_possible) {
         std::vector<int> A_link_inds, B_link_inds, AC_inds, BC_inds;

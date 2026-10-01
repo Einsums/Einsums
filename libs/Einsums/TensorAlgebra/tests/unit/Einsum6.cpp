@@ -21,8 +21,8 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
     int nocc{1}, ncabs{4}, nobs{2};
     int nall{nobs + ncabs};
 
-    auto F = create_incremented_tensor("F", nall, nall, nall, nall);
-    auto G = create_incremented_tensor("G", nall, nall, nall, nall);
+    auto F = create_incremented_tensor<TestType>("F", nall, nall, nall, nall);
+    auto G = create_incremented_tensor<TestType>("G", nall, nall, nall, nall);
 
     TensorView F_ooco{F, Dim{nocc, nocc, ncabs, nocc}, Offset{0, 0, nobs, 0}};
     TensorView F_oooc{F, Dim{nocc, nocc, nocc, ncabs}, Offset{0, 0, 0, nobs}};
@@ -39,11 +39,11 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
     Tensor result2 = create_zero_tensor<TestType>("Result2", nocc, nocc, nocc, nocc);
 
     einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco, &alg_choice);
-    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+    REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc, &alg_choice);
-    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+    REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
     einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq, &alg_choice);
-    REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
+    REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
 
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {

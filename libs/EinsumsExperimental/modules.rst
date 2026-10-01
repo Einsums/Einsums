@@ -11,4 +11,5 @@ EinsumsExperimental Modules
 .. toctree::
     :maxdepth: 2
 
+    /libs/EinsumsExperimental/Decomposition/docs/index.rst
     /libs/EinsumsExperimental/Graph/docs/index.rst

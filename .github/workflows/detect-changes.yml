@@ -30,6 +30,7 @@ jobs:
             docs:
               - 'docs/**'
               - 'libs/**/*.hpp'
+              - 'libs/**/*.h'
               - '.github/workflows/docs.yml'
             ci:
               - '.github/workflows/**'
@@ -44,7 +45,9 @@ jobs:
               - '.cmake-format.py'
             cpp:
               - '**/*.cpp'
+              - '**/*.c'
               - '**/*.hpp'
+              - '**/*.h'
               - '.clang-format'
 
       - name: Set output

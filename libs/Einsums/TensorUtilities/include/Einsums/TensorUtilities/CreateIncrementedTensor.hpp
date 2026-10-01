@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 
 #include <complex>
@@ -33,17 +34,20 @@ namespace einsums {
  * @param index The arguments needed to construct the tensor.
  * @return A new tensor filled with incremented data
  */
-template <typename T = double, typename... MultiIndex>
+template <typename T = double, bool RowMajor = false, typename... MultiIndex>
 auto create_incremented_tensor(std::string const &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    size_t elements = A.size();
+    Stride<sizeof...(MultiIndex)> index_strides;
+    size_t                        elements = dims_to_strides(A.dims(), index_strides);
 
     for (size_t item = 0; item < elements; item++) {
+        size_t sentinel;
+        sentinel_to_sentinels(item, index_strides, A.strides(), sentinel);
         if constexpr (std::is_same_v<T, std::complex<float>> || std::is_same_v<T, std::complex<double>>) {
-            A.data()[item] = T(item, item);
+            A.data()[sentinel] = T(item, item);
         } else {
-            A.data()[item] = T(item);
+            A.data()[sentinel] = T(item);
         }
     }
 

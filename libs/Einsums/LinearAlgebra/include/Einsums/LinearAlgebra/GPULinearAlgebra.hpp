@@ -31,6 +31,8 @@ namespace detail {
 
 namespace gpu {
 
+EINSUMS_EXPORT hipblasOperation_t char_to_op(char trans);
+
 template <size_t Rank, typename T1, typename T2>
 __global__ void dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ A, T2 const *__restrict__ B, size_t const *__restrict__ dims,
                            size_t const *__restrict__ strides, size_t const *__restrict__ A_strides, size_t const *__restrict__ B_strides) {
@@ -127,6 +129,20 @@ EINSUMS_EXPORT void ger(int m, int n, hipFloatComplex const *alpha, hipFloatComp
 
 EINSUMS_EXPORT void ger(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y,
                         int incy, hipDoubleComplex *A, int lda);
+
+inline void gerc(int m, int n, float const *alpha, float const *x, int incx, float const *y, int incy, float *A, int lda) {
+    ger(m, n, alpha, x, incx, y, incy, A, lda);
+}
+
+inline void gerc(int m, int n, double const *alpha, double const *x, int incx, double const *y, int incy, double *A, int lda) {
+    ger(m, n, alpha, x, incx, y, incy, A, lda);
+}
+
+EINSUMS_EXPORT void gerc(int m, int n, hipFloatComplex const *alpha, hipFloatComplex const *x, int incx, hipFloatComplex const *y, int incy,
+                         hipFloatComplex *A, int lda);
+
+EINSUMS_EXPORT void gerc(int m, int n, hipDoubleComplex const *alpha, hipDoubleComplex const *x, int incx, hipDoubleComplex const *y,
+                         int incy, hipDoubleComplex *A, int lda);
 
 /**
  * Internal gemv functions.
@@ -239,6 +255,26 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, size_t const *_
 
 } // namespace gpu
 
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires std::is_same_v<typename AType::host_datatype, T>;
+    }
+void gemm(char transA, char transB, T const *alpha, AType const &A, BType const &B, T const *beta, CType *C) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::dev_datatype;
+
+    int m = C->dim(0), n = C->dim(1), k = (std::tolower(transA) != 'n') ? A.dim(0) : A.dim(1);
+    int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
+
+    // Flip the A and B matrices. Row-major vs column major.
+    gpu::gemm(gpu::char_to_op(transA), gpu::char_to_op(transB), n, m, k, (dev_datatype *)alpha, B.gpu_data(), ldb, A.gpu_data(), lda,
+              (dev_datatype *)beta, C->gpu_data(), ldc);
+    stream_wait();
+}
+
 template <bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType,
           typename T>
     requires requires {
@@ -247,17 +283,7 @@ template <bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicT
         requires std::is_same_v<typename AType::host_datatype, T>;
     }
 void gemm(T const *alpha, AType const &A, BType const &B, T const *beta, CType *C) {
-    using namespace einsums::gpu;
-
-    using dev_datatype = typename AType::dev_datatype;
-
-    int m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
-    int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
-
-    // Flip the A and B matrices. Row-major vs column major.
-    gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha, B.gpu_data(), ldb,
-              A.gpu_data(), lda, (dev_datatype *)beta, C->gpu_data(), ldc);
-    stream_wait();
+    gemm((TransA) ? 't' : 'n', (TransB) ? 't' : 'n', alpha, A, B, beta, C);
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
@@ -366,6 +392,49 @@ void ger(T const *alpha, XType const &X, YType const &Y, AType *A) {
     // No wait needed. sort waits.
 }
 
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+    requires requires {
+        requires SameUnderlying<AType, XType, YType>;
+        requires VectorConcept<XType>;
+        requires VectorConcept<YType>;
+        requires MatrixConcept<AType>;
+        requires std::is_same_v<typename AType::ValueType, T>;
+    }
+void gerc(T const *alpha, XType const &X, YType const &Y, AType *A) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::dev_datatype;
+
+    gpu::gerc(Y.dim(0), X.dim(0), (dev_datatype *)alpha, Y.gpu_data(), Y.stride(0), X.gpu_data(), X.stride(0), A->gpu_data(), A->stride(0));
+
+    // No wait needed. sort waits.
+}
+
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires VectorConcept<XType>;
+        requires VectorConcept<YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::is_same_v<typename AType::ValueType, T>;
+    }
+void gemv(char transA, T const *alpha, AType const &A, XType const &x, T const *beta, YType *y) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::dev_datatype;
+
+    int m = A.dim(1), n = A.dim(0);
+
+    if (!strchr("CNTcnt", transA)) {
+        EINSUMS_THROW_EXCEPTION(std::invalid_argument, "Invalid transpose parameter! Expected c, n, or t case insensitive. Got {}.",
+                                transA);
+    }
+
+    gpu::gemv(gpu::char_to_op(transA), m, n, (dev_datatype *)alpha, A.gpu_data(), A.stride(0), x.gpu_data(), x.stride(0),
+              (dev_datatype *)beta, y->gpu_data(), y->stride(0));
+    stream_wait();
+}
+
 template <bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
     requires requires {
         requires MatrixConcept<AType>;
@@ -375,21 +444,7 @@ template <bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept 
         requires std::is_same_v<typename AType::ValueType, T>;
     }
 void gemv(T const *alpha, AType const &A, XType const &x, T const *beta, YType *y) {
-    using namespace einsums::gpu;
-
-    using dev_datatype = typename AType::dev_datatype;
-
-    int m = A.dim(1), n = A.dim(0);
-
-    if constexpr (!TransA) {
-        gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.gpu_data(), A.stride(0), x.gpu_data(), x.stride(0), (dev_datatype *)beta,
-                  y->gpu_data(), y->stride(0));
-        stream_wait();
-    } else {
-        gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.gpu_data(), A.stride(0), x.gpu_data(), x.stride(0), (dev_datatype *)beta,
-                  y->gpu_data(), y->stride(0));
-        stream_wait();
-    }
+    gemv((TransA) ? 't' : 'n', alpha, A, x, beta, y);
 }
 
 template <DeviceBasicTensorConcept AType, typename T>
@@ -427,6 +482,31 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
                                                       block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
         TransA, TransB, A.dim(0), C->dim(0), A.gpu_data(), A.stride(0), B.gpu_data(), B.stride(0), C->gpu_data(), C->stride(0));
     stream_wait();
+}
+
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires std::is_same_v<typename AType::ValueType, T>;
+    }
+void gemm(char transA, char transB, T alpha, AType const &A, BType const &B, T beta, CType *C) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::dev_datatype;
+    dev_datatype *alpha_gpu, *beta_gpu;
+
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
+    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
+
+    hip_catch(hipMemcpyAsync((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    gemm(transA, transB, (T *)alpha_gpu, A, B, (T *)beta_gpu, C);
+
+    // These can still be done async.
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
 
 template <bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType,
@@ -476,6 +556,56 @@ void ger(T alpha, XType const &X, YType const &Y, AType *A) {
     ger((T *)alpha_gpu, X, Y, A);
 
     hip_catch(hipFree(alpha_gpu));
+}
+
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires VectorConcept<XType>;
+        requires VectorConcept<YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::is_same_v<typename AType::ValueType, T>;
+    }
+void gerc(T alpha, XType const &X, YType const &Y, AType *A) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::ValueType;
+
+    dev_datatype *alpha_gpu;
+
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
+
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    gerc((T *)alpha_gpu, X, Y, A);
+
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+}
+
+template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires VectorConcept<XType>;
+        requires VectorConcept<YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::is_same_v<typename AType::ValueType, T>;
+    }
+void gemv(char transA, T alpha, AType const &A, XType const &x, T beta, YType *y) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = typename AType::dev_datatype;
+    dev_datatype *alpha_gpu, *beta_gpu;
+
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
+    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
+
+    hip_catch(hipMemcpyAsync((void *)alpha_gpu, (void const *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)beta_gpu, (void const *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    gemv(transA, (T *)alpha_gpu, A, x, (T *)beta_gpu, y);
+
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+    hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
 
 template <bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>

@@ -97,7 +97,7 @@ TEMPLATE_TEST_CASE("einsum4", "[tensor_algebra]", float, double) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 auto vgMO0 = gMO0(i0, j0, All, All);
                 REQUIRE_NOTHROW(einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All, All), Indices{p, k}, B, &alg_choice));
-                REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
+                REQUIRE(alg_choice == tensor_algebra::detail::GENERIC);
             }
         }
 

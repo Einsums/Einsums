@@ -11,8 +11,8 @@
 
 using namespace einsums;
 
-TEMPLATE_TEST_CASE("Tensor impl subscripting.", "[tensor]", float, double, int, float const, double const) {
-    std::vector<std::remove_cv_t<TestType>> vector_data(27);
+TEMPLATE_TEST_CASE("Tensor impl subscripting.", "[tensor]", float, double, int) {
+    std::vector<TestType> vector_data(27);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -111,8 +111,8 @@ TEMPLATE_TEST_CASE("Tensor impl subscripting.", "[tensor]", float, double, int, 
     }
 }
 
-TEMPLATE_TEST_CASE("Tensor impl const subscripting.", "[tensor]", float, double, int, float const, double const) {
-    std::vector<std::remove_cv_t<TestType>> vector_data(27);
+TEMPLATE_TEST_CASE("Tensor impl const subscripting.", "[tensor]", float, double, int) {
+    std::vector<TestType> vector_data(27);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -157,8 +157,8 @@ TEMPLATE_TEST_CASE("Tensor impl const subscripting.", "[tensor]", float, double,
     }
 }
 
-TEMPLATE_TEST_CASE("TensorImpl view subscript", "[tensor]", float, double, int, float const, double const) {
-    std::vector<std::remove_cv_t<TestType>> test_data(27);
+TEMPLATE_TEST_CASE("TensorImpl view subscript", "[tensor]", float, double, int) {
+    std::vector<TestType> test_data(27);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -205,8 +205,8 @@ TEMPLATE_TEST_CASE("TensorImpl view subscript", "[tensor]", float, double, int, 
     }
 }
 
-TEMPLATE_TEST_CASE("TensorImpl tied view subscript", "[tensor]", float, double, int, float const, double const) {
-    std::vector<std::remove_cv_t<TestType>> test_data(27);
+TEMPLATE_TEST_CASE("TensorImpl tied view subscript", "[tensor]", float, double, int) {
+    std::vector<TestType> test_data(27);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -253,8 +253,8 @@ TEMPLATE_TEST_CASE("TensorImpl tied view subscript", "[tensor]", float, double, 
     }
 }
 
-TEMPLATE_TEST_CASE("TensorImpl const tied view subscript", "[tensor]", float, double, int, float const, double const) {
-    std::vector<std::remove_cv_t<TestType>> test_data(27);
+TEMPLATE_TEST_CASE("TensorImpl const tied view subscript", "[tensor]", float, double, int) {
+    std::vector<TestType> test_data(27);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {

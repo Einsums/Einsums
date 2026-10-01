@@ -56,6 +56,14 @@ auto dsyev(char job, char uplo, int_t n, double *a, int_t lda, double *w, double
     return vendor::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+auto ssterf(int_t n, float *d, float *e) -> int_t {
+    return vendor::ssterf(n, d, e);
+}
+
+auto dsterf(int_t n, double *d, double *e) -> int_t {
+    return vendor::dsterf(n, d, e);
+}
+
 auto sgeev(char jobvl, char jobvr, int_t n, float *a, int_t lda, std::complex<float> *w, float *vl, int_t ldvl, float *vr, int_t ldvr)
     -> int_t {
     return vendor::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
@@ -124,6 +132,22 @@ void csscal(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
 
 void zdscal(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
     vendor::zdscal(n, alpha, vec, inc);
+}
+
+void srscl(int_t n, float alpha, float *vec, int_t inc) {
+    vendor::srscl(n, alpha, vec, inc);
+}
+
+void drscl(int_t n, double alpha, double *vec, int_t inc) {
+    vendor::drscl(n, alpha, vec, inc);
+}
+
+void csrscl(int_t n, float alpha, std::complex<float> *vec, int_t inc) {
+    vendor::csrscl(n, alpha, vec, inc);
+}
+
+void zdrscl(int_t n, double alpha, std::complex<double> *vec, int_t inc) {
+    vendor::zdrscl(n, alpha, vec, inc);
 }
 
 auto sdot(int_t n, float const *x, int_t incx, float const *y, int_t incy) -> float {
@@ -202,6 +226,16 @@ void zger(int_t m, int_t n, std::complex<double> alpha, std::complex<double> con
     vendor::zger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
+void cgerc(int_t m, int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t inc_x, std::complex<float> const *y,
+           int_t inc_y, std::complex<float> *a, int_t lda) {
+    vendor::cgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+void zgerc(int_t m, int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t inc_x, std::complex<double> const *y,
+           int_t inc_y, std::complex<double> *a, int_t lda) {
+    vendor::zgerc(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
 auto sgetrf(int_t m, int_t n, float *a, int_t lda, int_t *ipiv) -> int_t {
     return vendor::sgetrf(m, n, a, lda, ipiv);
 }
@@ -264,6 +298,22 @@ void classq(int_t n, std::complex<float> const *x, int_t incx, float *scale, flo
 
 void zlassq(int_t n, std::complex<double> const *x, int_t incx, double *scale, double *sumsq) {
     return vendor::zlassq(n, x, incx, scale, sumsq);
+}
+
+float snrm2(int_t n, float const *x, int_t incx) {
+    return vendor::snrm2(n, x, incx);
+}
+
+double dnrm2(int_t n, double const *x, int_t incx) {
+    return vendor::dnrm2(n, x, incx);
+}
+
+float scnrm2(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scnrm2(n, x, incx);
+}
+
+double dznrm2(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dznrm2(n, x, incx);
 }
 
 auto sgesdd(char jobz, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt) -> int_t {
@@ -400,6 +450,61 @@ void ccopy(int_t n, std::complex<float> const *x, int_t inc_x, std::complex<floa
 
 void zcopy(int_t n, std::complex<double> const *x, int_t inc_x, std::complex<double> *y, int_t inc_y) {
     vendor::zcopy(n, x, inc_x, y, inc_y);
+}
+
+int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda) {
+    return vendor::slascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+int_t dlascl(char type, int_t kl, int_t ku, double cfrom, double cto, int_t m, int_t n, double *vec, int_t lda) {
+    return vendor::dlascl(type, kl, ku, cfrom, cto, m, n, vec, lda);
+}
+
+void sdirprod(int_t n, float alpha, float const *x, int_t incx, float const *y, int_t incy, float *z, int_t incz) {
+    vendor::sdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+void ddirprod(int_t n, double alpha, double const *x, int_t incx, double const *y, int_t incy, double *z, int_t incz) {
+    vendor::ddirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+void cdirprod(int_t n, std::complex<float> alpha, std::complex<float> const *x, int_t incx, std::complex<float> const *y, int_t incy,
+              std::complex<float> *z, int_t incz) {
+    vendor::cdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+void zdirprod(int_t n, std::complex<double> alpha, std::complex<double> const *x, int_t incx, std::complex<double> const *y, int_t incy,
+              std::complex<double> *z, int_t incz) {
+    vendor::zdirprod(n, alpha, x, incx, y, incy, z, incz);
+}
+
+float sasum(int_t n, float const *x, int_t incx) {
+    return vendor::sasum(n, x, incx);
+}
+
+double dasum(int_t n, double const *x, int_t incx) {
+    return vendor::dasum(n, x, incx);
+}
+
+float scasum(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scasum(n, x, incx);
+}
+
+double dzasum(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dzasum(n, x, incx);
+}
+
+float scsum1(int_t n, std::complex<float> const *x, int_t incx) {
+    return vendor::scsum1(n, x, incx);
+}
+
+double dzsum1(int_t n, std::complex<double> const *x, int_t incx) {
+    return vendor::dzsum1(n, x, incx);
+}
+
+void clacgv(int_t n, std::complex<float> *x, int_t incx) {
+    vendor::clacgv(n, x, incx);
+}
+
+void zlacgv(int_t n, std::complex<double> *x, int_t incx) {
+    vendor::zlacgv(n, x, incx);
 }
 
 } // namespace detail

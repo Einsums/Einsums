@@ -86,9 +86,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             _existed = true;
             try {
                 _disk = h5::open(_file, _name);
-            } catch (std::exception &e) {
-                println("Unable to open disk tensor '{}'", _name);
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '{}'.", _name);
             }
         } else {
             _existed = false;
@@ -96,9 +95,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             try {
                 _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
                                       h5::chunk{chunk} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
-            } catch (std::exception &e) {
-                println("Unable to create disk tensor '{}': {}", _name, e.what());
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '{}'", _name);
             }
         }
     }
@@ -132,9 +130,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             _existed = true;
             try {
                 _disk = h5::open(_file, _name);
-            } catch (std::exception &e) {
-                println("Unable to open disk tensor '{}'", _name);
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '{}'", _name);
             }
         } else {
             _existed = false;
@@ -142,9 +139,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             try {
                 _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
                                       h5::chunk{chunk_temp} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
-            } catch (std::exception &e) {
-                println("Unable to create disk tensor '{}': {}", _name, e.what());
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '{}'", _name);
             }
         }
     }
@@ -176,18 +172,16 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
             _existed = true;
             try {
                 _disk = h5::open(_file, _name);
-            } catch (std::exception &e) {
-                println("Unable to open disk tensor '%s'", _name.c_str());
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to open disk tensor '%s'", _name.c_str());
             }
         } else {
             _existed = false;
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
                 _disk = h5::create<T>(_file, _name, cdims, h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
-            } catch (std::exception &e) {
-                println("Unable to create disk tensor '%s'", _name.c_str());
-                std::abort();
+            } catch (...) {
+                EINSUMS_THROW_NESTED(std::runtime_error, "Unable to create disk tensor '%s'", _name.c_str());
             }
         }
     }

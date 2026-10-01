@@ -16,6 +16,9 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+#include "EinsumsPy/Tensor/PyTensor.hpp"
+#include "macros.hpp"
+
 namespace py = pybind11;
 
 namespace einsums {
@@ -26,33 +29,8 @@ void gemv(std::string const &transA, py::object const &alpha, pybind11::buffer c
           pybind11::buffer &C) {
     py::buffer_info A_info = A.request(false), B_info = B.request(false), C_info = C.request(true);
 
-    if (A_info.ndim != 2 || B_info.ndim != 1 || C_info.ndim != 1) {
-        EINSUMS_THROW_EXCEPTION(
-            rank_error, "A call to gemv only takes a rank-2 tensor and a rank-1 tensor as input, and outputs into a rank-1 tensor.");
-    }
-
-    blas::int_t A_m, A_k, lda = A_info.strides[0] / A_info.itemsize;
-    blas::int_t B_k = B_info.shape[0], ldb = B_info.strides[0] / B_info.itemsize;
-    blas::int_t C_m = C_info.shape[0], ldc = C_info.strides[0] / C_info.itemsize;
-
-    char transA_ch = 'n';
-
-    if (transA.length() >= 1) {
-        if (is_in(transA[0], {'n', 'N', 't', 'T', 'c', 'C'})) {
-            transA_ch = transA[0];
-        }
-    }
-
-    if (not_in(transA_ch, {'n', 'N'})) {
-        A_m = A_info.shape[1];
-        A_k = A_info.shape[0];
-    } else {
-        A_m = A_info.shape[0];
-        A_k = A_info.shape[1];
-    }
-
-    if (A_m != C_m || A_k != B_k) {
-        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "The rows and columns of the matrices passed into gemv are not compatible!");
+    if (transA.length() < 1) {
+        EINSUMS_THROW_EXCEPTION(py::value_error, "The transpose string needs to have data! It can not be empty!");
     }
 
     if (A_info.format != B_info.format || A_info.format != C_info.format) {
@@ -60,21 +38,15 @@ void gemv(std::string const &transA, py::object const &alpha, pybind11::buffer c
                                 A_info.format, B_info.format, C_info.format);
     }
 
-    if (A_info.format == py::format_descriptor<float>::format()) {
-        blas::gemv<float>(transA_ch, A_m, A_k, alpha.cast<float>(), (float const *)A_info.ptr, lda, (float const *)B_info.ptr, ldb,
-                          beta.cast<float>(), (float *)C_info.ptr, ldc);
-    } else if (A_info.format == py::format_descriptor<double>::format()) {
-        blas::gemv<double>(transA_ch, A_m, A_k, alpha.cast<double>(), (double const *)A_info.ptr, lda, (double const *)B_info.ptr, ldb,
-                           beta.cast<double>(), (double *)C_info.ptr, ldc);
-    } else if (A_info.format == py::format_descriptor<std::complex<float>>::format()) {
-        blas::gemv<std::complex<float>>(transA_ch, A_m, A_k, alpha.cast<std::complex<float>>(), (std::complex<float> const *)A_info.ptr,
-                                        lda, (std::complex<float> const *)B_info.ptr, ldb, beta.cast<std::complex<float>>(),
-                                        (std::complex<float> *)C_info.ptr, ldc);
-    } else if (A_info.format == py::format_descriptor<std::complex<double>>::format()) {
-        blas::gemv<std::complex<double>>(transA_ch, A_m, A_k, alpha.cast<std::complex<double>>(), (std::complex<double> const *)A_info.ptr,
-                                         lda, (std::complex<double> const *)B_info.ptr, ldb, beta.cast<std::complex<double>>(),
-                                         (std::complex<double> *)C_info.ptr, ldc);
-    } else {
+    EINSUMS_PY_LINALG_CALL(A_info.item_type_is_equivalent_to<Float>(),
+                           [&]() {
+                               auto A_tens = buffer_to_tensor<Float>(A);
+                               auto B_tens = buffer_to_tensor<Float>(B);
+                               auto C_tens = buffer_to_tensor<Float>(C);
+                               einsums::linear_algebra::detail::gemv(transA[0], alpha.cast<Float>(), A_tens, B_tens, beta.cast<Float>(),
+                                                                     &C_tens);
+                           }())
+    else {
         EINSUMS_THROW_EXCEPTION(py::value_error, "Can only perform gemv on floating point matrices! Got type {}.", A_info.format);
     }
 }
