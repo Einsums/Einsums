@@ -14,7 +14,7 @@ import random
 
 try :
     from einsums import core
-except ImportError :
+except (ImportError, ModuleNotFoundError) :
     from pyeinsums import core
 
 import numpy as np
