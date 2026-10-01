@@ -18,6 +18,7 @@
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 
+#include "Einsums/Config/Types.hpp"
 #include "Einsums/TensorImpl/TensorImpl.hpp"
 #include "Einsums/TensorImpl/TensorImplOperations.hpp"
 
@@ -106,7 +107,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    RuntimeTensor(std::string name, Dim const &dims, bool row_major = row_major_default) : _name{name}, _impl(nullptr, dims, row_major) {
+    RuntimeTensor(std::string name, Dim const &dims, bool row_major) : _name{name}, _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -118,7 +119,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param dims The dimensions of the tensor.
      */
     template <Container Dim>
-    explicit RuntimeTensor(Dim const &dims, bool row_major = row_major_default) : _impl(nullptr, dims, row_major) {
+    explicit RuntimeTensor(Dim const &dims, bool row_major) : _impl(nullptr, dims, row_major) {
         _data.resize(_impl.size());
 
         _impl.set_data(_data.data());
@@ -130,7 +131,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      * @param name the new name of the tensor.
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major = row_major_default)
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims, bool row_major)
         : RuntimeTensor(name, std::vector<size_t>(dims), row_major) {}
 
     /**
@@ -138,8 +139,50 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
      *
      * @param dims The dimensions of the tensor as an initializer list.
      */
-    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major = row_major_default)
+    explicit RuntimeTensor(std::initializer_list<size_t> dims, bool row_major)
         : RuntimeTensor(std::vector<size_t>(dims), row_major) {}
+
+    /**
+     * @brief Create a new runtime tensor with the given name and dimensions.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor.
+     */
+    template <Container Dim>
+    RuntimeTensor(std::string name, Dim const &dims) : _name{name}, _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+    }
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions.
+     *
+     * @param dims The dimensions of the tensor.
+     */
+    template <Container Dim>
+    explicit RuntimeTensor(Dim const &dims) : _impl(nullptr, dims, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        _data.resize(_impl.size());
+
+        _impl.set_data(_data.data());
+    }
+
+    /**
+     * @brief Create a new runtime tensor with the given name and dimensions using an initializer list.
+     *
+     * @param name the new name of the tensor.
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    RuntimeTensor(std::string name, std::initializer_list<size_t> dims)
+        : RuntimeTensor(name, std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
+
+    /**
+     * @brief Create a new runtime tensor with the given dimensions using an initializer list.
+     *
+     * @param dims The dimensions of the tensor as an initializer list.
+     */
+    explicit RuntimeTensor(std::initializer_list<size_t> dims)
+        : RuntimeTensor(std::vector<size_t>(dims), GlobalConfigMap::get_singleton().get_bool("row-major")) {}
 
     /**
      * @brief Copy a tensor into a runtime tensor.

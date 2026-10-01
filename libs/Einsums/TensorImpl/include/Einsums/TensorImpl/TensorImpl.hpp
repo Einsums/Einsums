@@ -17,6 +17,7 @@
 
 #include "Einsums/Concepts/Complex.hpp"
 #include "Einsums/Config/CompilerSpecific.hpp"
+#include "Einsums/Config/Types.hpp"
 #include "Einsums/Print.hpp"
 
 namespace einsums {
@@ -99,7 +100,7 @@ struct TensorImpl final {
     /**
      * @brief Default constructor.
      */
-    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{row_major_default} {};
+    constexpr TensorImpl() noexcept : _ptr{nullptr}, _dims(), _strides(), _rank{0}, _size{0}, _row_major{false} {};
 
     /**
      * @brief Copy constructor.
@@ -165,13 +166,43 @@ struct TensorImpl final {
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
     template <Container Dims>
-    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major = row_major_default)
+    constexpr TensorImpl(pointer ptr, Dims const &dims, bool row_major)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
         _size = 1;
 
         if (row_major) {
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = _size;
+                _size *= _dims[i];
+            }
+        } else {
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = _size;
+                _size *= _dims[i];
+            }
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer and dimensions.
+     *
+     * This will calculate the strides using the given memory order.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param row_major Whether to compute the strides in row-major or column-major ordering.
+     */
+    template <Container Dims>
+    constexpr TensorImpl(pointer ptr, Dims const &dims)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()),
+          _row_major{GlobalConfigMap::get_singleton().get_bool("row-major")} {
+        _strides.resize(_rank);
+
+        _size = 1;
+
+        if (_row_major) {
             for (int i = _rank - 1; i >= 0; i--) {
                 _strides[i] = _size;
                 _size *= _dims[i];
@@ -215,13 +246,42 @@ struct TensorImpl final {
      * @param dims The dimensions of the tensor.
      * @param row_major Whether to compute the strides in row-major or column-major ordering.
      */
-    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major = row_major_default)
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims, bool row_major)
         : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()), _row_major{row_major} {
         _strides.resize(_rank);
 
         _size = 1;
 
         if (row_major) {
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = _size;
+                _size *= _dims[i];
+            }
+        } else {
+            for (int i = 0; i < _rank; i++) {
+                _strides[i] = _size;
+                _size *= _dims[i];
+            }
+        }
+    }
+
+    /**
+     * @brief Create a tensor with the given pointer and dimensions.
+     *
+     * This will calculate the strides using the given memory order.
+     *
+     * @param ptr The pointer to wrap.
+     * @param dims The dimensions of the tensor.
+     * @param row_major Whether to compute the strides in row-major or column-major ordering.
+     */
+    constexpr TensorImpl(pointer ptr, std::initializer_list<size_t> const &dims)
+        : _ptr{ptr}, _rank{dims.size()}, _dims(dims.begin(), dims.end()),
+          _row_major{GlobalConfigMap::get_singleton().get_bool("row-major")} {
+        _strides.resize(_rank);
+
+        _size = 1;
+
+        if (_row_major) {
             for (int i = _rank - 1; i >= 0; i--) {
                 _strides[i] = _size;
                 _size *= _dims[i];

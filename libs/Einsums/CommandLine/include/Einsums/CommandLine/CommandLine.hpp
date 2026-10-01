@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <functional>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -52,12 +53,14 @@ struct ParseResult {
 // Forward decls
 struct OptionBase;
 struct OptionCategory;
+struct ExclusiveCategory;
 
 // -------------------------- Registry ------------------------------------- //
 
 struct Registry {
-    std::vector<OptionBase *>     options;
-    std::vector<OptionCategory *> categories;
+    std::list<OptionBase *>        options;
+    std::list<OptionCategory *>    categories;
+    std::list<ExclusiveCategory *> exclusions;
 
     static Registry &instance() {
         static Registry R;
@@ -66,10 +69,12 @@ struct Registry {
 
     void add_option(OptionBase *o) { options.push_back(o); }
     void add_category(OptionCategory *c) { categories.push_back(c); }
+    void add_exclusion(ExclusiveCategory *c) { exclusions.push_back(c); }
 
     void clear_for_tests() {
         options.clear();
         categories.clear();
+        exclusions.clear();
     }
 };
 
@@ -79,6 +84,8 @@ struct OptionCategory {
     std::string name;
     explicit OptionCategory(StringRef n) : name(n.s) { Registry::instance().add_category(this); }
 };
+
+struct ExclusiveCategory;
 
 // -------------------------- Parsing helpers ------------------------------ //
 
@@ -162,17 +169,18 @@ struct Positional {};
 
 // Base option (no subcommand affinity)
 struct OptionBase {
-    std::string       long_name;   // "--long"
-    std::vector<char> short_names; // {'v'}
-    std::string       help;
-    OptionCategory   *category       = nullptr;
-    Visibility        visibility     = Visibility::Normal;
-    Occurrence        occurrence     = Occurrence::Optional;
-    ValueExpected     value_expected = ValueExpected::ValueOptional;
-    bool              is_positional  = false;
-    bool              seen_cli       = false;
-    bool              seen_config    = false;
-    int               occurrences    = 0;
+    std::string        long_name;   // "--long"
+    std::vector<char>  short_names; // {'v'}
+    std::string        help;
+    OptionCategory    *category       = nullptr;
+    ExclusiveCategory *exclusions     = nullptr;
+    Visibility         visibility     = Visibility::Normal;
+    Occurrence         occurrence     = Occurrence::Optional;
+    ValueExpected      value_expected = ValueExpected::ValueOptional;
+    bool               is_positional  = false;
+    bool               seen_cli       = false;
+    bool               seen_config    = false;
+    int                occurrences    = 0;
 
     std::function<void()> on_seen;
 
@@ -198,6 +206,37 @@ struct OptionBase {
     }
 
     virtual void finalize_default() {}
+};
+
+struct ExclusiveCategory {
+    std::list<OptionBase *> options;
+    explicit ExclusiveCategory() { Registry::instance().add_exclusion(this); }
+
+    bool verify_exclusions() {
+        bool found_one = false;
+
+        for (auto *opt : options) {
+            if (opt->seen_cli || opt->seen_config || opt->occurrences > 0) {
+                if (found_one) {
+                    return false;
+                }
+                found_one = true;
+            }
+        }
+
+        return true;
+    }
+
+    std::list<OptionBase *> found_options() {
+        std::list<OptionBase *> out;
+        for (auto *opt : options) {
+            if (opt->seen_cli || opt->seen_config || opt->occurrences > 0) {
+                out.push_back(opt);
+            }
+        }
+
+        return out;
+    }
 };
 
 // -------------------------- Location & Setter ---------------------------- //
@@ -255,6 +294,7 @@ struct Flag : OptionBase {
     std::function<void(bool const &)> setter;
     bool                              implicit_on           = true;
     bool                              has_implicit_override = false;
+    bool                              set_on_unseen         = true;
 
     template <class... Args>
     Flag(StringRef longName, std::initializer_list<char> shorts, StringRef helpText, Args &&...args)
@@ -269,10 +309,12 @@ struct Flag : OptionBase {
     }
 
     void finalize_default() override {
-        if (bound)
-            *bound = value;
-        if (setter)
-            setter(value);
+        if (set_on_unseen || occurrences > 0 || seen_cli || seen_config) {
+            if (bound)
+                *bound = value;
+            if (setter)
+                setter(value);
+        }
     }
 
   private:
@@ -290,6 +332,10 @@ struct Flag : OptionBase {
     void apply_arg(ImplicitValueTag<bool> d) {
         implicit_on           = d.v;
         has_implicit_override = true;
+    }
+    void apply_arg(ExclusiveCategory &cat) {
+        cat.options.push_back(this);
+        exclusions = &cat;
     }
     template <class U>
     void apply_arg(U &&) {
@@ -331,6 +377,8 @@ struct Flag : OptionBase {
 
     bool get() const { return bound ? *bound : value; }
 };
+
+EINSUMS_EXPORT std::shared_ptr<ExclusiveCategory> make_yes_no(Flag &yes_flag, Flag &no_flag, bool default_value = false);
 
 // -------------------------- Opt<T> -------------------------------------- //
 
@@ -402,6 +450,10 @@ struct Opt : OptionBase {
     void apply_arg(ImplicitValueTag<U> d) {
         static_assert(std::is_same_v<std::decay_t<U>, T>, "ImplicitValue(value) type must match Opt<T>");
         implicit_value = d.v;
+    }
+    void apply_arg(ExclusiveCategory &cat) {
+        cat.options.push_back(this);
+        exclusions = &cat;
     }
     template <class U>
     void apply_arg(U &&) {
@@ -502,6 +554,10 @@ struct List : OptionBase {
     void apply_arg(OptionCategory &c) { category = &c; }
     void apply_arg(Visibility v) { visibility = v; }
     void apply_arg(Occurrence o) { occurrence = o; }
+    void apply_arg(ExclusiveCategory &cat) {
+        cat.options.push_back(this);
+        exclusions = &cat;
+    }
     template <class U>
     void apply_arg(U &&) {
         static_assert(sizeof(U) == 0, "Unsupported argument to List");
@@ -584,6 +640,10 @@ struct OptEnum : OptionBase {
     void apply_arg(Location<Enum> loc) { bound = loc.ptr; }
     void apply_arg(std::function<void(Enum const &, bool)> f) { setter = std::move(f); }
     void apply_arg(Setter<Enum> s) { setter = s.fn; }
+    void apply_arg(ExclusiveCategory &cat) {
+        cat.options.push_back(this);
+        exclusions = &cat;
+    }
     template <class U>
     void apply_arg(U &&) {
         static_assert(sizeof(U) == 0, "Unsupported argument to OptEnum");
@@ -1116,6 +1176,26 @@ inline ParseResult parse_internal(std::vector<std::string> const &args, char con
         std::string err;
         if (!o->validate(err)) {
             fmt::print(stderr, "error: {}\n", err);
+            return {false, 1};
+        }
+    }
+
+    // Validate exclusions.
+    for (auto *exc : Registry::instance().exclusions) {
+        if (!exc->verify_exclusions()) {
+            auto found = exc->found_options();
+
+            auto it = found.begin();
+
+            fmt::print(stderr, "error: incompatible arguments found: ");
+
+            for (int i = 0; i < found.size(); i++, it++) {
+                if (i != found.size() - 1) {
+                    fmt::print(stderr, "--{}, ", (*it)->long_name);
+                } else {
+                    fmt::print(stderr, "--{}\n", (*it)->long_name);
+                }
+            }
             return {false, 1};
         }
     }

@@ -11,7 +11,7 @@ using namespace einsums;
 
 TEMPLATE_TEST_CASE("invert", "[linear-algebra]", float, double) {
     SECTION("Invert") {
-        Tensor A = create_tensor<TestType, true>("A", 3, 3);
+        Tensor A = create_tensor<TestType>(true, "A", 3, 3);
         A(0, 0)  = 1.0;
         A(0, 1)  = 2.0;
         A(0, 2)  = 3.0;
@@ -41,7 +41,7 @@ TEMPLATE_TEST_CASE("invert", "[linear-algebra]", float, double) {
         A(2, 1) = 1.0;
         A(2, 2) = 3.0;
 
-        Tensor A_test        = create_tensor<TestType, true>("A test", 3, 3);
+        Tensor A_test        = create_tensor<TestType>(true, "A test", 3, 3);
         A_test.vector_data() = {-5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25, -2.0 / 3.0, 1.0 / 12.0, -0.25, 1.0 / 3.0};
 
         linear_algebra::invert(&A);
