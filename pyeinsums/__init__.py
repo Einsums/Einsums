@@ -11,7 +11,6 @@ This module allows for interaction with the C++ Einsums library.
 import sys
 import os
 import atexit
-
 import inspect
 import datetime
 import typing
@@ -151,13 +150,13 @@ def initialize():
     """
     pass_args = [sys.argv[0]]
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 :
         einsums_arg = False
-        for arg in sys.argv[1:]:
-            if einsums_arg:
+        for arg in sys.argv[1:] :
+            if einsums_arg :
                 pass_args.append(arg)
                 einsums_arg = False
-            elif arg == "--einsums":
+            elif arg == "--einsums" :
                 einsums_arg = True
 
     core.initialize(pass_args)

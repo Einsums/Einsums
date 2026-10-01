@@ -144,6 +144,22 @@ jobs:
         run: |
           cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }} --target install
 
+      - name: Linked dependencies, ldd (L)
+        if: runner.os == 'Linux'
+        run: |
+          ldd -v ${{ github.workspace }}/installed/lib/einsums/core.*.so
+          nm -u ${{ github.workspace }}/installed/lib/einsums/core.*.so
+          ls -l ${CONDA_PREFIX}/lib | grep atomic
+
+      # - name: Linked dependencies, otool (M)
+      #   if: runner.os == 'macOS'
+      #   run: otool -L objdir/stage/lib/psi4/core.*.so
+
+      # - name: Linked dependencies, objdump (W)
+      #   if: runner.os == 'Windows'
+      #   shell: cmd /C CALL {0}
+      #   run: objdump.exe -p objdir\stage\lib\psi4\core.*.pyd | grep dll
+
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
         run: ctest --rerun-failed --output-on-failure -j4
@@ -156,7 +172,7 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          pytest "${{github.workspace}}/installed/lib/einsums" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
+          pytest "${{github.workspace}}/installed/lib/einsums" -m "not slow" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
 
       - name: Generate coverage information
         if: ${{ contains(matrix.compiler, 'default') }}

@@ -138,7 +138,6 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
 
   file(RELATIVE_PATH _ein_pymod_relDir ${CMAKE_INSTALL_PREFIX}/${EINSUMS_INSTALL_PYMODDIR}/einsums
                                        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-
   include(Einsums_ExtendWithPython)
 
   foreach(lib ${PYTHON_LIBS})
@@ -192,6 +191,10 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
       target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
     endif()
 
+    if(${BLA_VENDOR} MATCHES "[mM][kK][lL]")
+      target_link_libraries(${lib} $<$<CXX_COMPILER_ID:GNU>:atomic>)
+    endif()
+
     install(
       TARGETS ${lib}
       EXPORT einsums_targets
@@ -218,7 +221,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
       ${EINSUMS_INSTALL_PYMODDIR}/einsums
     COMPONENT EinsumsPy
   )
-  
+
   if(EINSUMS_WITH_TESTS)
     install(
       DIRECTORY
@@ -238,7 +241,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
       COMPONENT EinsumsPy
     )
   endif()
-  
+
   set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "${_old_default_comp}")
 endif()
 
