@@ -14,6 +14,7 @@ set(_Einsums_modules
   BLASBase
   BLASVendor
   BufferAllocator
+  CommandLine
   Concepts
   Config
   Debugging
