@@ -16,6 +16,7 @@ set(TensorHeaders
     Einsums/Tensor/TiledTensor.hpp
     Einsums/Tensor/InitModule.hpp
     Einsums/Tensor/ModuleVars.hpp
+    Einsums/Tensor/DiskTensorView.hpp
 )
 
 set(TensorSources TensorDefs.cpp Requirements.cpp InitModule.cpp ModuleVars.cpp)

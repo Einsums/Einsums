@@ -31,12 +31,12 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
     TensorView G_oooc{G, Dim{nocc, nocc, nocc, ncabs}, Offset{0, 0, 0, nobs}};
     TensorView G_oopq{G, Dim{nocc, nocc, nobs, nobs}, Offset{0, 0, 0, 0}};
 
-    Tensor ijkl_1 = create_zero_tensor<TestType>("Einsum Temp 1", nocc, nocc, nocc, nocc);
-    Tensor ijkl_2 = create_zero_tensor<TestType>("Einsum Temp 2", nocc, nocc, nocc, nocc);
-    Tensor ijkl_3 = create_zero_tensor<TestType>("Einsum Temp 3", nocc, nocc, nocc, nocc);
+    auto ijkl_1 = create_zero_tensor<TestType>("Einsum Temp 1", nocc, nocc, nocc, nocc);
+    auto ijkl_2 = create_zero_tensor<TestType>("Einsum Temp 2", nocc, nocc, nocc, nocc);
+    auto ijkl_3 = create_zero_tensor<TestType>("Einsum Temp 3", nocc, nocc, nocc, nocc);
 
-    Tensor result  = create_zero_tensor<TestType>("Result", nocc, nocc, nocc, nocc);
-    Tensor result2 = create_zero_tensor<TestType>("Result2", nocc, nocc, nocc, nocc);
+    auto result  = create_zero_tensor<TestType>("Result", nocc, nocc, nocc, nocc);
+    auto result2 = create_zero_tensor<TestType>("Result2", nocc, nocc, nocc, nocc);
 
     einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco, &alg_choice);
     // REQUIRE(alg_choice == tensor_algebra::detail::GEMM);
@@ -95,11 +95,11 @@ TEMPLATE_TEST_CASE("B_tilde", "[tensor_algebra]", float, double, std::complex<fl
     assert(nobs > nocc); // sanity check
     int nall{nobs + ncabs}, nvir{nobs - nocc};
 
-    Tensor CD   = create_zero_tensor<TestType>("CD", nocc, nocc, nvir, nvir);
-    Tensor CD0  = create_zero_tensor<TestType>("CD0", nocc, nocc, nvir, nvir);
-    auto   C    = create_random_tensor<TestType>("C", nocc, nocc, nvir, nvir);
-    auto   D    = create_random_tensor<TestType>("D", nocc, nocc, nvir, nvir);
-    auto   D_ij = D(2, 2, All, All);
+    auto CD   = create_zero_tensor<TestType>("CD", nocc, nocc, nvir, nvir);
+    auto CD0  = create_zero_tensor<TestType>("CD0", nocc, nocc, nvir, nvir);
+    auto C    = create_random_tensor<TestType>("C", nocc, nocc, nvir, nvir);
+    auto D    = create_random_tensor<TestType>("D", nocc, nocc, nvir, nvir);
+    auto D_ij = D(2, 2, All, All);
 
     einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij, &alg_choice);
 

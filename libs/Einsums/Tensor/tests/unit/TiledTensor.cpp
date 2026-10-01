@@ -127,9 +127,9 @@ TEST_CASE("TiledTensor GEMMs", "[tensor]") {
 TEST_CASE("TiledTensor GEMVs", "[tensor]") {
     using namespace einsums;
 
-    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
-    einsums::Tensor        x("x", 3);
-    einsums::Tensor        y("y", 3);
+    TiledTensor<double, 2>     A("A", std::array{1, 0, 2});
+    einsums::Tensor<double, 1> x("x", 3);
+    einsums::Tensor<double, 1> y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));

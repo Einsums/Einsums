@@ -16,9 +16,9 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
     size_t _x{100}, _y{100};
 
     SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor<TestType>("A", _x);
-        Tensor B = create_random_tensor<TestType>("B", _y);
-        Tensor C = create_zero_tensor<TestType>("C", _x, _y);
+        auto A = create_random_tensor<TestType>("A", _x);
+        auto B = create_random_tensor<TestType>("B", _y);
+        auto C = create_zero_tensor<TestType>("C", _x, _y);
         zero(C);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
@@ -62,9 +62,9 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
     }
 
     SECTION("2 * 1 -> 3") {
-        Tensor A = create_random_tensor<TestType>("A", 3, 3);
-        Tensor B = create_random_tensor<TestType>("B", 3);
-        Tensor C = create_tensor<TestType>("C", 3, 3, 3);
+        auto A = create_random_tensor<TestType>("A", 3, 3);
+        auto B = create_random_tensor<TestType>("B", 3);
+        auto C = create_tensor<TestType>("C", 3, 3, 3);
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B));
@@ -104,10 +104,9 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor A = create_random_tensor<TestType>("A", 3, 3);
-        Tensor B = create_random_tensor<TestType>("B", 3, 3);
-        Tensor C = create_tensor<TestType>("C", 3, 3, 3, 3);
-        ;
+        auto A = create_random_tensor<TestType>("A", 3, 3);
+        auto B = create_random_tensor<TestType>("B", 3, 3);
+        auto C = create_tensor<TestType>("C", 3, 3, 3, 3);
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B));
@@ -145,12 +144,12 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
     using namespace einsums::index;
 
     SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor<TestType>("A", 6);
-        Tensor B = create_random_tensor<TestType>("B", 6);
+        auto A = create_random_tensor<TestType>("A", 6);
+        auto B = create_random_tensor<TestType>("B", 6);
 
         auto   vA = TensorView(A, Dim{3}, Offset{3});
         auto   vB = TensorView(B, Dim{3});
-        Tensor C  = create_zero_tensor<TestType>("C", 3, 3);
+        auto C  = create_zero_tensor<TestType>("C", 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
 
@@ -193,11 +192,11 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor A  = create_random_tensor<TestType>("A", 9, 9);
-        Tensor B  = create_random_tensor<TestType>("B", 12, 12);
+        auto A  = create_random_tensor<TestType>("A", 9, 9);
+        auto B  = create_random_tensor<TestType>("B", 12, 12);
         auto   vA = TensorView{A, Dim{3, 3}, Offset{6, 3}};
         auto   vB = TensorView{B, Dim{3, 3}, Offset{5, 7}};
-        Tensor C  = create_zero_tensor<TestType>("C", 3, 3, 3, 3);
+        auto C  = create_zero_tensor<TestType>("C", 3, 3, 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
 

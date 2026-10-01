@@ -137,6 +137,8 @@ else()
   endif()
 endif()
 
+get_property(BLA_VENDOR TARGET tgt::lapack PROPERTY VENDOR)
+
 get_property(
   _ill
   TARGET tgt::lapack

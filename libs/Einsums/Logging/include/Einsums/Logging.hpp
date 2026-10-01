@@ -14,6 +14,10 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
+#ifdef EINSUMS_HAVE_BACKTRACES
+#    include <cpptrace/cpptrace.hpp>
+#endif
+
 namespace einsums::detail {
 
 /**
@@ -55,11 +59,26 @@ namespace einsums::detail {
  *
  * @versionadded{1.0.0}
  */
-#define EINSUMS_DETAIL_SPDLOG(name, loglevel, ...)                                                                                         \
-    if (::einsums::detail::get_##name##_logger().level() <= loglevel) {                                                                    \
-        ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION},                              \
-                                                     static_cast<::spdlog::level::level_enum>(loglevel), __VA_ARGS__);                     \
-    }
+#ifdef EINSUMS_HAVE_BACKTRACES
+#    define EINSUMS_DETAIL_SPDLOG(name, loglevel, ...)                                                                                     \
+        if (::einsums::detail::get_##name##_logger().level() <= loglevel) {                                                                \
+            ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION},                          \
+                                                         static_cast<::spdlog::level::level_enum>(loglevel), __VA_ARGS__);                 \
+            if (loglevel >= 3) {                                                                                                           \
+                ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION},                      \
+                                                             static_cast<::spdlog::level::level_enum>(loglevel), "Backtrace:");            \
+                ::einsums::detail::get_##name##_logger().log(                                                                              \
+                    spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, static_cast<::spdlog::level::level_enum>(loglevel),           \
+                    cpptrace::generate_trace(1, EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH).to_string(true));                                     \
+            }                                                                                                                              \
+        }
+#else
+#    define EINSUMS_DETAIL_SPDLOG(name, loglevel, ...)                                                                                     \
+        if (::einsums::detail::get_##name##_logger().level() <= loglevel) {                                                                \
+            ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION},                          \
+                                                         static_cast<::spdlog::level::level_enum>(loglevel), __VA_ARGS__);                 \
+        }
+#endif
 
 /**
  * Checks to see if the logger can handle the given log level.

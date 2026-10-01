@@ -73,7 +73,7 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
     DiskTensor<TestType, 2> A(fmt::format("/A1/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
-    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
+    auto Ad = create_random_tensor<TestType>("A", 3, 3);
 
     {
         A(All, All) = Ad;
@@ -124,7 +124,7 @@ TEMPLATE_TEST_CASE("Write/Read compressed", "[disktensor]", float, double, std::
     DiskTensor<TestType, 2> A(fmt::format("/A2/{}", type_name<TestType>()), Dim{3, 3}, 9);
 
     // Data must exist on disk before it can be read in.
-    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
+    auto Ad = create_random_tensor<TestType>("A", 3, 3);
 
     {
         A(All, All) = Ad;
@@ -175,7 +175,7 @@ TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<f
     DiskTensor<TestType, 2> A(fmt::format("/A3/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
-    Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
+    auto Ad = create_random_tensor<TestType>("A", 3, 3);
     // println(Ad);
     A.write(Ad);
 
@@ -261,19 +261,19 @@ TEMPLATE_TEST_CASE("DiskView 7x7x7x7", "[disktensor]", float, double, std::compl
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g0/{}", type_name<TestType>()), 7, 7, 7, 7);
-        Tensor                  data = create_random_tensor<TestType>("data", 7, 7);
+        auto                  data = create_random_tensor<TestType>("data", 7, 7);
         g(All, 2, 4, All)            = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g1/{}", type_name<TestType>()), 7, 7, 7, 7);
-        Tensor                  data2 = create_random_tensor<TestType>("data", 7, 2, 7);
+        auto                  data2 = create_random_tensor<TestType>("data", 7, 2, 7);
         g(All, Range{4, 6}, 2, All)   = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
         DiskTensor<TestType, 4> g(fmt::format("/g2/{}", type_name<TestType>()), 3, 3, 3, 3);
-        Tensor                  data3 = create_random_tensor<TestType>("data", 3, 3);
+        auto                  data3 = create_random_tensor<TestType>("data", 3, 3);
         TestType                value = 0.0;
 
         for (size_t i = 0; i < 3; i++) {

@@ -40,13 +40,18 @@ jobs:
         with:
           ref: ${{ inputs.build_ref }}
           path: src
+          
+      - name: Get Week
+        id: get-date
+        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Cache Build Cache
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-
+          key: einsums-${{ runner.os }}-${{ steps.get-date.outputs.week }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ steps.get-date.outputs.week }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
@@ -65,11 +70,6 @@ jobs:
         run: |
           pwd
           python merge_yml.py default openblas
-
-      - name: Get Week
-        id: get-date
-        run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
-        shell: bash
 
       - name: Cache Conda env
         uses: actions/cache@v4
