@@ -76,8 +76,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-
+          key: einsums-${{env.CACHE_NUMBER}}-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-${{ github.sha }}
+          restore-keys: einsums-${{env.CACHE_NUMBER}}-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ matrix.variant }}-
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
@@ -127,6 +130,8 @@ jobs:
 
       - name: Configure CMake
         run: |
+          echo "$CONDA_PREFIX"
+          which python
           cmake \
             -G Ninja \
             -S "$GITHUB_WORKSPACE/src" \
@@ -167,7 +172,7 @@ jobs:
           echo "NOTES=$NOTES"
           echo "SOURCES=$SOURCES"
           gcov -r $SOURCES || echo "returned $?"
-          lcov --capture --directory . --output-file coverage.info --exclude \*/_deps/\* --exclude /usr/\* --exclude \*/einsums-env/\*
+          lcov --capture --ignore-errors inconsistent --directory . --output-file coverage.info --exclude \*/_deps/\* --exclude /usr/\* --exclude \*/einsums-env/\*
 
       - name: Upload C++ coverage to Codecov
         if: ${{ contains(matrix.compiler, 'default') }}

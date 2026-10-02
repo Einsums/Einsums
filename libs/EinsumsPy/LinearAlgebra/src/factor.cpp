@@ -8,6 +8,7 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Tensor.hpp>
 
@@ -217,14 +218,13 @@ py::object pseudoinverse(pybind11::buffer const &A, pybind11::object const &tol)
 
 template <typename T>
 pybind11::tuple qr_work(pybind11::buffer const &_A) {
-    // Copy A because it will be overwritten by the QR call.
     Tensor<T, 2>      A = PyTensorView<T>(_A);
     blas::int_t const m = A.dim(0);
     blas::int_t const n = A.dim(1);
 
     Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    blas::int_t info = blas::geqrf(m, n, A.data(), n, tau.data());
+    blas::int_t info = blas::geqrf(m, n, A.data(), A.stride(0), tau.data());
 
     if (info < 0) {
         EINSUMS_THROW_EXCEPTION(py::value_error, "{} parameter to geqrf has an illegal value.", print::ordinal(-info));
@@ -232,14 +232,14 @@ pybind11::tuple qr_work(pybind11::buffer const &_A) {
 
     // Extract Matrix Q out of QR factorization
     // blas::int_t info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
-    return py::make_tuple(PyTensor<T>(std::move(A)), PyTensor<T>(std::move(tau)));
+    return py::make_tuple(RuntimeTensor<T>(std::move(A)), RuntimeTensor<T>(std::move(tau)));
 }
 
 py::tuple qr(pybind11::buffer const &A) {
     py::buffer_info A_info = A.request(false);
 
     if (A_info.ndim != 2) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "Can only take the pseudoinverse of matrices!");
+        EINSUMS_THROW_EXCEPTION(rank_error, "Can only take the QR decomposition of matrices!");
     }
 
     py::tuple out;
@@ -274,7 +274,7 @@ RuntimeTensor<T> q_work(pybind11::buffer const &qr, pybind11::buffer const &tau)
                                 print::ordinal(-info), m, n, k, lda);
     }
 
-    return RuntimeTensor<T>(std::move(Q));
+    return RuntimeTensor<T>(Q(Range{0, m}, Range{0, n}));
 }
 
 py::object q(pybind11::buffer const &qr, pybind11::buffer const &tau) {
@@ -307,7 +307,7 @@ RuntimeTensor<T> r_work(pybind11::buffer const &qr) {
 
     T const *qr_data = (T const *)qr_info.ptr;
 
-    size_t qr_stride0 = qr_info.strides[0] / qr_info.itemsize, qr_stride1 = qr_info.strides[1] / qr_info.itemsize;
+    size_t const qr_stride0 = qr_info.strides[0] / qr_info.itemsize, qr_stride1 = qr_info.strides[1] / qr_info.itemsize;
 
     for (size_t i = 0; i < out.dim(0); i++) {
         for (size_t j = i; j < out.dim(1); j++) {
@@ -322,7 +322,7 @@ py::object r(pybind11::buffer const &qr, pybind11::buffer const &tau) {
     py::buffer_info qr_info = qr.request(false), tau_info = tau.request(false);
 
     if (qr_info.ndim != 2 || tau_info.ndim != 1) {
-        EINSUMS_THROW_EXCEPTION(rank_error, "The q function takes a matrix and a vector!");
+        EINSUMS_THROW_EXCEPTION(rank_error, "The r function takes a matrix and a vector!");
     }
 
     py::object out;

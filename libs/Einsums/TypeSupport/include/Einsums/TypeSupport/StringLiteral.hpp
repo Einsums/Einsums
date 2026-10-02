@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstdlib>
+// stdlib needs to come before format.
 #include <fmt/format.h>
 
 #include <algorithm>

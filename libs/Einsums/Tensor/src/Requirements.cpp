@@ -31,6 +31,7 @@ static void check_requirements() {
     if constexpr (std::is_same_v<T, BadT> || Rank == BadRank) {
         return;
     } else {
+        static_assert(TensorConcept<tensor_base::BlockTensor<T, RuntimeTensor<T>>>);
         if constexpr (Rank >= 2) {
             static_assert(TensorConcept<BlockTensor<T, Rank>>);
             static_assert(!NotTensorConcept<BlockTensor<T, Rank>>);

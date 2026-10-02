@@ -37,3 +37,11 @@ new submodules.
 
 * Once the work to process access to argc and argv from the RuntimeConfiguration the
   testing harness needs to be updated to use them.
+
+# Checklist for 1.2
+
+* Get BlockTensors and TiledTensors working with Python
+* Add conjugation to the einsum, gemm, and gemv calls
+* Windows support.
+* Add setters to the global config map.
+* Add copy-cast constructors to tensors

@@ -10,11 +10,12 @@ dependencies:
   - ninja
   - lcov
   - pre-commit
+  - llvm-tools
   # Prebuilts to save einsums the work
   - cpp-argparse
   - catch2
   - fftw
-  - fmt
+  - fmt=11
   - cpptrace
   - spdlog>=1.17
   # HDF5
