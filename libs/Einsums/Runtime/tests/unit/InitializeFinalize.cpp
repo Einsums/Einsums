@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <Einsums/Runtime/InitializeFinalize.hpp>
+#include <Einsums/Runtime.hpp>
 
 #include <string>
 
@@ -13,19 +13,17 @@ TEST_CASE("Initialize-Finalize", "[runtime]") {
 
     using namespace einsums;
 
-    REQUIRE(initialize_testing() == 0);
+    REQUIRE_NOTHROW(initialize(std::vector<std::string>{"einsums"}));
 
     SECTION("Normal finalize") {
         REQUIRE_NOTHROW(finalize());
     }
 
-    SECTION("Stringify finalize") {
-        std::stringstream stream;
-
-        REQUIRE_NOTHROW(finalize(stream));
-
-        std::string output = stream.str();
-
-        REQUIRE(output.size() != 0);
+    SECTION("Double initialize/finalize") {
+        REQUIRE_NOTHROW(initialize(std::vector<std::string>{"einsums"}));
+        REQUIRE_NOTHROW(finalize());
+        REQUIRE_NOTHROW(finalize());
+        REQUIRE_NOTHROW(initialize(std::vector<std::string>{"einsums"}));
+        REQUIRE_NOTHROW(finalize());
     }
 }

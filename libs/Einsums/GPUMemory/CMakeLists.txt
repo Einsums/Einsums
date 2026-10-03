@@ -25,7 +25,7 @@ if(EINSUMS_WITH_GPU_SUPPORT)
 
   if(EINSUMS_WITH_CUDA)
     foreach(f IN LISTS GPUMemorySources)
-      set_source_file_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
+      set_source_files_properties("src/${f}" PROPERTIES LANGUAGE CUDA)
     endforeach()
   endif()
 endif()

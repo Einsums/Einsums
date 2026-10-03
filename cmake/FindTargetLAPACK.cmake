@@ -43,8 +43,14 @@ if(LAPACK_LIBRARIES)
     elseif(${_lname} MATCHES "openblas")
       set(_VENDOR "OpenBLAS")
       break()
+    else()
+      set(_VENDOR "${_lname}")
+      # no break. If we fall through the loop, we need some diagnostics.
     endif()
   endforeach()
+  
+  message("-- Using LAPACK vendor ${_VENDOR}")
+  
 
   add_library(tgt::lapack INTERFACE IMPORTED)
   set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES ${LAPACK_LIBRARIES})
@@ -152,6 +158,12 @@ get_property(
   TARGET tgt::lapack
   PROPERTY INT_INTERFACE
 )
+
+# Set up libatomic if needed.
+if(_ven STREQUAL "MKL")
+	target_link_libraries(tgt::lapack INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+endif()
+
 set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_ill}")
 if((TARGET tgt::blas) AND (TARGET tgt::lapk))
   get_property(
@@ -164,7 +176,35 @@ if((TARGET tgt::blas) AND (TARGET tgt::lapk))
     TARGET tgt::lapk
     PROPERTY INTERFACE_LINK_LIBRARIES
   )
+  
+  # Set up libatomic if needed.
+  if(_ven STREQUAL "MKL")
+	target_link_libraries(tgt::blas INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+	target_link_libraries(tgt::lapk INTERFACE $<$<PLATFORM_ID:Linux>:atomic>)
+  endif()
   set(${PN}_MESSAGE "Found LAPACK ${_ven}w/${_int}: ${_illl};${_illb}")
+endif()
+
+# libm is not available on MSVC/clang-cl Windows toolchains.
+if(WIN32)
+  set(_einsums_dot_check_libs tgt::lapack)
+else()
+  set(_einsums_dot_check_libs tgt::lapack m)
+endif()
+
+einsums_check_for_dot_subroutine(DEFINITIONS EINSUMS_DOT_SUBROUTINE LIBRARIES ${_einsums_dot_check_libs})
+
+if(EINSUMS_DOT_SUBROUTINE)
+  message("-- Complex dot products are subroutines. Choosing appropriate code path.")
+else()
+  einsums_check_for_dot_struct_return(
+    DEFINITIONS EINSUMS_DOT_STRUCT_RETURN LIBRARIES ${_einsums_dot_check_libs}
+  )
+  if(EINSUMS_DOT_STRUCT_RETURN)
+    message("-- Complex dot products return structs. Choosing appropriate code path.")
+  else()
+    message("-- Complex dot products return std::complex. Choosing appropriate code path.")
+  endif()
 endif()
 
 include(FindPackageHandleStandardArgs)

@@ -43,6 +43,10 @@ einsums_add_module(
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack
         MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Print Einsums_Profile
-        Einsums_BLASBase Einsums_HPTT
+        Einsums_BLASBase
   CMAKE_SUBDIRS examples tests
 )
+
+if(NOT WIN32)
+    target_link_libraries(Einsums_BLASVendor PUBLIC Einsums_HPTT)
+endif()

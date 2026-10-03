@@ -236,11 +236,11 @@ struct BufferAllocator {
 
 #ifndef WINDOWS
 
-extern template struct EINSUMS_EXPORT BufferAllocator<void>;
-extern template struct EINSUMS_EXPORT BufferAllocator<float>;
-extern template struct EINSUMS_EXPORT BufferAllocator<double>;
-extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<float>>;
-extern template struct EINSUMS_EXPORT BufferAllocator<std::complex<double>>;
+extern template struct BufferAllocator<void>;
+extern template struct BufferAllocator<float>;
+extern template struct BufferAllocator<double>;
+extern template struct BufferAllocator<std::complex<float>>;
+extern template struct BufferAllocator<std::complex<double>>;
 
 #endif
 

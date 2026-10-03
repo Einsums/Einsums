@@ -25,6 +25,8 @@
 
 namespace einsums {
 
+static bool is_init = false;
+
 template <typename F, typename... BoundArgs>
 struct bind_back_t {
     F                        func_;
@@ -89,6 +91,7 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
+
     RuntimeConfiguration config(argv);
 
     // Before this line logging does not work.
@@ -113,8 +116,9 @@ int run(std::function<int()> const &f, std::vector<std::string> const &argv, Ini
     H5Eset_auto(0, nullptr, nullptr);
 
     // Build and configure this runtime instance.
-    std::unique_ptr<Runtime> rt = std::make_unique<Runtime>(std::move(config), true);
+    std::unique_ptr<Runtime> rt = std::make_unique<Runtime>(std::move(config), !is_init);
 
+    is_init = true;
     if (blocking) {
         return run(f, *rt, params);
     }

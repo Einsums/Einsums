@@ -98,8 +98,10 @@ function(einsums_add_config_test variable)
 
     set(CONFIG_TEST_INCLUDE_DIRS ${CONFIG_TEST_INCLUDE_DIRS} ${${variable}_INCLUDE_DIRECTORIES})
     set(CONFIG_TEST_LINK_DIRS ${CONFIG_TEST_LINK_DIRS} ${${variable}_LINK_DIRECTORIES})
-
+    
     set(CONFIG_TEST_LINK_LIBRARIES ${${variable}_LIBRARIES})
+    
+    einsums_debug("-- Libraries: ${CONFIG_TEST_LINK_LIBRARIES}")
 
     set(additional_cmake_flags)
     if(MSVC)
@@ -120,10 +122,11 @@ function(einsums_add_config_test variable)
             CMAKE_FLAGS
             "-DINCLUDE_DIRECTORIES=${CONFIG_TEST_INCLUDE_DIRS}"
             "-DLINK_DIRECTORIES=${CONFIG_TEST_LINK_DIRS}"
-            "-DLINK_LIBRARIES=${CONFIG_TEST_LINK_LIBRARIES}"
+            LINK_LIBRARIES ${CONFIG_TEST_LINK_LIBRARIES}
             CXX_STANDARD ${EINSUMS_WITH_CXX_STANDARD}
             CXX_STANDARD_REQUIRED ON
             CXX_EXTENSIONS FALSE
+            COPY_FILE ${test_binary}
             RUN_OUTPUT_VARIABLE ${variable}_OUTPUT
             ARGS ${${variable}_ARGS}
         )
@@ -138,7 +141,7 @@ function(einsums_add_config_test variable)
       endif()
     else()
       if(EINSUMS_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
-        set(cuda_parameters CUDA_STANDARD ${CMAKE_CUDA_STANDARD})
+        set(cuda_parameters CUDA_STANDARD "${CMAKE_CUDA_STANDARD}")
       endif()
       # if(EINSUMS_WITH_HIP) set(hip_parameters HIP_STANDARD "${CMAKE_HIP_STANDARD}") endif()
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
@@ -153,7 +156,7 @@ function(einsums_add_config_test variable)
           CMAKE_FLAGS
           "-DINCLUDE_DIRECTORIES=${CONFIG_TEST_INCLUDE_DIRS}"
           "-DLINK_DIRECTORIES=${CONFIG_TEST_LINK_DIRS}"
-          "-DLINK_LIBRARIES=${CONFIG_TEST_LINK_LIBRARIES}"
+          LINK_LIBRARIES ${CONFIG_TEST_LINK_LIBRARIES}
           OUTPUT_VARIABLE ${variable}_OUTPUT
           CXX_STANDARD ${EINSUMS_WITH_CXX_STANDARD}
           CXX_STANDARD_REQUIRED ON
@@ -440,4 +443,45 @@ function(einsums_check_for_cxx_lambda_capture_decltype)
     EINSUMS_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
                                                     FILE ${ARGN}
   )
+endfunction()
+
+function(einsums_check_for_dot_subroutine)
+  if(_int STREQUAL ilp64)
+    set(__int_interface_macro EINSUMS_BLAS_INTERFACE_ILP64)
+  elseif(_int STREQUAL lp64)
+    set(__int_interface_macro EINSUMS_BLAS_INTERFACE_LP64)
+  endif()
+
+  if(DEFINED FC_SYMBOL)
+  	einsums_add_config_test(
+    	EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp 
+    	FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS FC_SYMBOL=${FC_SYMBOL} ${__int_interface_macro} ${ARGN}
+  	)
+  else()
+	  einsums_add_config_test(
+    	EINSUMS_DOT_SUBROUTINE SOURCE cmake/tests/dot_subroutine.cpp 
+    	FILE NOT_REQUIRED EXECUTE COMPILE_DEFINITIONS FC_SYMBOL=2 ${__int_interface_macro} ${ARGN}
+  	)
+  endif()
+endfunction()
+
+# OpenBLAS on Windows returns complex results via struct.
+function(einsums_check_for_dot_struct_return)
+  if(_int STREQUAL ilp64)
+    set(__int_interface_macro EINSUMS_BLAS_INTERFACE_ILP64)
+  elseif(_int STREQUAL lp64)
+    set(__int_interface_macro EINSUMS_BLAS_INTERFACE_LP64)
+  endif()
+
+  if(DEFINED FC_SYMBOL)
+    einsums_add_config_test(
+      EINSUMS_DOT_STRUCT_RETURN SOURCE cmake/tests/dot_struct_return.cpp FILE NOT_REQUIRED EXECUTE
+      COMPILE_DEFINITIONS FC_SYMBOL=${FC_SYMBOL} ${__int_interface_macro} ${ARGN}
+    )
+  else()
+    einsums_add_config_test(
+      EINSUMS_DOT_STRUCT_RETURN SOURCE cmake/tests/dot_struct_return.cpp FILE NOT_REQUIRED EXECUTE
+      COMPILE_DEFINITIONS FC_SYMBOL=2 ${__int_interface_macro} ${ARGN}
+    )
+  endif()
 endfunction()

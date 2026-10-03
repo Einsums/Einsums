@@ -12,7 +12,7 @@ on:
       build_cache_size:
         type: string
         required: false
-        default: 2G
+        default: 4G
       build_configure_extra_args:
         type: string
         required: false
@@ -142,7 +142,7 @@ jobs:
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config Release --target install
+          TMPDIR=$PWD cmake --build "${{ github.workspace }}/build" --config Release --target install
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"

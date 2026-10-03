@@ -70,7 +70,7 @@ struct insensitive_hash {
 
 #ifndef DOXYGEN
 template <>
-struct insensitive_hash<std::string> {
+struct EINSUMS_EXPORT insensitive_hash<std::string> {
   public:
     constexpr insensitive_hash() = default;
 
@@ -78,7 +78,7 @@ struct insensitive_hash<std::string> {
 };
 
 template <>
-struct insensitive_hash<char *> {
+struct EINSUMS_EXPORT insensitive_hash<char *> {
   public:
     constexpr insensitive_hash() = default;
 
@@ -316,12 +316,12 @@ class EINSUMS_EXPORT GlobalConfigMap {
      *
      * @param obs The observer to attach.
      */
-    template <typename T, bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
-              bool int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
-              bool double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
-              bool bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); }>
+    template <typename T>
     void attach(T &obs) {
-
+        constexpr bool string_requirement = requires(T obs, config_mapping_type<std::string> map) { obs(map); },
+                       int_requirement    = requires(T obs, config_mapping_type<std::int64_t> map) { obs(map); },
+                       double_requirement = requires(T obs, config_mapping_type<double> map) { obs(map); },
+                       bool_requirement   = requires(T obs, config_mapping_type<bool> map) { obs(map); };
         if constexpr (string_requirement) {
             str_map_->attach(obs);
         }

@@ -1,0 +1,54 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 2
+  },
+  "configurePresets": [
+    {
+      "name": "windows-clang-cl",
+      "displayName": "Windows clang-cl (conda) + Ninja",
+      "description": "Activate einsums-dev in cmd, clear CMAKE_GENERATOR_PLATFORM/TOOLSET and feedstock C*FLAGS, then cmake --preset windows-clang-cl. (Do not set PLATFORM to empty in this preset — CMake treats that as specified.)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_C_COMPILER": "$env{CONDA_PREFIX}/Library/bin/clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "$env{CONDA_PREFIX}/Library/bin/clang-cl.exe",
+        "CMAKE_PREFIX_PATH": "$env{CONDA_PREFIX}/Library",
+        "EINSUMS_BUILD_PYTHON": "OFF",
+        "EINSUMS_WITH_TESTS": "ON",
+        "EINSUMS_WITH_EXAMPLES": "ON",
+        "EINSUMS_WITH_BACKTRACES": "OFF"
+      },
+      "environment": {
+        "CC": "$env{CONDA_PREFIX}/Library/bin/clang-cl.exe",
+        "CXX": "$env{CONDA_PREFIX}/Library/bin/clang-cl.exe",
+        "CFLAGS": "",
+        "CXXFLAGS": "",
+        "CPPFLAGS": ""
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-clang-cl",
+      "configurePreset": "windows-clang-cl"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-clang-cl",
+      "configurePreset": "windows-clang-cl",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

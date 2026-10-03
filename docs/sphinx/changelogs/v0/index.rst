@@ -4,7 +4,7 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. include:: v0.6.1
+.. include:: v0.6.1.rst
 
 .. include:: v0.6.0.rst
 
