@@ -13,14 +13,17 @@ namespace einsums::detail {
 
 void *allocate(size_t n) {
     void *ptr = nullptr;
+    
+    size_t modified_n = n + 63;
+    size_t rounded_n = modified_n & ~63;
 
 #if defined(EINSUMS_HAVE_MALLOC_MIMALLOC)
-    ptr = mi_malloc_aligned(n, 64);
+    ptr = mi_malloc_aligned(rounded_n, 64);
 #elif defined(_ISOC11_SOURCE) || (__STDC_VERSION__ >= 201112L)
-    ptr = std::aligned_alloc(64, n);
+    ptr = std::aligned_alloc(64, rounded_n);
 #else
     // returns zero on success, or an error value. On Linux (and other systems), p is not modified on failure.
-    if (posix_memalign(&ptr, 64, n) != 0) {
+    if (posix_memalign(&ptr, 64, rounded_n) != 0) {
         ptr = nullptr;
     }
 #endif

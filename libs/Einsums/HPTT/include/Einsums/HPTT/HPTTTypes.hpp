@@ -30,10 +30,16 @@
 #include <complex.h>
 #include <complex>
 
-#define REGISTER_BITS 256 // AVX
-#ifdef __aarch64__
-#    undef REGISTER_BITS
+#if defined(__AVX512F__) && defined(__AVX512VL__)
+#define REGISTER_BITS 512
+#elif defined(__AVX__)
+#define REGISTER_BITS 256
+#elif defined(__SSE__)
+#define REGISTER_BITS 128
+#elif defined(__aarch64__)
 #    define REGISTER_BITS 128 // ARM
+#else
+#   define REGISTER_BITS (8 * sizeof(double))
 #endif
 
 namespace hptt {

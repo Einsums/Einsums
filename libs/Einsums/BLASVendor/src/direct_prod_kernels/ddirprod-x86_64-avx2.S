@@ -107,9 +107,9 @@ ddirprod_kernel_avx2:
 
     // Increment.
     incb    %cl
-    leaq    4(%rsi), %rsi
-    leaq    4(%rdx), %rdx
-    leaq    4(%rbx), %rbx
+    leaq    8(%rsi), %rsi
+    leaq    8(%rdx), %rdx
+    leaq    8(%rbx), %rbx
     jmp     .begin_unvector_loop_1
 .end_unvector_loop_1:
 

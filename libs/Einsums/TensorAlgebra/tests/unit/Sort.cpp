@@ -13,33 +13,33 @@
 TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::index;
 
     SECTION("Rank 2 - axpy") {
-        Tensor<TestType, 2> A{"A", 3, 3};
-        Tensor<TestType, 2> C{"C", 3, 3};
+        constexpr int       dim = 9;
+        Tensor<TestType, 2> A{"A", dim, dim};
+        Tensor<TestType, 2> C{"C", dim, dim};
 
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++, ij++) {
                 A(i, j) = ij;
             }
         }
 
-        permute(Indices{i, j}, &C, Indices{i, j}, A);
+        permute(Indices{index::i, index::j}, &C, Indices{index::i, index::j}, A);
 
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
+        for (int i = 0; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
                 REQUIRE(C(i, j) == A(i, j));
             }
         }
 
-        TensorView<TestType, 2> A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView<TestType, 2> C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView<TestType, 2> A_view{A, Dim<2>{dim - 1, dim - 1}, Offset<2>{1, 1}};
+        TensorView<TestType, 2> C_view{C, Dim<2>{dim - 1, dim - 1}, Offset<2>{1, 1}};
 
-        permute(Indices{j, i}, &C_view, Indices{i, j}, A_view);
+        permute(Indices{index::j, index::i}, &C_view, Indices{index::i, index::j}, A_view);
 
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++, ij++) {
                 if (i == 0 || j == 0)
                     REQUIRE(C(i, j) == A(i, j));
                 else
@@ -60,7 +60,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
+        permute(1.0, Indices{index::i, index::j}, &C0, 1.0, Indices{index::i, index::j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -75,7 +75,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
+        permute(2.0, Indices{index::i, index::j}, &C0, 0.5, Indices{index::i, index::j}, A);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -94,7 +94,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{j, i}, &C, Indices{i, j}, A);
+        permute(Indices{index::j, index::i}, &C, Indices{index::i, index::j}, A);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -115,7 +115,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{k, j, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{index::k, index::j, index::i}, &B, Indices{index::i, index::j, index::k}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -124,7 +124,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{i, k, j}, &B, Indices{i, j, k}, A);
+        permute(Indices{index::i, index::k, index::j}, &B, Indices{index::i, index::j, index::k}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -133,7 +133,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{index::j, index::k, index::i}, &B, Indices{index::i, index::j, index::k}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -142,7 +142,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{i, j, k}, &B, Indices{k, j, i}, A);
+        permute(Indices{index::i, index::j, index::k}, &B, Indices{index::k, index::j, index::i}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -166,7 +166,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
+        permute(0.0, Indices{index::i, index::l, index::k, index::j}, &B, 0.5, Indices{index::k, index::j, index::l, index::i}, A);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -194,8 +194,8 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
     //         }
     //     }
 
-    //     permute(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
-    //     for (int i = 0; i < 3; i++) {
+    //     permute(Indices{index::i, index::k, index::l, index::m, index::j}, &B, Indices{index::j, index::k, index::l, index::m, index::i},
+    //     A); for (int i = 0; i < 3; i++) {
     //         for (int j = 0; j < 3; j++) {
     //             for (int k = 0; k < 3; k++) {
     //                 for (int l = 0; l < 3; l++) {
@@ -218,7 +218,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{j, i}, &B, Indices{i, j}, A);
+        permute(Indices{index::j, index::i}, &B, Indices{index::i, index::j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 REQUIRE_THAT(B(j, i), Catch::Matchers::WithinRel(A(i, j), (TestType)0.00001));
@@ -238,7 +238,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        permute(Indices{index::j, index::k, index::i}, &B, Indices{index::i, index::j, index::k}, A);
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
@@ -260,7 +260,7 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
             }
         }
 
-        auto plan = compile_permute(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+        auto plan = compile_permute(Indices{index::j, index::k, index::i}, &B, Indices{index::i, index::j, index::k}, A);
 
         permute(&B, A, plan);
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
@@ -276,7 +276,6 @@ TEMPLATE_TEST_CASE("permute2", "[tensor]", float, double) {
 TEST_CASE("Saving and loading permutes") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
-    using namespace einsums::index;
 
     Tensor A{"A", 2, 3, 4};
     Tensor B{"B", 3, 4, 2};
@@ -289,7 +288,8 @@ TEST_CASE("Saving and loading permutes") {
         }
     }
 
-    auto plan = einsums::tensor_algebra::compile_permute(0.0, Indices{j, k, i}, &B, 1.0, Indices{i, j, k}, A);
+    auto plan = einsums::tensor_algebra::compile_permute(0.0, Indices{index::j, index::k, index::i}, &B, 1.0,
+                                                         Indices{index::i, index::j, index::k}, A);
 
     auto fp = std::fopen("saved_plan.hptt", "w+");
 
