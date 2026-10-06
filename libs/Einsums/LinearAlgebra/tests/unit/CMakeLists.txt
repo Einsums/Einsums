@@ -22,6 +22,7 @@ set(linear_algebra_tests
     Scale
     Decomposition
     GPULinearAlgebra.hpp
+    trace
 )
 
 foreach(test ${linear_algebra_ests})

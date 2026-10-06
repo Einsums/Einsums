@@ -276,4 +276,18 @@ void scale(typename AType::ValueType alpha, AType *A) {
     }
 }
 
+template<MatrixConcept AType>
+typename AType::ValueType trace(AType const &A) {
+    using T = typename AType::ValueType;
+
+    T out{0.0};
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for(size_t i = 0; i < A.dim(0); i++) {
+        out += A(i, i);
+    }
+
+    return out;
+}
+
 } // namespace einsums::linear_algebra::detail

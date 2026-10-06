@@ -5,8 +5,8 @@
 
 include(FetchContent)
 
-set(SPDLOG_INSTALL TRUE)
-set(SPDLOG_FMT_EXTERNAL TRUE)
+set(SPDLOG_INSTALL ON)
+set(SPDLOG_FMT_EXTERNAL ON)
 fetchcontent_declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
