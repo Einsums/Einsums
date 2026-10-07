@@ -1,0 +1,4 @@
+[submodule "EinsumsCMake"]
+	path = EinsumsCMake
+	url = git@github.com:Einsums/EinsumsCMake.git
+	branch = main

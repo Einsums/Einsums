@@ -239,7 +239,7 @@ add_custom_target(
     -DEINSUMS_WITH_GIT_BRANCH=${EINSUMS_WITH_GIT_BRANCH}
     -DEINSUMS_WITH_GIT_TAG=${EINSUMS_WITH_GIT_TAG}
     -DEINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS="${EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS}" -P
-    "${PROJECT_SOURCE_DIR}/cmake/Einsums_UpdateGitDocs.cmake"
+    "${PROJECT_SOURCE_DIR}/EinsumsCMake/cmake/Einsums_UpdateGitDocs.cmake"
 )
 
 set_target_properties(git_docs PROPERTIES FOLDER "Documentation/")

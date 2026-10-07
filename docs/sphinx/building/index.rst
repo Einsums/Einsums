@@ -136,7 +136,7 @@ Building Einsums from source
 If you want to build from source in order to work on Einsums itself, first clone
 the Einsums repository.::
 
-    git clone https://github.com/Einsums/Einsums.git
+    git clone --recursive https://github.com/Einsums/Einsums.git
     cd Einsums
 
 Then you will want to do the following:

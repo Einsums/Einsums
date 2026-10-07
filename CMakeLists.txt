@@ -61,7 +61,7 @@ set(EINSUMS_BINARY_DIR "${PROJECT_BINARY_DIR}")
 # ##################################################################################################
 # CMake configuration
 # ##################################################################################################
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake" "${PROJECT_SOURCE_DIR}/EinsumsCMake/cmake")
 
 include(GNUInstallDirs)
 include(Einsums_Utils)
@@ -885,8 +885,18 @@ install(
 )
 
 install(
-  # Install all einsums CMake utility files
+  # Install Einsums specific CMake utility files
   DIRECTORY cmake/
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
+  COMPONENT core
+  PATTERN "templates" EXCLUDE
+  PATTERN "packaging" EXCLUDE
+  PATTERN ".git" EXCLUDE
+)
+
+install(
+  # Install common organization CMake utility files
+  DIRECTORY EinsumsCMake/
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
   COMPONENT core
   PATTERN "templates" EXCLUDE
