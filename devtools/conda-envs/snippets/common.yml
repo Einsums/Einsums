@@ -10,6 +10,7 @@ dependencies:
   - ninja
   - lcov
   - pre-commit
+  - llvm-tools
   # Prebuilts to save einsums the work
   - cpp-argparse
   - catch2

@@ -16,61 +16,81 @@ import math
         ein.core.RuntimeTensorZ,
     ],
 )
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_creation(tensor_type):
+    ein.log_debug("")
     A = tensor_type("A", [3, 3])
+    ein.log_debug("")
     B = tensor_type([3, 3])
+    ein.log_debug("")
     C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+    ein.log_debug("")
 
     A_dims = A.dims()
     B_dims = B.dims()
     C_dims = C.dims()
+    print(C_dims, flush=True)
+    ein.log_debug("")
 
     assert A.rank() == 2
+    ein.log_debug("")
     assert B.rank() == 2
+    ein.log_debug("")
     assert C.rank() == 2
+    ein.log_debug("")
 
     assert A_dims[0] == 3
     assert A_dims[1] == 3
     assert A.dim(0) == 3
     assert A.dim(1) == 3
+    ein.log_debug("")
 
     assert B_dims[0] == 3
     assert B_dims[1] == 3
     assert B.dim(0) == 3
     assert B.dim(1) == 3
+    ein.log_debug("")
 
     assert C_dims[0] == 3
     assert C_dims[1] == 3
     assert C.dim(0) == 3
     assert C.dim(1) == 3
+    ein.log_debug("")
 
     A_strides = A.strides()
     B_strides = B.strides()
     C_strides = C.strides()
+    ein.log_debug("")
 
     assert A_strides[0] == 3
     assert A_strides[1] == 1
     assert A.stride(0) == 3
     assert A.stride(1) == 1
+    ein.log_debug("")
 
     assert B_strides[0] == 3
     assert B_strides[1] == 1
     assert B.stride(0) == 3
     assert B.stride(1) == 1
+    ein.log_debug("")
 
     assert C_strides[0] == 3
     assert C_strides[1] == 1
     assert C.stride(0) == 3
     assert C.stride(1) == 1
+    ein.log_debug("")
 
     assert A.get_name() == "A"
     assert A.name == "A"
+    ein.log_debug("")
 
     B.set_name("B")
     assert B.get_name() == "B"
 
     B.name = "B2"
     assert B.get_name() == "B2"
+    ein.log_debug("")
 
     for dtype in [
         int,
@@ -86,12 +106,11 @@ def test_creation(tensor_type):
         np.int64,
     ]:
         C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
-
-        print(C)
-        print(dtype)
+        ein.log_debug("")
 
         for n, x in enumerate(C):
             assert x == n + 1
+        ein.log_debug("")
 
     for dtype in [
         int,
@@ -109,13 +128,13 @@ def test_creation(tensor_type):
         x = np.array(
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], dtype=dtype
         )
+        ein.log_debug("")
         C = tensor_type(x[0:3, 0:3])
-
-        print(C)
-        print(dtype)
+        ein.log_debug("")
 
         for n, x in enumerate(C):
             assert x == n + (n // 3) + 1
+        ein.log_debug("")
 
     # Test errors
     for dtype in ["X", "ZX", "T{}"]:
@@ -123,6 +142,7 @@ def test_creation(tensor_type):
             x = ein.core.BadBuffer(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
             x.set_format(dtype)
             C = tensor_type(x)
+        ein.log_debug("")
 
 
 @pytest.mark.parametrize(
@@ -134,6 +154,8 @@ def test_creation(tensor_type):
         ein.core.RuntimeTensorZ,
     ],
 )
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_set(tensor_type):
     A = tensor_type("A", [3, 3])
     B = tensor_type("B", [3, 3])
@@ -175,6 +197,8 @@ def test_set(tensor_type):
 @pytest.mark.parametrize(
     "etype", [float, complex, np.float32, np.float64, np.complex64, np.complex128]
 )
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_ops(dtype, etype):
     A = ein.utils.create_random_tensor("A", [3, 3], dtype)
     B = ein.utils.create_random_tensor("B", [3, 3], dtype)
@@ -188,7 +212,7 @@ def test_ops(dtype, etype):
     F.set_format("X")
 
     rel = 1e-6
-    if dtype in ein.utils.__singles or dtype in ein.utils.__complex_singles or etype in ein.utils.__singles or etype in ein.utils.__complex_singles :
+    if dtype in ein.utils.__singles or dtype in ein.utils.__complex_singles or etype in ein.utils.__singles or etype in ein.utils.__complex_singles:
         rel = 1e-3
 
     # Multiplication
@@ -197,27 +221,27 @@ def test_ops(dtype, etype):
     A_res *= 2
 
     for x, y in zip(A_res, A):
-        assert x == pytest.approx(2 * y, rel = rel)
+        assert x == pytest.approx(2 * y, rel=rel)
 
     A_res *= B
 
     for x, y, z in zip(A_res, A, B):
-        assert x == pytest.approx(2 * y * z, rel = rel)
+        assert x == pytest.approx(2 * y * z, rel=rel)
 
     A_res *= C[0:3, 0:3]
 
     for x, y, z, w in zip(A_res, A, B, C):
-        assert x == pytest.approx(2 * y * z * w, rel = rel)
+        assert x == pytest.approx(2 * y * z * w, rel=rel)
 
     A_res *= D
 
     for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-        assert x == pytest.approx(2 * y * z * w * u, rel = rel)
+        assert x == pytest.approx(2 * y * z * w * u, rel=rel)
 
     A_res *= E
 
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-        assert x == pytest.approx(2 * y * z * w * u * v, rel = rel)
+        assert x == pytest.approx(2 * y * z * w * u * v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res *= F
@@ -228,27 +252,27 @@ def test_ops(dtype, etype):
     A_res += 2
 
     for x, y in zip(A_res, A):
-        assert x == pytest.approx(2 + y, rel = rel)
+        assert x == pytest.approx(2 + y, rel=rel)
 
     A_res += B
 
     for x, y, z in zip(A_res, A, B):
-        assert x == pytest.approx(2 + y + z, rel = rel)
+        assert x == pytest.approx(2 + y + z, rel=rel)
 
     A_res += C[0:3, 0:3]
 
     for x, y, z, w in zip(A_res, A, B, C):
-        assert x == pytest.approx(2 + y + z + w, rel = rel)
+        assert x == pytest.approx(2 + y + z + w, rel=rel)
 
     A_res += D
 
     for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-        assert x == pytest.approx(2 + y + z + w + u, rel = rel)
+        assert x == pytest.approx(2 + y + z + w + u, rel=rel)
 
     A_res += E
 
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-        assert x == pytest.approx(2 + y + z + w + u + v, rel = rel)
+        assert x == pytest.approx(2 + y + z + w + u + v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res += F
@@ -259,27 +283,27 @@ def test_ops(dtype, etype):
     A_res /= 2
 
     for x, y in zip(A_res, A):
-        assert x == pytest.approx(y / 2, rel = rel)
+        assert x == pytest.approx(y / 2, rel=rel)
 
     A_res /= B
 
     for x, y, z in zip(A_res, A, B):
-        assert x == pytest.approx(y / 2 / z, rel = rel)
+        assert x == pytest.approx(y / 2 / z, rel=rel)
 
     A_res /= C[0:3, 0:3]
 
     for x, y, z, w in zip(A_res, A, B, C):
-        assert x == pytest.approx(y / 2 / z / w, rel = rel)
+        assert x == pytest.approx(y / 2 / z / w, rel=rel)
 
     A_res /= D
 
     for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-        assert x == pytest.approx(y / 2 / z / w / u, rel = rel)
+        assert x == pytest.approx(y / 2 / z / w / u, rel=rel)
 
     A_res /= E
 
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-        assert x == pytest.approx(y / 2 / z / w / u / v, rel = rel)
+        assert x == pytest.approx(y / 2 / z / w / u / v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res /= F
@@ -290,32 +314,34 @@ def test_ops(dtype, etype):
     A_res -= 2
 
     for x, y in zip(A_res, A):
-        assert x == pytest.approx(y - 2, rel = rel)
+        assert x == pytest.approx(y - 2, rel=rel)
 
     A_res -= B
 
     for x, y, z in zip(A_res, A, B):
-        assert x == pytest.approx(y - 2 - z, rel = rel)
+        assert x == pytest.approx(y - 2 - z, rel=rel)
 
     A_res -= C[0:3, 0:3]
 
     for x, y, z, w in zip(A_res, A, B, C):
-        assert x == pytest.approx(y - 2 - z - w, rel = rel)
+        assert x == pytest.approx(y - 2 - z - w, rel=rel)
 
     A_res -= D
 
     for x, y, z, w, u in zip(A_res, A, B, C, D_test.flat):
-        assert x == pytest.approx(y - 2 - z - w - u, rel = rel)
+        assert x == pytest.approx(y - 2 - z - w - u, rel=rel)
 
     A_res -= E
 
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
-        assert x == pytest.approx(y - 2 - z - w - u - v, rel = rel)
+        assert x == pytest.approx(y - 2 - z - w - u - v, rel=rel)
 
     with pytest.raises(ValueError):
         A_res -= F
 
 
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_view_creation():
     A = ein.core.RuntimeTensorD("A", [5, 5])
     B = ein.core.RuntimeTensorD([5, 5])
@@ -362,6 +388,8 @@ def test_view_creation():
     assert B_view.get_name() == "B view"
 
 
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_view_set():
     A = ein.core.RuntimeTensorD("A", [5, 5])
     B = ein.core.RuntimeTensorD([5, 5])
@@ -430,6 +458,8 @@ def test_view_set():
 @pytest.mark.parametrize(
     "etype", [float, complex, np.float32, np.float64, np.complex64, np.complex128]
 )
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_view_ops(dtype, etype):
     A = ein.utils.create_random_tensor("A", [5, 5], dtype)
     B = ein.utils.create_random_tensor("B", [3, 3], dtype)
@@ -443,7 +473,7 @@ def test_view_ops(dtype, etype):
     F.set_format("X")
 
     rel = 1e-6
-    if dtype in ein.utils.__singles or dtype in ein.utils.__complex_singles or etype in ein.utils.__singles or etype in ein.utils.__complex_singles :
+    if dtype in ein.utils.__singles or dtype in ein.utils.__complex_singles or etype in ein.utils.__singles or etype in ein.utils.__complex_singles:
         rel = 1e-3
 
     # Multiplication
@@ -454,7 +484,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] * 2, rel = rel)
+            assert A_res[index] == pytest.approx(A[index] * 2, rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -463,7 +493,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             try:
-                assert A_res[index] == pytest.approx(A[index] * 2 * B[index], rel = rel)
+                assert A_res[index] == pytest.approx(A[index] * 2 * B[index], rel=rel)
             except Exception as e:
                 raise RuntimeError(f"Index is {index}.") from e
         else:
@@ -473,7 +503,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] * 2 * B[index] * C[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] * 2 * B[index] * C[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -482,7 +512,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] * 2 * B[index] * C[index] * D_test[index], rel = rel
+                A[index] * 2 * B[index] * C[index] * D_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -492,7 +522,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] * 2 * B[index] * C[index] * D_test[index] * E_test[index], rel = rel
+                A[index] * 2 * B[index] * C[index] * D_test[index] * E_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -508,7 +538,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] + 2, rel = rel)
+            assert A_res[index] == pytest.approx(A[index] + 2, rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -516,7 +546,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] + 2 + B[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] + 2 + B[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -524,7 +554,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] + 2 + B[index] + C[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] + 2 + B[index] + C[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -533,7 +563,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] + 2 + B[index] + C[index] + D_test[index], rel = rel
+                A[index] + 2 + B[index] + C[index] + D_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -543,7 +573,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] + 2 + B[index] + C[index] + D_test[index] + E_test[index], rel = rel
+                A[index] + 2 + B[index] + C[index] + D_test[index] + E_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -559,7 +589,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] - 2, rel = rel)
+            assert A_res[index] == pytest.approx(A[index] - 2, rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -567,7 +597,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] - 2 - B[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] - 2 - B[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -575,7 +605,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] - 2 - B[index] - C[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] - 2 - B[index] - C[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -584,7 +614,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] - 2 - B[index] - C[index] - D_test[index], rel = rel
+                A[index] - 2 - B[index] - C[index] - D_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -594,7 +624,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] - 2 - B[index] - C[index] - D_test[index] - E_test[index], rel = rel
+                A[index] - 2 - B[index] - C[index] - D_test[index] - E_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -610,7 +640,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] / 2, rel = rel)
+            assert A_res[index] == pytest.approx(A[index] / 2, rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -618,7 +648,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] / 2 / B[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] / 2 / B[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -626,7 +656,7 @@ def test_view_ops(dtype, etype):
 
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
-            assert A_res[index] == pytest.approx(A[index] / 2 / B[index] / C[index], rel = rel)
+            assert A_res[index] == pytest.approx(A[index] / 2 / B[index] / C[index], rel=rel)
         else:
             assert A_res[index] == A[index]
 
@@ -635,7 +665,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] / 2 / B[index] / C[index] / D_test[index], rel = rel
+                A[index] / 2 / B[index] / C[index] / D_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -645,7 +675,7 @@ def test_view_ops(dtype, etype):
     for index in ein.utils.TensorIndices(A):
         if index[0] < 3 and index[1] < 3:
             assert A_res[index] == pytest.approx(
-                A[index] / 2 / B[index] / C[index] / D_test[index] / E_test[index], rel = rel
+                A[index] / 2 / B[index] / C[index] / D_test[index] / E_test[index], rel=rel
             )
         else:
             assert A_res[index] == A[index]
@@ -654,6 +684,8 @@ def test_view_ops(dtype, etype):
         A_view /= F
 
 
+@pytest.mark.filterwarnings(r"ignore:.*:numpy.exceptions.ComplexWarning")
+@ein.utils.labeled_section
 def test_iterators():
     A = ein.utils.create_random_tensor("A", [10, 10])
     B = A.copy()

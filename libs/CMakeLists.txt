@@ -169,6 +169,7 @@ if(EINSUMS_BUILD_PYTHON OR EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
     FILES
       ../pyeinsums/__init__.py
       ../pyeinsums/utils.py
+      ../pytest.ini
     DESTINATION
       ${EINSUMS_INSTALL_PYMODDIR}/einsums
     COMPONENT EinsumsPy

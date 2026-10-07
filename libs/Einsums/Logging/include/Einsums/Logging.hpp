@@ -59,6 +59,24 @@ namespace einsums::detail {
 #define EINSUMS_LOG_ERROR(...)    EINSUMS_LOG(SPDLOG_LEVEL_ERROR, __VA_ARGS__)
 #define EINSUMS_LOG_CRITICAL(...) EINSUMS_LOG(SPDLOG_LEVEL_CRITICAL, __VA_ARGS__)
 
+#define EINSUMS_LOG_EXCEPTION(except, ...)                                                                                                 \
+    do {                                                                                                                                   \
+        auto message =                                                                                                                     \
+            einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__), std::source_location::current());  \
+        EINSUMS_LOG_ERROR(message);                                                                                                        \
+                                                                                                                                           \
+        throw except(message);                                                                                                             \
+    } while (false)
+
+#define EINSUMS_LOG_CRITICAL_EXCEPTION(except, ...)                                                                                        \
+    do {                                                                                                                                   \
+        auto message =                                                                                                                     \
+            einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__), std::source_location::current());  \
+        EINSUMS_LOG_CRITICAL(message);                                                                                                     \
+                                                                                                                                           \
+        throw except(message);                                                                                                             \
+    } while (false)
+
 EINSUMS_EXPORT spdlog::level::level_enum get_spdlog_level(std::string const &env);
 EINSUMS_EXPORT std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const &env);
 EINSUMS_EXPORT                                      EINSUMS_DETAIL_DECLARE_SPDLOG(einsums)

@@ -729,6 +729,7 @@ struct RuntimeTensor : public tensor_base::CoreTensor, tensor_base::RuntimeTenso
 #ifndef DOXYGEN
 #    define OPERATOR(OP, NAME)                                                                                                             \
         template <typename TOther>                                                                                                         \
+            requires(!TensorConcept<TOther>)                                                                                               \
         auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                            \
             size_t elements  = size();                                                                                                     \
             T     *this_data = data();                                                                                                     \

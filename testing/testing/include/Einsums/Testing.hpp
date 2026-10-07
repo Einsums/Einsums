@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Assert.hpp>
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
@@ -19,6 +20,36 @@
 #include <catch2/catch_all.hpp>
 
 namespace einsums {
+
+/**
+ * @brief Returns a type-based tolerance to help with tests that fail for single-precision.
+ *
+ * If the template parameter is @c float or @c std::complex<float> this function will return the higher tolerance parameter,
+ * since often these tests require looser constraints to pass. Otherwise, this function will return the lower tolerance parameter.
+ * These parameters have sensible defaults, but they can be overridden to get more control over the precision of the tests.
+ * By default, the tolerance is @f$0.001@f$ for single precision tests and @f$1\times 10^{-6}@f$ for all others. As more types are
+ * supported, more cases may be added.
+ *
+ * @param high_tol Tolerance for single-precision comparisons. Defaults to @f$0.001@f$.
+ * @param low_tol Tolerance for double-precision comparisons. Defaults to @f$1\times 10^{-6}@f$.
+ * @return The specified tolerance for the templated type.
+ *
+ * @versionadded{1.2.0}
+ */
+template <typename T>
+constexpr double tolerance(double high_tol = 1e-3, double low_tol = 1e-6) {
+    return low_tol;
+}
+
+template <>
+constexpr double tolerance<float>(double high_tol, double low_tol) {
+    return high_tol;
+}
+
+template <>
+constexpr double tolerance<std::complex<float>>(double high_tol, double low_tol) {
+    return high_tol;
+}
 
 /**
  * @struct WithinStrictMatcher
@@ -86,7 +117,7 @@ auto WithinStrict(T value, T scale = T{1.0}) -> WithinStrictMatcher<T> {
 template <typename TestType>
 class WithinRelMatcher : public Catch::Matchers::MatcherGenericBase {
   public:
-    WithinRelMatcher(TestType value, double eps) : target_{value}, eps_{eps} {}
+    WithinRelMatcher(TestType value, double eps) : target_{value}, eps_{eps} { EINSUMS_ASSERT(eps > 0); }
     bool match(TestType value) const {
         if (target_ == RemoveComplexT<std::remove_cvref_t<TestType>>{0.0}) {
             return std::abs(value) <= eps_;
@@ -120,6 +151,39 @@ WithinRelMatcher(TestType, double) -> WithinRelMatcher<TestType>;
 template <typename TestType>
 WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance) {
     return WithinRelMatcher(reference, tolerance);
+}
+
+template <typename TestType>
+class WithinAbsMatcher : public Catch::Matchers::MatcherGenericBase {
+  public:
+    WithinAbsMatcher(TestType value, double eps) : target_{value}, eps_{eps} { EINSUMS_ASSERT(eps > 0); }
+    bool match(TestType value) const { return std::abs(value - target_) <= eps_; }
+
+    std::string describe() const override {
+        if constexpr (IsComplexV<std::remove_cvref_t<TestType>>) {
+            return "and " + Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(target_.real()) +
+                   ((target_.imag() < 0) ? "-" : "+") +
+                   Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(std::abs(target_.imag())) + "i are within " +
+                   Catch::StringMaker<double>::convert(eps_) + " of each other";
+        } else {
+            return "and " + Catch::StringMaker<std::remove_cvref_t<TestType>>::convert(target_) + " are within " +
+                   Catch::StringMaker<double>::convert(eps_) + " of each other";
+        }
+    }
+
+  private:
+    TestType target_;
+    double   eps_;
+};
+
+#ifdef __cpp_deduction_guides
+template <typename TestType>
+WithinAbsMatcher(TestType, double) -> WithinAbsMatcher<TestType>;
+#endif
+
+template <typename TestType>
+WithinAbsMatcher<std::remove_cvref_t<TestType>> CheckWithinAbs(TestType reference, double tolerance) {
+    return WithinAbsMatcher(reference, tolerance);
 }
 
 } // namespace einsums

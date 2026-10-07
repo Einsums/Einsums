@@ -50,7 +50,7 @@ auto apply_view(TensorType const &tensor, std::vector<Range> const &spec) {
 
     auto out = TiledTensorView<typename TensorType::ValueType, TensorType::Rank>("unnamed view", sizes);
 
-    std::array<int, TensorType::Rank> position;
+    std::array<size_t, TensorType::Rank> position;
 
     auto index = std::array<Range, TensorType::Rank>();
 
@@ -117,7 +117,7 @@ auto apply_view(TensorType const &tensor, ViewSpec &&...spec) {
 
     auto out = TiledTensorView<typename TensorType::ValueType, TensorType::Rank>("unnamed view", sizes);
 
-    std::array<int, TensorType::Rank> position;
+    std::array<size_t, TensorType::Rank> position;
 
     auto index = std::array<Range, TensorType::Rank>();
 

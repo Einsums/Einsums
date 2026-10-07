@@ -761,3 +761,8 @@ void export_tensor(pybind11::module &mod) {
 #undef OPERATOR
 }
 } // namespace einsums::python
+
+EINSUMS_EXPORT void export_Tensorf(pybind11::module_ &mod);
+EINSUMS_EXPORT void export_Tensord(pybind11::module_ &mod);
+EINSUMS_EXPORT void export_Tensorc(pybind11::module_ &mod);
+EINSUMS_EXPORT void export_Tensorz(pybind11::module_ &mod);

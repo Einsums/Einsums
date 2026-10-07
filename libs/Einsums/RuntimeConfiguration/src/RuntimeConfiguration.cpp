@@ -76,10 +76,13 @@ std::string get_executable_filename() {
 }
 
 std::string get_executable_prefix() {
-    std::filesystem::path p(get_executable_filename());
-    std::string           prefix = p.parent_path().parent_path().string();
-
-    return prefix;
+    try {
+        std::filesystem::path p(get_executable_filename());
+        std::string           prefix = p.parent_path().parent_path().string();
+        return prefix;
+    } catch (...) {
+        return std::string{"Unknown"};
+    }
 }
 } // namespace detail
 

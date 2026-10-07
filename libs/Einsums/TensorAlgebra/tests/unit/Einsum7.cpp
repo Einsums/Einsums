@@ -14,6 +14,8 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
+    constexpr double tol = tolerance<TestType>();
+
     size_t proj_rank_{10}, nocc_{5}, nvirt_{28}, naux_{3}, u_rank_{4};
 
     SECTION("1") {
@@ -48,7 +50,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
-                REQUIRE_THAT(c(x, y), CheckWithinRel(-a(x, y) * b(x, y), 0.001));
+                REQUIRE_THAT(c(x, y), CheckWithinAbs(-a(x, y) * b(x, y), tol));
                 // REQUIRE_THAT(c(x, y), Catch::Matchers::WithinRel(-a(x, y) * b(x, y)));
             }
         }
@@ -78,7 +80,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t X = 0; X < proj_rank_; X++) {
-                REQUIRE_THAT(c(Q, X), CheckWithinRel(c0(Q, X), 0.001));
+                REQUIRE_THAT(c(Q, X), CheckWithinAbs(c0(Q, X), tol));
                 // REQUIRE_THAT(c(Q, X), Catch::Matchers::WithinRel(c0(Q, X), 0.00001));
             }
         }
@@ -109,7 +111,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t a = 0; a < nvirt_; a++) {
                 for (size_t X = 0; X < proj_rank_; X++) {
-                    REQUIRE_THAT(F_BAR(Q, a, X), CheckWithinRel(F_BAR0(Q, a, X), 0.001));
+                    REQUIRE_THAT(F_BAR(Q, a, X), CheckWithinAbs(F_BAR0(Q, a, X), tol));
                     // REQUIRE_THAT(F_BAR(Q, a, X), Catch::Matchers::WithinRel(F_BAR0(Q, a, X), 0.00001));
                 }
             }
@@ -126,7 +128,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t a = 0; a < 84; a++) {
             for (size_t b = 0; b < 84; b++) {
-                REQUIRE_THAT(C(a, b), CheckWithinRel(A(a) * A(b), 0.001));
+                REQUIRE_THAT(C(a, b), CheckWithinRel(A(a) * A(b), tol));
                 // REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
             }
         }
@@ -151,7 +153,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t a = 0; a < 9; a++) {
             for (size_t b = 0; b < 9; b++) {
-                REQUIRE_THAT(C(a, b), CheckWithinRel(A(a) * A(b), 0.001));
+                REQUIRE_THAT(C(a, b), CheckWithinAbs(A(a) * A(b), tol));
                 // REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
             }
         }

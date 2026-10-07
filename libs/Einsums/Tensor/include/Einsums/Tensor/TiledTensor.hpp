@@ -44,22 +44,23 @@ namespace tensor_base {
  * @tparam T The type of data being stored.
  * @tparam Rank The tensor rank.
  */
-template <typename T, size_t rank, typename TensorType>
+template <typename T, typename TensorType, typename KeyType>
 struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recursive_mutex>, AlgebraOptimizedTensor {
   public:
+    static_assert(TypedTensorConcept<TensorType, T>);
+    static_assert(SubscriptableContainer<KeyType>);
+
+    /**
+     * @defgroup Constructors
+     * @{
+     */
+
     /**
      * @typedef map_type
      *
      * @brief The data type used to hold the subtensors.
      */
-    using map_type = typename std::unordered_map<std::array<int, rank>, TensorType, einsums::hashes::container_hash<std::array<int, rank>>>;
-
-    /**
-     * @property Rank
-     *
-     * @brief The rank of the tensor.
-     */
-    constexpr static size_t Rank = rank;
+    using map_type = typename std::unordered_map<KeyType, TensorType, einsums::hashes::container_hash<KeyType>>;
 
     /**
      * @typedef ValueType
@@ -75,10 +76,22 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     using StoredType = TensorType;
 
+    using Key = KeyType;
+
+    /**
+     * @var key_has_reserve
+     *
+     * This property indicates whether the key type has the reserve method. This is important for
+     * using vector types, and can help with writing blocks that can also handle lists and arrays.
+     */
+    static constexpr inline bool key_has_resize = requires(Key key, size_t size) { key.resize(size); };
+
     /**
      * Create a new empty tiled tensor.
      */
-    TiledTensor() : _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{}, _grid_size{0} {}
+    TiledTensor() : _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{}, _grid_size{0}, _rank{0} {}
+
+    TiledTensor(size_t rank) : _tile_offsets(rank), _tile_sizes(rank), _tiles(), _size(0), _dims(rank, 0), _grid_size{0}, _rank{rank} {}
 
     /**
      * Create a new empty tiled tensor with the given grid. If only one grid is given, the grid is applied to all dimensions.
@@ -89,48 +102,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      */
     template <ContainerOrInitializer... Sizes>
         requires(!ContainerOrInitializer<typename Sizes::value_type> && ... && true)
-    TiledTensor(std::string name, Sizes const &...sizes) : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
-        static_assert(sizeof...(Sizes) == rank || sizeof...(Sizes) == 1);
-
-        _size = 1;
-        if constexpr (sizeof...(Sizes) == rank) {
-            auto size_tuple = std::make_tuple(sizes...);
-            for_sequence<rank>([&](auto i) {
-                auto &size = std::get<i>(size_tuple);
-
-                this->_tile_sizes[(int)i] = std::vector<int>(size.size());
-                for (int j = 0; j < size.size(); j++) {
-                    this->_tile_sizes[(int)i][j] = size[j];
-                }
-            });
-        } else {
-            for (int i = 0; i < rank; i++) {
-                _tile_sizes[i] = std::vector<int>(sizes.size()...);
-
-                for (int j = 0; j < _tile_sizes[i].size(); j++) {
-                    _tile_sizes[i][j] = (sizes[j] + ...);
-                }
-            }
-        }
-        for (int i = 0; i < rank; i++) {
-            _tile_offsets[i] = std::vector<int>();
-            _tile_offsets[i].reserve(_tile_sizes[i].size());
-
-            int sum = 0;
-            for (int j = 0; j < _tile_sizes[i].size(); j++) {
-                _tile_offsets[i].push_back(sum);
-                sum += _tile_sizes[i].at(j);
-            }
-            _dims[i] = sum;
-            _size *= sum;
-        }
-
-        _grid_size = 1;
-
-        for (int i = 0; i < rank; i++) {
-            _grid_size *= _tile_offsets[i].size();
-        }
-    }
+    TiledTensor(std::string const &name, size_t rank, Sizes const &...sizes);
 
     /**
      * @brief Create a new empty tiled tensor with the given grid.
@@ -138,68 +110,42 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param name The name of the tensor.
      * @param sizes The grids to apply.
      */
-    template <Container ContainerType>
-        requires(Container<typename ContainerType::value_type> && std::is_integral_v<typename ContainerType::value_type::value_type>)
-    TiledTensor(std::string name, ContainerType const &sizes) : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
-        if (sizes.size() != rank) {
-            EINSUMS_THROW_EXCEPTION(num_argument_error, "Wrong number of grid sizes passed to TiledTensor constructor!");
-        }
-        for (int i = 0; i < rank; i++) {
-            _tile_sizes[i] = std::vector<int>(sizes[i].size());
-
-            for (int j = 0; j < sizes[i].size(); j++) {
-                _tile_sizes[i][j] = sizes[i][j];
-            }
-        }
-        _size = 1;
-        for (int i = 0; i < rank; i++) {
-            _tile_offsets[i] = std::vector<int>();
-            _tile_offsets[i].reserve(_tile_sizes[i].size());
-            int sum = 0;
-            for (int j = 0; j < _tile_sizes[i].size(); j++) {
-                _tile_offsets[i].push_back(sum);
-                sum += _tile_sizes[i].at(j);
-            }
-            _dims[i] = sum;
-            _size *= sum;
-        }
-
-        _grid_size = 1;
-
-        for (int i = 0; i < rank; i++) {
-            _grid_size *= _tile_offsets[i].size();
-        }
-    }
+    template <ContainerOrInitializer ContainerType>
+        requires(ContainerOrInitializer<typename ContainerType::value_type> &&
+                 std::is_integral_v<typename ContainerType::value_type::value_type>)
+    TiledTensor(std::string const &name, ContainerType const &sizes);
 
     /**
      * Copy a tiled tensor.
      *
      * @param other The tensor to be copied.
      */
-    TiledTensor(TiledTensor<T, rank, TensorType> const &other)
-        : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
-          _dims{other._dims}, _grid_size{other._grid_size} {
-        for (auto &pair : other._tiles) {
-            _tiles.insert_or_assign(pair.first, pair.second);
-        }
-    }
+    TiledTensor(TiledTensor<T, TensorType, KeyType> const &other);
+
+    /**
+     * Move a tiled tensor.
+     *
+     * @param other The tensor to be moved.
+     */
+    TiledTensor(TiledTensor<T, TensorType, KeyType> &&other);
 
     /**
      * Copy a tiled tensor from one tensor type to another.
      *
      * @param other The tensor to be copied and converted.
      */
-    template <TRTensorConcept<rank, T> OtherTensor>
-    TiledTensor(TiledTensor<T, rank, OtherTensor> const &other)
-        : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
-          _dims{other._dims}, _grid_size{other._grid_size} {
-        for (auto &pair : other._tiles) {
-            _tiles.insert_or_assign(pair.first, pair.second);
-        }
-    }
+    template <TypedTensorConcept<T> OtherTensor, typename OtherKey>
+    TiledTensor(TiledTensor<T, OtherTensor, OtherKey> const &other);
 
     virtual ~TiledTensor() = default;
 
+    /// @}
+
+    /**
+     * @defgroup TileQuery Methods for Querying Tiles
+     * @{
+     */
+
     /**
      * Returns the tile with given coordinates. If the tile is not filled, it will be created.
      *
@@ -207,30 +153,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return The tile at the given index.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    TensorType &tile(MultiIndex... index) {
-        std::array<int, rank> arr_index{static_cast<int>(index)...};
-
-        for (int i = 0; i < rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        if (!has_tile(arr_index)) {
-            Dim<rank> dims{};
-
-            for (int i = 0; i < rank; i++) {
-                dims[i] = _tile_sizes[i].at(arr_index[i]);
-            }
-
-            add_tile(arr_index);
-        }
-
-        return _tiles.at(arr_index);
-    }
+    TensorType &tile(MultiIndex... index);
 
     /**
      * Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
@@ -239,20 +162,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return The tile at the given index.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    TensorType const &tile(MultiIndex... index) const {
-        std::array<int, rank> arr_index{static_cast<int>(index)...};
-
-        for (int i = 0; i < rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        return _tiles.at(arr_index);
-    }
+    TensorType const &tile(MultiIndex... index) const;
 
     /**
      * Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
@@ -260,22 +170,8 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    TensorType const &tile(Storage index) const {
-        std::array<int, rank> arr_index;
-
-        for (int i = 0; i < rank; i++) {
-            arr_index[i] = static_cast<int>(index[i]);
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        return _tiles.at(arr_index);
-    }
+    template <ContainerOrInitializer Storage>
+    TensorType &tile(Storage const &index);
 
     /**
      * Returns the tile with given coordinates. If the tile is not filled, it will be created.
@@ -283,30 +179,8 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    TensorType &tile(Storage index) {
-        std::array<int, rank> arr_index{index};
-
-        for (int i = 0; i < rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        if (!has_tile(arr_index)) {
-            Dim<rank> dims{};
-
-            for (int i = 0; i < rank; i++) {
-                dims[i] = _tile_sizes[i].at(arr_index[i]);
-            }
-            add_tile(arr_index);
-        }
-
-        return _tiles.at(arr_index);
-    }
+    template <ContainerOrInitializer Storage>
+    TensorType const &tile(Storage const &index) const;
 
     /**
      * Returns whether a tile exists at a given position, and if it is filled.
@@ -315,22 +189,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    bool has_tile(MultiIndex... index) const {
-        std::array<int, rank> arr_index{static_cast<int>(index)...};
-
-        for (int i = 0; i < rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            if (arr_index[i] >= _tile_sizes[i].size() || arr_index[i] < 0) {
-                return false;
-            }
-        }
-
-        return _tiles.count(arr_index) > 0;
-    }
+    bool has_tile(MultiIndex... index) const;
 
     /**
      * Returns the tile coordinates of a given tensor index.
@@ -339,33 +198,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return The coordinates of the tile.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    std::array<int, rank> tile_of(MultiIndex... index) const {
-        std::array<int, rank> arr_index{static_cast<int>(index)...};
-        std::array<int, rank> out{0};
-
-        for (int i = 0; i < rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _dims[i];
-            }
-
-            if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index not in the tensor!");
-            }
-
-            if (arr_index[i] >= _tile_offsets[i].at(_tile_offsets[i].size() - 1)) {
-                out[i] = _tile_offsets[i].size() - 1;
-            } else {
-                for (int j = 0; j < _tile_offsets[i].size() - 1; j++) {
-                    if (arr_index[i] < _tile_offsets[i].at(j + 1) && arr_index[i] >= _tile_offsets[i].at(j)) {
-                        out[i] = j;
-                        break;
-                    }
-                }
-            }
-        }
-        return out;
-    }
+    Key tile_of(MultiIndex... index) const;
 
     /**
      * Returns whether a tile exists at a given position, and if it is filled.
@@ -373,24 +206,8 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The position to check for a tile.
      * @return True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
      */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    bool has_tile(Storage index) const {
-        std::array<int, rank> arr_index;
-
-        for (int i = 0; i < rank; i++) {
-            arr_index[i] = static_cast<int>(index[i]);
-            if (arr_index[i] < 0) {
-                index[i] += _tile_sizes[i].size();
-            }
-
-            if (arr_index[i] >= _tile_sizes[i].size() || arr_index[i] < 0) {
-                return false;
-            }
-        }
-
-        return _tiles.count(arr_index) > 0;
-    }
+    template <ContainerOrInitializer Storage>
+    bool has_tile(Storage const &index) const;
 
     /**
      * Returns the tile coordinates of a given tensor index.
@@ -398,35 +215,33 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The tensor index to check.
      * @return The coordinates of the tile.
      */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    std::array<int, rank> tile_of(Storage index) const {
-        std::array<int, rank> arr_index;
-        std::array<int, rank> out{0};
+    template <ContainerOrInitializer Storage>
+    Key tile_of(Storage const &index) const;
 
-        for (int i = 0; i < rank; i++) {
-            arr_index[i] = static_cast<int>(index[i]);
-            if (arr_index[i] < 0) {
-                arr_index[i] += _dims[i];
-            }
+    /**
+     * Check to see if the given tile has zero size.
+     *
+     * @param index The index of the tile, as a list of integers.
+     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+     */
+    template <std::integral... Index>
+    bool has_zero_size(Index... index) const;
 
-            if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
-                EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index not in the tensor!");
-            }
+    /**
+     * Check to see if the given tile has zero size.
+     *
+     * @param index The index of the tile, as a container of integers.
+     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+     */
+    template <ContainerOrInitializer Storage>
+    bool has_zero_size(Storage const &index) const;
 
-            if (arr_index[i] >= _tile_offsets[i].at(_tile_offsets[i].size() - 1)) {
-                out[i] = _tile_offsets[i].size() - 1;
-            } else {
-                for (int j = 0; j < _tile_offsets[i].size() - 1; j++) {
-                    if (arr_index[i] < _tile_offsets[i].at(j + 1) && arr_index[i] >= _tile_offsets[i].at(j)) {
-                        out[i] = j;
-                        break;
-                    }
-                }
-            }
-        }
-        return out;
-    }
+    /// @}
+
+    /**
+     * @defgroup Subscripting Tensor Subscripting Methods
+     * @{
+     */
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
@@ -435,26 +250,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return The value at the position.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    T operator()(MultiIndex... index) const {
-        auto coords = tile_of(index...);
-
-        auto array_ind = std::array<int64_t, rank>{static_cast<int64_t>(index)...};
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-
-        if (has_tile(coords)) {
-            return subscript_tensor(tile(coords), array_ind);
-        } else {
-            return T{0.0};
-        }
-    }
+    T operator()(MultiIndex... index) const;
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
@@ -463,26 +259,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return The value at the position.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    T at(MultiIndex... index) const {
-        auto coords = tile_of(index...);
-
-        auto array_ind = std::array<int64_t, rank>{static_cast<int64_t>(index)...};
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-
-        if (has_tile(coords)) {
-            return subscript_tensor(tile(coords), array_ind);
-        } else {
-            return T{0.0};
-        }
-    }
+    T at(MultiIndex... index) const;
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
@@ -491,23 +268,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @return A reference to the position.
      */
     template <std::integral... MultiIndex>
-        requires(sizeof...(MultiIndex) == rank)
-    T &operator()(MultiIndex... index) {
-        auto coords = tile_of(index...);
-
-        auto array_ind = std::array<int64_t, rank>{static_cast<int64_t>(index)...};
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-        auto &out = tile(coords);
-
-        return subscript_tensor(out, array_ind);
-    }
+    T &operator()(MultiIndex... index);
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
@@ -515,42 +276,8 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The index to evaluate.
      * @return The value at the position.
      */
-    template <typename ContainerType>
-        requires requires {
-            requires !std::is_integral_v<ContainerType>;
-            requires !std::is_same_v<ContainerType, Dim<rank>>;
-            requires !std::is_same_v<ContainerType, Stride<rank>>;
-            requires !std::is_same_v<ContainerType, Offset<rank>>;
-            requires !std::is_same_v<ContainerType, Range>;
-        }
-    T operator()(ContainerType const &index) const {
-        if (index.size() < rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Not enough indices passed to Tensor!");
-        } else if (index.size() > rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Too many indices passed to Tensor!");
-        }
-        auto coords = tile_of(index);
-
-        std::array<std::int64_t, rank> array_ind;
-
-        for (size_t i = 0; i < rank; i++) {
-            array_ind[i] = index[i];
-        }
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-
-        if (has_tile(coords)) {
-            return subscript_tensor(tile(coords), array_ind);
-        } else {
-            return T{0.0};
-        }
-    }
+    template <ContainerOrInitializer ContainerType>
+    T operator()(ContainerType const &index) const;
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
@@ -558,42 +285,8 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The index to evaluate.
      * @return The value at the position.
      */
-    template <typename ContainerType>
-        requires requires {
-            requires !std::is_integral_v<ContainerType>;
-            requires !std::is_same_v<ContainerType, Dim<rank>>;
-            requires !std::is_same_v<ContainerType, Stride<rank>>;
-            requires !std::is_same_v<ContainerType, Offset<rank>>;
-            requires !std::is_same_v<ContainerType, Range>;
-        }
-    T at(ContainerType const &index) const {
-        if (index.size() < rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Not enough indices passed to Tensor!");
-        } else if (index.size() > rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(std::out_of_range, "Too many indices passed to Tensor!");
-        }
-        auto coords = tile_of(index);
-
-        std::array<std::int64_t, rank> array_ind;
-
-        for (size_t i = 0; i < rank; i++) {
-            array_ind[i] = index[i];
-        }
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-
-        if (has_tile(coords)) {
-            return subscript_tensor(tile(coords), array_ind);
-        } else {
-            return T{0.0};
-        }
-    }
+    template <ContainerOrInitializer ContainerType>
+    T at(ContainerType const &index) const;
 
     /**
      * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
@@ -601,53 +294,25 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param index The index to evaluate.
      * @return A reference to the position.
      */
-    template <typename ContainerType>
-        requires requires {
-            requires !std::is_integral_v<ContainerType>;
-            requires !std::is_same_v<ContainerType, Dim<rank>>;
-            requires !std::is_same_v<ContainerType, Stride<rank>>;
-            requires !std::is_same_v<ContainerType, Offset<rank>>;
-            requires !std::is_same_v<ContainerType, Range>;
-        }
-    T &operator()(ContainerType const &index) {
-        if (index.size() < rank) {
-            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
-        } else if (index.size() > rank) {
-            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
-        }
-        auto coords = tile_of(index);
+    template <ContainerOrInitializer ContainerType>
+    T &operator()(ContainerType const &index);
 
-        std::array<std::int64_t, rank> array_ind;
+    ///@}
 
-        for (size_t i = 0; i < rank; i++) {
-            array_ind[i] = index[i];
-        }
-
-        // Find the index in the tile.
-        for (int i = 0; i < rank; i++) {
-            if (array_ind[i] < 0) {
-                array_ind[i] += _dims[i];
-            }
-            array_ind[i] -= _tile_offsets[i].at(coords[i]);
-        }
-        auto &out = tile(coords);
-
-        return subscript_tensor(out, array_ind);
-    }
+    /**
+     * @defgroup Operations
+     * @{
+     */
 
     /**
      * Sets all entries in the tensor to zero. This clears all tiles. There will be no more tiles after this.
      */
-    void zero() { _tiles.clear(); }
+    void zero();
 
     /**
      * Sets all entries in the tensor to zero. This keeps all tiles, just calls zero on the tensors.
      */
-    void zero_no_clear() {
-        for (auto &tile : _tiles) {
-            tile.second.zero();
-        }
-    }
+    void zero_no_clear();
 
     /**
      * Sets all entries to the given value. Initializes all tiles, unless zero is given.
@@ -655,260 +320,92 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @param value The value to broadcast.
      */
-    void set_all(T value) {
-        if (value == T{0}) {
-            zero();
-            return;
-        }
-
-        // Find the number of tiles.
-        long num_tiles = 1;
-        for (int i = 0; i < rank; i++) {
-            num_tiles *= _tile_offsets[i].size();
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (long i = 0; i < num_tiles; i++) {
-            std::array<int, rank> tile_index{};
-            long                  remaining = i;
-
-            // Turn sentinel into an index.
-            for (int j = 0; j < rank; j++) {
-                tile_index[j] = remaining % _tile_offsets[j].size();
-                remaining /= _tile_offsets[j].size();
-            }
-
-            // Set the tile index.
-            _tiles.at(tile_index).set_all(value);
-        }
-    }
+    void set_all(T value);
 
     /**
      * Sets all entries to the given value. If a tile does not exist, it is ignored.
      *
      * @param value The value to broadcast.
      */
-    void set_all_existing(T value) {
-        for (auto &tile : _tiles) {
-            tile.second.set_all(value);
-        }
-    }
+    void set_all_existing(T value);
 
     /**
      * @brief Copy assignment.
      *
      * @param copy The tensor to copy.
      */
-    TiledTensor<T, rank, TensorType> &operator=(TiledTensor<T, rank, TensorType> const &copy) {
-        zero();
-        _tile_sizes   = copy._tile_sizes;
-        _tile_offsets = copy._tile_offsets;
-        _dims         = copy._dims;
-        _name         = copy._name;
-        _size         = copy._size;
-        _grid_size    = copy._grid_size;
+    virtual TiledTensor<T, TensorType, KeyType> &operator=(TiledTensor<T, TensorType, KeyType> const &copy);
 
-        for (auto const &tile : copy._tiles) {
-            add_tile(tile.first);
-            _tiles.at(tile.first) = tile.second;
-        }
-
-        return *this;
-    }
+    /**
+     * @brief Move assignment.
+     *
+     * @param copy The tensor to copy.
+     */
+    virtual TiledTensor<T, TensorType, KeyType> &operator=(TiledTensor<T, TensorType, KeyType> &&copy);
 
     /**
      * @brief Copy assignment from a different kind of tiled tensor.
      *
      * @param copy The tensor to copy.
      */
-    template <TiledTensorConcept TensorOther>
-        requires(SameUnderlyingAndRank<TiledTensor<T, rank, TensorType>, TensorOther>)
-    TiledTensor<T, rank, TensorType> &operator=(TensorOther const &copy) {
-        zero();
-        _tile_sizes   = copy._tile_sizes;
-        _tile_offsets = copy._tile_offsets;
-        _dims         = copy._dims;
-        _name         = copy._name;
-        _size         = copy._size;
-        _grid_size    = copy._grid_size;
-
-        for (auto const &tile : copy._tiles) {
-            add_tile(tile.first);
-            _tiles.at(tile.first) = tile.second;
-        }
-
-        return *this;
-    }
+    template <typename TOther, TensorConcept TensorOther, typename KeyOther>
+    TiledTensor<T, TensorType, KeyType> &operator=(TiledTensor<TOther, TensorOther, KeyOther> const &copy);
 
     /**
      * @brief Set all occupied tensors with the given value.
      *
      * @param value The value to fill the tensors with.
      */
-    TiledTensor &operator=(T value) {
-        set_all(value);
-        return *this;
-    }
+    TiledTensor &operator=(T value);
 
     /**
      * @brief Add a scalar to every tensor.
      *
      * @param value The value to add.
      */
-    TiledTensor &operator+=(T value) {
-        if (value == T{0}) {
-            return *this;
-        }
-
-        // Find the number of tiles.
-        long num_tiles = 1;
-        for (int i = 0; i < rank; i++) {
-            num_tiles *= _tile_offsets[i].size();
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (long i = 0; i < num_tiles; i++) {
-            std::array<int, rank> tile_index{};
-            long                  remaining = i;
-
-            // Turn sentinel into an index.
-            for (int j = 0; j < rank; j++) {
-                tile_index[j] = remaining % _tile_offsets[j].size();
-                remaining /= _tile_offsets[j].size();
-            }
-
-            // Set the tile index.
-            _tiles.at(tile_index) += value;
-        }
-        return *this;
-    }
+    TiledTensor &operator+=(T value);
 
     /**
      * @brief Subtract a scalar from every tensor.
      *
      * @param value The value to subtract.
      */
-    TiledTensor &operator-=(T value) {
-        if (value == T{0}) {
-            return *this;
-        }
-
-        // Find the number of tiles.
-        long num_tiles = 1;
-        for (int i = 0; i < rank; i++) {
-            num_tiles *= _tile_offsets[i].size();
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (long i = 0; i < num_tiles; i++) {
-            std::array<int, rank> tile_index{};
-            long                  remaining = i;
-
-            // Turn sentinel into an index.
-            for (int j = 0; j < rank; j++) {
-                tile_index[j] = remaining % _tile_offsets[j].size();
-                remaining /= _tile_offsets[j].size();
-            }
-
-            // Set the tile index.
-            _tiles.at(tile_index) -= value;
-        }
-        return *this;
-    }
+    TiledTensor &operator-=(T value);
 
     /**
      * @brief Multiply every tensor by a scalar.
      *
      * @param value The value to multiply.
      */
-    TiledTensor &operator*=(T value) {
-        if (value == T{0}) {
-            zero();
-            return *this;
-        }
-        for (auto &tile : _tiles) {
-            tile.second *= value;
-        }
-        return *this;
-    }
+    TiledTensor &operator*=(T value);
 
     /**
      * @brief Divide every tensor by a scalar.
      *
      * @param value The value to divide by.
      */
-    TiledTensor &operator/=(T value) {
-        for (auto &tile : _tiles) {
-            tile.second /= value;
-        }
-        return *this;
-    }
+    TiledTensor &operator/=(T value);
 
     /**
      * @brief Perform in-place addition between two tensors.
      *
      * @param other The tensor to add to this one.
      */
-    TiledTensor &operator+=(TiledTensor const &other) {
-        if (_tile_sizes != other._tile_sizes) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
-        }
-
-        for (auto const &tile : other._tiles) {
-            if (has_tile(tile.first)) {
-                _tiles.at(tile.first) += tile.second;
-            } else {
-                add_tile(tile.first);
-                _tiles.at(tile.first) = TensorType(tile.second);
-            }
-        }
-
-        return *this;
-    }
+    TiledTensor &operator+=(TiledTensor const &other);
 
     /**
      * @brief Perform in-place subtraction between two tensors.
      *
      * @param other The tensor to subtract from this one.
      */
-    TiledTensor &operator-=(TiledTensor const &other) {
-        if (_tile_sizes != other._tile_sizes) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
-        }
-
-        for (auto const &tile : other._tiles) {
-            if (has_tile(tile.first)) {
-                _tiles.at(tile.first) -= tile.second;
-            } else {
-                add_tile(tile.first);
-                _tiles.at(tile.first) = TensorType(tile.second);
-                _tiles.at(tile.first) *= -1;
-            }
-        }
-
-        return *this;
-    }
+    TiledTensor &operator-=(TiledTensor const &other);
 
     /**
      * @brief Perform in-place multiplication between two tensors.
      *
      * @param other The tensor to multiply this one by.
      */
-    TiledTensor &operator*=(TiledTensor const &other) {
-        if (_tile_sizes != other._tile_sizes) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
-        }
-
-        for (auto const &tile : _tiles) {
-            if (other.has_tile(tile.first)) {
-                tile.second *= other._tiles.at(tile.first);
-            } else {
-                _tiles.erase(tile.first);
-            }
-        }
-
-        return *this;
-    }
+    TiledTensor &operator*=(TiledTensor const &other);
 
     /**
      * @brief Perform in-place division between two tensors.
@@ -918,26 +415,14 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @param other The tensor to division this one by.
      */
-    TiledTensor &operator/=(TiledTensor const &other) {
-        if (_tile_sizes != other._tile_sizes) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors do not have the same layouts.");
-        }
+    TiledTensor &operator/=(TiledTensor const &other);
 
-        for (auto const &tile : _tiles) {
-            if (other.has_tile(tile.first)) {
-                tile.second /= other._tiles.at(tile.first);
-            } else {
-                tile.second /= T{0};
-            }
-        }
-
-        return *this;
-    }
+    ///@}
 
     /**
      * Returns the tile offsets.
      */
-    std::array<std::vector<int>, rank> tile_offsets() const { return _tile_offsets; }
+    std::vector<std::vector<size_t>> const &tile_offsets() const { return _tile_offsets; }
 
     /**
      * Returns the tile offsets along a given dimension.
@@ -945,12 +430,12 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_offset(int i = 0) const { return _tile_offsets.at(i); }
+    std::vector<size_t> const &tile_offset(int i = 0) const { return _tile_offsets.at(i); }
 
     /**
      * Returns the tile sizes.
      */
-    std::array<std::vector<int>, rank> tile_sizes() const { return _tile_sizes; }
+    std::vector<std::vector<size_t>> const &tile_sizes() const { return _tile_sizes; }
 
     /**
      * Returns the tile sizes along a given dimension.
@@ -958,7 +443,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_size(int i = 0) const { return _tile_sizes.at(i); }
+    std::vector<size_t> const &tile_size(int i = 0) const { return _tile_sizes.at(i); }
 
     /**
      * Get a reference to the tile map.
@@ -1017,90 +502,28 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     /**
      * @brief Get the dimensions
      */
-    Dim<rank> dims() const { return _dims; }
+    std::vector<size_t> const &dims() const { return _dims; }
 
-    /**
-     * Check to see if the given tile has zero size.
-     *
-     * @param index The index of the tile, as a list of integers.
-     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
-     */
-    template <std::integral... Index>
-        requires(sizeof...(Index) == rank)
-    bool has_zero_size(Index... index) const {
-        std::array<int, rank> arr_index{static_cast<int>(index)...};
-
-        for (int i = 0; i < rank; i++) {
-            if (_tile_sizes[i].at(arr_index[i]) == 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Check to see if the given tile has zero size.
-     *
-     * @param index The index of the tile, as a container of integers.
-     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
-     */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    bool has_zero_size(Storage const &index) const {
-        for (int i = 0; i < rank; i++) {
-            if (_tile_sizes[i].at(index[i]) == 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    size_t rank() const { return _rank; }
 
     /**
      * Convert to the underlying tensor type.
      */
-    operator TensorType() const {
-        TensorType out(_dims);
-        out.set_name(name());
-
-        Stride<rank> tile_strides;
-
-        size_t tiles = 1;
-
-        for (ptrdiff_t i = rank - 1; i >= 0; i--) {
-            tile_strides[i] = tiles;
-            tiles *= grid_size(i);
-        }
-
-        for (size_t tile = 0; tile < tiles; tile++) {
-            std::array<int64_t, rank> tile_index;
-
-            sentinel_to_indices(tile, tile_strides, tile_index);
-
-            if (!this->has_tile(tile_index) || this->has_zero_size(tile_index)) {
-                continue;
-            } else {
-                // Calculate the view ranges.
-                thread_local std::array<Range, rank> ranges;
-
-                for (size_t i = 0; i < rank; i++) {
-                    ranges[i] =
-                        Range{this->tile_offset(i)[tile_index[i]], this->tile_offset(i)[tile_index[i]] + this->tile_size(i)[tile_index[i]]};
-                }
-
-                // Create the view.
-                auto tile_view = std::apply(out, ranges);
-
-                // Assign.
-                tile_view = this->tile(tile_index);
-            }
-        }
-
-        return out;
-    }
+    operator TensorType() const;
 
   protected:
+    template <std::integral... MultiIndex>
+    Key convert_coords_to_key(MultiIndex... index) const;
+
+    template <Container Index>
+    Key convert_coords_to_key(Index const &index) const;
+
+    template <std::integral... MultiIndex>
+    Key convert_index_to_key(MultiIndex... index) const;
+
+    template <Container Index>
+    Key convert_index_to_key(Index const &index) const;
+
     /**
      * @property _tile_offsets
      *
@@ -1111,7 +534,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @brief A list of the lengths of the tiles along the axes.
      */
-    std::array<std::vector<int>, rank> _tile_offsets, _tile_sizes;
+    std::vector<std::vector<size_t>> _tile_offsets, _tile_sizes;
 
     /**
      * @property _tiles
@@ -1125,7 +548,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @brief The overall dimensions of the tensor.
      */
-    Dim<rank> _dims;
+    std::vector<size_t> _dims;
 
     /**
      * @property _size
@@ -1137,7 +560,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @brief The number of possible tile positions within the grid.
      */
-    size_t _size, _grid_size;
+    size_t _size, _grid_size, _rank;
 
     /**
      * @property _name
@@ -1151,7 +574,7 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      *
      * @param pos The position in the grid to place the tile.
      */
-    virtual void add_tile(std::array<int, rank> const &pos) = 0;
+    virtual void add_tile(Key const &pos) = 0;
 
     template <typename TOther, size_t RankOther, typename TensorTypeOther>
     friend struct TiledTensorBase;
@@ -1166,17 +589,17 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
  *
  * Tensors of this class have large blocks that are rigorously zero. These blocks need to line up on a grid.
  */
-template <typename T, size_t Rank>
-struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, Rank>>, tensor_base::CoreTensor {
+template <typename T, size_t rank>
+struct TiledTensor final : public tensor_base::TiledTensor<T, einsums::Tensor<T, rank>, std::array<size_t, rank>>, tensor_base::CoreTensor {
   protected:
     /**
      * @brief Construct a new tile in the set of tiles at the given position.
      *
      * @param pos The position of the tile to create.
      */
-    void add_tile(std::array<int, Rank> const &pos) override {
+    void add_tile(std::array<size_t, rank> const &pos) override {
         std::string tile_name = this->_name + " - (";
-        Dim<Rank>   dims{};
+        Dim<rank>   dims{};
 
         for (int i = 0; i < Rank; i++) {
             tile_name += std::to_string(pos[i]);
@@ -1193,7 +616,11 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
     }
 
   public:
-    TiledTensor() = default;
+    static constexpr size_t Rank = rank;
+    using typename tensor_base::TiledTensor<T, Tensor<T, rank>, std::array<size_t, rank>>::ValueType;
+    using typename tensor_base::TiledTensor<T, Tensor<T, rank>, std::array<size_t, rank>>::StoredType;
+
+    TiledTensor() : tensor_base::TiledTensor<T, Tensor<T, Rank>, std::array<size_t, Rank>>() { this->_rank = rank; }
 
     /**
      * @brief Create a new tiled tensor with the given name and grid specification.
@@ -1209,14 +636,14 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
      */
     template <typename... Sizes>
     TiledTensor(std::string name, Sizes &&...sizes)
-        : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(name, std::forward<Sizes>(sizes)...) {}
+        : tensor_base::TiledTensor<T, Tensor<T, Rank>, std::array<size_t, Rank>>(name, Rank, std::forward<Sizes>(sizes)...) {}
 
     /**
      * @brief Copy constructor.
      *
      * @param other The tensor to copy.
      */
-    TiledTensor(TiledTensor<T, Rank> const &other) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(other) {}
+    TiledTensor(TiledTensor<T, Rank> const &other) : tensor_base::TiledTensor<T, Tensor<T, Rank>, std::array<size_t, Rank>>(other) {}
 
     /**
      * @brief Copy cast constructor.
@@ -1228,7 +655,7 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
      */
     template <TiledTensorConcept OtherTensor>
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>)
-    TiledTensor(OtherTensor const &other) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(other) {}
+    TiledTensor(OtherTensor const &other) : tensor_base::TiledTensor<T, Tensor<T, Rank>, std::array<size_t, Rank>>(other) {}
 
     ~TiledTensor() = default;
 
@@ -1258,6 +685,21 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
 
         return *this;
     }
+
+    Dim<rank> dims() {
+        Dim<rank> out;
+
+        if (this->_dims.size() == 0) {
+            out.fill(0);
+            return out;
+        }
+
+        for (size_t i = 0; i < rank; i++) {
+            out[i] = this->_dims[i];
+        }
+
+        return out;
+    }
 };
 
 /**
@@ -1268,8 +710,9 @@ struct TiledTensor final : public tensor_base::TiledTensor<T, Rank, einsums::Ten
  * Since views of block tensors are not guaranteed to be truly block diagonal, TiledTensorViews also hold
  * views of BlockTensors when the view is not hypersquare.
  */
-template <typename T, size_t Rank>
-struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>, tensor_base::CoreTensor {
+template <typename T, size_t rank>
+struct TiledTensorView final : public tensor_base::TiledTensor<T, einsums::TensorView<T, rank>, std::array<size_t, rank>>,
+                               tensor_base::CoreTensor {
   private:
     /**
      * @property _full_view_of_underlying
@@ -1285,11 +728,13 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      * not allowed. This is because currently, TiledTensorViews are kind of scuffed in that
      * their structure is desynchronized from the tensor they view. This may change in the future.
      */
-    void add_tile(std::array<int, Rank> const &) override {
+    void add_tile(std::array<size_t, rank> const &) override {
         EINSUMS_THROW_EXCEPTION(std::logic_error, "Can't add a tile to a TiledTensorView!");
     }
 
   public:
+    static constexpr size_t Rank = rank;
+
     /**
      * @typedef underlying_type
      *
@@ -1297,7 +742,11 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      */
     using underlying_type = TiledTensor<T, Rank>;
 
+    using tensor_base::TiledTensor<T, einsums::TensorView<T, rank>, std::array<size_t, rank>>::TiledTensor;
+
     TiledTensorView() = default;
+
+    TiledTensorView(size_t __rank__) = delete; // Don't allow this constructor, but allow the others.
 
     /**
      * @brief Create an empty view with the given name and grid specification.
@@ -1311,19 +760,14 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      * @param name The name of the tensor.
      * @param sizes The grids for the axes. There must either only be one, or the number must be the same as the rank.
      */
-    template <typename... Sizes>
-    TiledTensorView(std::string name, Sizes &&...sizes)
-        : tensor_base::TiledTensor<T, Rank, einsums::TensorView<T, Rank>>(name, std::forward<Sizes>(sizes)...) {}
+    template <ContainerOrInitializer... Sizes>
+        requires(!ContainerOrInitializer<typename Sizes::value_type> && ... && true)
+    TiledTensorView(std::string const &name, Sizes const &...sizes)
+        : tensor_base::TiledTensor<T, einsums::TensorView<T, Rank>, std::array<size_t, Rank>>(name, rank, sizes...) {}
 
-    /**
-     * @brief Copy constructor.
-     *
-     * On exit, the structure of the copied tensor is copied. This means that the new tensor will view the same tensor
-     * as the tensor being copied. Modifications to one will modify the other.
-     *
-     * @param other The tensor view to copy.
-     */
-    TiledTensorView(TiledTensorView<T, Rank> const &other) = default;
+    //    template <TypedTensorConcept<T> OtherTensor, typename OtherKey>
+    //    TiledTensorView(tensor_base::TiledTensor<T, OtherTensor, OtherKey> const &other)
+    //        : tensor_base::TiledTensor<T, einsums::TensorView<T, rank>, std::array<size_t, rank>>(other) {}
 
     ~TiledTensorView() = default;
 
@@ -1337,9 +781,19 @@ struct TiledTensorView final : public tensor_base::TiledTensor<T, Rank, einsums:
      *
      * This does not add a tile to the viewed tensor, only to the view.
      */
-    void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &&view) {
+    void insert_tile(std::array<size_t, Rank> const &pos, einsums::TensorView<T, Rank> &&view) {
         std::lock_guard lock(*this);
         this->_tiles.emplace(pos, view);
+    }
+
+    /**
+     * @brief Add a tile to the view.
+     *
+     * This does not add a tile to the viewed tensor, only to the view.
+     */
+    void insert_tile(std::array<size_t, Rank> const &pos, einsums::TensorView<T, Rank> const &view) {
+        std::lock_guard lock(*this);
+        this->_tiles.insert(std::pair(pos, view));
     }
 };
 
@@ -1360,7 +814,7 @@ struct TiledDeviceTensor final : public tensor_base::TiledTensor<T, Rank, einsum
      * @param pos The position to put the new tensor.
      */
     void add_tile(std::array<int, Rank> const &pos) override {
-        auto lock = std::lock_guard(*this);
+        auto        lock      = std::lock_guard(*this);
         std::string tile_name = this->_name + " - (";
         Dim<Rank>   dims{};
 
@@ -1872,3 +1326,5 @@ void fprintln(std::ostream &os, TensorType const &A, TensorPrintOptions options 
 }
 
 } // namespace einsums
+
+#include <Einsums/Tensor/Backends/TiledTensor.hpp>
