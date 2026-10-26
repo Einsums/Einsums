@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace einsums {
+namespace einsums::string_util {
 /**
  * Figures out the characters in the first string that are not in the second.
  *
@@ -21,7 +21,7 @@ namespace einsums {
  *
  * @versionadded{2.0.0}
  */
-EINSUMS_EXPORT std::string difference(std::string const &st1, std::string const &st2);
+[[nodiscard]] EINSUMS_EXPORT std::string difference(std::string const &st1, std::string const &st2);
 
 /**
  * Reverses a string.
@@ -32,7 +32,7 @@ EINSUMS_EXPORT std::string difference(std::string const &st1, std::string const 
  *
  * @versionadded{2.0.0}
  */
-EINSUMS_EXPORT std::string reverse(std::string const &str);
+[[nodiscard]] EINSUMS_EXPORT std::string reverse(std::string const &str);
 
 /**
  * Go through the first string and find the index of each character in the second string. Put them in the output vector
@@ -51,6 +51,30 @@ void find_char_with_position(std::string const &needles, std::string const &hays
     for (int i = 0; i < needles.size(); i++) {
         out->at(i) = (int_type)haystack.find(needles.at(i));
     }
+}
+
+[[nodiscard]] inline std::string lower(std::string const &str) {
+    std::string out;
+
+    out.reserve(str.size());
+
+    for (auto ch : str) {
+        out.push_back(static_cast<char>(std::tolower(static_cast<int>(ch))));
+    }
+
+    return out;
+}
+
+[[nodiscard]] inline std::string upper(std::string const &str) {
+    std::string out;
+
+    out.reserve(str.size());
+
+    for (auto ch : str) {
+        out.push_back(static_cast<char>(std::toupper(static_cast<int>(ch))));
+    }
+
+    return out;
 }
 
 } // namespace einsums

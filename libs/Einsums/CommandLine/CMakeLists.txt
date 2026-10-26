@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(CommandLineHeaders Einsums/CommandLine/CommandLine.hpp)
 
-set(CommandLineSources CommandLine.cpp)
+set(CommandLineSources CommandLine.cpp Registry.cpp OptionCategory.cpp Options.cpp Categories.cpp Parse.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -15,7 +15,7 @@ einsums_add_module(
   SOURCES ${CommandLineSources}
   HEADERS ${CommandLineHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Config
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Compat Einsums_StringUtil Einsums_Assertion
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME Einsums
 )

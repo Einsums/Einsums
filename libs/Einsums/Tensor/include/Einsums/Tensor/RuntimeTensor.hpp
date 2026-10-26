@@ -1469,20 +1469,4 @@ void println(AType const &A, einsums::TensorPrintOptions options = {}) {
 
 #endif
 
-#if !defined(EINSUMS_WINDOWS) && !defined(DOXYGEN)
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<float, std::allocator<float>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<double, std::allocator<double>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<float>, std::allocator<std::complex<float>>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>;
-
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<float, BufferAllocator<float>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<double, BufferAllocator<double>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<float>, BufferAllocator<std::complex<float>>>;
-extern template class EINSUMS_EXPORT GeneralRuntimeTensor<std::complex<double>, BufferAllocator<std::complex<double>>>;
-
-extern template class EINSUMS_EXPORT RuntimeTensorView<float>;
-extern template class EINSUMS_EXPORT RuntimeTensorView<double>;
-extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<float>>;
-extern template class EINSUMS_EXPORT RuntimeTensorView<std::complex<double>>;
-#endif
 } // namespace einsums

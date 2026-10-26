@@ -12,6 +12,8 @@
 TEMPLATE_TEST_CASE("Test lassq", "[linear-algebra][gpu]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
+constexpr double tol = tolerance<TestType>();
+
     constexpr int max_size = 2048;
 
     auto gpu_alloc = gpu::GPUAllocator<TestType>();
@@ -44,6 +46,6 @@ TEMPLATE_TEST_CASE("Test lassq", "[linear-algebra][gpu]", float, double, std::co
             blas::hip::zlassq(i, gpu_buffer, 1, &scale, &sumsq);
         }
 
-        REQUIRE_THAT(scale * scale * sumsq, Catch::Matchers::WithinRel((RemoveComplexT<TestType>)i));
+        REQUIRE_THAT(scale * scale * sumsq, Catch::Matchers::WithinRel((RemoveComplexT<TestType>)i, tol));
     }
 }

@@ -13,6 +13,8 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+
+@ein.utils.labeled_section
 def test_dot(a: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)
@@ -30,6 +32,8 @@ def test_dot(a: int, dtype, array):
 
     assert C[0] == pytest.approx(C_actual)
 
+
+@ein.utils.labeled_section
 def test_dot_list(a: int, dtype, array):
     A = [ein.utils.random_tensor_factory(f"A {i}", [a], dtype, array) for i in range(10)]
     B = [ein.utils.random_tensor_factory(f"B {i}", [a], dtype, array) for i in range(10)]
@@ -45,12 +49,14 @@ def test_dot_list(a: int, dtype, array):
 
     C_actual = [sum(a_ * b_ for a_, b_ in zip(a, b)) for a, b in zip(A, B)]
 
-    for i in range(10) :
+    for i in range(10):
         assert C[i][0] == pytest.approx(C_actual[i])
+
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_dot_copy(a: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)
@@ -76,6 +82,7 @@ def test_dot_copy(a: int, dtype, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_dot_map(a: int, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)

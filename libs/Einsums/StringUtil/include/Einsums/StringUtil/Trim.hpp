@@ -16,77 +16,76 @@ namespace einsums::string_util {
  * @param[inout] s The string to trim.
  *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *    No longer modifies its argument due to potential incompatibility with Windows build systems.
+ *    Now returns a new string instead.
+ * @endversion
  */
-static inline void ltrim(std::string &s) {
-    auto first_nospace = std::find_if(s.cbegin(), s.cend(), [](unsigned char ch) { return !std::isspace(ch); });
-    if (first_nospace != s.cend()) {
-        s.erase(s.begin(), first_nospace);
+[[nodiscard]] inline std::string ltrim(std::string const &s) {
+    // Find the position of the first non-space character.
+    auto start_iter = s.begin();
+
+    while (start_iter != s.end() && std::isspace(*start_iter)) {
+        start_iter++;
+    }
+
+    return std::string(start_iter, s.end());
+}
+
+/**
+ * Trim whitespace from the end of the string.
+ *
+ * @param[inout] s The string to trim.
+ *
+ * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *    No longer modifies its argument due to potential incompatibility with Windows build systems.
+ *    Now returns a new string instead.
+ * @endversion
+ */
+[[nodiscard]] inline std::string rtrim(std::string const &s) {
+    auto end_iter = std::prev(s.end());
+
+    while (end_iter != s.begin() && std::isspace(*end_iter)) {
+        end_iter--;
+    }
+
+    if (end_iter == s.begin() && std::isspace(*end_iter)) {
+        return std::string();
+    } else {
+        return std::string(s.begin(), end_iter + 1);
     }
 }
 
 /**
- * Trim whitespace from the end of the string.
- *
- * @param[inout] s The string to trim.
- *
- * @versionadded{1.0.0}
- */
-static inline void rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
-}
-
-/**
  * Trim whitespace from the start and end of the string.
  *
  * @param[inout] s The string to trim.
  *
  * @versionadded{1.0.0}
+ * @versionchangeddesc{2.0.0}
+ *    No longer modifies its argument due to potential incompatibility with Windows build systems.
+ *    Now returns a new string instead.
+ * @endversion
  */
-static inline void trim(std::string &s) {
-    rtrim(s);
-    ltrim(s);
-}
+[[nodiscard]] inline std::string trim(std::string const &s) {
+    auto start_iter = s.begin();
 
-/**
- * Trim whitespace from the start of the string.
- *
- * @param[in] s The string to trim.
- *
- * @return The string without leading whitespace.
- *
- * @versionadded{1.0.0}
- */
-static inline auto ltrim_copy(std::string s) -> std::string {
-    ltrim(s);
-    return s;
-}
+    while (start_iter != s.end() && std::isspace(*start_iter)) {
+        start_iter++;
+    }
 
-/**
- * Trim whitespace from the end of the string.
- *
- * @param[in] s The string to trim.
- *
- * @return The string without trailing whitespace.
- *
- * @versionadded{1.0.0}
- */
-static inline auto rtrim_copy(std::string s) -> std::string {
-    rtrim(s);
-    return s;
-}
+    auto end_iter = std::prev(s.end());
 
-/**
- * Trim whitespace from the start and end of the string.
- *
- * @param[in] s The string to trim.
- *
- * @return The string without leading or tailing whitespace.
- *
- * @versionadded{1.0.0}
- */
-static inline auto trim_copy(std::string s) -> std::string {
-    trim(s);
-    return s;
+    while (end_iter != start_iter && std::isspace(*end_iter)) {
+        end_iter--;
+    }
+
+    if (end_iter == start_iter && std::isspace(*end_iter)) {
+        return std::string();
+    } else {
+        return std::string(start_iter, end_iter + 1);
+    }
 }
 
 } // namespace einsums::string_util

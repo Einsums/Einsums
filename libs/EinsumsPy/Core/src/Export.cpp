@@ -24,6 +24,10 @@
 namespace py = pybind11;
 using namespace einsums;
 
+struct EINSUMS_EXPORT __scoped_zone {
+    __scoped_zone(std::string const &, std::string const &, int, std::string const &) {};
+};
+
 bool gpu_enabled() {
 #ifdef EINSUMS_COMPUTE_CODE
     return true;
@@ -53,6 +57,25 @@ void export_Core(py::module_ &mod) {
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(
         mod, "GlobalConfigMap", "Contains all of the options handled by Einsums.");
+
+#ifdef EINSUMS_HAVE_PROFILER
+    auto scoped_zone = py::class_<einsums::profile::ScopedZone, std::shared_ptr<einsums::profile::ScopedZone>>(
+        mod, "ScopedZone", "Adds an entry to the profiling file.");
+
+    scoped_zone.def(py::init<std::string const &, std::string const &, int, std::string const &>())
+        .def_static(
+            "einsums_have_profiler", []() { return true; }, "Returns whether or not Einsums was compiled with the profiler enabled.");
+#else
+
+    auto scoped_zone = py::class_<__scoped_zone, std::shared_ptr<__scoped_zone>>(
+        mod, "ScopedZone",
+        "Adds an entry to the profiling file. NOTE: Einsums has been compiled with profiling turned off (EINSUMS_WITH_PROFILER=OFF). This "
+        "class does nothing as a result.");
+
+    scoped_zone.def(py::init<std::string const &, std::string const &, int, std::string const &>())
+        .def_static(
+            "einsums_have_profiler", []() { return false; }, "Returns whether or not Einsums was compiled with the profiler enabled.");
+#endif
 
     config_map
         .def_static("get_singleton", einsums::GlobalConfigMap::get_singleton, "Get the single unique instance.",

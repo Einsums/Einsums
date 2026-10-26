@@ -6,6 +6,7 @@
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+#include <Einsums/Compat/FmtAlternatives.hpp>
 
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
@@ -210,9 +211,9 @@ TEMPLATE_TEST_CASE("Disk direct products", "[linear-algebra]", float, double, st
         C.zero();
         Tensor<TestType, 1> C_test = create_tensor<TestType>("C", size);
 
-        DiskTensor<TestType, 1> A_disk{fmt::format("/dirprod/rank1/{}/A", type_name<TestType>()), size};
-        DiskTensor<TestType, 1> B_disk{fmt::format("/dirprod/rank1/{}/B", type_name<TestType>()), size};
-        DiskTensor<TestType, 1> C_disk{fmt::format("/dirprod/rank1/{}/C", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> A_disk{einsums::format("/dirprod/rank1/{}/A", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> B_disk{einsums::format("/dirprod/rank1/{}/B", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> C_disk{einsums::format("/dirprod/rank1/{}/C", type_name<TestType>()), size};
 
         A_disk(All).get() = A;
         B_disk(All).get() = B;

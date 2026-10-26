@@ -9,13 +9,14 @@ dependencies:
   - cxx-compiler
   - ninja
   - lcov
+  - llvm-tools
   - pre-commit
   # Prebuilts to save einsums the work
   - catch2
   - fftw
-  - fmt<=12.1
+  - fmt
   - cpptrace
-  - spdlog
+  - spdlog>=1.17
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib
   - hdf5
@@ -23,6 +24,7 @@ dependencies:
   - numpy
   - mimalloc
   # Python stuff
+  - python=3.14
   - pybind11
   - pytest
   - numpy

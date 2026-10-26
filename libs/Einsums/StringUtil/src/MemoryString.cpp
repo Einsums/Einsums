@@ -12,28 +12,28 @@
 namespace einsums {
 namespace string_util {
 
-namespace detail {
+namespace {
 
-static constexpr size_t get_prefix(char ch) {
+constexpr size_t get_prefix(char ch) {
     switch (ch) {
     case 'k':
     case 'K':
-        return 1024UL;
+        return 1024ULL;
     case 'm':
     case 'M':
-        return 1048576UL;
+        return 1048576ULL;
     case 'g':
     case 'G':
-        return 1073741824UL;
+        return 1073741824ULL;
     case 't':
     case 'T':
-        return 1099511627776UL;
+        return 1099511627776ULL;
     default:
         return 0;
     }
 }
 
-static constexpr size_t get_unit(char ch) {
+constexpr size_t get_unit(char ch) {
     switch (ch) {
     case 'b':
     case 'B':
@@ -48,7 +48,7 @@ static constexpr size_t get_unit(char ch) {
     }
 }
 
-static constexpr int char_to_int(char ch) {
+constexpr int char_to_int(char ch) {
     if constexpr ('1' == '0' + 1) {
         return ch - '0';
     } else {
@@ -79,60 +79,128 @@ static constexpr int char_to_int(char ch) {
     }
 }
 
-} // namespace detail
+} // namespace
 
-size_t memory_string(std::string const &mem_spec) {
+size_t memory_string(char const *mem_spec) {
+
+    if (mem_spec == nullptr) {
+        EINSUMS_THROW_EXCEPTION(std::runtime_error, "No string provided to parse!");
+    }
 
     double out = 0, mult = 1;
-    auto   mem_copy = mem_spec;
 
-    trim(mem_copy);
+    {
+        enum { SPACE, INT_PART, FRAC_PART, PREFIX, UNIT, END } state;
 
-    enum { INT_PART, FRAC_PART, PREFIX, UNIT, END } state;
+        state = SPACE;
 
-    state = INT_PART;
-
-    for (int i = 0; i < mem_copy.length(); i++) {
-        auto ch = mem_copy[i];
-        switch (state) {
-        case INT_PART:
-            if (std::isalpha(ch)) {
-                size_t prefix = detail::get_prefix(ch);
-
-                if (prefix == 0) {
-                    size_t unit = detail::get_unit(ch);
-
-                    if (unit == 0) {
-                        EINSUMS_THROW_EXCEPTION(
-                            std::runtime_error,
-                            "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got {}.", ch);
-                    } else {
-                        state = END;
-
-                        out /= unit;
-                    }
-                } else {
-                    state = UNIT;
-                    out *= prefix;
+        for (size_t i = 0; mem_spec[i] != 0; i++) {
+            auto ch = mem_spec[i];
+            switch (state) {
+            case SPACE:
+                if (std::isdigit(ch)) {
+                    out += char_to_int(ch);
+                    state = INT_PART;
+                } else if (!std::isspace(ch)) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Expected a number before any suffix.");
                 }
-            } else if (ch == ',' || ch == '.') {
-                state = FRAC_PART;
-            } else if (std::isdigit(ch)) {
-                out *= 10;
-                out += detail::char_to_int(ch);
-            } else if (std::isspace(ch)) {
-                state = PREFIX;
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                        "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
-            }
-            break;
-        case FRAC_PART:
-            if (std::isalpha(ch)) {
-                size_t prefix = detail::get_prefix(ch);
+                break;
+            case INT_PART:
+                if (std::isalpha(ch)) {
+                    size_t prefix = get_prefix(ch);
 
-                if (prefix == 0) {
-                    size_t unit = detail::get_unit(ch);
+                    if (prefix == 0) {
+                        size_t unit = get_unit(ch);
+
+                        if (unit == 0) {
+                            EINSUMS_THROW_EXCEPTION(
+                                std::runtime_error,
+                                "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got {}.",
+                                ch);
+                        } else {
+                            state = END;
+
+                            out /= unit;
+                        }
+                    } else {
+                        state = UNIT;
+                        out *= prefix;
+                    }
+                } else if (ch == ',' || ch == '.') {
+                    state = FRAC_PART;
+                } else if (std::isdigit(ch)) {
+                    out *= 10;
+                    out += char_to_int(ch);
+                } else if (std::isspace(ch)) {
+                    state = PREFIX;
+                } else {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
+                }
+                break;
+            case FRAC_PART:
+                if (std::isalpha(ch)) {
+                    size_t prefix = get_prefix(ch);
+
+                    if (prefix == 0) {
+                        size_t unit = get_unit(ch);
+
+                        if (unit == 0) {
+                            EINSUMS_THROW_EXCEPTION(
+                                std::runtime_error,
+                                "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got '{}'.",
+                                ch);
+                        } else {
+                            state = END;
+
+                            out /= unit;
+                        }
+                    } else {
+                        state = UNIT;
+                        out *= prefix;
+                    }
+                } else if (std::isdigit(ch)) {
+                    mult /= 10;
+                    out += char_to_int(ch) * mult;
+                } else if (std::isspace(ch)) {
+                    state = PREFIX;
+                } else {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
+                }
+                break;
+            case PREFIX:
+                if (std::isalpha(ch)) {
+                    size_t prefix = get_prefix(ch);
+
+                    if (prefix == 0) {
+                        size_t unit = get_unit(ch);
+
+                        if (unit == 0) {
+                            EINSUMS_THROW_EXCEPTION(
+                                std::runtime_error,
+                                "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got '{}'.",
+                                ch);
+                        } else {
+                            state = END;
+
+                            out /= unit;
+                        }
+                    } else {
+                        state = UNIT;
+                        out *= prefix;
+                    }
+                } else if (std::isspace(ch)) {
+                    // Do nothing.
+                } else {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
+                }
+                break;
+            case UNIT:
+                if (std::isalpha(ch)) {
+                    size_t unit = get_unit(ch);
 
                     if (unit == 0) {
                         EINSUMS_THROW_EXCEPTION(
@@ -143,77 +211,28 @@ size_t memory_string(std::string const &mem_spec) {
 
                         out /= unit;
                     }
+                } else if (std::isspace(ch)) {
+                    // Do nothing.
                 } else {
-                    state = UNIT;
-                    out *= prefix;
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
                 }
-            } else if (std::isdigit(ch)) {
-                mult /= 10;
-                out += detail::char_to_int(ch) * mult;
-            } else if (std::isspace(ch)) {
-                state = PREFIX;
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                        "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
-            }
-            break;
-        case PREFIX:
-            if (std::isalpha(ch)) {
-                size_t prefix = detail::get_prefix(ch);
-
-                if (prefix == 0) {
-                    size_t unit = detail::get_unit(ch);
-
-                    if (unit == 0) {
-                        EINSUMS_THROW_EXCEPTION(
-                            std::runtime_error,
-                            "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got '{}'.", ch);
-                    } else {
-                        state = END;
-
-                        out /= unit;
-                    }
-                } else {
-                    state = UNIT;
-                    out *= prefix;
+                break;
+            case END:
+                if (!std::isspace(ch)) {
+                    EINSUMS_THROW_EXCEPTION(std::runtime_error,
+                                            "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
                 }
-            } else if (std::isspace(ch)) {
-                // Do nothing.
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                        "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
+                break;
             }
-            break;
-        case UNIT:
-            if (std::isalpha(ch)) {
-                size_t unit = detail::get_unit(ch);
-
-                if (unit == 0) {
-                    EINSUMS_THROW_EXCEPTION(
-                        std::runtime_error,
-                        "Memory specification formatted incorrectly. Expected b, g, k, m, o, t, or w, case insensitive, got '{}'.", ch);
-                } else {
-                    state = END;
-
-                    out /= unit;
-                }
-            } else if (std::isspace(ch)) {
-                // Do nothing.
-            } else {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                        "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
-            }
-            break;
-        case END:
-            if (!std::isspace(ch)) {
-                EINSUMS_THROW_EXCEPTION(std::runtime_error,
-                                        "Memory specification formatted incorrectly. Unexpected symbol '{}' at position {}.", ch, i);
-            }
-            break;
         }
     }
 
     return (size_t)out;
+}
+
+size_t memory_string(std::string const &str) {
+    return memory_string(str.c_str());
 }
 } // namespace string_util
 

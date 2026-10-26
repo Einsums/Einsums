@@ -38,15 +38,8 @@ set(BLASVendorSources
     scal.cpp
     syev.cpp
     trsyl.cpp
-    direct_prod.c
     direct_prod.cpp
 )
-
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64 AND CMAKE_HOST_SYSTEM STREQUAL Linux)
-  set(BLASVendorx64Sources direct_prod_kernels/sdirprod-x86_64-avx2.S direct_prod_kernels/ddirprod-x86_64-avx2.S
-      direct_prod_kernels/cdirprod-x86_64-avx2.S direct_prod_kernels/zdirprod-x86_64-avx2.S)
-  list(APPEND BLASVendorSources ${BLASVendorx64Sources})
-endif()
 
 include(Einsums_AddModule)
 einsums_add_module(

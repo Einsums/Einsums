@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Compat/PosixAlternatives.hpp>
 #include <Einsums/HPTT/Files.hpp>
 
 #include <algorithm>
@@ -19,7 +20,7 @@ constexpr char version[4] = {0, 0, 0, endian_char()};
 void setupFile(std::FILE *fp) {
     FileHeader header{.magic{'H', 'P', 'T', 'T'}, .version{version[0], version[1], version[2], version[3]}, .checksum = 0xffffffff};
 
-    int error = std::fseek(fp, 0, SEEK_SET);
+    int error = einsums::fseek(fp, 0, SEEK_SET);
 
     if (error != 0) {
         std::perror("Error encountered while trying to rewind HPTT file!");
@@ -38,7 +39,7 @@ void setupFile(std::FILE *fp) {
 
 uint32_t computeChecksum(std::FILE *fp) {
     std::fflush(fp);
-    int error = fseek(fp, 0, SEEK_END);
+    int error = einsums::fseek(fp, 0, SEEK_END);
     if (error != 0) {
         std::perror("Error encountered while trying to seek in HPTT file!");
         throw std::runtime_error("IO error");
@@ -46,7 +47,7 @@ uint32_t computeChecksum(std::FILE *fp) {
 
     long end_pos = ftell(fp);
 
-    error = fseek(fp, 7, SEEK_SET);
+    error = einsums::fseek(fp, 7, SEEK_SET);
 
     if (error != 0) {
         perror("Error encountered while trying to seek in HPTT file!");
@@ -59,7 +60,7 @@ uint32_t computeChecksum(std::FILE *fp) {
         throw std::runtime_error("Malformed HPTT file! Endianness specification is broken!");
     }
 
-    error = fseek(fp, sizeof(FileHeader), SEEK_SET);
+    error = einsums::fseek(fp, sizeof(FileHeader), SEEK_SET);
 
     if (error != 0) {
         perror("Error encountered while trying to seek in HPTT file!");
@@ -83,7 +84,7 @@ uint32_t computeChecksum(std::FILE *fp) {
             }
             data_len -= block_len;
 
-            error = fread(data_buff, 2, block_len, fp);
+            size_t error = fread(data_buff, 2, block_len, fp);
 
             if (error < block_len) {
                 perror("Error while reading file!");
@@ -106,7 +107,7 @@ uint32_t computeChecksum(std::FILE *fp) {
             }
             data_len -= block_len;
 
-            error = fread(data_buff, 2, block_len, fp);
+            size_t error = fread(data_buff, 2, block_len, fp);
 
             if (error < block_len) {
                 perror("Error while reading file!");
@@ -129,7 +130,7 @@ uint32_t computeChecksum(std::FILE *fp) {
 int verifyFile(std::FILE *fp) {
     FileHeader header;
 
-    int error = fseek(fp, 0, SEEK_SET);
+    int error = einsums::fseek(fp, 0, SEEK_SET);
 
     if (error != 0) {
         return 1;

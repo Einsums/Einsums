@@ -30,6 +30,7 @@ namespace string_util {
  *
  * @throws std::runtime_error If the string is improperly formatted.
  */
+EINSUMS_EXPORT size_t memory_string(char const *mem_spec);
 EINSUMS_EXPORT size_t memory_string(std::string const &mem_spec);
 } // namespace string_util
 } // namespace einsums

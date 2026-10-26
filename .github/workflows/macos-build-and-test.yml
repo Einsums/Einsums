@@ -36,13 +36,13 @@ jobs:
         shell: bash -el {0}
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.build_ref }}
           path: src
 
       - name: Cache Build Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
           key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
@@ -50,7 +50,7 @@ jobs:
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           activate-environment: einsums-env
@@ -71,20 +71,22 @@ jobs:
         run: echo "week=$(/bin/date -u '+%W')" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Cache Conda env
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.week }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
-        env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
-          CACHE_NUMBER: 0
-        id: cache
+      #- name: Cache Conda env
+      #  uses: actions/cache@v6
+      #  with:
+      #    path: ${{ env.CONDA }}/envs
+      #    key:
+      #      conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.week }}-${{ hashFiles('src/devtools/conda-envs/conda.yml') }}-${{ env.CACHE_NUMBER }}
+      #  env:
+      #    # Increase this value to reset cache if etc/example-environment.yml has not changed
+      #    CACHE_NUMBER: 1
+      #  id: cache
 
       - name: Update environment
-        run:
+        run: |
           conda env update -n einsums-env -f src/devtools/conda-envs/conda.yml
+          conda activate einsums-env
+          conda install python_abi=3.14 python=3.14
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
@@ -111,7 +113,7 @@ jobs:
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config Release --target install
+          cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }} --target install
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
@@ -120,12 +122,8 @@ jobs:
       - name: Test (Pytest) - unit tests
         working-directory: "${{github.workspace}}/installed"
         run: |
-          if [[ "${{runner.os}}" == "Windows" ]]; then
-            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
-          else
-            export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib"
-          fi
-          pytest "${{github.workspace}}/installed" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
+          export PYTHONPATH="$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib"
+          pytest "${{github.workspace}}/installed/lib/einsums" -m "not slow" --cov="${{github.workspace}}/installed/lib" --cov="${{github.workspace}}/src" --cov-report=xml
           
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"

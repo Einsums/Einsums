@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateIncrementedTensor.hpp>
 
@@ -95,9 +96,9 @@ TEMPLATE_TEST_CASE("gemv", "[linear-algebra]", float, double, std::complex<float
         auto          y    = create_tensor<TestType>("y", size);
         auto          y2   = create_tensor<TestType>("y2", size);
 
-        DiskTensor<TestType, 2> A_disk(fmt::format("/test/gemv/{}/A", type_name<TestType>()), size, size);
-        DiskTensor<TestType, 1> x_disk(fmt::format("/test/gemv/{}/x", type_name<TestType>()), size);
-        DiskTensor<TestType, 1> y_disk(fmt::format("/test/gemv/{}/y", type_name<TestType>()), size);
+        DiskTensor<TestType, 2> A_disk(einsums::format("/test/gemv/{}/A", type_name<TestType>()), size, size);
+        DiskTensor<TestType, 1> x_disk(einsums::format("/test/gemv/{}/x", type_name<TestType>()), size);
+        DiskTensor<TestType, 1> y_disk(einsums::format("/test/gemv/{}/y", type_name<TestType>()), size);
 
         A_disk.write(A);
         x_disk.write(x);

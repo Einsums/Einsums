@@ -14,16 +14,16 @@ TEST_CASE("Memory specifications") {
     SECTION("Good strings") {
         REQUIRE(memory_string("1") == 1);
         REQUIRE(memory_string("2B") == 2);
-        REQUIRE(memory_string("3M") == 3 * 1024 * 1024);
-        REQUIRE(memory_string("4GB") == 4 * 1024UL * 1024UL * 1024UL);
-        REQUIRE(memory_string("5To") == 5UL * 1024UL * 1024UL * 1024UL * 1024UL);
-        REQUIRE(memory_string("6kw") == 6 * 1024 / sizeof(size_t));
-        REQUIRE(memory_string("7.8Mb") == 8178892);
+        REQUIRE(memory_string("3M") == 3ULL * 1024ULL * 1024ULL);
+        REQUIRE(memory_string("4GB") == 4ULL * 1024ULL * 1024ULL * 1024ULL);
+        REQUIRE(memory_string("5To") == 5ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL);
+        REQUIRE(memory_string("6kw") == 6ULL * 1024ULL / sizeof(size_t));
+        REQUIRE(memory_string("7.8Mb") == 8178892ULL);
     }
 
     SECTION("Weird strings") {
         REQUIRE(memory_string("1.234     o") == 1);
-        REQUIRE(memory_string("  1.234   g     w    ") == 1324997410 / sizeof(size_t));
+        REQUIRE(memory_string("  1.234   g     w    ") == 1324997410ULL / sizeof(size_t));
     }
 
     SECTION("Bad strings") {

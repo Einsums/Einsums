@@ -26,6 +26,7 @@ einsums_add_module(
   MODULE_DEPENDENCIES
     Einsums_Assertion
     Einsums_Config
+    Einsums_Compat
     Einsums_Debugging
     Einsums_Profile
     Einsums_RuntimeConfiguration

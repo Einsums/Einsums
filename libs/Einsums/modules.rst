@@ -18,6 +18,7 @@ Einsums Modules
     /libs/Einsums/BlockManager/docs/index.rst
     /libs/Einsums/BufferAllocator/docs/index.rst
     /libs/Einsums/CommandLine/docs/index.rst
+    /libs/Einsums/Compat/docs/index.rst
     /libs/Einsums/Concepts/docs/index.rst
     /libs/Einsums/Config/docs/index.rst
     /libs/Einsums/Debugging/docs/index.rst

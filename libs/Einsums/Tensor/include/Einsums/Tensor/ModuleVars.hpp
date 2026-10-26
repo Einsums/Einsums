@@ -24,6 +24,7 @@ class EINSUMS_EXPORT Einsums_Tensor_vars final : public design_pats::Lockable<st
     EINSUMS_SINGLETON_DEF(Einsums_Tensor_vars)
 
   public:
+    ~Einsums_Tensor_vars();
     // Put module-global variables here.
     hid_t hdf5_file;
     hid_t link_property_list;

@@ -5,9 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(DebuggingHeaders Einsums/Debugging/AttachDebugger.hpp Einsums/Debugging/Backtrace.hpp)
+set(DebuggingHeaders Einsums/Debugging/Backtrace.hpp)
 
-set(DebuggingSources AttachDebugger.cpp Backtrace.cpp)
+set(DebuggingSources Backtrace.cpp)
 
 set(ExtraDependencies)
 

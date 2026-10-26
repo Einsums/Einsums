@@ -29,7 +29,7 @@ namespace einsums {
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void register_arguments(std::function<void()>);
+EINSUMS_EXPORT void register_arguments(std::function<void()> const &);
 
 /**
  * @struct RuntimeConfiguration

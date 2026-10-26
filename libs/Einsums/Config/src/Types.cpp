@@ -11,6 +11,26 @@ namespace einsums {
 
 EINSUMS_SINGLETON_IMPL(GlobalConfigMap)
 
+GlobalConfigMap::~GlobalConfigMap() {
+    std::fprintf(stderr, "Finalizing the GlobalConfigMap.\n");
+
+    std::fprintf(stderr, "Freeing the string map.\n");
+    str_map_.reset();
+    std::fprintf(stderr, "Done.\n");
+
+    std::fprintf(stderr, "Freeing the int map.\n");
+    int_map_.reset();
+    std::fprintf(stderr, "Done.\n");
+
+    std::fprintf(stderr, "Freeing the double map.\n");
+    double_map_.reset();
+    std::fprintf(stderr, "Done.\n");
+
+    std::fprintf(stderr, "Freeing the bool map.\n");
+    bool_map_.reset();
+    std::fprintf(stderr, "Done.\n");
+}
+
 GlobalConfigMap::GlobalConfigMap()
     : str_map_{ConfigMap<std::string>::create()}, int_map_{ConfigMap<std::int64_t>::create()}, double_map_{ConfigMap<double>::create()},
       bool_map_{ConfigMap<bool>::create()} {

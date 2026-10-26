@@ -10,70 +10,88 @@
 
 TEMPLATE_TEST_CASE("Arithmetic Tensor", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
-    size_t size = 10;
-    auto   A    = create_random_tensor<TestType>("A", size, size);
-    auto   B    = create_random_tensor<TestType>("B", size, size);
-    auto   C    = create_tensor_like(A);
+    constexpr size_t size = 10;
+    auto             A    = create_random_tensor<TestType>("A", size, size);
+    auto             B    = create_random_tensor<TestType>("B", size, size);
+    auto             C    = create_tensor_like(A);
 
-    C = A + B;
+    constexpr double tol = tolerance<TestType>();
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) + B(i, j), 1e-10));
+    SECTION("Sum") {
+        C = A + B;
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) + B(i, j), tol));
+            }
         }
     }
 
-    C = A - B;
+    SECTION("Difference") {
+        C = A - B;
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) - B(i, j), 1e-10));
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) - B(i, j), tol));
+            }
         }
     }
 
-    C = A * B;
+    SECTION("Product") {
+        C = A * B;
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) * B(i, j), 1e-10));
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) * B(i, j), tol));
+            }
         }
     }
 
-    C = A / B;
+    SECTION("Quotient") {
+        C = A / B;
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) / B(i, j), 1e-10));
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(A(i, j) / B(i, j), tol));
+            }
         }
     }
 
-    C = -A;
+    SECTION("Negation") {
+        C = -A;
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(-A(i, j), 1e-10));
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(-A(i, j), tol));
+            }
         }
     }
 
-    C = TestType(2.0) * A;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j), 1e-10));
+    SECTION("Scalar multiple") {
+        C = TestType(2.0) * A;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j), tol));
+            }
         }
     }
 
-    C = (A + B) / (A * B);
+    SECTION("Complicated with tensors") {
+        C = (A + B) / (A * B);
 
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel((A(i, j) + B(i, j)) / (A(i, j) * B(i, j)), 1e-10));
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel((A(i, j) + B(i, j)) / (A(i, j) * B(i, j)), tol));
+            }
         }
     }
 
-    C = TestType(2.0) * A + B;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j) + B(i, j), 1e-10));
+    SECTION("Complicated with scalars") {
+        C = TestType(2.0) * A + B;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK_THAT(C(i, j), CheckWithinRel(TestType(2.0) * A(i, j) + B(i, j), tol));
+            }
         }
     }
 }

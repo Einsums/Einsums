@@ -7,15 +7,19 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ProfileHeaders Einsums/Profile/Profile.hpp)
 
-set(ProfileSources Profile.cpp)
-
-if(EINSUMS_WITH_OMP_TOOLS_H)
-  list(APPEND ProfileSource OMPT.cpp)
-endif()
-
+set(ProfileSources)
 set(ProfileDeps)
-if(TARGET Tracy::TracyClient)
-  list(APPEND ProfileDeps Tracy::TracyClient)
+
+if(EINSUMS_WITH_PROFILER)
+  list(APPEND ProfileSources Profile.cpp AggNode.cpp ActiveStack.cpp)
+
+  if(EINSUMS_WITH_OMP_TOOLS_H)
+    list(APPEND ProfileSource OMPT.cpp)
+  endif()
+
+  if(TARGET Tracy::TracyClient)
+    list(APPEND ProfileDeps Tracy::TracyClient)
+  endif()
 endif()
 
 include(Einsums_AddModule)
@@ -24,6 +28,6 @@ einsums_add_module(
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
   DEPENDENCIES ${ProfileDeps}
-  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_Preprocessor
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Logging Einsums_Print Einsums_Preprocessor Einsums_Compat
   CMAKE_SUBDIRS examples tests
 )

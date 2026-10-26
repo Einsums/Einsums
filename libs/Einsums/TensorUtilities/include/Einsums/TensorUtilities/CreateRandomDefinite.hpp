@@ -58,7 +58,7 @@ auto create_random_definite(std::string const &name, int rows, int cols, RemoveC
 
     Evecs = std::get<0>(pair);
 
-    std::default_random_engine engine;
+    std::default_random_engine &engine = einsums::random_engine();
 
     // Create random eigenvalues. Need to calculate the standard deviation from the mean.
     auto normal =

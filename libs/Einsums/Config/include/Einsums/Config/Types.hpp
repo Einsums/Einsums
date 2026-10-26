@@ -76,7 +76,7 @@ struct insensitive_hash {
 
 #ifndef DOXYGEN
 template <>
-struct insensitive_hash<std::string> {
+struct EINSUMS_EXPORT insensitive_hash<std::string> {
   public:
     constexpr insensitive_hash() = default;
 
@@ -84,7 +84,7 @@ struct insensitive_hash<std::string> {
 };
 
 template <>
-struct insensitive_hash<char *> {
+struct EINSUMS_EXPORT insensitive_hash<char *> {
   public:
     constexpr insensitive_hash() = default;
 
@@ -277,6 +277,8 @@ class EINSUMS_EXPORT GlobalConfigMap {
 #ifdef DOXYGEN
     static GlobalConfigMap &get_singleton();
 #endif
+
+    ~GlobalConfigMap();
 
     /**
      * @brief Checks to see if the map is empty.

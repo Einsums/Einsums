@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BufferAllocator/BufferAllocator.hpp>
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
@@ -203,7 +204,8 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
     template <std::integral... Dims>
         requires(sizeof...(Dims) == Rank)
     GeneralTensor(std::string name, Dims... dims)
-        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...}, GlobalConfigMap::get_singleton().get_bool("row-major")) {
+        : _name{std::move(name)}, _impl(nullptr, std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(dims)...},
+                                        GlobalConfigMap::get_singleton().get_bool("row-major")) {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         // Resize the data structure
@@ -365,7 +367,8 @@ struct GeneralTensor : tensor_base::CoreTensor, design_pats::Lockable<std::recur
      *
      * @param other The tensor view to copy.
      */
-    GeneralTensor(TensorView<T, rank> const &other) : _name{other.name()}, _impl(nullptr, other.dims(), GlobalConfigMap::get_singleton().get_bool("row-major")) {
+    GeneralTensor(TensorView<T, rank> const &other)
+        : _name{other.name()}, _impl(nullptr, other.dims(), GlobalConfigMap::get_singleton().get_bool("row-major")) {
         // Resize the data structure
         _data.resize(_impl.size());
 
@@ -1694,7 +1697,7 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, std::remove_cvref_t<MultiIndex>...> || AtLeastOneOfType<Range, std::remove_cvref_t<MultiIndex>...>)
     [[nodiscard]] auto operator()(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
-                                                                count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
+                                                                              count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
@@ -1715,7 +1718,8 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
 
     template <typename... MultiIndex>
         requires(AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)
-    [[nodiscard]] auto subscript(MultiIndex &&...index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+    [[nodiscard]] auto subscript(MultiIndex &&...index)
+        -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
         static_assert(sizeof...(MultiIndex) == Rank);
 
         return TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() +
@@ -2293,9 +2297,15 @@ TensorView(std::string, GeneralTensor<T, OtherRank, Alloc> &, Dim<Rank> const &,
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(std::string const &name, Args... args) {
+auto create_tensor(std::string const &name, Args &&...args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
-    return Tensor<Type, sizeof...(Args)>{name, args...};
+    return Tensor<Type, sizeof...(Args)>{name, std::forward<Args>(args)...};
+}
+
+template <typename Type = double, typename... Args>
+auto create_tensor(char const *name, Args &&...args) {
+    EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
+    return Tensor<Type, sizeof...(Args)>{std::string(name), std::forward<Args>(args)...};
 }
 
 /**
@@ -2323,9 +2333,15 @@ auto create_tensor(std::string const &name, Args... args) {
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(bool row_major, std::string const &name, Args... args) {
+auto create_tensor(bool row_major, std::string const &name, Args &&...args) {
     EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
-    return Tensor<Type, sizeof...(Args)>{row_major, name, args...};
+    return Tensor<Type, sizeof...(Args)>{row_major, name, std::forward<Args>(args)...};
+}
+
+template <typename Type = double, typename... Args>
+auto create_tensor(bool row_major, char const *name, Args &&...args) {
+    EINSUMS_LOG_TRACE("creating tensor {}, {}", name, std::forward_as_tuple(args...));
+    return Tensor<Type, sizeof...(Args)>{row_major, std::string(name), std::forward<Args>(args)...};
 }
 
 /**
@@ -2352,8 +2368,15 @@ auto create_tensor(bool row_major, std::string const &name, Args... args) {
  * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, std::integral... Args>
-auto create_tensor(Args... args) {
-    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
+    requires(!std::is_same_v<bool, Args> && ...)
+auto create_tensor(Args &&...args) {
+    return Tensor<Type, sizeof...(Args)>{"Temporary", std::forward<Args>(args)...};
+}
+
+template <typename Type = double, std::integral... Args>
+    requires(!std::is_same_v<bool, Args> && ...)
+auto create_tensor(bool row_major, Args &&...args) {
+    return Tensor<Type, sizeof...(Args)>{row_major, "Temporary", std::forward<Args>(args)...};
 }
 
 #ifndef DOXYGEN
@@ -2384,14 +2407,14 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                 oss << "              ";
                 if constexpr (std::is_floating_point_v<typename AType::ValueType>) {
                     if (std::abs(value) < 1.0E-4) {
-                        oss << fmt::format("{:14.4e} ", value);
+                        oss << einsums::format("{:14.4e} ", value);
                     } else {
-                        oss << fmt::format("{:14.8f} ", value);
+                        oss << einsums::format("{:14.8f} ", value);
                     }
                 } else if constexpr (IsComplexV<typename AType::ValueType>) {
-                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                    oss << einsums::format("({:14.8f} ", value.real()) << " + " << einsums::format("{:14.8f}i)", value.imag());
                 } else
-                    oss << fmt::format("{:14} ", value);
+                    oss << einsums::format("{:14} ", value);
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
@@ -2409,11 +2432,6 @@ void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }
 
-TENSOR_EXPORT_ALLOC_RANK(GeneralTensor, 0, std::allocator)
-TENSOR_ALLOC_EXPORT(GeneralTensor, std::allocator)
-TENSOR_ALLOC_EXPORT(GeneralTensor, BufferAllocator)
-
-TENSOR_EXPORT(TensorView)
 #endif
 
 } // namespace einsums

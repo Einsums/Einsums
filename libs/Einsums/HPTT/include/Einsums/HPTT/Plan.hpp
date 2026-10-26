@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <Einsums/Config/ExportDefinitions.hpp>
 #include <Einsums/HPTT/ComputeNode.hpp>
 
 #include <memory>
@@ -41,7 +42,7 @@ namespace hptt {
  *
  * It stores the loop order and parallelizes each loop.
  */
-class Plan {
+class EINSUMS_EXPORT Plan {
   public:
     Plan() : rootNodes_(), numTasks_(0) {}
 

@@ -22,6 +22,13 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   target_compile_definitions(einsums_public_flags INTERFACE EINSUMS_DEBUG)
 endif()
 
+if(NOT "${module_library_type}" STREQUAL "INTERFACE")
+  if(WIN32)
+    target_compile_definitions(einsums_private_flags INTERFACE _CRT_SECURE_NO_WARNINGS)
+  endif()
+  target_compile_definitions(einsums_private_flags INTERFACE EINSUMS_EXPORTS)
+endif()
+
 target_compile_definitions(
   einsums_private_flags
   INTERFACE $<$<CONFIG:MinSizeRel>:NDEBUG>

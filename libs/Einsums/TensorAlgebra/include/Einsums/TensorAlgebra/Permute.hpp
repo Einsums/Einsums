@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/SmartPointer.hpp>
 #include <Einsums/Concepts/SubscriptChooser.hpp>
@@ -31,7 +32,6 @@
 
 namespace einsums::tensor_algebra {
 
-#if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
 template <bool ConjA = false, typename T, typename... CIndices, typename... AIndices>
@@ -175,12 +175,12 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
                                                     std::string const &A_indices, einsums::detail::TensorImpl<T> const &A,
                                                     hptt::SelectionMethod method = hptt::ESTIMATE) {
     LabeledSection((std::abs(beta) > EINSUMS_ZERO)
-                       ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
+                       ? einsums::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices, beta,
                                      C->name(), C_indices)
-                       : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
+                       : einsums::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, alpha, A.name(), A_indices));
 
     // Error check:  If there are any remaining indices then we cannot perform a permute
-    auto check = difference(A_indices, C_indices);
+    auto check = string_util::difference(A_indices, C_indices);
     if (check.size() != 0) {
         EINSUMS_THROW_EXCEPTION(rank_error, "The number of unique indices needs to be the same on the input and output for permute!");
     }
@@ -209,7 +209,7 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
             offsetC[i0]    = 0;
         }
 
-        find_char_with_position(A_indices, C_indices, &perms);
+        string_util::find_char_with_position(A_indices, C_indices, &perms);
         auto plan =
             hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
                               C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
@@ -232,7 +232,7 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
             outerSizeC[i0] = C_swap.stride(i0 - 1) / (C_swap.stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        find_char_with_position(A_indices, reverse(C_indices), &perms);
+        string_util::find_char_with_position(A_indices, string_util::reverse(C_indices), &perms);
         auto plan =
             hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
                               C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, true);
@@ -255,7 +255,7 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
             offsetC[i0]    = 0;
         }
 
-        find_char_with_position(A_indices, C_indices, &perms);
+        string_util::find_char_with_position(A_indices, C_indices, &perms);
         auto plan =
             hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
                               C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
@@ -278,7 +278,7 @@ std::shared_ptr<hptt::Transpose<T>> compile_permute(T beta, std::string const &C
             outerSizeC[i0] = C_swap.stride(i0 + 1) / (C_swap.stride(i0) * innerStrideC);
             offsetC[i0]    = 0;
         }
-        find_char_with_position(A_indices, C_indices, &perms);
+        string_util::find_char_with_position(A_indices, C_indices, &perms);
         auto plan =
             hptt::create_plan(perms.data(), A.rank(), alpha, A.data(), size.data(), outerSizeA.data(), offsetA.data(), innerStrideA, beta,
                               C->data(), outerSizeC.data(), offsetC.data(), innerStrideC, method, omp_get_max_threads(), nullptr, false);
@@ -311,7 +311,6 @@ void permute(T beta, std::string const &C_indices, einsums::detail::TensorImpl<T
 }
 
 } // namespace detail
-#endif
 
 /**
  * @brief Permutes the elements of a tensor and puts it into an output tensor.
@@ -341,10 +340,11 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    std::string description = std::abs(UC_prefactor) > EINSUMS_ZERO
-                                  ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(),
-                                                A_indices, UC_prefactor, C->name(), C_indices)
-                                  : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices);
+    std::string description =
+        std::abs(UC_prefactor) > EINSUMS_ZERO
+            ? einsums::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices,
+                              UC_prefactor, C->name(), C_indices)
+            : einsums::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), C_indices, UA_prefactor, A.name(), A_indices);
     LabeledSection(fmt::runtime(description));
 
     T const C_prefactor = UC_prefactor;
@@ -367,12 +367,9 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         }
     });
 
-#if !defined(EINSUMS_WINDOWS)
     if (CoreBasicTensorConcept<AType> && CoreBasicTensorConcept<CType>) {
         detail::permute<ConjA>(C_prefactor, C_indices, &C->impl(), A_prefactor, A_indices, A.impl());
-    } else
-#endif
-        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
+    } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)> && !(ConjA && IsComplexV<T>)) {
         // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
         if (C_prefactor == T{0.0}) {
             *C = T{0.0};
@@ -383,12 +380,12 @@ void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
         if (C_prefactor == T{0.0}) {
             *C = T{0.0};
         }
-        Stride<ARank> index_strides;
-        size_t        elements = dims_to_strides(A.dims(), index_strides);
+        Stride<CRank> index_strides;
+        size_t        elements = dims_to_strides(C->dims(), index_strides);
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t i = 0; i < elements; i++) {
-            thread_local std::array<int64_t, ARank> index;
+            std::array<int64_t, ARank> index;
 
             sentinel_to_indices(i, index_strides, index);
 

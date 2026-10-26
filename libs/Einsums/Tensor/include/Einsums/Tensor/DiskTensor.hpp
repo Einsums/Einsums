@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
@@ -102,7 +103,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
 
-            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+            auto new_temp1 = einsums::format("/tmp/{}", temp_path1.filename()),
+                 new_temp2 = einsums::format("/tmp/{}", temp_path2.filename());
 
             // Link the temporary dataset into a temporary location.
             auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
@@ -139,7 +141,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             std::filesystem::path temp_path(std::move(temp_name_str));
 
-            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+            auto new_temp = einsums::format("/tmp/{}", temp_path.filename());
 
             H5Dflush(other._dataset);
 
@@ -397,7 +399,8 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             std::filesystem::path temp_path1(std::move(temp_name1_str)), temp_path2(std::move(temp_name2_str));
 
-            auto new_temp1 = fmt::format("/tmp/{}", temp_path1.filename()), new_temp2 = fmt::format("/tmp/{}", temp_path2.filename());
+            auto new_temp1 = einsums::format("/tmp/{}", temp_path1.filename()),
+                 new_temp2 = einsums::format("/tmp/{}", temp_path2.filename());
 
             // Link the temporary dataset into a temporary location.
             auto err = H5Olink(other._dataset, _file, new_temp1.c_str(), detail::Einsums_Tensor_vars::get_singleton().link_property_list,
@@ -434,7 +437,7 @@ struct DiskTensor final : public tensor_base::DiskTensor, design_pats::Lockable<
 
             std::filesystem::path temp_path(std::move(temp_name_str));
 
-            auto new_temp = fmt::format("/tmp/{}", temp_path.filename());
+            auto new_temp = einsums::format("/tmp/{}", temp_path.filename());
 
             H5Dflush(other._dataset);
 
@@ -1679,13 +1682,5 @@ template <typename T, size_t Rank>
 auto create_disk_tensor_like(Tensor<T, Rank> const &tensor) -> DiskTensor<T, Rank> {
     return DiskTensor(detail::Einsums_Tensor_vars::get_singleton().hdf5_file, tensor.name(), tensor.dims());
 }
-
-#ifndef DOXYGEN
-
-TENSOR_EXPORT(DiskTensor)
-
-TENSOR_EXPORT(DiskView)
-
-#endif
 
 } // namespace einsums

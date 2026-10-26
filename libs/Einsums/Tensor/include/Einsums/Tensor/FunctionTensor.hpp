@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Concepts/TensorConcepts.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
@@ -78,11 +79,11 @@ struct FunctionTensor : public CoreTensor {
                 inds->at(i) += _dims[i];
             }
             if (inds->at(i) >= _dims[i] || inds->at(i) < 0) {
-                std::string message = fmt::format("Function tensor index out of range! Index at rank {} ", i);
+                std::string message = einsums::format("Function tensor index out of range! Index at rank {} ", i);
                 if (orig != inds->at(i)) {
-                    message = fmt::format("{}({} -> {}) ", message, orig, inds->at(i));
+                    message = einsums::format("{}({} -> {}) ", message, orig, inds->at(i));
                 } else {
-                    message = fmt::format("{}({}) ", message, inds->at(i));
+                    message = einsums::format("{}({}) ", message, inds->at(i));
                 }
                 EINSUMS_THROW_EXCEPTION(std::out_of_range, "{}is too far below zero or is greater than {}", message, _dims[i]);
             }
@@ -367,9 +368,7 @@ struct FunctionTensor : public CoreTensor {
         return out;
     }
 
-    operator BufferTensor<T, Rank>() const {
-        return get();
-    }
+    operator BufferTensor<T, Rank>() const { return get(); }
 
     /**
      * Returns whether the tensor contains all elements or only some subset of a whole.

@@ -17,6 +17,8 @@ TEMPLATE_TEST_CASE("Einsum Dot Product", "[tensor-algebra]", float, double, std:
 
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
+    constexpr double tol = tolerance<TestType>();
+
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
     SECTION("1") {
@@ -30,10 +32,10 @@ TEMPLATE_TEST_CASE("Einsum Dot Product", "[tensor-algebra]", float, double, std:
         REQUIRE(alg_choice == einsums::tensor_algebra::detail::DOT);
 
         if constexpr (!einsums::IsComplexV<TestType>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, tol));
         } else {
-            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), tol));
+            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), tol));
         }
     }
 
@@ -48,10 +50,10 @@ TEMPLATE_TEST_CASE("Einsum Dot Product", "[tensor-algebra]", float, double, std:
         REQUIRE(alg_choice == einsums::tensor_algebra::detail::DOT);
 
         if constexpr (!einsums::IsComplexV<TestType>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, tol));
         } else {
-            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), tol));
+            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), tol));
         }
     }
 
@@ -66,10 +68,10 @@ TEMPLATE_TEST_CASE("Einsum Dot Product", "[tensor-algebra]", float, double, std:
         REQUIRE(alg_choice == einsums::tensor_algebra::detail::DOT);
 
         if constexpr (!einsums::IsComplexV<TestType>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, tol));
         } else {
-            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), tol));
+            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), tol));
         }
     }
 
@@ -84,10 +86,10 @@ TEMPLATE_TEST_CASE("Einsum Dot Product", "[tensor-algebra]", float, double, std:
         REQUIRE(alg_choice == einsums::tensor_algebra::detail::DOT);
 
         if constexpr (!einsums::IsComplexV<TestType>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, tol));
         } else {
-            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(((TestType)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), tol));
+            REQUIRE_THAT(((TestType)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), tol));
         }
     }
 }
@@ -96,6 +98,8 @@ TEMPLATE_TEST_CASE("Dot TensorView and Tensor", "[tensor_algebra]", float, doubl
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+
+    constexpr double tol = tolerance<TestType>();
 
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
@@ -117,5 +121,5 @@ TEMPLATE_TEST_CASE("Dot TensorView and Tensor", "[tensor_algebra]", float, doubl
         }
     }
 
-    REQUIRE_THAT(C, CheckWithinRel(C0, 0.0001));
+    REQUIRE_THAT(C, CheckWithinRel(C0, tol));
 }

@@ -12,6 +12,8 @@
 TEMPLATE_TEST_CASE("Test solver", "[linear-algebra][gpu]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
+    constexpr double tol = tolerance<TestType>();
+
     BufferVector<TestType> A{TestType{1.0}, TestType{4.0}, TestType{7.0}, TestType{2.0}, TestType{5.0},
                              TestType{8.0}, TestType{3.0}, TestType{6.0}, TestType{1.0}},
         B{TestType{11.0}, TestType{12.0}, TestType{13.0}},
@@ -47,12 +49,12 @@ TEMPLATE_TEST_CASE("Test solver", "[linear-algebra][gpu]", float, double, std::c
 
     if constexpr (IsComplexV<TestType>) {
         for (int i = 0; i < 3; i++) {
-            REQUIRE_THAT(std::real(B[i]), Catch::Matchers::WithinAbs(std::real(Expected[i]), 1e-3));
-            REQUIRE_THAT(std::imag(B[i]), Catch::Matchers::WithinAbs(std::imag(Expected[i]), 1e-3));
+            REQUIRE_THAT(std::real(B[i]), Catch::Matchers::WithinAbs(std::real(Expected[i]), tol));
+            REQUIRE_THAT(std::imag(B[i]), Catch::Matchers::WithinAbs(std::imag(Expected[i]), tol));
         }
     } else {
         for (int i = 0; i < 3; i++) {
-            REQUIRE_THAT(B[i], Catch::Matchers::WithinAbs(Expected[i], 1e-3));
+            REQUIRE_THAT(B[i], Catch::Matchers::WithinAbs(Expected[i], tol));
         }
     }
 }

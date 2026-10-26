@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR) # 3.25.2 for CUDA20 support.
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR) # 3.28 for CMAKE_CXX_SCAN_FOR_MODULES
 
 # Overrides must go before project() statement, otherwise they are ignored
 
@@ -23,6 +23,12 @@ if(NOT CMAKE_BUILD_TYPE)
       "RelWithDebInfo"
       CACHE STRING "Configuration type (one of Debug, RelWithDebInfo, Release, MinSizeRel)" FORCE
   )
+endif()
+
+cmake_policy(SET CMP0091 NEW)
+# Needs 4.0
+if(CMAKE_MAJOR_VERSION GREATER_EQUAL 4)
+  cmake_policy(SET CMP0184 NEW)
 endif()
 
 project(Einsums LANGUAGES C CXX ASM)
@@ -69,7 +75,7 @@ include(CheckLanguage)
 
 # Explicitly set certain policies
 einsums_set_cmake_policy(CMP0144 NEW)
-einsums_set_cmake_policy(CMP0155 OLD)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 set(CMAKE_CXX_FLAGS_SAFE ${CMAKE_CXX_FLAGS})
 include(Einsums_CheckCXXStandard)
@@ -502,6 +508,11 @@ get_property(
   TARGET tgt::lapack
   PROPERTY INT_INTERFACE
 )
+
+if("${EINSUMS_LINALG_VENDOR}" STREQUAL "MKL" AND "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  target_link_libraries(einsums_base_libraries INTERFACE atomic)
+endif()
+
 einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
@@ -632,6 +643,11 @@ if(EINSUMS_WITH_COMPILER_WARNINGS_AS_ERRORS)
   else()
     einsums_add_compile_flag_if_available(-Werror)
   endif()
+endif()
+
+if(WIN32)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug,RelWithDebInfo>:Debug>DLL")
+  set(CMAKE_MSVC_RUNTIME_CHECKS "$<$<CONFIG:Debug>:PossibleDataLoss;StackFrameErrorCheck;UninitializedVariable>")
 endif()
 
 # Diagnostics
@@ -781,6 +797,13 @@ if(EINSUMS_WITH_SANITIZERS AND NOT MSVC)
   target_compile_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   target_link_options(einsums_public_flags INTERFACE -fsanitize=${EINSUMS_WITH_SANITIZERS})
   einsums_add_config_define(EINSUMS_HAVE_SANITIZERS)
+elseif(MSVC AND EINSUMS_WITH_SANITIZERS STREQUAL "address")
+  einsums_info("Adding sanitizer flags for ${EINSUMS_WITH_SANITIZERS}")
+  target_compile_options(einsums_public_flags INTERFACE /fsanitize=${EINSUMS_WITH_SANITIZERS})
+  target_link_options(einsums_public_flags INTERFACE /fsanitize=${EINSUMS_WITH_SANITIZERS})
+  einsums_add_config_define(EINSUMS_HAVE_SANITIZERS)
+elseif(MSVC AND EINSUMS_WITH_SANITIZERS)
+  einsums_info("Not adding sanitizers due to incompatible options. MSVC only supports address at this time.")
 endif()
 
 # Note: on windows systems the ':' will be converted to a ';' at runtime
@@ -801,6 +824,7 @@ endif()
 # ##################################################################################################
 include(Einsums_GitCommit)
 einsums_add_config_define(EINSUMS_HAVE_GIT_COMMIT "\"${EINSUMS_WITH_GIT_COMMIT}\"")
+einsums_add_config_define(EINSUMS_HAVE_GIT_COMMIT_SHORT "\"${EINSUMS_WITH_GIT_COMMIT_SHORT}\"")
 
 include(Einsums_SetOutputPaths)
 
@@ -838,6 +862,11 @@ endif()
 
 if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_target(Examples)
+endif()
+
+# For some reason, Windows doesn't always provide all types.
+if(WIN32)
+  einsums_add_config_test(EINSUMS_WINDOWS_HAS_TYPES SOURCE ${CMAKE_PROJECT_DIR}/cmake/tests/windows_needs_types.cpp)
 endif()
 
 # ##################################################################################################

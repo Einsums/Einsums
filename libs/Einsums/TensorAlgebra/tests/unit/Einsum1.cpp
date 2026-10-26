@@ -92,6 +92,8 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
+    
+    constexpr double tol = tolerance<TestType>();
 
     tensor_algebra::detail::AlgorithmChoice alg_choice;
 
@@ -128,9 +130,9 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C_view(x, y), CheckWithinRel(C_solution(x, y), 0.001));
+            REQUIRE_THAT(C_view(x, y), CheckWithinRel(C_solution(x, y), tol));
             // REQUIRE_THAT(C_view(x, y), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
-            REQUIRE_THAT(C(x + 5, y + 5), CheckWithinRel(C_solution(x, y), 0.001));
+            REQUIRE_THAT(C(x + 5, y + 5), CheckWithinRel(C_solution(x, y), tol));
             // REQUIRE_THAT(C(x + 5, y + 5), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
         }
     }

@@ -9,22 +9,24 @@
 
 using namespace einsums::cl;
 
+namespace {
 OptionCategory Cat{"General"};
 Flag           Verbose{"verbose", {'v'}, "Enable verbose output", Cat};
 Opt<int>       Iters{"iters",
                      {'i'},
-               5,
-               "Iteration count",
-               Cat,
-               Visibility::Normal,
-               Occurrence::Optional,
-               ValueExpected::ValueRequired,
-               RangeBetween(1, 1000000)};
+                     5,
+                     "Iteration count",
+                     Cat,
+                     Visibility::Normal,
+                     Occurrence::Optional,
+                     ValueExpected::ValueRequired,
+                     NumericRange(1, 1000000)};
 
 OptionCategory   ToolsCat{"Tools"};
 Opt<std::string> ToolName{"tool", {'t'}, "Which tool", ToolsCat};
 
 List<std::string> Inputs{"inputs", Positional{}, "Input files"};
+} // namespace
 
 int main(int argc, char **argv) {
     std::vector<std::string> args(argv, argv + argc);

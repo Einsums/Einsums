@@ -16,6 +16,7 @@ set(_Einsums_modules
   BlockManager
   BufferAllocator
   CommandLine
+  Compat
   Concepts
   Config
   Debugging

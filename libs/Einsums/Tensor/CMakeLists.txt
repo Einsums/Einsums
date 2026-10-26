@@ -49,6 +49,7 @@ einsums_add_module(
     Einsums_BufferAllocator
     Einsums_Concepts
     Einsums_Config
+    Einsums_Compat
     Einsums_Errors
     Einsums_Iterator
     Einsums_Logging

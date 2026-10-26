@@ -14,6 +14,8 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
     using namespace einsums::index;
 
     tensor_algebra::detail::AlgorithmChoice alg_choice;
+    
+    constexpr TestType tol = tolerance<TestType>();
 
     SECTION("3x3 <- 3x5 * 5x3") {
         auto C0 = create_tensor<TestType>("C0", 3, 3);
@@ -27,7 +29,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), TestType{0.0001}));
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), tol));
             }
         }
     }
@@ -44,7 +46,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), TestType{0.0001}));
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), tol));
             }
         }
     }
@@ -63,7 +65,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
-            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinAbs(C1(i0), TestType{0.001}));
+            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinAbs(C1(i0), tol));
         }
     }
 
@@ -90,7 +92,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         }
 
         for (size_t i0 = 0; i0 < 3; i0++) {
-            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinRel(C1(i0), TestType{0.0001}));
+            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinRel(C1(i0), tol));
         }
     }
 
@@ -122,7 +124,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), TestType{0.0001}));
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), tol));
             }
         }
     }
@@ -156,7 +158,7 @@ TEMPLATE_TEST_CASE("einsum3", "[tensor_algebra]", float, double) {
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
                 // REQUIRE(C0(i0, j0) == C1(i0, j0));?
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), TestType{0.0001}));
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), tol));
             }
         }
     }

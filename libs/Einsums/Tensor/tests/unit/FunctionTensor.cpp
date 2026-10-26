@@ -34,7 +34,7 @@ TEST_CASE("Function Tensor Mixed Einsum") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     auto A = einsums::FuncPointerTensor<double, 2>("A", prod, 10, 10);
-    auto B = einsums::create_random_tensor("A", 10, 10);
+    auto B = einsums::create_random_tensor<double>("A", 10, 10);
 
     auto C = einsums::Tensor<double, 2>("C", 10, 10);
 

@@ -21,18 +21,18 @@
 namespace einsums {
 
 template <typename T>
-constexpr double tolerance() {
-    return 1e-6;
+constexpr double tolerance(double high_tol = 1e-3, double low_tol = 1e-6) {
+    return low_tol;
 }
 
 template <>
-constexpr double tolerance<float>() {
-    return 1e-2;
+constexpr double tolerance<float>(double high_tol, double low_tol) {
+    return high_tol;
 }
 
 template <>
-constexpr double tolerance<std::complex<float>>() {
-    return 1e-2;
+constexpr double tolerance<std::complex<float>>(double high_tol, double low_tol) {
+    return high_tol;
 }
 
 /**
@@ -135,6 +135,39 @@ WithinRelMatcher(TestType, double) -> WithinRelMatcher<TestType>;
 template <typename TestType>
 WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance = ::einsums::tolerance<TestType>()) {
     return WithinRelMatcher(reference, tolerance);
+}
+
+template <typename TestType>
+class WithinAbsMatcher : public Catch::Matchers::MatcherGenericBase {
+  public:
+    WithinAbsMatcher(TestType value, double eps) : target_{value}, eps_{eps} {}
+    bool match(TestType value) const { return std::abs(value - target_) <= eps_; }
+
+    std::string describe() const override {
+        if constexpr (IsComplexV<std::remove_cvref_t<TestType>>) {
+            return "and " + Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(target_.real()) +
+                   ((target_.imag() < 0) ? "-" : "+") +
+                   Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(std::abs(target_.imag())) + "i are within " +
+                   Catch::StringMaker<double>::convert(eps_) + " of each other";
+        } else {
+            return "and " + Catch::StringMaker<std::remove_cvref_t<TestType>>::convert(target_) + " are within " +
+                   Catch::StringMaker<double>::convert(eps_ ) + " of each other";
+        }
+    }
+
+  private:
+    TestType target_;
+    double   eps_;
+};
+
+#ifdef __cpp_deduction_guides
+template <typename TestType>
+WithinAbsMatcher(TestType, double) -> WithinAbsMatcher<TestType>;
+#endif
+
+template <typename TestType>
+WithinAbsMatcher<std::remove_cvref_t<TestType>> CheckWithinAbs(TestType reference, double tolerance = ::einsums::tolerance<TestType>()) {
+    return WithinAbsMatcher(reference, tolerance);
 }
 
 } // namespace einsums

@@ -7,13 +7,14 @@
 
 #include <cstddef>
 #include <limits>
+#include <Einsums/Config/ExportDefinitions.hpp>
 
 namespace hptt {
 
 /**
  * \brief A ComputNode encodes a loop.
  */
-class ComputeNode {
+class EINSUMS_EXPORT ComputeNode {
   public:
     ComputeNode()
         : start(-1), end(-1), inc(0), lda(0), ldb(0), indexA(false), indexB(false), offDiffAB(std::numeric_limits<ptrdiff_t>::min()),

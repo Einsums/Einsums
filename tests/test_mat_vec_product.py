@@ -11,16 +11,19 @@ pytestmark = [
         [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)],
     ),
     pytest.mark.parametrize(
-        ["dtype", "rel"], [(np.float64,1e-6), (np.complex128,1e-6)]
+        ["dtype", "rel"], [(np.float64, 1e-6), (np.complex128, 1e-6)]
     ),
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+
 @pytest.fixture
-def set_big_memory() :
+def set_big_memory():
     ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
     ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
 
+
+@ein.utils.labeled_section
 def test_mat_vec_prod(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)
@@ -32,7 +35,7 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, rel, array):
 
     plan.execute(0.0, C, 1.0, A, B)
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -40,7 +43,7 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)
 
     # Do the swapped version.
     C = ein.utils.tensor_factory("C", [b], dtype, array)
@@ -51,7 +54,7 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, rel, array):
 
     plan.execute(0.0, C, 1.0, B, A)
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -59,8 +62,10 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)
 
+
+@ein.utils.labeled_section
 def test_mat_vec_prod_list(a, b, dtype, rel, array):
     A = [ein.utils.random_tensor_factory(f"A {i}", [b, a], dtype, array) for i in range(10)]
     B = [ein.utils.random_tensor_factory(f"B {i}", [a], dtype, array) for i in range(10)]
@@ -72,16 +77,16 @@ def test_mat_vec_prod_list(a, b, dtype, rel, array):
 
     plan.execute(0.0, C, 1.0, A, B)
 
-    C_actual = [np.array([0.0 for i in range(b)], dtype = dtype) for i in range(10)]
+    C_actual = [np.array([0.0 for i in range(b)], dtype=dtype) for i in range(10)]
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for item in range(10) :
+    for item in range(10):
         for i in range(b):
             for j in range(a):
                 C_actual[item][i] += A[item][i, j] * B[item][j]
 
         for i in range(b):
-            assert C[item][i] == pytest.approx(C_actual[item][i], rel = rel)
+            assert C[item][i] == pytest.approx(C_actual[item][i], rel=rel)
 
     # Do the swapped version.
     C = [ein.utils.tensor_factory(f"C {i}", [b], dtype, array) for i in range(10)]
@@ -92,22 +97,22 @@ def test_mat_vec_prod_list(a, b, dtype, rel, array):
 
     plan.execute(0.0, C, 1.0, B, A)
 
-    C_actual = [np.array([0.0 for i in range(b)], dtype = dtype) for i in range(10)]
+    C_actual = [np.array([0.0 for i in range(b)], dtype=dtype) for i in range(10)]
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for item in range(10) :
+    for item in range(10):
         for i in range(b):
             for j in range(a):
                 C_actual[item][i] += A[item][i, j] * B[item][j]
 
         for i in range(b):
-            assert C[item][i] == pytest.approx(C_actual[item][i], rel = rel)
-
+            assert C[item][i] == pytest.approx(C_actual[item][i], rel=rel)
 
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_mat_vec_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)
@@ -125,7 +130,7 @@ def test_mat_vec_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
 
     C_view.update_D2H()
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -133,7 +138,7 @@ def test_mat_vec_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)
 
     # Do the swapped version.
     C = ein.utils.tensor_factory("C", [b], dtype, array)
@@ -150,7 +155,7 @@ def test_mat_vec_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
 
     C_view.update_D2H()
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -158,12 +163,13 @@ def test_mat_vec_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)
 
 
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_mat_vec_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [b, a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [a], dtype, array)
@@ -179,7 +185,7 @@ def test_mat_vec_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -187,7 +193,7 @@ def test_mat_vec_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)
 
     # Do the swapped version.
     C = ein.utils.tensor_factory("C", [b], dtype, array)
@@ -202,7 +208,7 @@ def test_mat_vec_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
 
     plan.execute(0.0, C_view, 1.0, B_view, A_view)
 
-    C_actual = np.array([0.0 for i in range(b)], dtype = dtype)
+    C_actual = np.array([0.0 for i in range(b)], dtype=dtype)
 
     # Numpy hates doing matrix multiplication with einsums imported
     for i in range(b):
@@ -210,4 +216,4 @@ def test_mat_vec_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
             C_actual[i] += A[i, j] * B[j]
 
     for i in range(b):
-        assert C[i] == pytest.approx(C_actual[i], rel = rel)
+        assert C[i] == pytest.approx(C_actual[i], rel=rel)

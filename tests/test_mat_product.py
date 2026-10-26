@@ -24,12 +24,14 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+
 @pytest.fixture
-def set_big_memory() :
+def set_big_memory():
     ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
     ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
 
 
+@ein.utils.labeled_section
 def test_mat_prod(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
@@ -53,6 +55,8 @@ def test_mat_prod(set_big_memory, a, b, c, dtype, rel, array):
         for j in range(c):
             assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)
 
+
+@ein.utils.labeled_section
 def test_mat_prod_list(a, b, c, dtype, rel, array):
     A = [ein.utils.random_tensor_factory(f"A {i}", [a, b], dtype, array) for i in range(10)]
     B = [ein.utils.random_tensor_factory(f"B {i}", [b, c], dtype, array) for i in range(10)]
@@ -67,7 +71,7 @@ def test_mat_prod_list(a, b, c, dtype, rel, array):
     plan.execute(0.0, C, 1.0, A, B)
 
     # Numpy hates doing matrix multiplication with einsums imported
-    for item in range(10) :
+    for item in range(10):
         for i in range(a):
             for j in range(c):
                 for k in range(b):
@@ -77,9 +81,11 @@ def test_mat_prod_list(a, b, c, dtype, rel, array):
             for j in range(c):
                 assert C[item][i, j] == pytest.approx(C_actual[item][i, j], rel=rel)
 
+
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_mat_prod_gpu_copy(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
@@ -113,6 +119,7 @@ def test_mat_prod_gpu_copy(set_big_memory, a, b, c, dtype, rel, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_mat_prod_gpu_map(set_big_memory, a, b, c, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)

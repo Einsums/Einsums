@@ -7,7 +7,7 @@ import platform
 import argparse
 
 packages_to_filter = [
-    'cpptrace' if platform.system() == 'Windows' else None,
+    #'cpptrace' if platform.system() == 'Windows' else None,
 ]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))

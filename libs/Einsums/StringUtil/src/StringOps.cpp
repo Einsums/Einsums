@@ -7,7 +7,7 @@
 
 #include <string>
 
-std::string einsums::difference(std::string const &st1, std::string const &st2) {
+std::string einsums::string_util::difference(std::string const &st1, std::string const &st2) {
     std::string out = st1;
 
     for (char i : st2) {
@@ -20,6 +20,6 @@ std::string einsums::difference(std::string const &st1, std::string const &st2) 
     return out;
 }
 
-std::string einsums::reverse(std::string const &str) {
+std::string einsums::string_util::reverse(std::string const &str) {
     return std::string{str.rbegin(), str.rend()};
 }

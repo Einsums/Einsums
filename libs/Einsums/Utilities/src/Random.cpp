@@ -9,10 +9,14 @@
 #include <random>
 
 namespace einsums {
-std::default_random_engine random_engine;
+std::default_random_engine &random_engine() {
+    thread_local std::unique_ptr<std::default_random_engine> engine{nullptr};
 
-void seed_random(std::default_random_engine::result_type seed) {
-    random_engine.seed(seed);
+    if (!engine) {
+        engine = std::make_unique<std::default_random_engine>(std::chrono::system_clock::now().time_since_epoch().count());
+    }
+
+    return *engine;
 }
 
 } // namespace einsums

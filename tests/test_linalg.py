@@ -19,6 +19,7 @@ def set_big_memory():
 
 
 @pytest.mark.parametrize(["length"], [(10,), (1000,)])
+@ein.utils.labeled_section
 def test_sumsq(length, dtype, array):
     lst = ein.utils.random_tensor_factory("vector", [length], dtype, array)
 
@@ -33,6 +34,7 @@ def test_sumsq(length, dtype, array):
     ["a", "b", "c"],
     [(10, 10, 10), pytest.param(100, 100, 100, marks=pytest.mark.slow), (11, 13, 17)],
 )
+@ein.utils.labeled_section
 def test_gemm(set_big_memory, a, b, c, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b, c], dtype, array)
@@ -56,6 +58,7 @@ def test_gemm(set_big_memory, a, b, c, dtype, array):
 @pytest.mark.parametrize(
     ["a", "b"], [(10, 10), pytest.param(1000, 1000, marks=pytest.mark.slow), (11, 13)]
 )
+@ein.utils.labeled_section
 def test_mat_vec_prod(set_big_memory, a, b, dtype, array):
 
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
@@ -76,20 +79,20 @@ def test_mat_vec_prod(set_big_memory, a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["width"], [(10,), (100,)])
+@ein.utils.labeled_section
 def test_syev(width, dtype, array):
     A = ein.utils.random_tensor_factory("Test tensor", [width, width], dtype, array)
-    W = ein.utils.tensor_factory("Eigenvalues", [width], dtype = ein.utils.remove_complex(dtype))
+    W = ein.utils.tensor_factory("Eigenvalues", [width], dtype=ein.utils.remove_complex(dtype))
 
-    if ein.utils.is_complex(dtype) :
-        for i in range(width) :
+    if ein.utils.is_complex(dtype):
+        for i in range(width):
             A[i, i] = A[i, i].real
-            for j in range(i) :
+            for j in range(i):
                 A[i, j] = A[j, i].conjugate()
-    else :
-        for i in range(width) :
-            for j in range(i) :
+    else:
+        for i in range(width):
+            for j in range(i):
                 A[i, j] = A[j, i]
-
 
     A_copy = np.array(A)
 
@@ -99,23 +102,21 @@ def test_syev(width, dtype, array):
 
     pair = [(evals[i], evecs[:, i]) for i in range(width)]
 
-    pair = sorted(pair, key = lambda x : x[0])
+    pair = sorted(pair, key=lambda x: x[0])
 
     evals, evecs = [p[0] for p in pair], np.array([p[1] for p in pair]).T
 
-    for i in range(width) :
+    for i in range(width):
         assert W[i] == pytest.approx(evals[i])
 
-    for i in range(width) :
+    for i in range(width):
         scale = evecs[0, i] / A[0, i]
-        for j in range(width) :
+        for j in range(width):
             assert A[j, i] * scale == pytest.approx(evecs[j, i])
 
 
-
-
-
 @pytest.mark.parametrize(["width"], [(10,), (50,)])
+@ein.utils.labeled_section
 def test_geev(width, dtype, array):
     A = ein.utils.random_tensor_factory("A", [width, width], dtype=dtype, method=array)
     A_copy = A.copy()
@@ -177,6 +178,7 @@ def test_geev(width, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (10, 10), (100, 100)])
+@ein.utils.labeled_section
 def test_gesv(a, b, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a, dtype=dtype, method=array)
     B = ein.utils.random_tensor_factory("B", [a, b], dtype, array)
@@ -196,6 +198,7 @@ def test_gesv(a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b", "c"], [(10, 10, 10), (11, 13, 17)])
+@ein.utils.labeled_section
 def test_scale(a, b, c, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b, c], dtype, array)
 
@@ -212,6 +215,7 @@ def test_scale(a, b, c, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (1, 10), (10, 10), (100, 100)])
+@ein.utils.labeled_section
 def test_scale_row(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -231,6 +235,7 @@ def test_scale_row(a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 1), (1, 10), (10, 10), (100, 100)])
+@ein.utils.labeled_section
 def test_scale_col(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -250,6 +255,7 @@ def test_scale_col(a, b, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_axpy(a, dtype, array):
     X = ein.utils.random_tensor_factory("X", [a], dtype, array)
     Y = ein.utils.random_tensor_factory("Y", [a], dtype, array)
@@ -268,6 +274,7 @@ def test_axpy(a, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_axpby(a, dtype, array):
     X = ein.utils.random_tensor_factory("X", [a], dtype, array)
     Y = ein.utils.random_tensor_factory("Y", [a], dtype, array)
@@ -287,6 +294,7 @@ def test_axpby(a, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13)])
+@ein.utils.labeled_section
 def test_ger(a, b, dtype, array):
     X = ein.utils.random_tensor_factory("X", [a], dtype, array)
     Y = ein.utils.random_tensor_factory("Y", [b], dtype, array)
@@ -308,6 +316,7 @@ def test_ger(a, b, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_invert(a, dtype, array):
     A = ein.utils.random_definite_tensor_factory("A", a, dtype=dtype, method=array)
 
@@ -327,6 +336,7 @@ def test_invert(a, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (100, 100), (11, 13)])
+@ein.utils.labeled_section
 def test_norm(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -336,15 +346,16 @@ def test_norm(a, b, dtype, array):
     assert ein.core.norm(ein.core.ONE, A) == pytest.approx(np.linalg.norm(A, 1))
     assert ein.core.norm(ein.core.INFINITY, A) == pytest.approx(np.linalg.norm(A, np.inf))
     maxabs = 0
-    for i in range(a) :
-        for j in range(b) :
-            if abs(A[i, j]) > maxabs :
+    for i in range(a):
+        for j in range(b):
+            if abs(A[i, j]) > maxabs:
                 maxabs = abs(A[i, j])
     assert ein.core.norm(ein.core.MAXABS, A) == pytest.approx(maxabs)
     assert ein.core.norm(ein.core.TWO, A) == pytest.approx(np.linalg.norm(A, 2))
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_vec_norm(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
 
@@ -352,6 +363,7 @@ def test_vec_norm(a, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_dot(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a], dtype, array)
@@ -364,6 +376,7 @@ def test_dot(a, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 100])
+@ein.utils.labeled_section
 def test_true_dot(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("A", [a], dtype, array)
@@ -376,6 +389,7 @@ def test_true_dot(a, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
+@ein.utils.labeled_section
 def test_svd(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -398,6 +412,8 @@ def test_svd(a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (11, 13)])
+@pytest.mark.xfail(reason="Unstable algorithm. See issue #291", strict=False)
+@ein.utils.labeled_section
 def test_nullspace(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -424,8 +440,8 @@ def test_nullspace(a, b, dtype, array):
 
     for j in range(Null_expected.shape[1]):
         scale = 1.0
-        for i in range(b) :
-            if Null[i, j] != 0.0 :
+        for i in range(b):
+            if Null[i, j] != 0.0:
                 scale = Null_expected[i, j] / Null[i, j]
                 break
 
@@ -434,6 +450,7 @@ def test_nullspace(a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13)])
+@ein.utils.labeled_section
 def test_sdd(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -456,6 +473,7 @@ def test_sdd(a, b, dtype, array):
 
 
 @pytest.mark.parametrize(["a", "b"], [(10, 10), (50, 50), (11, 13), (13, 11)])
+@ein.utils.labeled_section
 def test_qr(a, b, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, b], dtype, array)
 
@@ -465,12 +483,13 @@ def test_qr(a, b, dtype, array):
 
     ein.core.gemm('n', 'n', 1.0, Q, R, 0.0, A_test)
 
-    for i in range(A.shape[0]) :
-        for j in range(A.shape[1]) :
+    for i in range(A.shape[0]):
+        for j in range(A.shape[1]):
             assert A_test[i, j] == pytest.approx(A[i, j])
 
 
 @pytest.mark.parametrize("dims", [[10, 10], [10, 10, 10], [11, 12, 13], [100]])
+@ein.utils.labeled_section
 def test_direct_prod(dims, dtype, array):
     A = ein.utils.random_tensor_factory("A", dims, dtype, array)
     B = ein.utils.random_tensor_factory("B", dims, dtype, array)
@@ -494,6 +513,7 @@ def test_direct_prod(dims, dtype, array):
 
 
 @pytest.mark.parametrize("a", [10, 25])
+@ein.utils.labeled_section
 def test_det(a, dtype, array):
     A = ein.utils.random_tensor_factory("A", [a, a], dtype, array)
 

@@ -7,9 +7,11 @@
 
 #include <algorithm>
 #include <optional>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <cstdio>
 
 namespace einsums {
 
@@ -32,6 +34,17 @@ class InsertionOrderedMap {
 
   public:
     InsertionOrderedMap() = default;
+
+    InsertionOrderedMap(InsertionOrderedMap<K, V, Hash, Eq> const &copy) = default;
+
+    InsertionOrderedMap(InsertionOrderedMap<K, V, Hash, Eq> &&move) noexcept(std::is_nothrow_move_constructible_v<map_type>) = default;
+
+    InsertionOrderedMap &operator=(InsertionOrderedMap<K, V, Hash, Eq> const &copy) = default;
+
+    InsertionOrderedMap &
+    operator=(InsertionOrderedMap<K, V, Hash, Eq> &&move) noexcept(std::is_nothrow_move_assignable_v<map_type>) = default;
+
+    ~InsertionOrderedMap() { std::fprintf(stderr, "Finalizing InsertionOrderedMap.\n"); }
 
     // ----- Iterator types that yield references into map_ -----
     class iterator {

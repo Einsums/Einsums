@@ -15,8 +15,18 @@ set(TensorTests
     DeviceTiledTensor.hip
     FunctionTensor.cpp
     TiledTensor.cpp
-    Tensor.cpp
- Disk.cpp)
+    Tensor1.cpp
+    Tensor2.cpp
+    Tensor3.cpp
+    Tensor4.cpp
+    Tensor5.cpp
+    Tensor6.cpp
+    Tensor7.cpp
+    Tensor8.cpp
+    Tensor9.cpp
+    Tensor10.cpp
+    Tensor11.cpp
+    Disk.cpp)
 
 foreach(test ${TensorTests})
   # Extract base name of test Example1.cpp -> Example1, Example.2.hip -> Example

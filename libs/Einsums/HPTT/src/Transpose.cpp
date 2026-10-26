@@ -50,6 +50,7 @@
 #    include <omp.h>
 #endif
 
+#include <Einsums/Compat/PosixAlternatives.hpp>
 #include <Einsums/HPTT/ComputeNode.hpp>
 #include <Einsums/HPTT/Files.hpp>
 #include <Einsums/HPTT/HPTTTypes.hpp>
@@ -184,7 +185,7 @@ struct micro_kernel<double, betaIsZero, conjA> {
             // Store B
             if (innerStrideB != 1) {
                 __m256i indicesB = _mm256_set_epi64x(7 * innerStrideB, 6 * innerStrideB, 5 * innerStrideB, 4 * innerStrideB,
-                                                    3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
+                                                     3 * innerStrideB, 2 * innerStrideB, 1 * innerStrideB, 0 * innerStrideB);
                 _mm256_i64scatter_pd((B + 0 * ldb), indicesB, rowA0, sizeof(double));
                 _mm256_i64scatter_pd((B + 1 * ldb), indicesB, rowA1, sizeof(double));
                 _mm256_i64scatter_pd((B + 2 * ldb), indicesB, rowA2, sizeof(double));
@@ -620,8 +621,8 @@ struct micro_kernel<float, betaIsZero, conjA> {
 #endif
 
 template <bool betaIsZero, typename floatType, bool conjA>
-static INLINE void macro_kernel_scalar(floatType const *A, const size_t lda, int blockingA, size_t innerStrideA, floatType *B,
-                                       const size_t ldb, int blockingB, size_t innerStrideB, const floatType alpha, const floatType beta) {
+static INLINE void macro_kernel_scalar(floatType const *A, size_t const lda, int blockingA, size_t innerStrideA, floatType *B,
+                                       size_t const ldb, int blockingB, size_t innerStrideB, floatType const alpha, floatType const beta) {
 #ifdef DEBUG
     assert(blockingA > 0 && blockingB > 0);
 #endif
@@ -1953,8 +1954,8 @@ void Transpose<floatType>::skipIndices(size_t const *sizeA, int const *perm, siz
     printf("dim: %d\n", dim_);
     printf("alpha: %f\n", alpha_);
     printf("beta: %f\n", beta_);
-    printf("innerStrideA: %lu\n", innerStrideA_);
-    printf("innerStrideB: %lu\n", innerStrideB_);
+    printf("innerStrideA: %zu\n", innerStrideA_);
+    printf("innerStrideB: %zu\n", innerStrideB_);
 #endif
 }
 
@@ -2062,19 +2063,19 @@ void Transpose<floatType>::fuseIndices() {
             printf("%d ", perm_[i]);
         printf("\nsizes_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%lu ", sizeA_[i]);
+            printf("%zu ", sizeA_[i]);
         printf("\nouterSizeA_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%lu ", outerSizeA_[i]);
+            printf("%zu ", outerSizeA_[i]);
         printf("\nouterSizeB_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%lu ", outerSizeB_[i]);
+            printf("%zu ", outerSizeB_[i]);
         printf("\noffsetA_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%lu ", offsetA_[i]);
+            printf("%zu ", offsetA_[i]);
         printf("\noffsetB_new: ");
         for (int i = 0; i < dim_; ++i)
-            printf("%lu ", offsetB_[i]);
+            printf("%zu ", offsetB_[i]);
         printf("\n");
 #endif
     }
@@ -2453,7 +2454,7 @@ std::shared_ptr<Plan> Transpose<floatType>::selectPlan(std::vector<std::shared_p
             }
         }
         if (this->infoLevel_ > 0)
-            printf("We evaluated %d/%lu candidates and selected candidate %d.\n", plansEvaluated, plans.size(), bestPlan_id);
+            printf("We evaluated %d/%zu candidates and selected candidate %d.\n", plansEvaluated, plans.size(), bestPlan_id);
     }
     return plans[bestPlan_id];
 }
@@ -2469,7 +2470,7 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
 
     TransposeConstants constants;
 
-    int error1 = fseek(fp, 0, SEEK_SET);
+    int error1 = einsums::fseek(fp, 0, SEEK_SET);
 
     if (error1 != 0) {
         goto write_to_file_error;
@@ -2485,7 +2486,7 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
         throw std::runtime_error("Trying to write to a file that is not a HPTT transpose file!");
     }
 
-    error1 = fseek(fp, sizeof(FileHeader), SEEK_SET);
+    error1 = einsums::fseek(fp, sizeof(FileHeader), SEEK_SET);
 
     if (error1 != 0) {
         goto write_to_file_error;
@@ -2576,7 +2577,7 @@ void Transpose<FloatType>::writeToFile(std::FILE *fp) const {
 
     check = computeChecksum(fp);
 
-    error1 = fseek(fp, offsetof(FileHeader, checksum), SEEK_SET);
+    error1 = einsums::fseek(fp, offsetof(FileHeader, checksum), SEEK_SET);
 
     if (error1 != 0) {
         goto write_to_file_error;
@@ -2608,7 +2609,7 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
     TransposeConstants constants;
     uint32_t           check;
 
-    int error1 = fseek(fp, 0, SEEK_SET);
+    int error1 = einsums::fseek(fp, 0, SEEK_SET);
 
     if (error1 != 0) {
         goto read_from_file_error;
@@ -2624,7 +2625,7 @@ Transpose<FloatType>::Transpose(std::FILE *fp, FloatType alpha, FloatType const 
         throw std::runtime_error("Trying to read from a file that is not a HPTT transpose file!");
     }
 
-    error1 = fseek(fp, sizeof(FileHeader), SEEK_SET);
+    error1 = einsums::fseek(fp, sizeof(FileHeader), SEEK_SET);
 
     if (error1 != 0) {
         goto read_from_file_error;
@@ -2743,45 +2744,52 @@ read_from_file_error:
     throw std::runtime_error("IO error");
 }
 
+#ifdef EINSUMS_WINDOWS
+template class EINSUMS_EXPORT Transpose<float>;
+template class EINSUMS_EXPORT Transpose<double>;
+template class EINSUMS_EXPORT Transpose<FloatComplex>;
+template class EINSUMS_EXPORT Transpose<DoubleComplex>;
+#else
 template class Transpose<float>;
 template class Transpose<double>;
 template class Transpose<FloatComplex>;
 template class Transpose<DoubleComplex>;
+#endif
 
-template void Transpose<float>::execute_expert<true, true, true>();
-template void Transpose<float>::execute_expert<true, false, true>();
-template void Transpose<float>::execute_expert<false, true, true>();
-template void Transpose<float>::execute_expert<false, false, true>();
-template void Transpose<float>::execute_expert<true, true, false>();
-template void Transpose<float>::execute_expert<true, false, false>();
-template void Transpose<float>::execute_expert<false, true, false>();
-template void Transpose<float>::execute_expert<false, false, false>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<true, true, true>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<true, false, true>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<false, true, true>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<false, false, true>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<true, true, false>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<true, false, false>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<false, true, false>();
+template void EINSUMS_EXPORT Transpose<float>::execute_expert<false, false, false>();
 
-template void Transpose<double>::execute_expert<true, true, true>();
-template void Transpose<double>::execute_expert<false, true, true>();
-template void Transpose<double>::execute_expert<true, false, true>();
-template void Transpose<double>::execute_expert<false, false, true>();
-template void Transpose<double>::execute_expert<true, true, false>();
-template void Transpose<double>::execute_expert<false, true, false>();
-template void Transpose<double>::execute_expert<true, false, false>();
-template void Transpose<double>::execute_expert<false, false, false>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<true, true, true>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<false, true, true>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<true, false, true>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<false, false, true>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<true, true, false>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<false, true, false>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<true, false, false>();
+template void EINSUMS_EXPORT Transpose<double>::execute_expert<false, false, false>();
 
-template void Transpose<FloatComplex>::execute_expert<true, true, true>();
-template void Transpose<FloatComplex>::execute_expert<false, true, true>();
-template void Transpose<FloatComplex>::execute_expert<true, false, true>();
-template void Transpose<FloatComplex>::execute_expert<false, false, true>();
-template void Transpose<FloatComplex>::execute_expert<true, true, false>();
-template void Transpose<FloatComplex>::execute_expert<false, true, false>();
-template void Transpose<FloatComplex>::execute_expert<true, false, false>();
-template void Transpose<FloatComplex>::execute_expert<false, false, false>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<true, true, true>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<false, true, true>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<true, false, true>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<false, false, true>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<true, true, false>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<false, true, false>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<true, false, false>();
+template void EINSUMS_EXPORT Transpose<FloatComplex>::execute_expert<false, false, false>();
 
-template void Transpose<DoubleComplex>::execute_expert<true, true, true>();
-template void Transpose<DoubleComplex>::execute_expert<false, true, true>();
-template void Transpose<DoubleComplex>::execute_expert<true, false, true>();
-template void Transpose<DoubleComplex>::execute_expert<false, false, true>();
-template void Transpose<DoubleComplex>::execute_expert<true, true, false>();
-template void Transpose<DoubleComplex>::execute_expert<false, true, false>();
-template void Transpose<DoubleComplex>::execute_expert<true, false, false>();
-template void Transpose<DoubleComplex>::execute_expert<false, false, false>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<true, true, true>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<false, true, true>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<true, false, true>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<false, false, true>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<true, true, false>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<false, true, false>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<true, false, false>();
+template void EINSUMS_EXPORT Transpose<DoubleComplex>::execute_expert<false, false, false>();
 
 } // namespace hptt

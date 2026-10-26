@@ -20,11 +20,14 @@ pytestmark = [
     pytest.mark.parametrize(["array"], [("numpy",), ("einsums",)]),
 ]
 
+
 @pytest.fixture
-def set_big_memory() :
+def set_big_memory():
     ein.core.GlobalConfigMap.get_singleton().set_str("buffer-size", "1GB")
     ein.core.GlobalConfigMap.get_singleton().set_str("gpu-buffer-size", "1GB")
 
+
+@ein.utils.labeled_section
 def test_outer_prod(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b], dtype, array)
@@ -57,6 +60,8 @@ def test_outer_prod(set_big_memory, a, b, dtype, rel, array):
         for j in range(b):
             assert C[i, j] == pytest.approx(C_actual[i, j], rel=rel)
 
+
+@ein.utils.labeled_section
 def test_outer_prod_list(a, b, dtype, rel, array):
     A = [ein.utils.random_tensor_factory(f"A {i}", [a], dtype, array) for i in range(10)]
     B = [ein.utils.random_tensor_factory(f"B {i}", [b], dtype, array) for i in range(10)]
@@ -70,7 +75,7 @@ def test_outer_prod_list(a, b, dtype, rel, array):
 
     C_actual = [np.outer(a, b) for a, b in zip(A, B)]
 
-    for item in range(10) :
+    for item in range(10):
         for i in range(a):
             for j in range(b):
                 assert C[item][i, j] == pytest.approx(C_actual[item][i, j], rel=rel)
@@ -86,7 +91,7 @@ def test_outer_prod_list(a, b, dtype, rel, array):
 
     C_actual = [np.outer(a, b) for a, b in zip(A, B)]
 
-    for item in range(10) :
+    for item in range(10):
         for i in range(a):
             for j in range(b):
                 assert C[item][i, j] == pytest.approx(C_actual[item][i, j], rel=rel)
@@ -95,6 +100,7 @@ def test_outer_prod_list(a, b, dtype, rel, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_outer_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b], dtype, array)
@@ -143,6 +149,7 @@ def test_outer_prod_gpu_copy(set_big_memory, a, b, dtype, rel, array):
 @pytest.mark.skipif(
     not ein.core.gpu_enabled(), reason="Einsums not built with GPU support!"
 )
+@ein.utils.labeled_section
 def test_outer_prod_gpu_map(set_big_memory, a, b, dtype, rel, array):
     A = ein.utils.random_tensor_factory("A", [a], dtype, array)
     B = ein.utils.random_tensor_factory("B", [b], dtype, array)

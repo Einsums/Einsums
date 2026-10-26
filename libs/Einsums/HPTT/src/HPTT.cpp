@@ -25,6 +25,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <Einsums/HPTT/HPTT.hpp>
 #include <Einsums/HPTT/Transpose.hpp>
 
 #include <memory>
@@ -32,59 +33,62 @@
 
 namespace hptt {
 
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, float const beta, float *B, size_t const *outerSizeB,
-                                                    SelectionMethod const selectionMethod, int const numThreads, int const *threadIds,
-                                                    bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, float const beta,
+                                                                   float *B, size_t const *outerSizeB,
+                                                                   SelectionMethod const selectionMethod, int const numThreads,
+                                                                   int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B, beta,
                                                        selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, double const beta, double *B,
-                                                     size_t const *outerSizeB, SelectionMethod const selectionMethod, int const numThreads,
-                                                     int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, double const beta,
+                                                                    double *B, size_t const *outerSizeB,
+                                                                    SelectionMethod const selectionMethod, int const numThreads,
+                                                                    int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B, beta,
                                                         selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, FloatComplex const beta,
-                                                           FloatComplex *B, size_t const *outerSizeB, SelectionMethod const selectionMethod,
-                                                           int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, FloatComplex const beta, FloatComplex *B, size_t const *outerSizeB,
+                               SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B,
                                                               beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, size_t const *sizeA, size_t const *outerSizeA,
-                                                            DoubleComplex const beta, DoubleComplex *B, size_t const *outerSizeB,
-                                                            SelectionMethod const selectionMethod, int const numThreads,
-                                                            int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, DoubleComplex const beta, DoubleComplex *B, size_t const *outerSizeB,
+                               SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha,
                                                                B, beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<float>> create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
-                                                    std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                    float const beta, float *B, std::vector<size_t> const &outerSizeB,
-                                                    SelectionMethod const selectionMethod, int const numThreads,
-                                                    std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, float const alpha,
+                                                                   float const *A, std::vector<size_t> const &sizeA,
+                                                                   std::vector<size_t> const &outerSizeA, float const beta, float *B,
+                                                                   std::vector<size_t> const &outerSizeB,
+                                                                   SelectionMethod const selectionMethod, int const numThreads,
+                                                                   std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], nullptr, nullptr, 1, 1, dim, A,
                                                        alpha, B, beta, selectionMethod, numThreads,
                                                        (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
-                                                     std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                     double const beta, double *B, std::vector<size_t> const &outerSizeB,
-                                                     SelectionMethod const selectionMethod, int const numThreads,
-                                                     std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, double const alpha,
+                                                                    double const *A, std::vector<size_t> const &sizeA,
+                                                                    std::vector<size_t> const &outerSizeA, double const beta, double *B,
+                                                                    std::vector<size_t> const &outerSizeB,
+                                                                    SelectionMethod const selectionMethod, int const numThreads,
+                                                                    std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], nullptr, nullptr, 1, 1, dim, A,
                                                         alpha, B, beta, selectionMethod, numThreads,
                                                         (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -92,31 +96,31 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &per
 }
 
 std::shared_ptr<hptt::Transpose<FloatComplex>>
-create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A, std::vector<size_t> const &sizeA,
-            std::vector<size_t> const &outerSizeA, FloatComplex const beta, FloatComplex *B, std::vector<size_t> const &outerSizeB,
-            SelectionMethod const selectionMethod, int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, FloatComplex const beta,
+                               FloatComplex *B, std::vector<size_t> const &outerSizeB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], nullptr, nullptr, 1, 1,
                                                               dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                               (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, std::vector<size_t> const &sizeA,
-                                                            std::vector<size_t> const &outerSizeA, DoubleComplex const beta,
-                                                            DoubleComplex *B, std::vector<size_t> const &outerSizeB,
-                                                            SelectionMethod const selectionMethod, int const numThreads,
-                                                            std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, DoubleComplex const beta,
+                               DoubleComplex *B, std::vector<size_t> const &outerSizeB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], nullptr, nullptr, 1, 1,
                                                                dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                                (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, float const beta, float *B, size_t const *outerSizeB,
-                                                    int const maxAutotuningCandidates, int const numThreads, int const *threadIds,
-                                                    bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, float const beta,
+                                                                   float *B, size_t const *outerSizeB, int const maxAutotuningCandidates,
+                                                                   int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B, beta,
                                                        MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -124,10 +128,10 @@ std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const d
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, double const beta, double *B,
-                                                     size_t const *outerSizeB, int const maxAutotuningCandidates, int const numThreads,
-                                                     int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, double const beta,
+                                                                    double *B, size_t const *outerSizeB, int const maxAutotuningCandidates,
+                                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B, beta,
                                                         MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -135,21 +139,20 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const 
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, FloatComplex const beta,
-                                                           FloatComplex *B, size_t const *outerSizeB, int const maxAutotuningCandidates,
-                                                           int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, FloatComplex const beta, FloatComplex *B, size_t const *outerSizeB,
+                               int const maxAutotuningCandidates, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha, B,
                                                               beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->createPlan();
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, size_t const *sizeA, size_t const *outerSizeA,
-                                                            DoubleComplex const beta, DoubleComplex *B, size_t const *outerSizeB,
-                                                            int const maxAutotuningCandidates, int const numThreads, int const *threadIds,
-                                                            bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, DoubleComplex const beta, DoubleComplex *B, size_t const *outerSizeB,
+                               int const maxAutotuningCandidates, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, nullptr, nullptr, 1, 1, dim, A, alpha,
                                                                B, beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -159,41 +162,41 @@ std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int
 
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B), SelectionMethod Class,
  * --int-- Offsets, and ints (sizeA, outerSizeA, and outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, size_t const *offsetA, float const beta, float *B,
-                                                    size_t const *outerSizeB, size_t const *offsetB, SelectionMethod const selectionMethod,
-                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                   float const beta, float *B, size_t const *outerSizeB,
+                                                                   size_t const *offsetB, SelectionMethod const selectionMethod,
+                                                                   int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B, beta,
                                                        selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                     double const beta, double *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                     SelectionMethod const selectionMethod, int const numThreads, int const *threadIds,
-                                                     bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                    double const beta, double *B, size_t const *outerSizeB,
+                                                                    size_t const *offsetB, SelectionMethod const selectionMethod,
+                                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B, beta,
                                                         selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                           FloatComplex const beta, FloatComplex *B, size_t const *outerSizeB,
-                                                           size_t const *offsetB, SelectionMethod const selectionMethod,
-                                                           int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, FloatComplex const beta, FloatComplex *B,
+                               size_t const *outerSizeB, size_t const *offsetB, SelectionMethod const selectionMethod, int const numThreads,
+                               int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B,
                                                               beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, size_t const *sizeA, size_t const *outerSizeA,
-                                                            size_t const *offsetA, DoubleComplex const beta, DoubleComplex *B,
-                                                            size_t const *outerSizeB, size_t const *offsetB,
-                                                            SelectionMethod const selectionMethod, int const numThreads,
-                                                            int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, DoubleComplex const beta, DoubleComplex *B,
+                               size_t const *outerSizeB, size_t const *offsetB, SelectionMethod const selectionMethod, int const numThreads,
+                               int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha,
                                                                B, beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
@@ -201,24 +204,24 @@ std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int
 
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B), SelectionMethod Class,
  * --vector int-- Offsets, and vector ints (sizeA, outerSizeA, and outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
-                                                    std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                    std::vector<size_t> const &offsetA, float const beta, float *B,
-                                                    std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
-                                                    SelectionMethod const selectionMethod, int const numThreads,
-                                                    std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>>
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               float const beta, float *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
+                               SelectionMethod const selectionMethod, int const numThreads, std::vector<int> const &threadIds,
+                               bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0], 1, 1,
                                                        dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                        (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
-                                                     std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                     std::vector<size_t> const &offsetA, double const beta, double *B,
-                                                     std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
-                                                     SelectionMethod const selectionMethod, int const numThreads,
-                                                     std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>>
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               double const beta, double *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
+                               SelectionMethod const selectionMethod, int const numThreads, std::vector<int> const &threadIds,
+                               bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0], 1, 1,
                                                         dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                         (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -226,10 +229,11 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &per
 }
 
 std::shared_ptr<hptt::Transpose<FloatComplex>>
-create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A, std::vector<size_t> const &sizeA,
-            std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA, FloatComplex const beta, FloatComplex *B,
-            std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB, SelectionMethod const selectionMethod,
-            int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               FloatComplex const beta, FloatComplex *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, SelectionMethod const selectionMethod, int const numThreads,
+                               std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0],
                                                               1, 1, dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                               (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -237,10 +241,11 @@ create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alph
 }
 
 std::shared_ptr<hptt::Transpose<DoubleComplex>>
-create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A,
-            std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
-            DoubleComplex const beta, DoubleComplex *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
-            SelectionMethod const selectionMethod, int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               DoubleComplex const beta, DoubleComplex *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, SelectionMethod const selectionMethod, int const numThreads,
+                               std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0],
                                                                &offsetB[0], 1, 1, dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                                (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -249,10 +254,11 @@ create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alp
 
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B), --int-- maxAutotuningCandidates,
  * --int-- Offsets, and ints (sizeA, outerSizeA, and outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, size_t const *offsetA, float const beta, float *B,
-                                                    size_t const *outerSizeB, size_t const *offsetB, int const maxAutotuningCandidates,
-                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                   float const beta, float *B, size_t const *outerSizeB,
+                                                                   size_t const *offsetB, int const maxAutotuningCandidates,
+                                                                   int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B, beta,
                                                        MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -260,11 +266,11 @@ std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const d
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                     double const beta, double *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                     int const maxAutotuningCandidates, int const numThreads, int const *threadIds,
-                                                     bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                    double const beta, double *B, size_t const *outerSizeB,
+                                                                    size_t const *offsetB, int const maxAutotuningCandidates,
+                                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B, beta,
                                                         MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -272,11 +278,11 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const 
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                           FloatComplex const beta, FloatComplex *B, size_t const *outerSizeB,
-                                                           size_t const *offsetB, int const maxAutotuningCandidates, int const numThreads,
-                                                           int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, FloatComplex const beta, FloatComplex *B,
+                               size_t const *outerSizeB, size_t const *offsetB, int const maxAutotuningCandidates, int const numThreads,
+                               int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha, B,
                                                               beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->createPlan();
@@ -284,9 +290,10 @@ std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int 
 }
 
 std::shared_ptr<hptt::Transpose<DoubleComplex>>
-create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
-            size_t const *outerSizeA, size_t const *offsetA, DoubleComplex const beta, DoubleComplex *B, size_t const *outerSizeB,
-            size_t const *offsetB, int const maxAutotuningCandidates, int const numThreads, int const *threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, DoubleComplex const beta, DoubleComplex *B,
+                               size_t const *outerSizeB, size_t const *offsetB, int const maxAutotuningCandidates, int const numThreads,
+                               int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, 1, 1, dim, A, alpha,
                                                                B, beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -297,45 +304,44 @@ create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleCom
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B),
  * SelectionMethod Class, --int-- Offsets, --int-- innerStrides, and ints (sizeA, outerSizeA, and
  * outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA,
-                                                    float const beta, float *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                    size_t const innerStrideB, SelectionMethod const selectionMethod, int const numThreads,
-                                                    int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                   size_t const innerStrideA, float const beta, float *B,
+                                                                   size_t const *outerSizeB, size_t const *offsetB,
+                                                                   size_t const innerStrideB, SelectionMethod const selectionMethod,
+                                                                   int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA, innerStrideB,
                                                        dim, A, alpha, B, beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                     size_t const innerStrideA, double const beta, double *B, size_t const *outerSizeB,
-                                                     size_t const *offsetB, size_t const innerStrideB,
-                                                     SelectionMethod const selectionMethod, int const numThreads, int const *threadIds,
-                                                     bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                    size_t const innerStrideA, double const beta, double *B,
+                                                                    size_t const *outerSizeB, size_t const *offsetB,
+                                                                    size_t const innerStrideB, SelectionMethod const selectionMethod,
+                                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA, innerStrideB,
                                                         dim, A, alpha, B, beta, selectionMethod, numThreads, threadIds, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                           size_t const innerStrideA, FloatComplex const beta, FloatComplex *B,
-                                                           size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
-                                                           SelectionMethod const selectionMethod, int const numThreads,
-                                                           int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA, FloatComplex const beta,
+                               FloatComplex *B, size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
+                               SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA,
                                                               innerStrideB, dim, A, alpha, B, beta, selectionMethod, numThreads, threadIds,
                                                               useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, size_t const *sizeA, size_t const *outerSizeA,
-                                                            size_t const *offsetA, size_t const innerStrideA, DoubleComplex const beta,
-                                                            DoubleComplex *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                            size_t const innerStrideB, SelectionMethod const selectionMethod,
-                                                            int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA, DoubleComplex const beta,
+                               DoubleComplex *B, size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
+                               SelectionMethod const selectionMethod, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA,
                                                                innerStrideB, dim, A, alpha, B, beta, selectionMethod, numThreads, threadIds,
                                                                useRowMajor));
@@ -344,24 +350,24 @@ std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int
 
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B), SelectionMethod Class,
  * --vector int-- Offsets, --int-- innerStrides, and vector ints (sizeA, outerSizeA, and outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
-                                                    std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                    std::vector<size_t> const &offsetA, size_t const innerStrideA, float const beta,
-                                                    float *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
-                                                    size_t const innerStrideB, SelectionMethod const selectionMethod, int const numThreads,
-                                                    std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>>
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               size_t const innerStrideA, float const beta, float *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, size_t const innerStrideB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0],
                                                        innerStrideA, innerStrideB, dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                        (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
-                                                     std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA,
-                                                     std::vector<size_t> const &offsetA, size_t const innerStrideA, double const beta,
-                                                     double *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB,
-                                                     size_t const innerStrideB, SelectionMethod const selectionMethod, int const numThreads,
-                                                     std::vector<int> const &threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>>
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               size_t const innerStrideA, double const beta, double *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, size_t const innerStrideB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0],
                                                         innerStrideA, innerStrideB, dim, A, alpha, B, beta, selectionMethod, numThreads,
                                                         (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -369,10 +375,11 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &per
 }
 
 std::shared_ptr<hptt::Transpose<FloatComplex>>
-create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A, std::vector<size_t> const &sizeA,
-            std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA, size_t const innerStrideA, FloatComplex const beta,
-            FloatComplex *B, std::vector<size_t> const &outerSizeB, std::vector<size_t> const &offsetB, size_t const innerStrideB,
-            SelectionMethod const selectionMethod, int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               size_t const innerStrideA, FloatComplex const beta, FloatComplex *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, size_t const innerStrideB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(&sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0],
                                                               innerStrideA, innerStrideB, dim, A, alpha, B, beta, selectionMethod,
                                                               numThreads, (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -380,11 +387,11 @@ create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alph
 }
 
 std::shared_ptr<hptt::Transpose<DoubleComplex>>
-create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A,
-            std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
-            size_t const innerStrideA, DoubleComplex const beta, DoubleComplex *B, std::vector<size_t> const &outerSizeB,
-            std::vector<size_t> const &offsetB, size_t const innerStrideB, SelectionMethod const selectionMethod, int const numThreads,
-            std::vector<int> const &threadIds, bool const useRowMajor) {
+    EINSUMS_EXPORT create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A,
+                               std::vector<size_t> const &sizeA, std::vector<size_t> const &outerSizeA, std::vector<size_t> const &offsetA,
+                               size_t const innerStrideA, DoubleComplex const beta, DoubleComplex *B, std::vector<size_t> const &outerSizeB,
+                               std::vector<size_t> const &offsetB, size_t const innerStrideB, SelectionMethod const selectionMethod,
+                               int const numThreads, std::vector<int> const &threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(
         &sizeA[0], &perm[0], &outerSizeA[0], &outerSizeB[0], &offsetA[0], &offsetB[0], innerStrideA, innerStrideB, dim, A, alpha, B, beta,
         selectionMethod, numThreads, (threadIds.size() > 0) ? &threadIds[0] : nullptr, useRowMajor));
@@ -393,11 +400,12 @@ create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alp
 
 /* Methods with (floats, doubles, FloatComplexes, and DoubleComplexes) (alpha, A, beta, and B), --int-- maxAutotuningCandidates,
  * --int-- Offsets, --int-- innerStrides, and ints (sizeA, outerSizeA, and outerSizeB). */
-std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, size_t const *sizeA,
-                                                    size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA,
-                                                    float const beta, float *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                    size_t const innerStrideB, int const maxAutotuningCandidates, int const numThreads,
-                                                    int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<float>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, float const alpha, float const *A,
+                                                                   size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                   size_t const innerStrideA, float const beta, float *B,
+                                                                   size_t const *outerSizeB, size_t const *offsetB,
+                                                                   size_t const innerStrideB, int const maxAutotuningCandidates,
+                                                                   int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<float>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA, innerStrideB,
                                                        dim, A, alpha, B, beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -405,11 +413,12 @@ std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const d
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A,
-                                                     size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                     size_t const innerStrideA, double const beta, double *B, size_t const *outerSizeB,
-                                                     size_t const *offsetB, size_t const innerStrideB, int const maxAutotuningCandidates,
-                                                     int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<double>> EINSUMS_EXPORT create_plan(int const *perm, int const dim, double const alpha, double const *A,
+                                                                    size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
+                                                                    size_t const innerStrideA, double const beta, double *B,
+                                                                    size_t const *outerSizeB, size_t const *offsetB,
+                                                                    size_t const innerStrideB, int const maxAutotuningCandidates,
+                                                                    int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<double>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA, innerStrideB,
                                                         dim, A, alpha, B, beta, MEASURE, numThreads, threadIds, useRowMajor));
     plan->setMaxAutotuningCandidates(maxAutotuningCandidates);
@@ -417,12 +426,11 @@ std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const 
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
-                                                           size_t const *sizeA, size_t const *outerSizeA, size_t const *offsetA,
-                                                           size_t const innerStrideA, FloatComplex const beta, FloatComplex *B,
-                                                           size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
-                                                           int const maxAutotuningCandidates, int const numThreads, int const *threadIds,
-                                                           bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<FloatComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA, FloatComplex const beta,
+                               FloatComplex *B, size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
+                               int const maxAutotuningCandidates, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<FloatComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA,
                                                               innerStrideB, dim, A, alpha, B, beta, MEASURE, numThreads, threadIds,
                                                               useRowMajor));
@@ -430,12 +438,11 @@ std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int 
     return plan;
 }
 
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
-                                                            DoubleComplex const *A, size_t const *sizeA, size_t const *outerSizeA,
-                                                            size_t const *offsetA, size_t const innerStrideA, DoubleComplex const beta,
-                                                            DoubleComplex *B, size_t const *outerSizeB, size_t const *offsetB,
-                                                            size_t const innerStrideB, int const maxAutotuningCandidates,
-                                                            int const numThreads, int const *threadIds, bool const useRowMajor) {
+std::shared_ptr<hptt::Transpose<DoubleComplex>>
+    EINSUMS_EXPORT create_plan(int const *perm, int const dim, DoubleComplex const alpha, DoubleComplex const *A, size_t const *sizeA,
+                               size_t const *outerSizeA, size_t const *offsetA, size_t const innerStrideA, DoubleComplex const beta,
+                               DoubleComplex *B, size_t const *outerSizeB, size_t const *offsetB, size_t const innerStrideB,
+                               int const maxAutotuningCandidates, int const numThreads, int const *threadIds, bool const useRowMajor) {
     auto plan(std::make_shared<hptt::Transpose<DoubleComplex>>(sizeA, perm, outerSizeA, outerSizeB, offsetA, offsetB, innerStrideA,
                                                                innerStrideB, dim, A, alpha, B, beta, MEASURE, numThreads, threadIds,
                                                                useRowMajor));

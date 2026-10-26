@@ -1726,16 +1726,6 @@ void fprintln(std::ostream &os, AType const &A, TensorPrintOptions options = {})
     }
 }
 
-TENSOR_EXPORT_RANK(BlockTensor, 2)
-TENSOR_EXPORT_RANK(BlockTensor, 3)
-TENSOR_EXPORT_RANK(BlockTensor, 4)
-
-#    ifdef EINSUMS_COMPUTE_CODE
-TENSOR_EXPORT_RANK(BlockDeviceTensor, 2)
-TENSOR_EXPORT_RANK(BlockDeviceTensor, 3)
-TENSOR_EXPORT_RANK(BlockDeviceTensor, 4)
-#    endif
-
 #endif
 
 } // namespace einsums

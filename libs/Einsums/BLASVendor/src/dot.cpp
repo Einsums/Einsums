@@ -19,7 +19,7 @@ EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 extern "C" {
 extern float  FC_GLOBAL(sdot, SDOT)(int_t *, float const *, int_t *, float const *, int_t *);
 extern double FC_GLOBAL(ddot, DDOT)(int_t *, double const *, int_t *, double const *, int_t *);
-#ifdef EINSUMS_HAVE_MKL
+#if defined(EINSUMS_HAVE_MKL) || defined(EINSUMS_DOT_SUBROUTINE)
 extern void FC_GLOBAL(cdotc, CDOTC)(std::complex<float> *, int_t *, std::complex<float> const *, int_t *, std::complex<float> const *,
                                     int_t *);
 extern void FC_GLOBAL(zdotc, ZDOTC)(std::complex<double> *, int_t *, std::complex<double> const *, int_t *, std::complex<double> const *,
@@ -28,6 +28,11 @@ extern void FC_GLOBAL(cdotu, CDOTU)(std::complex<float> *, int_t *, std::complex
                                     int_t *);
 extern void FC_GLOBAL(zdotu, ZDOTU)(std::complex<double> *, int_t *, std::complex<double> const *, int_t *, std::complex<double> const *,
                                     int_t *);
+#elif defined(EINSUMS_DOT_STRUCT_RETURN)
+extern std::complex<float>  FC_GLOBAL(cdotc, CDOTC)(int_t *, std::complex<float> const *, int_t *, std::complex<float> const *, int_t *);
+extern std::complex<double> FC_GLOBAL(zdotc, ZDOTC)(int_t *, std::complex<double> const *, int_t *, std::complex<double> const *, int_t *);
+extern std::complex<float>  FC_GLOBAL(cdotu, CDOTU)(int_t *, std::complex<float> const *, int_t *, std::complex<float> const *, int_t *);
+extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(int_t *, std::complex<double> const *, int_t *, std::complex<double> const *, int_t *);
 #else
 extern std::complex<float>  FC_GLOBAL(cdotc, CDOTC)(int_t *, std::complex<float> const *, int_t *, std::complex<float> const *, int_t *);
 extern std::complex<double> FC_GLOBAL(zdotc, ZDOTC)(int_t *, std::complex<double> const *, int_t *, std::complex<double> const *, int_t *);

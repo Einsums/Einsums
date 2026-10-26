@@ -52,7 +52,7 @@ namespace einsums {
  */
 template <typename T = double, bool Normalize = false, typename Distribution, std::integral... MultiIndex>
     requires requires(Distribution dist) {
-        { dist(einsums::random_engine) } -> std::same_as<T>;
+        { dist(einsums::random_engine()) } -> std::same_as<T>;
     }
 auto create_random_tensor(bool row_major, std::string const &name, Distribution &&distribution, MultiIndex... index)
     -> Tensor<T, sizeof...(MultiIndex)> {
@@ -61,7 +61,7 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
     Tensor<T, sizeof...(MultiIndex)> A(row_major, name, std::forward<MultiIndex>(index)...);
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < A.size(); i++) {
-        A.data()[i] = distribution(einsums::random_engine);
+        A.data()[i] = distribution(einsums::random_engine());
     }
 
     if constexpr (Normalize && sizeof...(MultiIndex) == 2) {
@@ -185,7 +185,7 @@ auto create_random_tensor(bool row_major, std::string const &name, Distribution 
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t i = 0; i < A.size(); i++) {
-        A.data()[i] = dist(einsums::random_engine);
+        A.data()[i] = dist(einsums::random_engine());
     }
 
     if constexpr (Normalize) {

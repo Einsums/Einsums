@@ -7,6 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Concepts/File.hpp>
 
 #include <fmt/color.h>
@@ -174,12 +175,12 @@ struct ordinal {
 #ifndef DOXYGEN
 #    define OPERATOR(OP)                                                                                                                   \
         template <std::integral OtherType>                                                                                                 \
-        constexpr ordinal<IntType> &operator OP##=(const ordinal<OtherType> &other) {                                                      \
+        constexpr ordinal<IntType> &operator OP## = (const ordinal<OtherType> &other) {                                                    \
             val_ OP## = other.val_;                                                                                                        \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
         template <std::integral OtherType>                                                                                                 \
-        constexpr ordinal<IntType> &operator OP##=(const OtherType & other) {                                                              \
+        constexpr ordinal<IntType> &operator OP## = (const OtherType &other) {                                                             \
             val_ OP## = other;                                                                                                             \
             return *this;                                                                                                                  \
         }
@@ -287,18 +288,18 @@ void fprintln(OutType out, Ts... args) {
 #ifndef DOXYGEN
 template <typename... Ts>
 void println(std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
+    std::string const s = einsums::format(fmt::runtime(f), ts...);
     detail::println(s);
 }
 
 template <typename... Ts>
 void println(fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
-    std::string const s = fmt::format(style, fmt::runtime(format), ts...);
+    std::string const s = einsums::format(style, fmt::runtime(format), ts...);
     detail::println(s);
 }
 
 inline void println(fmt::text_style const &style, std::string_view const &format) {
-    std::string const s = fmt::format(style, fmt::runtime(format));
+    std::string const s = einsums::format(style, fmt::runtime(format));
     detail::println(s);
 }
 
@@ -308,7 +309,7 @@ inline void println() {
 
 template <typename... Ts>
 void fprintln(std::FILE *fp, std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
+    std::string const s = einsums::format(fmt::runtime(f), ts...);
     detail::fprintln(fp, s);
 }
 
@@ -316,9 +317,9 @@ template <typename... Ts>
 void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
     std::string s;
     if (detail::is_terminal(fp)) {
-        s = fmt::format(style, format, ts...);
+        s = einsums::format(style, format, ts...);
     } else {
-        s = fmt::format(format, ts...);
+        s = einsums::format(format, ts...);
     }
     detail::fprintln(fp, s);
 }
@@ -330,7 +331,7 @@ inline void fprintln(std::FILE *fp, std::string const &format) {
 inline void fprintln(std::FILE *fp, fmt::text_style const &style, std::string_view const &format) {
     std::string s;
     if (detail::is_terminal(fp)) {
-        s = fmt::format(style, fmt::runtime(format));
+        s = einsums::format(style, fmt::runtime(format));
     } else {
         s = format;
     }
@@ -343,13 +344,13 @@ inline void fprintln(std::FILE *fp) {
 
 template <typename... Ts>
 void fprintln(std::ostream &fp, std::string_view const &f, Ts const... ts) {
-    std::string const s = fmt::format(fmt::runtime(f), ts...);
+    std::string const s = einsums::format(fmt::runtime(f), ts...);
     detail::fprintln(fp, s);
 }
 
 template <typename... Ts>
 void fprintln(std::ostream &fp, fmt::text_style const &style, std::string_view const &format, Ts const... ts) {
-    std::string const s = fmt::format(style, format, ts...);
+    std::string const s = einsums::format(style, format, ts...);
     detail::fprintln(fp, s);
 }
 
@@ -358,7 +359,7 @@ inline void fprintln(std::ostream &fp, std::string const &format) {
 }
 
 inline void fprintln(std::ostream &fp, fmt::text_style const &style, std::string_view const &format) {
-    std::string const s = fmt::format(style, fmt::runtime(format));
+    std::string const s = einsums::format(style, fmt::runtime(format));
     detail::fprintln(fp, s);
 }
 

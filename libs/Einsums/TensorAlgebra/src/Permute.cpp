@@ -7,7 +7,6 @@
 
 #include <chrono>
 
-#if !defined(EINSUMS_WINDOWS)
 #    include <Einsums/HPTT/HPTT.hpp>
 #    include <Einsums/TensorAlgebra/Permute.hpp>
 
@@ -146,4 +145,3 @@ permute(int const *perm, int const dim, std::complex<double> const alpha, std::c
 
 } // namespace einsums::tensor_algebra::detail
 
-#endif

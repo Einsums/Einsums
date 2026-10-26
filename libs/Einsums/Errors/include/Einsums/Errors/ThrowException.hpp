@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
@@ -32,7 +33,7 @@
  */
 #define EINSUMS_THROW_EXCEPTION(except, ...)                                                                                               \
     throw except(                                                                                                                          \
-        einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__), std::source_location::current())) /**/
+        einsums::detail::make_error_message(einsums::type_name<except>(), einsums::format(__VA_ARGS__), std::source_location::current())) /**/
 
 /**
  * @def EINSUMS_THROW_CODED_EXCEPTION
@@ -44,7 +45,7 @@
  */
 #define EINSUMS_THROW_CODED_EXCEPTION(except, code, ...)                                                                                   \
     throw einsums::CodedError<except, code>(                                                                                               \
-        einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__), std::source_location::current())) /**/
+        einsums::detail::make_error_message(einsums::type_name<except>(), einsums::format(__VA_ARGS__), std::source_location::current())) /**/
 
 /**
  * @def EINSUMS_THROW_NOT_IMPLEMENTED
@@ -65,5 +66,5 @@
  * @versionadded{2.0.0}
  */
 #define EINSUMS_THROW_NESTED(except, ...)                                                                                                  \
-    std::throw_with_nested(except(einsums::detail::make_error_message(einsums::type_name<except>(), fmt::format(__VA_ARGS__),              \
+    std::throw_with_nested(except(einsums::detail::make_error_message(einsums::type_name<except>(), einsums::format(__VA_ARGS__),              \
                                                                       std::source_location::current()))) /**/

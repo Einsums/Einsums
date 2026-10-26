@@ -31,8 +31,8 @@ namespace einsums {
 
 namespace detail {
 // Default params to initialize with
-[[maybe_unused]] static char                     app_name[] = EINSUMS_APPLICATION_STRING;
-[[maybe_unused]] static std::vector<std::string> dummy_argv{app_name};
+[[maybe_unused]] constexpr inline char app_name[] = EINSUMS_APPLICATION_STRING;
+extern EINSUMS_EXPORT std::vector<std::string> dummy_argv;
 } // namespace detail
 
 /**
@@ -70,7 +70,7 @@ struct InitParams {
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int()> f, std::vector<std::string> const &argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int start(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime and start a function.
@@ -98,7 +98,7 @@ EINSUMS_EXPORT int start(std::nullptr_t f, std::vector<std::string> const &argv,
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(int, char **)> f, std::vector<std::string> &argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int start(std::function<int(int, char **)> const &f, std::vector<std::string> &argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime and start a function.
@@ -112,7 +112,7 @@ EINSUMS_EXPORT int start(std::function<int(int, char **)> f, std::vector<std::st
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> f, std::vector<std::string> const &argv,
+EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> const &f, std::vector<std::string> const &argv,
                          InitParams const &params = InitParams());
 
 /**
@@ -127,7 +127,7 @@ EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> f, std::ve
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> &)> f, std::vector<std::string> &argv,
+EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> &)> const &f, std::vector<std::string> &argv,
                          InitParams const &params = InitParams());
 
 /**
@@ -142,7 +142,7 @@ EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> &)> f, std::
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> const &)> f, std::vector<std::string> const &argv,
+EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> const &)> const &f, std::vector<std::string> const &argv,
                          InitParams const &params = InitParams());
 
 /**
@@ -158,7 +158,7 @@ EINSUMS_EXPORT int start(std::function<int(std::vector<std::string> const &)> f,
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int start(std::function<int(int, char **)> const &f, int argc, char **argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime and start a function.
@@ -173,7 +173,7 @@ EINSUMS_EXPORT int start(std::function<int(int, char **)> f, int argc, char **ar
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> f, int argc, char const *const *argv,
+EINSUMS_EXPORT int start(std::function<int(int, char const *const *)> const &f, int argc, char const *const *argv,
                          InitParams const &params = InitParams());
 
 /**
@@ -230,7 +230,7 @@ int start(Function &&f, int argc, char const *const *argv, InitParams const &par
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, std::vector<std::string> &argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT void initialize(std::function<int(int, char **)> const &f, std::vector<std::string> &argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime.
@@ -244,7 +244,7 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, std::vector<s
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> f, std::vector<std::string> const &argv,
+EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> const &f, std::vector<std::string> const &argv,
                                InitParams const &params = InitParams());
 
 /**
@@ -259,7 +259,7 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> f, s
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void initialize(std::function<int()> f, std::vector<std::string> const &argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT void initialize(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime.
@@ -305,7 +305,7 @@ inline void initialize(std::vector<std::string> const &argv, InitParams const &p
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT void initialize(std::function<int(int, char **)> const &f, int argc, char **argv, InitParams const &params = InitParams());
 
 /**
  * \brief Initialize the runtime.
@@ -320,7 +320,7 @@ EINSUMS_EXPORT void initialize(std::function<int(int, char **)> f, int argc, cha
  *
  * @versionadded{1.0.0}
  */
-EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> f, int argc, char const *const *argv,
+EINSUMS_EXPORT void initialize(std::function<int(int, char const *const *)> const &f, int argc, char const *const *argv,
                                InitParams const &params = InitParams());
 /**
  * \brief Initialize the runtime.

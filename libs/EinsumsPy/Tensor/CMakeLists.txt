@@ -7,7 +7,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorHeaders EinsumsPy/Tensor/PyTensor.hpp EinsumsPy/Tensor/TensorExport.hpp)
 
-set(TensorSources Export.cpp)
+set(TensorSources Export.cpp TypedExport.cpp ExportView.cpp ExportTensorInit.cpp ExportTensorManip.cpp
+    ExportTensorOpsF.cpp ExportTensorOpsD.cpp ExportTensorOpsC.cpp ExportTensorOpsZ.cpp ExportTensorQuery.cpp 
+    ExportViewInit.cpp ExportViewManip.cpp ExportViewOps.cpp
+    ExportViewQuery.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

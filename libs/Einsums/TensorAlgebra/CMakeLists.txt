@@ -22,10 +22,10 @@ set(TensorAlgebraHeaders
     Einsums/TensorAlgebra/Detail/Utilities.hpp
 )
 
-if(NOT WIN32)
-  set(TensorAlgebraSources Permute.cpp)
-  set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
-endif()
+
+set(TensorAlgebraSources Permute.cpp)
+set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
+
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp
@@ -51,6 +51,7 @@ einsums_add_module(
     Einsums_Config
     Einsums_LinearAlgebra
     Einsums_BufferAllocator
+    Einsums_Compat
     Einsums_Concepts
     Einsums_Errors
     Einsums_Logging

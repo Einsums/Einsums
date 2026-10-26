@@ -6,7 +6,6 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assert.hpp>
-#include <Einsums/Debugging/AttachDebugger.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Profile.hpp>
@@ -23,69 +22,82 @@ namespace detail {
 
 EINSUMS_SINGLETON_IMPL(RuntimeVars)
 
-#if defined(EINSUMS_WINDOWS)
+RuntimeVars::RuntimeVars() {
+    global_pre_startup_functions_  = new std::list<StartupFunctionType>();
+    global_startup_functions_      = new std::list<StartupFunctionType>();
+    global_pre_shutdown_functions_ = new std::list<ShutdownFunctionType>();
+    global_shutdown_functions_     = new std::list<ShutdownFunctionType>();
+}
 
-void handle_termination(char const *reason) {
-    if (runtime_config().einsums.attach_debugger) {
-        util::attach_debugger();
+RuntimeVars::~RuntimeVars() {
+    std::fprintf(stderr, "Finalizing the RuntimeVars.\n");
+
+    std::fprintf(stderr, "Freeing pre-startup functions.\n");
+    if (global_pre_startup_functions_) {
+        delete global_pre_startup_functions_;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
     }
 
-    if (runtime_config().einsums.diagnostics_on_terminate) {
-        // Add more information here.
-        std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
+    std::fprintf(stderr, "Freeing startup functions.\n");
+    if (global_startup_functions_) {
+        delete global_startup_functions_;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+
+    std::fprintf(stderr, "Freeing pre-shutdown functions.\n");
+    if (global_pre_shutdown_functions_) {
+        delete global_pre_shutdown_functions_;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+
+    std::fprintf(stderr, "Freeing shutdown functions.\n");
+    if (global_shutdown_functions_) {
+        delete global_shutdown_functions_;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
     }
 }
 
-EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
-    switch (ctrl_type) {
-    case CTRL_C_EVENT:
-        handle_termination("Ctrl-C");
-        return TRUE;
-
-    case CTRL_BREAK_EVENT:
-        handle_termination("Ctrl-Break");
-        return TRUE;
-
-    case CTRL_CLOSE_EVENT:
-        handle_termination("Ctrl-Close");
-        return TRUE;
-
-    case CTRL_LOGOFF_EVENT:
-        handle_termination("Logoff");
-        return TRUE;
-
-    case CTRL_SHUTDOWN_EVENT:
-        handle_termination("Shutdown");
-        return TRUE;
-
-    default:
-        break;
-    }
-    return FALSE;
+void RuntimeVars::add_pre_startup_function(StartupFunctionType const &func) {
+    global_pre_startup_functions_->push_back(func);
 }
 
-#else
-[[noreturn]] EINSUMS_EXPORT void termination_handler(int signum) {
-    bool attach = true;
-
-    try {
-        auto &global_config = GlobalConfigMap::get_singleton();
-        attach              = global_config.get_bool("attach-debugger", true);
-    } catch (...) {
-        attach = true;
-    }
-
-    if (signum != SIGINT && attach) {
-        util::attach_debugger();
-    }
-
-    /// @todo If einsums.diagnostics_on_terminate is true then print out a lot of information.
-
-    std::abort();
+void RuntimeVars::add_startup_function(StartupFunctionType const &func) {
+    global_startup_functions_->push_back(func);
 }
-#endif
 
-static bool exit_called = false;
+void RuntimeVars::add_pre_shutdown_function(ShutdownFunctionType const &func) {
+    global_pre_shutdown_functions_->push_back(func);
+}
+
+void RuntimeVars::add_shutdown_function(ShutdownFunctionType const &func) {
+    global_shutdown_functions_->push_back(func);
+}
+
+std::list<StartupFunctionType> const &RuntimeVars::global_pre_startup_functions() const {
+    return *global_pre_startup_functions_;
+}
+
+std::list<StartupFunctionType> const &RuntimeVars::global_startup_functions() const {
+    return *global_startup_functions_;
+}
+
+std::list<ShutdownFunctionType> const &RuntimeVars::global_pre_shutdown_functions() const {
+    return *global_pre_shutdown_functions_;
+}
+
+std::list<ShutdownFunctionType> const &RuntimeVars::global_shutdown_functions() const {
+    return *global_shutdown_functions_;
+}
+
+static std::atomic_bool exit_called = false;
 
 void on_exit() noexcept {
     exit_called = true;
@@ -94,25 +106,6 @@ void on_exit() noexcept {
 void on_abort(int) noexcept {
     exit_called = true;
     std::exit(-1);
-}
-
-void set_signal_handlers() {
-#if defined(EINSUMS_WINDOWS)
-    SetConsoleCtrlHandler(termination_handler, TRUE);
-#else
-    struct sigaction new_action;
-    new_action.sa_handler = termination_handler;
-    sigemptyset(&new_action.sa_mask);
-    new_action.sa_flags = 0;
-
-    sigaction(SIGINT, &new_action, nullptr);  // Interrupted
-    sigaction(SIGBUS, &new_action, nullptr);  // Bus error
-    sigaction(SIGFPE, &new_action, nullptr);  // Floating point exception
-    sigaction(SIGILL, &new_action, nullptr);  // Illegal instruction
-    sigaction(SIGPIPE, &new_action, nullptr); // Bad pipe
-    sigaction(SIGSEGV, &new_action, nullptr); // Segmentation fault
-    sigaction(SIGSYS, &new_action, nullptr);  // Bad syscall
-#endif
 }
 
 Runtime::Runtime(RuntimeConfiguration &&rtcfg, bool initialize) : _rtcfg(std::move(rtcfg)) {
@@ -150,19 +143,19 @@ void Runtime::init() {
         std::lock_guard const vars_guard(runtime_vars); // Lock the variables.
 
         // Copy over all startup functions registered so far.
-        for (StartupFunctionType const &f : runtime_vars.global_pre_startup_functions) {
+        for (StartupFunctionType const &f : runtime_vars.global_pre_startup_functions()) {
             add_pre_startup_function(f);
         }
 
-        for (StartupFunctionType const &f : runtime_vars.global_startup_functions) {
+        for (StartupFunctionType const &f : runtime_vars.global_startup_functions()) {
             add_startup_function(f);
         }
 
-        for (ShutdownFunctionType const &f : runtime_vars.global_pre_shutdown_functions) {
+        for (ShutdownFunctionType const &f : runtime_vars.global_pre_shutdown_functions()) {
             add_pre_shutdown_function(f);
         }
 
-        for (ShutdownFunctionType const &f : runtime_vars.global_shutdown_functions) {
+        for (ShutdownFunctionType const &f : runtime_vars.global_shutdown_functions()) {
             add_shutdown_function(f);
         }
     } catch (std::exception const &e) {
@@ -187,25 +180,25 @@ void Runtime::deinit_global_data() {
     runtime_ = nullptr;
 }
 
-void Runtime::add_pre_shutdown_function(ShutdownFunctionType f) {
+void Runtime::add_pre_shutdown_function(ShutdownFunctionType const &f) {
     LabeledSectionInternal("Runtime::add_pre_shutdown_function");
     std::lock_guard const l(this->lock_);
     _pre_shutdown_functions.push_back(f);
 }
 
-void Runtime::add_shutdown_function(ShutdownFunctionType f) {
+void Runtime::add_shutdown_function(ShutdownFunctionType const &f) {
     LabeledSectionInternal("Runtime::add_shutdown_function");
     std::lock_guard const l(this->lock_);
     _shutdown_functions.push_back(f);
 }
 
-void Runtime::add_pre_startup_function(StartupFunctionType f) {
+void Runtime::add_pre_startup_function(StartupFunctionType const &f) {
     LabeledSectionInternal("Runtime::add_pre_startup_function");
     std::lock_guard const l(this->lock_);
     _pre_startup_functions.push_back(f);
 }
 
-void Runtime::add_startup_function(StartupFunctionType f) {
+void Runtime::add_startup_function(StartupFunctionType const &f) {
     LabeledSectionInternal("Runtime::add_startup_function");
     std::lock_guard const l(this->lock_);
     _startup_functions.push_back(f);
@@ -301,11 +294,11 @@ void register_pre_startup_function(StartupFunctionType f) {
             EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a pre-startup function");
             return;
         }
-        runtime->add_pre_startup_function(std::move(f));
+        runtime->add_pre_startup_function(f);
     } else {
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> guard(runtime_vars);
-        runtime_vars.global_pre_startup_functions.emplace_back(std::move(f));
+        runtime_vars.add_pre_startup_function(f);
     }
 }
 
@@ -316,11 +309,11 @@ void register_startup_function(StartupFunctionType f) {
             EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a startup function");
             return;
         }
-        runtime->add_startup_function(std::move(f));
+        runtime->add_startup_function(f);
     } else {
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> guard(runtime_vars);
-        runtime_vars.global_startup_functions.emplace_back(std::move(f));
+        runtime_vars.add_startup_function(f);
     }
 }
 
@@ -331,11 +324,11 @@ void register_pre_shutdown_function(ShutdownFunctionType f) {
             EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a pre-shutdown function");
             return;
         }
-        runtime->add_pre_shutdown_function(std::move(f));
+        runtime->add_pre_shutdown_function(f);
     } else {
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> guard(runtime_vars);
-        runtime_vars.global_pre_shutdown_functions.emplace_back(std::move(f));
+        runtime_vars.add_pre_shutdown_function(f);
     }
 }
 
@@ -350,7 +343,7 @@ void register_shutdown_function(ShutdownFunctionType f) {
     } else {
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> guard(runtime_vars);
-        runtime_vars.global_shutdown_functions.emplace_back(std::move(f));
+        runtime_vars.add_shutdown_function(f);
     }
 }
 

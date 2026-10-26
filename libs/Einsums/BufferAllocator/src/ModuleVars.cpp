@@ -14,6 +14,10 @@ namespace einsums::detail {
 
 EINSUMS_SINGLETON_IMPL(Einsums_BufferAllocator_vars)
 
+Einsums_BufferAllocator_vars::~Einsums_BufferAllocator_vars() {
+    std::fprintf(stderr, "Finalizing the buffer allocator variables.\n");
+}
+
 void Einsums_BufferAllocator_vars::update_max_size(config_mapping_type<std::string> const &options) {
     auto       &singleton = get_singleton();
     auto        lock      = std::lock_guard(singleton);

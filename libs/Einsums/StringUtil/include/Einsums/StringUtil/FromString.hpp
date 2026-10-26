@@ -11,7 +11,7 @@
 
 #include <algorithm>
 
-namespace einsums {
+namespace einsums::string_util {
 
 /**
  * @struct from_string_impl

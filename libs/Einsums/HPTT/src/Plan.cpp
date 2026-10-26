@@ -25,13 +25,13 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <Einsums/Compat/PosixAlternatives.hpp>
 #include <Einsums/HPTT/ComputeNode.hpp>
+#include <Einsums/HPTT/Files.hpp>
 #include <Einsums/HPTT/Plan.hpp>
 #include <Einsums/HPTT/Utils.hpp>
 
 #include <stdexcept>
-
-#include "Einsums/HPTT/Files.hpp"
 
 namespace hptt {
 
@@ -114,7 +114,7 @@ void Plan::writeToFile(std::FILE *fp) const {
 
     long offset_table_pos = ftell(fp);
 
-    int error2 = fseek(fp, (long)numTasks_ * sizeof(uint32_t), SEEK_CUR);
+    int error2 = einsums::fseek(fp, (long)numTasks_ * sizeof(uint32_t), SEEK_CUR);
 
     if (error2 != 0) {
         perror("Error seeking in file!");
@@ -151,7 +151,7 @@ void Plan::writeToFile(std::FILE *fp) const {
         }
     }
 
-    error2 = fseek(fp, offset_table_pos, SEEK_SET);
+    error2 = einsums::fseek(fp, offset_table_pos, SEEK_SET);
 
     if (error2 != 0) {
         perror("Error seeking in file!");
@@ -258,7 +258,7 @@ Plan::Plan(std::FILE *fp, bool swap_endian) {
             NodeConstants constants;
             auto         *curr_node = &rootNodes_[i];
 
-            int error2 = fseek(fp, offsets[i], SEEK_SET);
+            int error2 = einsums::fseek(fp, offsets[i], SEEK_SET);
 
             if (error2 < 0) {
                 perror("Error while seeking!");
@@ -295,7 +295,7 @@ Plan::Plan(std::FILE *fp, bool swap_endian) {
             NodeConstants constants;
             auto         *curr_node = &rootNodes_[i];
 
-            int error2 = fseek(fp, offsets[i], SEEK_SET);
+            int error2 = einsums::fseek(fp, offsets[i], SEEK_SET);
 
             if (error2 < 0) {
                 perror("Error while seeking!");

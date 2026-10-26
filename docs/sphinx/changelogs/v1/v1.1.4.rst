@@ -1,0 +1,29 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.1.4 Release
+==============
+
+Bug Fixes
+---------
+- Fixed an issue with the contraction optimization algorithm where it thought it could do an outer product
+  when it really couldn't.
+- Fixed a bug where the library would segfault if initialized twice in a run. Now it checks if it can be
+  initialized or not.
+- Fixed some compilation issues when targeting CUDA systems.
+- Restricted the versions of several packages due to bugs.
+  - MKL 2026.0.0 doesn't link against ``libatomic``, despite needing it. It has been restricted to version 2025.
+    - Attempts to link the MKL library to libatomic within Einsums have not worked. This likely needs to be
+      resolved upstream.
+  - The Intel compiler version 2026.0.0 can't seem to reliably find the OpenMP flags, and version 2025.3 has
+    a Clang bug, where the compiler crashes on some of our test files. The Clang devs seem to have fixed it
+    on their end, and the fix will likely come in an upcoming release. The Intel compiler will then need to 
+    use a Clang version with that fix before we can use anything newer than 2025.
+  - spdlog 1.17 and fmtlib 12 don't seem to play nice together, so fmtlib has been restricted to version 11.
+  - HDF5 has been restricted to version 1 until we can update some of the changed functions.

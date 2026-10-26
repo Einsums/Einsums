@@ -1740,13 +1740,7 @@ struct TiledDeviceTensorView final : public tensor_base::TiledTensor<T, Rank, De
     }
 };
 
-TENSOR_EXPORT(TiledDeviceTensor)
-TENSOR_EXPORT(TiledDeviceTensorView)
-
 #endif
-
-TENSOR_EXPORT(TiledTensor)
-TENSOR_EXPORT(TiledTensorView)
 
 /**
  * Prints a TiledTensor to standard output.

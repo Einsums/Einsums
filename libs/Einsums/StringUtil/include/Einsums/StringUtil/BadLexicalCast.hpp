@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace einsums {
+namespace einsums::string_util {
 
 /**
  * @struct bad_lexical_cast

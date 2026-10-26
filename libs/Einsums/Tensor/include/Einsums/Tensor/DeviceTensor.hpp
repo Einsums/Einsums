@@ -4,41 +4,42 @@
 //----------------------------------------------------------------------------------------------
 
 #ifndef DEVICE_TENSOR_HPP
-#define DEVICE_TENSOR_HPP
+#    define DEVICE_TENSOR_HPP
 // We use this so that the implementation headers work on their own.
 
-#include <Einsums/Config.hpp>
+#    include <Einsums/Config.hpp>
 
-#include <Einsums/Assert.hpp>
-#include <Einsums/Concepts/Complex.hpp>
-#include <Einsums/Concepts/File.hpp>
-#include <Einsums/Concepts/TensorConcepts.hpp>
-#include <Einsums/Errors/Error.hpp>
-#include <Einsums/Errors/ThrowException.hpp>
-#include <Einsums/GPUStreams/GPUStreams.hpp>
-#include <Einsums/Print.hpp>
-#include <Einsums/Tensor/TensorForward.hpp>
-#include <Einsums/TensorBase/Common.hpp>
-#include <Einsums/TensorBase/IndexUtilities.hpp>
-#include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/TensorImpl/TensorImpl.hpp>
-#include <Einsums/TypeSupport/AreAllConvertible.hpp>
-#include <Einsums/TypeSupport/Arguments.hpp>
-#include <Einsums/TypeSupport/CountOfType.hpp>
-#include <Einsums/TypeSupport/Lockable.hpp>
-#include <Einsums/TypeSupport/TypeName.hpp>
+#    include <Einsums/Assert.hpp>
+#    include <Einsums/Compat/FmtAlternatives.hpp>
+#    include <Einsums/Concepts/Complex.hpp>
+#    include <Einsums/Concepts/File.hpp>
+#    include <Einsums/Concepts/TensorConcepts.hpp>
+#    include <Einsums/Errors/Error.hpp>
+#    include <Einsums/Errors/ThrowException.hpp>
+#    include <Einsums/GPUStreams/GPUStreams.hpp>
+#    include <Einsums/Print.hpp>
+#    include <Einsums/Tensor/TensorForward.hpp>
+#    include <Einsums/TensorBase/Common.hpp>
+#    include <Einsums/TensorBase/IndexUtilities.hpp>
+#    include <Einsums/TensorBase/TensorBase.hpp>
+#    include <Einsums/TensorImpl/TensorImpl.hpp>
+#    include <Einsums/TypeSupport/AreAllConvertible.hpp>
+#    include <Einsums/TypeSupport/Arguments.hpp>
+#    include <Einsums/TypeSupport/CountOfType.hpp>
+#    include <Einsums/TypeSupport/Lockable.hpp>
+#    include <Einsums/TypeSupport/TypeName.hpp>
 
-#include <cstddef>
-#include <hip/driver_types.h>
-#include <hip/hip_common.h>
-#include <hip/hip_complex.h>
-#include <hip/hip_runtime_api.h>
-#include <numeric>
-#include <vector>
+#    include <cstddef>
+#    include <hip/driver_types.h>
+#    include <hip/hip_common.h>
+#    include <hip/hip_complex.h>
+#    include <hip/hip_runtime_api.h>
+#    include <numeric>
+#    include <vector>
 
 namespace einsums {
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <typename T, size_t Rank>
 struct DeviceTensorView;
 
@@ -51,7 +52,7 @@ struct BlockDeviceTensor;
 template <FileOrOStream Output, RankTensorConcept AType>
     requires((BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>) && DeviceTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
-#endif
+#    endif
 
 /**
  * @class HostDevReference
@@ -133,9 +134,9 @@ class HostDevReference {
      * @versionadded{1.0.0}
      */
     HostDevReference<T> &operator=(T const &other) {
-#ifndef EINSUMS_COMPUTE_DEVICE_CODE
+#    ifndef EINSUMS_COMPUTE_DEVICE_CODE
         EINSUMS_ASSERT(_ptr != nullptr);
-#endif
+#    endif
         if (is_on_host) {
             *_ptr = other;
         } else {
@@ -1226,7 +1227,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
      */
     detail::HostToDeviceMode _mode{detail::UNKNOWN};
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
     friend struct DeviceTensorView<T, rank>;
 
     template <typename TOther, size_t RankOther>
@@ -1234,7 +1235,7 @@ struct DeviceTensor : public einsums::tensor_base::DeviceTensorBase,
 
     template <typename TOther, size_t RankOther>
     friend struct einsums::DeviceTensor;
-#endif
+#    endif
 };
 
 /**
@@ -2378,7 +2379,7 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
      *
      * @versionadded{1.0.0}
      */
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
         requires(TRTensorConcept<TensorType<T, OtherRank>, OtherRank, T>)
     void common_initialization(TensorType<T, OtherRank> const &other, Args &&...args);
@@ -2388,10 +2389,10 @@ struct DeviceTensorView : public einsums::tensor_base::DeviceTensorBase,
 
     template <typename OtherT, size_t OtherRank>
     friend struct ::einsums::DeviceTensor;
-#endif
+#    endif
 };
 
-#if !defined(DOXYGEN) && defined(__cpp_deduction_guides)
+#    if !defined(DOXYGEN) && defined(__cpp_deduction_guides)
 template <typename... Args>
     requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 DeviceTensor(std::string const &, Args...) -> DeviceTensor<double, sizeof...(Args)>;
@@ -2417,9 +2418,9 @@ template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 DeviceTensorView(DeviceTensorView<T, OtherRank> const &, Dim<Rank> const &, Args...) -> DeviceTensorView<T, Rank>;
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> DeviceTensorView<T, Rank>;
-#endif
+#    endif
 
-#ifndef DOXYGEN
+#    ifndef DOXYGEN
 template <FileOrOStream Output, RankTensorConcept AType>
     requires((einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>) && einsums::DeviceTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
@@ -2447,14 +2448,14 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                 oss << "              ";
                 if constexpr (std::is_floating_point_v<typename AType::ValueType>) {
                     if (std::abs(value) < 1.0E-4) {
-                        oss << fmt::format("{:14.4e} ", value);
+                        oss << einsums::format("{:14.4e} ", value);
                     } else {
-                        oss << fmt::format("{:14.8f} ", value);
+                        oss << einsums::format("{:14.8f} ", value);
                     }
                 } else if constexpr (IsComplexV<typename AType::ValueType>) {
-                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                    oss << einsums::format("({:14.8f} ", value.real()) << " + " << einsums::format("{:14.8f}i)", value.imag());
                 } else
-                    oss << fmt::format("{:14} ", value);
+                    oss << einsums::format("{:14} ", value);
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
@@ -2495,20 +2496,20 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                     oss << "              ";
                     if constexpr (std::is_floating_point_v<T>) {
                         if (std::abs(value) < 1.0E-4) {
-                            oss << fmt::format("{:14.4e} ", value);
+                            oss << einsums::format("{:14.4e} ", value);
                         } else {
-                            oss << fmt::format("{:14.8f} ", value);
+                            oss << einsums::format("{:14.8f} ", value);
                         }
                     } else if constexpr (IsComplexV<T>) {
-                        oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                        oss << einsums::format("({:14.8f} ", value.real()) << " + " << einsums::format("{:14.8f}i)", value.imag());
                     } else
-                        oss << fmt::format("{:14} ", value);
+                        oss << einsums::format("{:14} ", value);
 
                     fprintln(fp, "{}", oss.str());
                     fprintln(fp);
                 } else if constexpr (Rank > 1) {
                     BufferVector<size_t> index_strides(Rank - 1);
-                    auto dims = A.dims();
+                    auto                 dims = A.dims();
                     size_t elements = dims_to_strides(BufferVector<size_t>(dims.begin(), std::prev(dims.end())), index_strides, true);
 
                     auto                     final_dim = A.dim(Rank - 1);
@@ -2522,35 +2523,37 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                         for (int j = 0; j < final_dim; j++) {
                             if (j % options.width == 0) {
                                 std::ostringstream tmp;
-                                tmp << fmt::format("{}", fmt::join(target_combination.begin(), std::prev(target_combination.end()), ", "));
+                                tmp << einsums::format("{}",
+                                                       fmt::join(target_combination.begin(), std::prev(target_combination.end()), ", "));
                                 if (final_dim >= j + options.width)
-                                    oss << fmt::format("{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
-                                                                             j + options.width - 1, ndigits));
+                                    oss << einsums::format("{:<14}", einsums::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits,
+                                                                                     j + options.width - 1, ndigits));
                                 else
-                                    oss << fmt::format("{:<14}",
-                                                       fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
+                                    oss << einsums::format(
+                                        "{:<14}", einsums::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
                             target_combination[Rank - 1] = j;
                             T value                      = A(target_combination);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
-                                    oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                                    oss << "\x1b[0;37;41m" << einsums::format("{:14.8f} ", value) << "\x1b[0m";
                                 else if constexpr (IsComplexV<T>)
-                                    oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
-                                        << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
+                                    oss << "\x1b[0;37;41m(" << einsums::format("{:14.8f} ", value.real()) << " + "
+                                        << einsums::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                                 else
-                                    oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
+                                    oss << "\x1b[0;37;41m" << einsums::format("{:14d} ", value) << "\x1b[0m";
                             } else {
                                 if constexpr (std::is_floating_point_v<T>) {
                                     if (std::abs(value) < 1.0E-4) {
-                                        oss << fmt::format("{:14.4e} ", value);
+                                        oss << einsums::format("{:14.4e} ", value);
                                     } else {
-                                        oss << fmt::format("{:14.8f} ", value);
+                                        oss << einsums::format("{:14.8f} ", value);
                                     }
                                 } else if constexpr (IsComplexV<T>) {
-                                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                                    oss << einsums::format("({:14.8f} ", value.real()) << " + "
+                                        << einsums::format("{:14.8f}i)", value.imag());
                                 } else
-                                    oss << fmt::format("{:14} ", value);
+                                    oss << einsums::format("{:14} ", value);
                             }
                             if (j % options.width == options.width - 1 && j != final_dim - 1) {
                                 oss << "\n";
@@ -2566,28 +2569,29 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                     for (size_t item = 0; item < elements; item++) {
                         std::ostringstream oss;
                         oss << "(";
-                        oss << fmt::format("{}, ", item);
+                        oss << einsums::format("{}, ", item);
                         oss << "): ";
 
                         T value = A(item);
                         if (std::abs(value) > 1.0E+5) {
                             if constexpr (std::is_floating_point_v<T>)
-                                oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
+                                oss << einsums::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
                             else if constexpr (IsComplexV<T>) {
-                                oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
+                                oss << einsums::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(),
+                                                       value.imag());
                             } else
-                                oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
+                                oss << einsums::format(fg(color::white) | bg(color::red), "{:14} ", value);
                         } else {
                             if constexpr (std::is_floating_point_v<T>)
                                 if (std::abs(value) < 1.0E-4) {
-                                    oss << fmt::format("{:14.4e} ", value);
+                                    oss << einsums::format("{:14.4e} ", value);
                                 } else {
-                                    oss << fmt::format("{:14.8f} ", value);
+                                    oss << einsums::format("{:14.8f} ", value);
                                 }
                             else if constexpr (IsComplexV<T>) {
-                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                                oss << einsums::format("({:14.8f} ", value.real()) << " + " << einsums::format("{:14.8f}i)", value.imag());
                             } else
-                                oss << fmt::format("{:14} ", value);
+                                oss << einsums::format("{:14} ", value);
                         }
 
                         fprintln(fp, "{}", oss.str());
@@ -2598,18 +2602,9 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
         fprintln(fp);
     }
 }
-#endif
+#    endif
 
 } // namespace einsums
 
-#include <Einsums/Tensor/Backends/DeviceTensor.hpp>
-#include <Einsums/Tensor/Backends/DeviceTensorView.hpp>
-
-#ifndef DOXYGEN
-namespace einsums {
-TENSOR_EXPORT_RANK(DeviceTensor, 0)
-TENSOR_EXPORT(DeviceTensor)
-TENSOR_EXPORT(DeviceTensorView)
-} // namespace einsums
-#endif
-#endif
+#    include <Einsums/Tensor/Backends/DeviceTensor.hpp>
+#    include <Einsums/Tensor/Backends/DeviceTensorView.hpp>

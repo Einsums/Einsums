@@ -3,15 +3,13 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#pragma once
+#include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/TensorUtilities/ARange.hpp>
 
-#include <Einsums/Config.hpp>
+#include <Einsums/Testing.hpp>
 
-namespace einsums::util {
+TEMPLATE_TEST_CASE("arange", "[tensor]", float, double) {
+    auto A = einsums::arange<TestType>(0, 10);
 
-/// Tries to break an attached debugger, if not supported a loop is
-/// invoked which gives enough time to attach a debugger manually.
-/// @versionadded{1.0.0}
-EINSUMS_EXPORT void attach_debugger();
-
-} // namespace einsums::util
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<TestType>{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}));
+}

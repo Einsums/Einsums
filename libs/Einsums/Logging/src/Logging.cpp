@@ -48,8 +48,8 @@ using tracy_sink_st = tracy_sink<spdlog::details::null_mutex>;
 
 spdlog::level::level_enum get_spdlog_level(std::string const &env) {
     try {
-        return static_cast<spdlog::level::level_enum>(from_string<std::underlying_type_t<spdlog::level::level_enum>>(env));
-    } catch (bad_lexical_cast const &) {
+        return static_cast<spdlog::level::level_enum>(string_util::from_string<std::underlying_type_t<spdlog::level::level_enum>>(env));
+    } catch (string_util::bad_lexical_cast const &) {
         fmt::print(std::cerr,
                    "Einsums given invalid log level: \"{}\". Using default level instead {} (warn). "
                    "Valid values are {} (trace) to {} (off).\n",

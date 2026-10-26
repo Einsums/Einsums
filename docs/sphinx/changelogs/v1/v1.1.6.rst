@@ -1,0 +1,30 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+==============
+vX.Y.Z Release
+==============
+
+What's New
+----------
+
+* Windows is now fully supported, including Python.
+* Tiled tensors now have a move constructor and a move assignment.
+* HDF5 version 2 is now supported.
+* MKL 2026 is supported.
+  * The 2026 Intel compiler is not supported. Due to the low memory on the GitHub runners, this compiler crashes at a certain point.
+    It should be fine on user systems with more than a handful of GB, but no guarantees can be made until we can get the compilation to work.
+    Until then, the latest supported Intel compiler is version 2025.2.
+
+What's Removed
+--------------
+
+Bug Fixes
+---------
+
+* Made the error messages emitted by ``Timer`` a bit more clear about who is actually throwing them. Users thought they were from other projects.
+* File names on Windows no longer get too long for the operating system.
+* Fixed several compilation warnings.

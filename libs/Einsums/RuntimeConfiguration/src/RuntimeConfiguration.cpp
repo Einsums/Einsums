@@ -6,6 +6,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/CommandLine.hpp>
+#include <Einsums/Compat/PosixAlternatives.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Print.hpp>
@@ -84,7 +85,7 @@ std::string get_executable_prefix() {
 }
 } // namespace detail
 
-void register_arguments(std::function<void()> func) {
+void register_arguments(std::function<void()> const &func) {
     auto &argument_list = detail::ArgumentList::get_singleton();
     auto  lock          = std::lock_guard(argument_list);
 
@@ -102,7 +103,7 @@ void RuntimeConfiguration::pre_initialize() {
     std::vector<std::string> lines = {
         // clang-format off
         "system:",
-        "    pid: " + std::to_string(getpid()),
+        "    pid: " + std::to_string(einsums::getpid()),
         "    executable_prefix: " + detail::get_executable_prefix(),
         "einsums:",
         "    master_yaml_file: ${system.executable_prefix}"
@@ -123,7 +124,7 @@ void RuntimeConfiguration::pre_initialize() {
 
     // For now set the values to their default values.
     global_strings["executable-prefix"] = detail::get_executable_prefix();
-    global_ints["pid"]                  = getpid();
+    global_ints["pid"]                  = einsums::getpid();
 }
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[], std::function<void()> const &user_command_line)
@@ -167,17 +168,9 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
         // These options are static but all use Location to initialize the
         // members of the parent class.
         static cl::OptionCategory debugCategory("Debug");
-        static cl::Flag           noInstallSignalHandlers("einsums:debug:no-install-signal-handlers", {}, "Do not install signal handlers",
-                                                          debugCategory, cl::Location(global_bools["install-signal-handlers"]), cl::Default(true),
-                                                          cl::ImplicitValue(false));
-
-        static cl::Flag noAttachDebugger("einsums:debug:no-attach-debugger", {},
-                                         "Do not provide a mechanism to attach a debugger on detected errors", debugCategory,
-                                         cl::Location(global_bools["attach-debugger"]), cl::Default(true), cl::ImplicitValue(false));
-
-        static cl::Flag noDiagnosticsOnTerminate(
-            "einsums:debug:no-diagnostics-on-terminate", {}, "Print additional diagnostic information on termination", debugCategory,
-            cl::Location(global_bools["diagnostics-on-terminate"]), cl::Default(true), cl::ImplicitValue(false));
+        static cl::Flag noInstallSignalHandlers("einsums:debug:no-install-signal-handlers", {}, "Do not install signal handlers",
+                                                debugCategory, cl::Location(global_bools["install-signal-handlers"]), cl::Default(true),
+                                                cl::ImplicitValue(false));
 
         static cl::OptionCategory logCategory("Logging");
         static cl::Opt<int64_t>   logLevel("einsums:log:level", {}, "Log level", logCategory, cl::Location(global_ints["log-level"]),
@@ -188,7 +181,7 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
                                              SPDLOG_LEVEL_INFO
 #endif
                                              )),
-                                         cl::RangeBetween(0, 4), cl::ValueName("LogLevel"));
+                                         cl::NumericRange(0, 4), cl::ValueName("LogLevel"));
 
         static cl::Opt<std::string> logDestination("einsums:log:destination", {}, "Log destination", logCategory,
                                                    cl::Location(global_strings["log-destination"]), cl::Default(std::string("cerr")));
@@ -198,8 +191,8 @@ std::vector<std::string> RuntimeConfiguration::parse_command_line(std::function<
                                               cl::Default(std::string("[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v")));
 
         static cl::OptionCategory profileCategory("Profile");
-        static cl::Flag           noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report", profileCategory,
-                                                  cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
+        static cl::Flag noProfileReport("einsums:profile:no-report", {}, "Don't generate profile report", profileCategory,
+                                        cl::Location(global_bools["profiler-report"]), cl::Default(true), cl::ImplicitValue(false));
 
         static cl::Opt<std::string> profileFilename("einsums:profile:filename", {}, "Generate profile filename", profileCategory,
                                                     cl::Location(global_strings["profiler-filename"]),

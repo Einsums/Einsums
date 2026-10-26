@@ -252,15 +252,6 @@
  * @versionadded{1.0.0}
  */
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
-#elif defined(_MSC_VER)
-#    define EINSUMS_DISABLE_WARNING_PUSH           __pragma(warning(push))
-#    define EINSUMS_DISABLE_WARNING_POP            __pragma(warning(pop))
-#    define EINSUMS_DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber))
-
-#    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
-#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
-// other warnings you want to deactivate...
-
 #elif defined(__GNUC__) || defined(__clang__)
 #    define EINSUMS_DISABLE_WARNING_PUSH          EINSUMS_PRAGMA(GCC diagnostic push)
 #    define EINSUMS_DISABLE_WARNING_POP           EINSUMS_PRAGMA(GCC diagnostic pop)
@@ -270,9 +261,17 @@
 #    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
 #else
 #    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE EINSUMS_DISABLE_WARNING(-Wreturn-type-c-linkage)
-#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)// other warnings you want to deactivate...
+#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS EINSUMS_DISABLE_WARNING(-Wdeprecated-declarations)
+// other warnings you want to deactivate...
 #endif
+#elif defined(_MSC_VER)
+#    define EINSUMS_DISABLE_WARNING_PUSH           __pragma(warning(push))
+#    define EINSUMS_DISABLE_WARNING_POP            __pragma(warning(pop))
+#    define EINSUMS_DISABLE_WARNING(warningNumber) __pragma(warning(disable : warningNumber))
 
+#    define EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
+#    define EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
+// other warnings you want to deactivate...
 #else
 #    define EINSUMS_DISABLE_WARNING_PUSH
 #    define EINSUMS_DISABLE_WARNING_POP

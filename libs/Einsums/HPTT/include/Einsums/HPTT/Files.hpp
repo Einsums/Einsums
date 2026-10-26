@@ -13,6 +13,14 @@
 #include <cstdint>
 #include <cstdio>
 #include <stdexcept>
+#include <version>
+
+#include <Einsums/Config/ExportDefinitions.hpp>
+
+#if defined(__x86__) || defined(__x86_64__)
+#    include <immintrin.h>
+#endif
+
 namespace hptt {
 
 constexpr char endian_char() {
@@ -27,9 +35,13 @@ constexpr char endian_char() {
 
 template <std::integral T>
 constexpr T byteswap(T value) noexcept {
+#if defined(__cpp_lib_byteswap) && __cpp_lib_byteswap >= 202110L
+    return std::byteswap(value);
+#else
     auto bytes = std::bit_cast<std::array<uint8_t, sizeof(T)>>(value);
     std::ranges::reverse(bytes);
     return std::bit_cast<T>(bytes);
+#endif
 }
 
 template <>
@@ -103,10 +115,10 @@ typedef struct FileHeader {
     uint32_t checksum;
 } FileHeader;
 
-void setupFile(std::FILE *fp);
+void EINSUMS_EXPORT setupFile(std::FILE *fp);
 
-uint32_t computeChecksum(std::FILE *fp);
+uint32_t EINSUMS_EXPORT computeChecksum(std::FILE *fp);
 
-int verifyFile(std::FILE *fp);
+int EINSUMS_EXPORT verifyFile(std::FILE *fp);
 
 } // namespace hptt

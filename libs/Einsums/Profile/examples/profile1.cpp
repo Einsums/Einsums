@@ -40,7 +40,7 @@ int einsums_main() {
     }
 
     // Print human-readable report
-    Profiler::instance().print();
+    Profiler::get_singleton().print();
 
     return 0;
 }

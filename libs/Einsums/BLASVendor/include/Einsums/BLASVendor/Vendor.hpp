@@ -10,36 +10,6 @@
 
 #include <complex>
 
-extern "C" {
-/**
- * Internal kernel for performing the direct product. The direct product function is not in BLAS, so we have to write our own.
- *
- * @param[in] n The number of elements in the vectors.
- * @param[in] alpha The scale factor for the product.
- * @param[in] x The first input vector.
- * @param[in] y The second input vector.
- * @param[out] z The output vector.
- *
- * @versionadded{2.0.0}
- *
- * @versionchangeddesc{2.0.0}
- *  Added AVX2 vectorized kernels and default unvectorized kernels.
- * @endversion
- */
-extern EINSUMS_EXPORT void sdirprod_kernel(size_t n, float alpha, float const *x, float const *y, float *z);
-
-/// @copydoc sdirprod_kernel
-extern EINSUMS_EXPORT void ddirprod_kernel(size_t n, double alpha, double const *x, double const *y, double *z);
-
-/// @copydoc sdirprod_kernel
-extern EINSUMS_EXPORT void cdirprod_kernel(size_t n, std::complex<float> alpha, std::complex<float> const *x, std::complex<float> const *y,
-                                           std::complex<float> *z);
-
-/// @copydoc sdirprod_kernel
-extern EINSUMS_EXPORT void zdirprod_kernel(size_t n, std::complex<double> alpha, std::complex<double> const *x,
-                                           std::complex<double> const *y, std::complex<double> *z);
-}
-
 namespace einsums::blas::vendor {
 
 /**

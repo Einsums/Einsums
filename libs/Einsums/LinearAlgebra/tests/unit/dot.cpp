@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/Tensor.hpp>
@@ -127,8 +128,8 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
         auto A = create_random_tensor<TestType>("A", size);
         auto B = create_random_tensor<TestType>("A", size);
 
-        DiskTensor<TestType, 1> A_disk{fmt::format("/dot/rank1/{}/A", type_name<TestType>()), size},
-            B_disk{fmt::format("/dot/rank1/{}/B", type_name<TestType>()), size};
+        DiskTensor<TestType, 1> A_disk{einsums::format("/dot/rank1/{}/A", type_name<TestType>()), size},
+            B_disk{einsums::format("/dot/rank1/{}/B", type_name<TestType>()), size};
 
         A_disk(All) = A;
         B_disk(All) = B;
@@ -144,8 +145,8 @@ TEMPLATE_TEST_CASE("Disk dot", "[linear-algebra]", float, double, std::complex<f
         auto             A = create_random_tensor<TestType>("A", size1, size2);
         auto             B = create_random_tensor<TestType>("B", size1, size2);
 
-        DiskTensor<TestType, 2> A_disk{fmt::format("/dot/rank2/{}/A", type_name<TestType>()), size1, size2},
-            B_disk{fmt::format("/dot/rank2/{}/B", type_name<TestType>()), size1, size2};
+        DiskTensor<TestType, 2> A_disk{einsums::format("/dot/rank2/{}/A", type_name<TestType>()), size1, size2},
+            B_disk{einsums::format("/dot/rank2/{}/B", type_name<TestType>()), size1, size2};
 
         A_disk(All, All) = A;
         B_disk(All, All) = B;

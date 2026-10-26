@@ -8,25 +8,35 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Debugging/Backtrace.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Profile.hpp>
 #include <Einsums/Runtime.hpp>
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Utilities/Random.hpp>
+#include <Einsums/Version.hpp>
 
 #include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_session.hpp>
 #include <catch2/internal/catch_context.hpp>
+#include <csignal>
+#include <cstdio>
 #include <functional>
+#include <iostream>
+#include <thread>
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
+namespace {
 
 int einsums_main(int argc, char *const *const argv) {
     int result = 0;
+
 #pragma omp parallel
     {
 #pragma omp single
         {
+
             Catch::Session session;
             session.applyCommandLine(argc, argv);
 
@@ -34,18 +44,27 @@ int einsums_main(int argc, char *const *const argv) {
             Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
             auto seed                             = session.config().rngSeed();
 
-            einsums::seed_random(seed);
-
+#pragma omp parallel
+            {
+                einsums::random_engine().seed(seed);
+            }
             {
                 LabeledSection("einsums_main");
                 result = session.run();
             }
+
+            EINSUMS_LOG_INFO("Finalizing Einsums");
             einsums::finalize();
+
+            std::printf("Finished finalizing Einsums.\n");
         }
     }
+
     return result;
 }
+} // namespace
 
 int main(int argc, char **argv) {
+
     return einsums::start(einsums_main, argc, argv);
 }

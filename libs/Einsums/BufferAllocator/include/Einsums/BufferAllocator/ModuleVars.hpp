@@ -88,7 +88,7 @@ class EINSUMS_EXPORT Einsums_BufferAllocator_vars final : public design_pats::Lo
      */
     size_t get_available() const;
 
-    ~Einsums_BufferAllocator_vars() { ; }
+    ~Einsums_BufferAllocator_vars();
 
   private:
     explicit Einsums_BufferAllocator_vars() = default;

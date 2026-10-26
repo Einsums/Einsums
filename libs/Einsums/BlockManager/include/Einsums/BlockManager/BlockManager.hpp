@@ -33,7 +33,7 @@ struct EINSUMS_EXPORT GPUBlock {
 struct EINSUMS_EXPORT BlockManager final : public design_pats::Lockable<std::mutex> {
     EINSUMS_SINGLETON_DEF(BlockManager)
   public:
-    ~BlockManager() = default;
+    ~BlockManager();
     using BlockType = std::shared_ptr<uint8_t[]>;
 
     std::weak_ptr<uint8_t[]> request_block(size_t bytes);
@@ -43,16 +43,16 @@ struct EINSUMS_EXPORT BlockManager final : public design_pats::Lockable<std::mut
 #endif
 
   private:
-    BlockManager() = default;
+    BlockManager();
 
-    BufferList<BlockType> _block_list;
+    BufferList<BlockType> *_block_list{nullptr};
 
-    BufferAllocator<uint8_t> _alloc;
+    BufferAllocator<uint8_t> *_alloc{nullptr};
 
 #ifdef EINSUMS_COMPUTE_CODE
-    BufferList<std::shared_ptr<GPUBlock>> _gpu_block_list;
+    BufferList<std::shared_ptr<GPUBlock>> *_gpu_block_list{nullptr};
 
-    gpu::GPUAllocator<uint8_t> _gpu_alloc;
+    gpu::GPUAllocator<uint8_t> *_gpu_alloc{nullptr};
 #endif
 };
 

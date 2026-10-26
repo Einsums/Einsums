@@ -26,16 +26,64 @@ GPUBlock::~GPUBlock() {
 
 EINSUMS_SINGLETON_IMPL(BlockManager);
 
+BlockManager::BlockManager() {
+    _block_list = new BufferList<BlockType>();
+    _alloc      = new BufferAllocator<uint8_t>();
+
+#ifdef EINSUMS_COMPUTE_CODE
+    _gpu_block_list = new BufferList<std::shared_ptr<GPUBlock>>();
+    _gpu_alloc      = new gpu::GPUAllocator<uint8_t>();
+#endif
+}
+
+BlockManager::~BlockManager() {
+    std::fprintf(stderr, "Finalizing the BlockManager.\n");
+
+    std::fprintf(stderr, "Freeing the block list.\n");
+    if (_block_list) {
+        delete _block_list;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+
+    std::fprintf(stderr, "Freeing the allocator.\n");
+    if (_alloc) {
+        delete _alloc;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+
+#ifdef EINSUMS_COMPUTE_CODE
+    std::fprintf(stderr, "Freeing the GPU block list.");
+    if (_gpu_block_list) {
+        delete _gpu_block_list;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+
+    std::fprintf(stderr, "Freeing the GPU allocator.");
+    if (_gpu_alloc) {
+        delete _gpu_alloc;
+        std::fprintf(stderr, "Done.\n");
+    } else {
+        std::fprintf(stderr, "No work to do.\n");
+    }
+#endif
+}
+
 std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
     // Try to clean up stale blocks.
-    for (int i = 0; i < 10 && _alloc.available_size() < bytes; i++) {
+    for (int i = 0; i < 10 && _alloc->available_size() < bytes; i++) {
         bool erased = false;
         {
             auto lock = std::lock_guard(*this);
 
-            for (auto it = _block_list.begin(); it != _block_list.end(); it++) {
+            for (auto it = _block_list->begin(); it != _block_list->end(); it++) {
                 if (it->use_count() == 1) {
-                    _block_list.erase(it);
+                    _block_list->erase(it);
                     erased = true;
                     break;
                 }
@@ -48,30 +96,30 @@ std::weak_ptr<uint8_t[]> BlockManager::request_block(size_t bytes) {
         }
     }
 
-    if (_alloc.available_size() < bytes) {
+    if (_alloc->available_size() < bytes) {
         EINSUMS_THROW_EXCEPTION(std::runtime_error,
                                 "Could not allocate enough memory for the requested block, even after stale blocks were removed! "
                                 "Requested {} bytes, but there are only {} bytes available.",
-                                bytes, _alloc.available_size());
+                                bytes, _alloc->available_size());
     }
 
     auto lock = std::lock_guard(*this);
 
-    _block_list.push_back(std::allocate_shared_for_overwrite<uint8_t[]>(_alloc, (size_t)bytes));
+    _block_list->push_back(std::allocate_shared_for_overwrite<uint8_t[]>(*_alloc, (size_t)bytes));
 
-    return std::weak_ptr<uint8_t[]>(_block_list.back());
+    return std::weak_ptr<uint8_t[]>(_block_list->back());
 }
 
 #ifdef EINSUMS_COMPUTE_CODE
 std::weak_ptr<GPUBlock> BlockManager::request_gpu_block(size_t bytes) { // Try to clean up stale blocks.
-    for (int i = 0; i < 10 && _gpu_alloc.available_size() < bytes; i++) {
+    for (int i = 0; i < 10 && _gpu_alloc->available_size() < bytes; i++) {
         bool erased = false;
         {
             auto lock = std::lock_guard(*this);
 
-            for (auto it = _gpu_block_list.begin(); it != _gpu_block_list.end(); it++) {
+            for (auto it = _gpu_block_list->begin(); it != _gpu_block_list->end(); it++) {
                 if (it->use_count() == 1) {
-                    _gpu_block_list.erase(it);
+                    _gpu_block_list->erase(it);
                     erased = true;
                     break;
                 }
@@ -84,19 +132,19 @@ std::weak_ptr<GPUBlock> BlockManager::request_gpu_block(size_t bytes) { // Try t
         }
     }
 
-    if (_gpu_alloc.available_size() < bytes) {
+    if (_gpu_alloc->available_size() < bytes) {
         EINSUMS_THROW_EXCEPTION(
             std::runtime_error,
             "Could not allocate enough memory on the GPU for the requested block, even after stale blocks were removed! "
             "Requested {} bytes, but there are only {} bytes available.",
-            bytes, _gpu_alloc.available_size());
+            bytes, _gpu_alloc->available_size());
     }
 
     auto lock = std::lock_guard(*this);
 
-    _gpu_block_list.push_back(std::make_shared<GPUBlock>(_gpu_alloc, bytes));
+    _gpu_block_list->push_back(std::make_shared<GPUBlock>(*_gpu_alloc, bytes));
 
-    return std::weak_ptr<GPUBlock>(_gpu_block_list.back());
+    return std::weak_ptr<GPUBlock>(_gpu_block_list->back());
 }
 #endif
 

@@ -346,7 +346,7 @@ struct formatter<einsums::Dim<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return format_to(ctx.out(), "Dim{{{}}}", einsums::string_util::rtrim_copy(oss.str()));
+        return format_to(ctx.out(), "Dim{{{}}}", einsums::string_util::rtrim(oss.str()));
     }
 };
 
@@ -375,7 +375,7 @@ struct formatter<einsums::Stride<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return format_to(ctx.out(), "Stride{{{}}}", einsums::string_util::rtrim_copy(oss.str()));
+        return format_to(ctx.out(), "Stride{{{}}}", einsums::string_util::rtrim(oss.str()));
     }
 };
 
@@ -402,7 +402,7 @@ struct formatter<einsums::Count<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return format_to(ctx.out(), "Count{{{}}}", einsums::string_util::rtrim_copy(oss.str()));
+        return format_to(ctx.out(), "Count{{{}}}", einsums::string_util::rtrim(oss.str()));
     }
 };
 
@@ -429,7 +429,7 @@ struct formatter<einsums::Offset<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return format_to(ctx.out(), "Offset{{{}}}", einsums::string_util::rtrim_copy(oss.str()));
+        return format_to(ctx.out(), "Offset{{{}}}", einsums::string_util::rtrim(oss.str()));
     }
 };
 

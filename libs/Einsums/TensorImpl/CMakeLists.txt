@@ -24,6 +24,7 @@ einsums_add_module(
     Einsums_TypeSupport
     Einsums_Config
     Einsums_BLAS
+    Einsums_Compat
     Einsums_Concepts
     Einsums_BufferAllocator
     Einsums_TensorBase

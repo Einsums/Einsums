@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <Einsums/Compat/FmtAlternatives.hpp>
 #include <Einsums/Config/Types.hpp>
 #include <Einsums/Tensor/DiskTensor.hpp>
 #include <Einsums/Tensor/InitModule.hpp>
@@ -58,9 +59,9 @@ TEST_CASE("File opening and closing") {
 TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<TestType, 2> A(fmt::format("/A0/{}", type_name<TestType>()), 3, 3);
-    DiskTensor<TestType, 2> B(fmt::format("/B0/{}", type_name<TestType>()), 3, 3);
-    DiskTensor<TestType, 2> C(fmt::format("/C0/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> A(einsums::format("/A0/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> B(einsums::format("/B0/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> C(einsums::format("/C0/{}", type_name<TestType>()), 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -70,7 +71,7 @@ TEMPLATE_TEST_CASE("disktensor-creation", "[disktensor]", float, double, std::co
 TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<TestType, 2> A(fmt::format("/A1/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> A(einsums::format("/A1/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
     Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
@@ -121,7 +122,7 @@ TEMPLATE_TEST_CASE("Write/Read", "[disktensor]", float, double, std::complex<flo
 TEMPLATE_TEST_CASE("Write/Read compressed", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<TestType, 2> A(fmt::format("/A2/{}", type_name<TestType>()), Dim{3, 3}, 9);
+    DiskTensor<TestType, 2> A(einsums::format("/A2/{}", type_name<TestType>()), Dim{3, 3}, 9);
 
     // Data must exist on disk before it can be read in.
     Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
@@ -172,7 +173,7 @@ TEMPLATE_TEST_CASE("Write/Read compressed", "[disktensor]", float, double, std::
 TEMPLATE_TEST_CASE("DiskView 3x3", "[disktensor]", float, double, std::complex<float>, std::complex<double>) {
     using namespace einsums;
 
-    DiskTensor<TestType, 2> A(fmt::format("/A3/{}", type_name<TestType>()), 3, 3);
+    DiskTensor<TestType, 2> A(einsums::format("/A3/{}", type_name<TestType>()), 3, 3);
 
     // Data must exist on disk before it can be read in.
     Tensor Ad = create_random_tensor<TestType>("A", 3, 3);
@@ -260,19 +261,19 @@ TEMPLATE_TEST_CASE("DiskView 7x7x7x7", "[disktensor]", float, double, std::compl
     using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
-        DiskTensor<TestType, 4> g(fmt::format("/g0/{}", type_name<TestType>()), 7, 7, 7, 7);
+        DiskTensor<TestType, 4> g(einsums::format("/g0/{}", type_name<TestType>()), 7, 7, 7, 7);
         Tensor                  data = create_random_tensor<TestType>("data", 7, 7);
         g(All, 2, 4, All)            = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
-        DiskTensor<TestType, 4> g(fmt::format("/g1/{}", type_name<TestType>()), 7, 7, 7, 7);
+        DiskTensor<TestType, 4> g(einsums::format("/g1/{}", type_name<TestType>()), 7, 7, 7, 7);
         Tensor                  data2 = create_random_tensor<TestType>("data", 7, 2, 7);
         g(All, Range{4, 6}, 2, All)   = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
-        DiskTensor<TestType, 4> g(fmt::format("/g2/{}", type_name<TestType>()), 3, 3, 3, 3);
+        DiskTensor<TestType, 4> g(einsums::format("/g2/{}", type_name<TestType>()), 3, 3, 3, 3);
         Tensor                  data3 = create_random_tensor<TestType>("data", 3, 3);
         TestType                value = 0.0;
 

@@ -233,7 +233,7 @@ function(einsums_add_executable name)
     foreach(source ${${name}_SOURCES})
       get_filename_component(extension ${source} EXT)
       if(${extension} STREQUAL ".cu")
-        set_source_file_properties(${source} PROPERTIES LANGUAGE HIP)
+        set_source_files_properties(${source} PROPERTIES LANGUAGE HIP)
       endif()
     endforeach()
   endif()
@@ -258,7 +258,7 @@ function(einsums_add_executable name)
       POST_BUILD
       COMMENT "Running dsymutil on: $<TARGET_FILE:${name}>"
       VERBATIM
-      COMMAND dsymutil $<TARGET_FILE:${name}>
+      COMMAND dsymutil $<TARGET_FILE:${name}> COMMAND_EXPAND_LISTS
     )
   endif()
 

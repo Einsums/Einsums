@@ -12,12 +12,14 @@ import functools
 import typing
 import random
 
-try :
+try:
     from einsums import core
-except ModuleNotFoundError :
+except ModuleNotFoundError:
     from pyeinsums import core
 
 import numpy as np
+
+import inspect
 
 
 def labeled_section(arg: typing.Union[str, typing.Callable]):
@@ -32,9 +34,26 @@ def labeled_section(arg: typing.Union[str, typing.Callable]):
     if isinstance(arg, str):
 
         def labeled_section_outer(func):
+
             @functools.wraps(func)
             def labeled_section_inner(*args, **kwargs):
-                section = core.Section(f"{func.__name__} {arg}")
+                line_number = 0
+                filename = ""
+                
+                if core.ScopedZone.einsums_have_profiler():
+                    try:
+                        filename = inspect.getsourcefile(func)
+                    except OSError:
+                        pass
+                    except TypeError:
+                        filename = "built-in"
+                    
+                    try:
+                        line_number = inspect.getsourcelines(func)[1]
+                    except (OSError, TypeError):
+                        pass
+                
+                section = core.ScopedZone(arg, filename, line_number, func.__name__)
                 retval = func(*args, **kwargs)
                 del section
                 return retval
@@ -46,7 +65,22 @@ def labeled_section(arg: typing.Union[str, typing.Callable]):
 
         @functools.wraps(arg)
         def labeled_section_inner(*args, **kwargs):
-            section = core.Section(f"{arg.__name__}")
+            line_number = 0
+            filename = ""
+                
+            if core.ScopedZone.einsums_have_profiler():
+                try:
+                    filename = inspect.getsourcefile(arg)
+                except OSError:
+                    pass
+                except TypeError:
+                    filename = "built-in"
+                    
+                try:
+                    line_number = inspect.getsourcelines(arg)[1]
+                except (OSError, TypeError):
+                    pass
+            section = core.ScopedZone(arg.__name__, filename, line_number, arg.__name__)
             retval = arg(*args, **kwargs)
             del section
             return retval
@@ -55,6 +89,12 @@ def labeled_section(arg: typing.Union[str, typing.Callable]):
     else:
         raise TypeError("Argument to labeled_section not valid!")
 
+def start_labeled_section(message: typing.Optional[string] = None) ->core.ScopedZone :
+    stack_info = inspect.stack()[1]
+    if message is None :
+        return core.ScopedZone(stack_info.function, stack_info.filename, stack_info.lineno, stack_info.function)
+    else :
+        return core.ScopedZone(message, stack_info.filename, stack_info.lineno, stack_info.function)
 
 def enumerate_many(*args, start=0):
     """
@@ -323,7 +363,7 @@ def create_random_tensor(name: str, dims: list[int], dtype=float):
 
 
 def random_tensor_factory(
-    name: str, dims: list[int], dtype: type = float, method: str = "einsums"
+    name: str, dims: list[int], dtype: type=float, method: str="einsums"
 ):
     """
     Create either a NumPy array or an Einsums tensor and fills it with random data.
@@ -394,7 +434,7 @@ def create_random_definite_numpy_array(rows: int, mean=1.0, dtype=float):
 
 
 def random_definite_tensor_factory(
-    name: str, rows: int, mean=1.0, dtype: type = float, method: str = "einsums"
+    name: str, rows: int, mean=1.0, dtype: type=float, method: str="einsums"
 ):
     """
     Create a random positive definite NumPy array or Einsums tensor. If the ``mean`` parameter is
@@ -485,8 +525,8 @@ def random_semidefinite_tensor_factory(
     rows: int,
     mean=1.0,
     force_zeros=1,
-    dtype: type = float,
-    method: str = "einsums",
+    dtype: type=float,
+    method: str="einsums",
 ):
     """
     Create a random positive semidefinite NumPy array or Einsums tensor. If the ``mean`` parameter is

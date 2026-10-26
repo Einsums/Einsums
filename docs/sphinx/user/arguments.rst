@@ -85,23 +85,24 @@ Advanced Arguments
 
     .. versionadded:: 1.0.0
     .. versionchanged:: 2.0.0
-        This option's name has been changed.
+        This option's name has changed.
 
 .. option:: --einsums:debug:no-attach-debugger
 
     Tells Einsums not to allow users the ability to attach a debugger when an error is detected.
 
     .. versionadded:: 1.0.0
-    .. versionchanged:: 2.0.0
-        This option's name has been changed.
+    .. versionremoved:: 2.0.0
+        Einsums no longer enters a busy loop when it encounters an error. It is much better to assume that production users don't want to
+        have to manually kill their derivative programs because Einsums has entered a waiting loop.
 
 .. option:: --einsums:debug:no-diagnostics-on-terminate
 
     When present, Einsums won't print extra diagnostics on termination.
 
     .. versionadded:: 1.0.0
-    .. versionchanged:: 2.0.0
-        This option's name has been changed.
+    .. versionremoved:: 2.0.0
+        Einsums no longer installs custom signal handlers to avoid issues with user programs.
 
 .. option:: --einsums:log:format
 

@@ -9,4 +9,7 @@ namespace einsums::detail {
 
 EINSUMS_SINGLETON_IMPL(Einsums_Tensor_vars)
 
+Einsums_Tensor_vars::~Einsums_Tensor_vars() {
+    std::fprintf(stderr, "Destroying the Einsums_Tensor_vars.\n");
 }
+} // namespace einsums::detail

@@ -138,6 +138,8 @@ auto fft1d_1() -> void {
 
     auto x_data   = create_tensor<Source>("sample data", N);
     auto x_result = create_tensor<Result>("FFT result", einsums::IsComplexV<Source> ? N : N / 2 + 1);
+    
+    constexpr double tol = std::max(tolerance<Source>(), tolerance<Result>());
 
     init_data(x_data, N, H);
 
@@ -161,8 +163,8 @@ auto fft1d_1() -> void {
                 re_exp = 1.0;
         }
 
-        REQUIRE_THAT(x_result(n).real(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(re_exp), 0.0001));
-        REQUIRE_THAT(x_result(n).imag(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(im_exp), 0.0001));
+        REQUIRE_THAT(x_result(n).real(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(re_exp), tol));
+        REQUIRE_THAT(x_result(n).imag(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(im_exp), tol));
     }
 }
 

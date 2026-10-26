@@ -26,38 +26,6 @@
 
 namespace einsums {
 
-TENSOR_DEFINE_RANK(BlockTensor, 2)
-TENSOR_DEFINE_RANK(BlockTensor, 3)
-TENSOR_DEFINE_RANK(BlockTensor, 4)
-
-TENSOR_DEFINE(DiskTensor)
-TENSOR_DEFINE(DiskView)
-
-TENSOR_DEFINE_ALLOC_RANK(GeneralTensor, 0, std::allocator)
-TENSOR_ALLOC_DEFINE(GeneralTensor, std::allocator)
-TENSOR_ALLOC_DEFINE(GeneralTensor, BufferAllocator)
-TENSOR_DEFINE(TensorView)
-
-TENSOR_DEFINE(TiledTensor)
-TENSOR_DEFINE(TiledTensorView)
-
-#ifndef EINSUMS_WINDOWS
-template class GeneralRuntimeTensor<float, std::allocator<float>>;
-template class GeneralRuntimeTensor<double, std::allocator<double>>;
-template class GeneralRuntimeTensor<std::complex<float>, std::allocator<std::complex<float>>>;
-template class GeneralRuntimeTensor<std::complex<double>, std::allocator<std::complex<double>>>;
-
-template class GeneralRuntimeTensor<float, BufferAllocator<float>>;
-template class GeneralRuntimeTensor<double, BufferAllocator<double>>;
-template class GeneralRuntimeTensor<std::complex<float>, BufferAllocator<std::complex<float>>>;
-template class GeneralRuntimeTensor<std::complex<double>, BufferAllocator<std::complex<double>>>;
-
-template class RuntimeTensorView<float>;
-template class RuntimeTensorView<double>;
-template class RuntimeTensorView<std::complex<float>>;
-template class RuntimeTensorView<std::complex<double>>;
-#endif
-
 static bool verify_path(std::string const &path) {
     if (path.size() == 0) {
         return true;
