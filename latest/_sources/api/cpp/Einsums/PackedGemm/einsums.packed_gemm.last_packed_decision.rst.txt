@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.last_packed_decision:
+
+==========================================
+einsums::packed_gemm::last_packed_decision
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: const char *& last_packed_decision()
+
+   Which path the most recent ``try_packed_gemm`` call on this thread chose, or why it declined:
+   "direct_outer_gemm", "direct_ger", "direct_gemv", "stream", "scatter", "single_mn", or a reason
+   for declining such as "defer_small_outer_to_generic". One level above ``last_contraction_route``, which names the kernel route
+   within the scatter and single_mn paths. Empty when the call ended before any decision.
+
+   Test introspection, and how ``einsums-tune`` checks that the two forced sides of a threshold took
+   different paths. Thread-local and out of line, like ``last_contraction_route``.

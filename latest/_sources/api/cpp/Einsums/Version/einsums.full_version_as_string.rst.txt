@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.full_version_as_string:
+
+===============================
+einsums::full_version_as_string
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Version.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::string full_version_as_string()
+
+   Returns the full einsums version with its tag, as in ``2.0.0a1``: the release's PEP 440 version,
+   which Python reports as ``einsums.__version__``.

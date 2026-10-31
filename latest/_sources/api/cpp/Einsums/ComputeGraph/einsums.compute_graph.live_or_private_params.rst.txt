@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.live_or_private_params:
+
+==============================================
+einsums::compute_graph::live_or_private_params
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::shared_ptr<ElementwiseParams> live_or_private_params(const std::shared_ptr<ElementwiseParams> &declared, const PrefactorScalar &alpha, const PrefactorScalar &beta)
+
+   The live scalar block a node carries, or a private one seeded from its snapshots.
+
+   A node captured before the params block existed, or one a loader has just
+   rebuilt, carries the values in the descriptor rather than behind a pointer.
+   An executor and a reader both need one block to read either way, and this is
+   it.
+
+   .. versionadded:: 2.0.0
+
+   :param declared: The descriptor's ``params``, which may be null.
+   :param alpha: The descriptor's alpha snapshot, used only when ``declared`` is null.
+   :param beta: The descriptor's beta snapshot, used only when ``declared`` is null.
+   :returns: A block that is never null.

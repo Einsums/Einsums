@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.pack_A_3m_flat:
+
+====================================
+einsums::packed_gemm::pack_A_3m_flat
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename RealT> void pack_A_3m_flat(RealT *Ar, RealT *Ai, RealT *As, const std::complex<RealT> *A_data, const PackingPlan &plan, int64_t mc_start, int64_t mc_len, int64_t kc_start, int64_t kc_len, bool conj)
+
+   Split-pack the complex A block into three real column-major mc_len x kc_len matrices: Re, (signed) Im, and their sum.

@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.to_string:
+
+=================================
+einsums::compute_graph::to_string
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Prefactor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string to_string(const PrefactorScalar &v)
+
+   Format a PrefactorScalar for logs / JSON. Real values print as-is; complex
+   as ``(re,im)``. Used by profile annotations and graph JSON serialization.

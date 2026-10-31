@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TileQuery:
+
+=================================
+einsums::compute_graph::TileQuery
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TileQuery
+
+   What a ``tiles`` hook is asked about: the tile grid of the node's tiled output and the graph's parameters.
+
+   ``tile_sizes`` holds, axis by axis, the extent of every tile along that axis, as
+   ``TiledRuntimeTensor::tile_sizes`` does; ``params`` may be null.
+
+
+   .. cpp:member:: const std::vector<std::vector<int>> *tile_sizes
+
+   .. cpp:member:: const ParamTable *params

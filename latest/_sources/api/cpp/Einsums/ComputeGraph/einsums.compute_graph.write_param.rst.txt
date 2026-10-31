@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.write_param:
+
+===================================
+einsums::compute_graph::write_param
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T> requires std::is_arithmetic_v<T> void write_param(std::string name, T &source)
+
+   Write a parameter from a scalar variable produced by the graph.
+
+   The value of ``source`` (an arithmetic scalar variable) is read at execute
+   time and stored in ``params[name]``. The graph captures ``&source``, so
+   any upstream op that registers the same address as a scalar input (via
+   ``ctx.get_or_register_scalar``) becomes a true dataflow predecessor: the
+   scheduler orders the producer before ``write_param``, and ``write_param``
+   before any downstream View op that reads ``Param(name)``.
+
+
+.. cpp:function:: void write_param(std::string name, BoundExpr source)
+
+   Write a parameter from a runtime scalar EXPRESSION evaluated at execute time.
+
+   No graph dependency on a tensor is created. A ``BoundExpr::Param`` source
+   does create a parameter-ordering edge (see ``param_reads``), so a chain of
+   parameter writes is scheduled correctly; a literal and a callback name
+   nothing and are unordered against anything.
+
+   This is the named-callable rule applied to the last of the four closures a
+   graph can carry: a runtime scalar is a literal, a named parameter, or a
+   callback, with only the last unserializable. ``OpKind::WriteParam`` is a reconstructible KIND either
+   way, and ``Graph::serializability_report`` names a callback-arm node
+   individually.
+
+
+.. cpp:function:: void write_param(std::string name, std::function<std::int64_t ()> source_fn)
+
+   Write a parameter from an arbitrary callback evaluated at execute time.
+
+   A thin spelling of the ``BoundExpr`` form above, kept because a bare lambda
+   cannot reach a ``BoundExpr`` parameter implicitly (that would be two
+   user-defined conversions). No graph dependency is created; the callback is
+   treated as opaque. Use the tensor-source form when the value is produced by
+   upstream graph ops and you want correct scheduling.

@@ -1,0 +1,93 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ParsedEinsumSpec:
+
+========================================
+einsums::compute_graph::ParsedEinsumSpec
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ParsedEinsumSpec
+
+   Result of parsing an einsum specification string.
+
+   Contains the parsed index lists for the output tensor (C) and the two
+   input tensors (A and B). Also stores the original string for error messages.
+
+
+   .. cpp:function:: std::string render() const
+
+      The canonical `"c <- a ; b"` spelling of these index lists.
+
+      ``raw`` is empty for a spec a pass or the IR loader assembled from index
+      lists. This is the one spelling diagnostics quote and the IR round-trip
+      goldens compare byte for byte.
+
+      Multi-character indices are comma-separated, which parses back to the same
+      lists under either notation.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::vector<std::string> link_indices() const
+
+      Compute link indices (in both A and B, not in C).
+
+
+   .. cpp:function:: std::vector<std::string> target_indices() const
+
+      Compute target indices: C's unique indices, in the order C first names them. That is the
+      order PackedGemm's target space takes them in, so a descriptor built from this list and the
+      spec the dispatcher hands PackedGemm describe one contraction the same way.
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Output (C) indices
+
+
+   .. cpp:member:: std::vector<std::string> a_indices
+
+      First input (A) indices
+
+
+   .. cpp:member:: std::vector<std::string> b_indices
+
+      Second input (B) indices
+
+
+   .. cpp:member:: std::string raw
+
+      Original specification string
+
+
+   .. cpp:member:: bool conj_a
+
+      A wrapped in conj(...) in the spec
+
+
+   .. cpp:member:: bool conj_b
+
+      B wrapped in conj(...) in the spec
+
+
+   .. cpp:member:: std::vector<PermutationOperator> operators
+
+      Permutation operators prefixing the term, in source order; empty if none.
+
+      .. seealso::
+
+         PermutationOperator, expand_permutation_operators
+
+      .. versionadded:: 2.0.0

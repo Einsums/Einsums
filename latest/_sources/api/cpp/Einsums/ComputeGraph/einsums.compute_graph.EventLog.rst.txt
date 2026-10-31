@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EventLog:
+
+================================
+einsums::compute_graph::EventLog
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Observer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EventLog : public ExecutionObserver
+
+   An observer that keeps every event, for reading after the replay: the way to observe a replay from Python, whose callbacks would serialize the executors on the GIL.
+
+   .. code-block:: text
+
+      log = cg.EventLog()
+      g.set_observer(log)
+      g.execute()
+      slowest = sorted((e for e in log.events if e.kind == cg.EventKind.NodeEnd), key=lambda e: e.ms)[-5:]
+      log.write_chrome_trace("replay.json")      # open in ui.perfetto.dev
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: EventLog() = default
+
+      An empty log.
+
+
+   .. cpp:function:: void on_replay_start(const ExecutionEvent &event) override
+
+   .. cpp:function:: void on_node_start(const ExecutionEvent &event) override
+
+   .. cpp:function:: void on_node_end(const ExecutionEvent &event) override
+
+   .. cpp:function:: void on_io(const ExecutionEvent &event) override
+
+   .. cpp:function:: void on_replay_end(const ExecutionEvent &event, const RunMetrics &run) override
+
+   .. cpp:function:: std::vector<ExecutionEvent> events() const
+
+      Every event so far, in the order they arrived.
+
+      :returns: A copy of the events.
+
+
+   .. cpp:function:: void clear()
+
+      Forget every event.
+
+
+   .. cpp:function:: void write_chrome_trace(const std::string &path) const
+
+      Write the events as a Chrome trace: one track per thread, a span per node, an instant per storage event, readable in ``ui.perfetto.dev`` or ``chrome://tracing``.
+
+      :param path: The file to write.
+      :throws std::runtime_error: when the file cannot be written.

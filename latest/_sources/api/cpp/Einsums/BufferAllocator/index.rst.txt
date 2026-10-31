@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BufferAllocator_api:
+
+=======================
+BufferAllocator C++ API
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_BufferAllocator>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::BufferAllocator` - Allocator whose maximum size can be restricted by runtime variables.
+- :cpp:any:`~einsums::MemoryPool` - A pre-reserved region of memory that mimalloc manages exclusively.
+- :cpp:any:`~einsums::MemoryPoolEpoch` - RAII scope whose carves are released together when it closes.
+- :cpp:any:`~einsums::MemoryPoolStats` - Accounting snapshot for one ``MemoryPool``.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::memory::aligned_alloc` - The library's one aligned-allocation primitive: 64-byte aligned, mimalloc-managed.
+- :cpp:any:`~einsums::memory::aligned_free` - Release memory obtained from ``aligned_alloc``. Null is a no-op.
+- :cpp:any:`~einsums::pool_reserve_cost` - The arena bytes a reservation of ``bytes`` actually claims, headroom and rounding included. Planners budgeting against einsums:max-memory should charge this, not the raw sum.
+- :cpp:any:`~einsums::pooled_reserved_bytes` - Arena bytes currently charged against einsums:max-memory: every live pool, plus dead PINNED pools, whose pages stay resident. A dead unpinned pool's pages purge, so it stops counting when it dies.
+- :cpp:any:`~einsums::register_Einsums_BufferAllocator_options` - Give the allocator's options their command-line presence. Idempotent.
+
+Types
+-----
+
+- :cpp:any:`~einsums::BufferBasicString` - Alias for a basic string that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferDeque` - Alias for a deque that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferForwardList` - Alias for a forward list that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferList` - Alias for a linked list that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferMap` - Alias for a map that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferMultiMap` - Alias for a multimap that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferMultiSet` - Alias for a multiset that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferSet` - Alias for a set that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferString` - Alias for a string that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferUnorderedMap` - Alias for an unordered map that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferUnorderedMultiMap` - Alias for an unordered multimap that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferUnorderedMultiSet` - Alias for an unordered multiset that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferUnorderedSet` - Alias for an unordered set that uses a BufferAllocator<T> as its allocator.
+- :cpp:any:`~einsums::BufferVector` - Alias for a vector that uses a BufferAllocator<T> as its allocator.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::BufferSize` - Total memory the contraction buffers may hold. Catches a runaway temporary, with room for a wide machine running many contractions at once.
+- :cpp:any:`~einsums::option::MaxMemory` - Ceiling on the memory einsums plans against: chunked algorithms size to it and MemoryPool refuses reservations past it. Ordinary allocations are not checked, so nothing throws in a kernel. 0 disables.
+- :cpp:any:`~einsums::option::WorkBufferSize` - The largest piece of a disk-backed tensor a contraction reads into memory at once. Zero means an eighth of --einsums:buffer-size.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.BufferAllocator
+   einsums.memory.aligned_alloc
+   einsums.memory.aligned_free
+   einsums.MemoryPool
+   einsums.MemoryPoolEpoch
+   einsums.MemoryPoolStats
+   einsums.pool_reserve_cost
+   einsums.pooled_reserved_bytes
+   einsums.register_Einsums_BufferAllocator_options
+   types
+   variables

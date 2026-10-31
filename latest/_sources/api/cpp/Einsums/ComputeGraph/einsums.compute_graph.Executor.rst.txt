@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Executor:
+
+================================
+einsums::compute_graph::Executor
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Executor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Executor
+
+   Abstract base class for graph execution backends.
+
+   An executor determines HOW graph nodes are executed, sequentially,
+   in parallel via threads, on GPU streams, etc. The graph structure,
+   optimization passes, and capture mechanism are executor-agnostic.
+
+
+   .. cpp:function:: virtual ~Executor() = default
+
+   .. cpp:function:: virtual std::string name() const = 0
+
+   .. cpp:function:: virtual void execute(Graph &graph) = 0
+
+      Execute all nodes of the graph.
+
+      The graph is guaranteed to be topologically sorted with valid
+      dependency info before this is called.
+
+      :param graph: The graph to execute.

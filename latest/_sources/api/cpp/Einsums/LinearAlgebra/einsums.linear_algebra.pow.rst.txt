@@ -1,0 +1,47 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.pow:
+
+============================
+einsums::linear_algebra::pow
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> RemoveViewT<AType> pow(const AType &a, typename AType::ValueType alpha, typename AType::ValueType cutoff)
+
+   Computes the matrix power of a to alpha.  Return a new tensor, does not destroy a.
+
+   This is equivalent to diagonalizing the matrix, raising its eigenvalues to the given power, then recombining the
+   matrix.
+
+   .. warning::
+
+      If any of the eigenvalues when exponentiated gives a non-finite or complex value, that eigenvalue will be set to zero. This may
+      cause numerical imprecisions.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType:
+   :param a: Matrix to take power of
+   :param alpha: The power to take
+   :param cutoff: If an eigenvalue is below this value after exponentiation, it is set to zero.
+   :throws RankError: If the inputs have the wrong ranks. The A tensor needs to be rank-2.
+   :throws DimensionError: If the matrix input is not square.
+   :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or zero-size tensors.
+   :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+   :returns: The matrix power.

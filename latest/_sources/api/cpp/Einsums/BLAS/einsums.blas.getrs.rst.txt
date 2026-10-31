@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.getrs:
+
+====================
+einsums::blas::getrs
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t getrs(char trans, int_t n, int_t nrhs, const T *a, int_t lda, const int_t *ipiv, T *b, int_t ldb)
+
+   Solve a linear system from an LU factorization.
+
+   Solves :math:`op(\mathbf{A})\mathbf{X} = \mathbf{B}` using the factors
+   previously computed by getrf(). Note the input contract: ``a`` is the
+   FACTORED matrix (L and U packed together) and ``ipiv`` its pivots, not the
+   original A - this is what distinguishes getrs from gesv, which takes the
+   source matrix and is equivalent to getrf followed by getrs.
+
+   :param trans: 'N': solve A*X = B; 'T': A^T*X = B; 'C': A^H*X = B.
+   :param n: Order of A.
+   :param nrhs: Number of right-hand sides (columns of B).
+   :param a: The LU factors from getrf().
+   :param lda: Leading dimension of a.
+   :param ipiv: The pivot indices from getrf().
+   :param b: On entry the right-hand sides B; on exit the solutions X.
+   :param ldb: Leading dimension of b.
+   :returns: 0 on success; < 0 for an illegal argument.

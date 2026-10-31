@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.spectral_range:
+
+===============================================
+einsums::compute_graph::laplace::spectral_range
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:function:: SpectralRange spectral_range(const std::vector<double> &axis_low, const std::vector<double> &axis_high, const std::vector<int> &signs)
+
+   The range of :math:`\sum_k \sigma_k \varepsilon_k[i_k]` from each axis's own range.
+
+   Exact rather than conservative, because the axes are INDEPENDENT: every combination of one
+   index per axis occurs, so the extremes of the sum are the sums of the extremes.
+
+   .. versionadded:: 2.0.0
+
+   :param axis_low: Per axis, the smallest element of that axis's energy vector.
+   :param axis_high: Per axis, the largest.
+   :param signs: Per axis, ``+1`` or ``-1``.
+   :throws std::invalid_argument: When the three lists differ in length or are empty.
+   :returns: The range of the signed sum.

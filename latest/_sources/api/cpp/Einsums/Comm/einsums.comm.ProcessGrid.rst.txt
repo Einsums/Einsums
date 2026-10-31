@@ -1,0 +1,87 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.ProcessGrid:
+
+==========================
+einsums::comm::ProcessGrid
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/ProcessGrid.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: ProcessGrid
+
+   2D process grid for distributed tensor operations.
+
+   Arranges P MPI ranks into a Pr × Pc grid. Each rank has a (row, col) coordinate.
+   Row and column sub-communicators enable efficient collective communication
+   patterns like SUMMA broadcasts.
+
+   For P=4: default grid is 2×2. For P=6: 2×3 or 3×2 (whichever is more square).
+   For prime P (e.g., 7): falls back to P×1 (1D grid).
+
+   .. code-block:: text
+
+      auto& grid = comm::ProcessGrid::default_grid();
+      fmt::print("Rank {} is at ({}, {}) in {}x{} grid\n",
+                 world_rank(), grid.my_row(), grid.my_col(), grid.rows(), grid.cols());
+
+
+   .. cpp:function:: explicit ProcessGrid(const Communicator &parent)
+
+      Auto-compute near-square Pr × Pc from parent communicator size.
+
+
+   .. cpp:function:: ProcessGrid(int pr, int pc, const Communicator &parent)
+
+      Explicit grid dimensions. Requires pr * pc == parent.size().
+
+
+   .. cpp:function:: int rows() const
+
+      Grid dimensions.
+
+
+   .. cpp:function:: int cols() const
+
+   .. cpp:function:: int size() const
+
+   .. cpp:function:: int my_row() const
+
+      This rank's coordinates in the grid.
+
+
+   .. cpp:function:: int my_col() const
+
+   .. cpp:function:: int rank_at(int row, int col) const
+
+      Map grid coordinates to MPI rank (row-major: rank = row * Pc + col).
+
+
+   .. cpp:function:: std::pair<int, int> coords(int rank) const
+
+      Map MPI rank to grid coordinates.
+
+
+   .. cpp:function:: const Communicator & row_comm() const
+
+      Sub-communicator for all ranks in the same row (used for SUMMA B-broadcasts).
+
+
+   .. cpp:function:: const Communicator & col_comm() const
+
+      Sub-communicator for all ranks in the same column (used for SUMMA A-broadcasts).
+
+
+   .. cpp:function:: static const ProcessGrid & default_grid()
+
+      Default grid constructed from Communicator::world() on first access.

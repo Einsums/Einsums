@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.geev:
+
+===================
+einsums::blas::geev
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t geev(char jobvl, char jobvr, int_t n, T *a, int_t lda, AddComplexT<T> *w, T *vl, int_t ldvl, T *vr, int_t ldvr)
+
+   Performs diagonalization of a matrix.
+
+   The syev routine finds the matrices that satisfy the following equations.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^{-1}
+      \mathbf{A}^T = \mathbf{L} \mathbf{\Lambda} \mathbf{L}^{-1}
+
+   In the above equation, :math:`\mathbf{A}` is a matrix, :math:`\mathbf{P}` is a complex-valued matrix whose columns are
+   the right eigenvectors of :math:`\mathbf{A}`, :math:`\mathbf{L}` is a complex-valued matrix whose columns are the left eigenvectors of
+   :math:`\mathbf{A}`, and :math:`\mathbf{\Lambda}` is a complex-valued diagonal matrix, whose elements are the eigenvalues of :math:`A`. The
+   eigenvalues are stored in a vector form on exit. The eigenvectors are stored in a special way if the input is a real matrix. If the input
+   is a complex matrix, then the eigenvectors are stored plainly in the columns of the appropriate output matrices.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param jobvl: Whether to compute the left eigenvectors. Can be either 'n' or 'v', case insensitive.
+   :param jobvr: Whether to compute the right eigenvectors. Can be either 'n' or 'v', case insensitive.
+   :param n: The number of rows/columns of the input matrix.
+   :param a: The input matrix. On output, it will be changed.
+   :param lda: The leading dimension of the input matrix.
+   :param w: The output vector for the eigenvalues.
+   :param vl: The left eigenvector output. If ``jobvl`` is 'n', then this is not referenced and may be null.
+   :param ldvl: The leading dimension of the left eigenvectors. Even if not referenced, it must be at least 1.
+   :param vr: The right eigenvector output. If ``jobvr`` is 'n', then this is not referenced and may be null.
+   :param ldvr: The leading dimension of the right eigenvectors. Even if not referenced, it must be at least 1.
+   :returns: 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which parameter was bad.

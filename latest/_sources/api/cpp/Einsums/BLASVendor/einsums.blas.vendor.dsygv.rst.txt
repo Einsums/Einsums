@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.dsygv:
+
+============================
+einsums::blas::vendor::dsygv
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t dsygv(int_t itype, char jobz, char uplo, int_t n, double *a, int_t lda, double *b, int_t ldb, double *w)
+
+   See ``ssygv``.

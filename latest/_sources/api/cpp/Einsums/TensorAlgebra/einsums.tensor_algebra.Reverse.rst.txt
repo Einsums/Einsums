@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.Reverse:
+
+================================
+einsums::tensor_algebra::Reverse
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/Utilities.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:class:: template <typename First, typename... Args> Reverse
+
+   Reverses the elements of a tuple.

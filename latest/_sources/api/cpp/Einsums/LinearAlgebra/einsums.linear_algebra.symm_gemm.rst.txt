@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.symm_gemm:
+
+==================================
+einsums::linear_algebra::symm_gemm
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType> requires (InSamePlace<AType, BType, CType> && SameUnderlying<AType, BType, CType>) void symm_gemm(const AType &A, const BType &B, CType *C)
+
+   Computes a common double multiplication between two matrices.
+
+   Computes :math:`C = OP(B)^T OP(A) OP(B)`.
+
+   It supports the same operand types as gemm, since it is normally implemented with gemm calls in the back.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam TransA: Whether to transpose the A matrix.
+   :tparam TransB: Whether to transpose the second instance of the B matrix. The first instance is always the opposite.
+   :tparam AType: The tensor type of A.
+   :tparam BType: The tensor type of B.
+   :tparam CType: The tensor type of C.
+   :param A: The inner tensor.
+   :param B: The outer tensor.
+   :param C: The output tensor.
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.

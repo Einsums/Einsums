@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.truncated_syev:
+
+=======================================
+einsums::linear_algebra::truncated_syev
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> requires (CoreTensorConcept<AType>) std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> truncated_syev(const AType &A, size_t k)
+
+   Perform the truncated eigendecomposition of a matrix.
+
+   Randomized variant: like ``truncated_svd``, the algorithm uses an
+   over-sampling factor of 5 internally and requires ``A.dim(0) >= k + 5``.
+   Smaller inputs will trip an out-of-range access inside the projection
+   step. Results are *approximate* top-``k`` eigenpairs; expect some drift
+   from a full ``syev`` for tightly clustered eigenvalues.
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the matrix.
+   :param A: The matrix to decompose. Must have ``A.dim(0) >= k + 5``.
+   :param k: The number of eigenvalues to use.
+   :returns: A tuple containing the eigenvectors and eigenvalues.

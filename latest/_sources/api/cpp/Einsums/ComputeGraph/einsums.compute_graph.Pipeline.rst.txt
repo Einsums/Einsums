@@ -1,0 +1,312 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Pipeline:
+
+================================
+einsums::compute_graph::Pipeline
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Pipeline.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Pipeline
+
+   A pipeline of sequential stages with optional iterative loops.
+
+   Pipeline models real computational workflows as a linear sequence of stages,
+   where each stage is either:
+
+   - A one-shot subgraph (e.g., setup, post-processing)
+   - An iterative loop with convergence check (e.g., SCF iterations)
+
+   Intermediate tensors shared across stages should be declared in the outer
+   scope so they outlive the pipeline.
+
+   **Example: SCF-like workflow**
+
+   .. code-block:: text
+
+      // Intermediates in outer scope
+      auto tmp = create_zero_tensor<double>("tmp", N, N);
+
+      cg::Pipeline pipeline("scf");
+
+      // Stage 1: Setup
+      {
+          auto &setup = pipeline.add_stage("setup");
+          cg::CaptureGuard guard(setup);
+          cg::einsum(...);  // Initialize
+      }
+
+      // Stage 2: Iterative loop
+      {
+          auto &loop = pipeline.add_loop("scf_iter", 200,
+              [&](size_t iter) { return !converged(); });
+          cg::CaptureGuard guard(loop);
+          cg::einsum(...);  // SCF step
+      }
+
+      // Stage 3: Post-processing
+      {
+          auto &post = pipeline.add_stage("post");
+          cg::CaptureGuard guard(post);
+          cg::einsum(...);  // Final computation
+      }
+
+      // Optimize and run
+      cg::passes::ScaleAbsorption fuse;
+      pipeline.apply(pm);
+      pipeline.execute();
+
+   .. seealso::
+
+      Graph for individual stage graphs
+
+   .. seealso::
+
+      LoopNode for iterative stage configuration
+
+
+   .. cpp:function:: Pipeline(const Pipeline &) = delete
+
+   .. cpp:function:: Pipeline(Pipeline &&) = default
+
+   .. cpp:function:: explicit Pipeline(std::string name)
+
+      Construct a pipeline with the given name.
+
+      :param name: Human-readable name for profiling and debugging.
+
+
+   .. cpp:function:: Pipeline & operator=(const Pipeline &) = delete
+
+   .. cpp:function:: Pipeline & operator=(Pipeline &&) = default
+
+   .. cpp:function:: Graph & add_stage(const std::string &name)
+
+      Add a one-shot (non-looping) stage to the pipeline.
+
+      Returns a reference to the stage's Graph for use with CaptureGuard.
+      Stages execute in the order they are added.
+
+      The reference stays valid for the life of the pipeline, including across
+      later add_stage() and add_loop() calls, so a caller may hold several at
+      once and revisit an earlier stage.
+
+      :param name: Human-readable name for the stage.
+      :returns: Reference to the stage's Graph.
+
+
+   .. cpp:function:: Graph & add_loop(std::string name, size_t max_iterations, LoopCondition condition)
+
+      Add an iterative loop stage to the pipeline.
+
+      Returns a reference to the loop body's Graph for use with CaptureGuard.
+      The loop executes the body repeatedly until the condition returns false
+      or max_iterations is reached.
+
+      :param name: Human-readable name for the loop stage.
+      :param max_iterations: Maximum number of iterations (safety limit).
+      :param condition: Predicate called after each iteration. Return false to stop.
+      :returns: Reference to the loop body's Graph.
+
+
+   .. cpp:function:: template <typename BodyFn> void add_stage(const std::string &name, BodyFn &&body_fn)
+
+      Add a one-shot stage with lambda-captured body.
+
+      .. code-block:: text
+
+         pipeline.add_stage("setup", [&]() {
+             cg::einsum("ij <- ik ; kj", &C, A, B);
+             cg::scale(2.0, &C);
+         });
+
+      :param name: Stage name.
+      :param body_fn: Lambda capturing the stage's operations.
+
+
+   .. cpp:function:: template <typename BodyFn> void add_loop(std::string name, size_t max_iterations, LoopCondition condition, BodyFn &&body_fn)
+
+      Add a loop stage with lambda-captured body.
+
+      .. code-block:: text
+
+         pipeline.add_loop("scf_iter", 200,
+             [&](size_t iter) { return delta > 1e-8; },
+             [&]() { cg::einsum(...); cg::scale(...); }
+         );
+
+      :param name: Stage name.
+      :param max_iterations: Maximum iterations (safety limit).
+      :param condition: After each iteration: true → continue, false → stop.
+      :param body_fn: Lambda capturing the loop body operations.
+
+
+   .. cpp:function:: bool apply(PassManager &pm)
+
+      Apply a PassManager to all stages.
+
+      Runs all passes on each one-shot stage's Graph and each loop stage's
+      body Graph. Returns true if any stage was modified.
+
+      .. code-block:: text
+
+         auto pm = cg::PassManager::create_default();
+         pipeline.apply(pm);
+
+
+   .. cpp:function:: void execute()
+
+      Execute all stages in order.
+
+      One-shot stages execute once. Loop stages repeat until their condition
+      returns false or max_iterations is reached.
+
+
+   .. cpp:function:: void execute(Executor &executor)
+
+      Execute all stages using a custom executor.
+
+      :param executor: The execution backend for each stage's graph.
+
+
+   .. cpp:function:: void run()
+
+      Build + run: apply default passes, materialize the associated workspace, and execute in one call.
+
+      Convenience wrapper over
+      ``apply(PassManager::create_default()) + workspace()->materialize_all() + execute()``.
+      Throws if ``workspace()`` is null, pipelines must own their
+      storage scope explicitly.
+
+      .. code-block:: text
+
+         cg::Pipeline p("compute");
+         p.set_workspace(ws);
+         p.add_stage("multiply", [&] { cg::einsum(...); });
+         p.run();  // defaults-apply + materialize + execute
+
+
+   .. cpp:function:: void run(PassManager &pm)
+
+      Same as ``run()`` but with a caller-supplied pass manager.
+
+
+   .. cpp:function:: const std::string & name() const
+
+   .. cpp:function:: size_t num_stages() const
+
+   .. cpp:function:: Graph * stage_graph(size_t index)
+
+      Access the graph for a stage by index. Returns nullptr if out of range.
+
+
+   .. cpp:function:: const std::string & stage_name(size_t index) const
+
+      Access stage name by index.
+
+
+   .. cpp:function:: void set_workspace(Workspace &ws)
+
+      Associate a Workspace with this pipeline.
+
+      Workspace tensors can be used across multiple pipelines. The workspace
+      must outlive the pipeline.
+
+
+   .. cpp:function:: Workspace * workspace() const
+
+      Get the associated workspace (may be nullptr).
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a pipeline-scoped tensor with deferred allocation.
+
+      The tensor has valid dimensions but no data until MaterializationPass runs.
+      It persists across all stages of this pipeline.
+
+      :tparam T: Element type.
+      :tparam Rank: Number of dimensions.
+      :tparam Dims: Integral types of the dimensions.
+      :param tensor_name: Human-readable tensor name.
+      :param dims: Dimensions of each rank.
+      :returns: Reference to the shell tensor.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_zero_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a pipeline-scoped tensor initialized to zero after materialization.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_random_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a pipeline-scoped tensor initialized with random values after materialization.
+
+
+   .. cpp:function:: const std::vector<TensorHandle> & declared_handles() const
+
+      Access all declared tensor handles (for passes to inspect).
+
+
+   .. cpp:function:: std::vector<TensorHandle> & declared_handles()
+
+   .. cpp:function:: const TensorScopeMapPtr & scope_map() const noexcept
+
+      The ownership scopes of the tensors this pipeline declares.
+
+      Attached to every stage graph so a stage's ``InterfaceManifest`` reports a tensor
+      that carries state between stages as pipeline-scoped rather than as one more
+      graph-scoped operand. @see Workspace::scope_map for why the table is shared.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The table. Never null.
+
+
+   .. cpp:function:: void set_param(std::string name, std::int64_t value)
+
+      Set or overwrite an integer parameter.
+
+
+   .. cpp:function:: std::int64_t get_param(const std::string &name) const
+
+      Read an integer parameter. Throws if ``name`` is not set.
+
+
+   .. cpp:function:: std::int64_t get_param_or(const std::string &name, std::int64_t fallback) const
+
+      Read a parameter with a default.
+
+
+   .. cpp:function:: std::shared_ptr<ParamTable> & params_ptr()
+
+      Direct access to the parameter table, used by capture-time helpers
+      to bake the table into executor lambdas (capture by shared_ptr).
+
+
+   .. cpp:function:: const std::shared_ptr<ParamTable> & params_ptr() const
+
+   .. cpp:class:: Stage
+
+      Internal stage representation.
+
+
+      .. cpp:member:: std::string name
+
+         Stage name for profiling
+
+
+      .. cpp:member:: std::variant<Graph, LoopNode> content
+
+         Either a one-shot Graph or a LoopNode

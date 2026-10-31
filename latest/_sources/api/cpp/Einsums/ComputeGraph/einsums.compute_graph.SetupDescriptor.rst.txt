@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SetupDescriptor:
+
+=======================================
+einsums::compute_graph::SetupDescriptor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SetupDescriptor
+
+   Metadata for setup nodes: a body computed once per bound problem.
+
+   A setup body holds the computation that depends only on what a caller binds and not on
+   how many times the graph is replayed: a fitting, a metric inverse, an integral transform.
+   Structurally it is a sub-graph exactly as a loop body is, and everything that walks,
+   expands, or refuses a sub-graph reaches it through ``is_control_flow``. What differs is
+   when it runs: the executor skips the body entirely once it has computed, so the node
+   costs one boolean per replay, and a bind is what puts it back to work.
+
+   Its outputs therefore live ACROSS replays and must not be freed between them, which
+   ``passes::FreeInsertion`` is told about rather than left to infer.
+
+   .. seealso::
+
+      Graph::add_setup
+
+   .. seealso::
+
+      SetupState
+
+
+   .. cpp:function:: bool computed() const noexcept
+
+      Whether the body has run since the last bind.
+
+      :returns: True when the outputs on hand are current; false on a node carrying no state.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::shared_ptr<Graph> body
+
+      The subgraph computed once per bound problem.
+
+
+   .. cpp:member:: std::shared_ptr<SetupState> state
+
+      Live state shared with the executor.

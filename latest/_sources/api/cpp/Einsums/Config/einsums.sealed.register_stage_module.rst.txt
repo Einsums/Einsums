@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sealed.register_stage_module:
+
+======================================
+einsums::sealed::register_stage_module
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Config/ABI.hpp``.
+
+.. cpp:namespace:: einsums::sealed
+
+.. cpp:function:: bool register_stage_module(const char *name)
+
+   Record that a stage module bound to *this* library, and answer whether it
+   had already.
+
+   The side effect is the check: a module bound to another copy registers in that copy's table.

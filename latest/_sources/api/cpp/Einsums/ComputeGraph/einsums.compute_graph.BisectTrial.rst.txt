@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BisectTrial:
+
+===================================
+einsums::compute_graph::BisectTrial
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/BisectDriver.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BisectTrial
+
+   What one pass did to the numbers.
+
+
+   .. cpp:member:: std::string name
+
+      The pass under test.
+
+
+   .. cpp:member:: std::string phase
+
+      Its phase, as ``pass_phase_name`` spells it.
+
+
+   .. cpp:member:: std::string tier
+
+      Its tier, as ``pass_tier_name`` spells it.
+
+
+   .. cpp:member:: bool modified
+
+      Whether the pass reported changing anything. A pass that did not fire cannot be the cause
+      of a divergence, and saying so is the difference between "cleared" and "never ran".
+
+
+   .. cpp:member:: bool comparable
+
+      Whether any interface output could be compared at all.
+
+
+   .. cpp:member:: double norm_relative
+
+      Largest norm-relative gap over the outputs both runs wrote.
+
+
+   .. cpp:member:: double max_absolute
+
+      Largest absolute gap over the same outputs.
+
+
+   .. cpp:member:: bool bitwise
+
+      Whether every compared element was identical.
+
+
+   .. cpp:member:: bool nonfinite_disagreement
+
+      The two runs disagree about WHERE the non-finite values are, which no norm describes.
+
+
+   .. cpp:member:: double bound
+
+      What ``norm_relative`` was held to. See ``tier_bound``.
+
+
+   .. cpp:member:: bool diverged
+
+      Whether the gap exceeded ``bound``.
+
+
+   .. cpp:member:: std::size_t outputs_not_written
+
+      How many interface outputs this trial stopped writing, and so did not compare.
+
+
+   .. cpp:member:: std::string note
+
+      Anything that needs saying: a trial that threw, an output that could not be read.

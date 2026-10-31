@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.save_graph_string:
+
+=========================================
+einsums::compute_graph::save_graph_string
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<std::string, GraphError> save_graph_string(const Graph &graph, const SaveOptions &options)
+
+   Render ``graph`` as ``einsums_graph_ir`` text.
+
+   .. versionadded:: 2.0.0
+
+   :param graph: The graph to write.
+   :param options: Layout and provenance.
+   :returns: The document, or the reason it refused.

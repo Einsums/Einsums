@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_sandwich:
+
+========================================
+einsums::compute_graph::grouped_sandwich
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept CType, CoreBasicTensorConcept AType, CoreBasicTensorConcept MType, CoreBasicTensorConcept PType, CoreBasicTensorConcept SType> requires (std::is_same_v<typename CType::ValueType, typename AType::ValueType> && std::is_same_v<typename CType::ValueType, typename MType::ValueType> && std::is_same_v<typename CType::ValueType, typename PType::ValueType> && std::is_same_v<typename CType::ValueType, typename SType::ValueType> && std::is_floating_point_v<typename CType::ValueType>) void grouped_sandwich(std::vector<CType *> c_list, std::vector<const AType *> a_list, std::vector<const MType *> m_list, std::vector<const PType *> p_list, std::vector<const SType *> s_list)
+
+   Emit one node holding many independent dressed sandwich accumulations: ``C_i += sum_q B_q S_i B_q^T`` with ``B_q = A_i[q] - P_i^T M_i[q]``, the whole run under one OpenMP region.
+
+   The shape this exists for is the DLPNO-CCSD Eq. 76 residual term with its
+   Eq. 93 T1-dressing, which the naive emission spells as a copy of ``A_i``,
+   an in-place dressing, a half product ``W`` the size of ``A_i``, and a
+   second contraction reading both - EIGHT full streams of the largest
+   per-pair data in the iteration where one suffices. Here every member
+   streams ``A_i`` once and keeps everything else in cache. The q slices are
+   tiled into cache-resident blocks and accumulated in ascending order on one
+   thread, so results match the naive emission to roundoff, not bitwise.
+
+   Every member is independent and members are threaded over, each one's
+   arithmetic serial inside its thread, so replays are deterministic whatever
+   the schedule.
+
+   Operand shapes per member, all column-major: ``A_i`` is ``(nq, na, na)``
+   with the auxiliary axis fastest, ``M_i`` is ``(nq, nk, na)``, ``P_i`` is
+   ``(nk, na)``, ``S_i`` is ``(na, na)``, and ``C_i`` is ``(na, na)``,
+   accumulated into (``beta = 1`` semantics, so the node reads its
+   destinations). ``P_i``, ``S_i`` and ``C_i`` must be column-contiguous;
+   ``A_i`` and ``M_i`` may be arbitrary views. Destinations must be distinct.
+
+   Outside capture this executes immediately, so the same call works eagerly.

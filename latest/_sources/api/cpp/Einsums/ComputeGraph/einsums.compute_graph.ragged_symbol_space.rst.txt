@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ragged_symbol_space:
+
+===========================================
+einsums::compute_graph::ragged_symbol_space
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view ragged_symbol_space(std::string_view symbol) noexcept
+
+   The index-space name a ragged symbol is ragged over.
+
+   .. versionadded:: 2.0.0
+
+   :param symbol: A symbol ``is_ragged_symbol`` accepts.
+   :returns: The space name, or an empty view when ``symbol`` is not ragged.

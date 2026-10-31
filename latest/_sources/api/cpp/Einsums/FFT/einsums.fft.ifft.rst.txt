@@ -1,0 +1,72 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.fft.ifft:
+
+==================
+einsums::fft::ifft
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/FFT.hpp``.
+
+.. cpp:namespace:: einsums::fft
+
+.. cpp:function:: void ifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result)
+
+   Performs the inverse fast Fourier transform on the input tensor using the linked FFT library.
+
+   .. versionadded:: 1.0.0
+
+   :param a: The input tensor.
+   :param result: The output tensor.
+   :throws DimensionError: When the sizes of the input and output are invalid. The input needs to have more than half the size of the output.
+
+
+.. cpp:function:: void ifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
+
+   Performs the inverse fast Fourier transform on the input tensor using the linked FFT library.
+
+   .. versionadded:: 1.0.0
+
+   :param a: The input tensor.
+   :param result: The output tensor.
+   :throws DimensionError: When the sizes of the input and output are invalid. The input needs to have more than half the size of the output.
+
+
+.. cpp:function:: void ifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result)
+
+   Performs the inverse fast Fourier transform on the input tensor using the linked FFT library.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      This overload now throws an exception when the inputs have invalid sizes. Previously it did
+      not throw and was instead prone to buffer overruns.
+
+   :param a: The input tensor.
+   :param result: The output tensor.
+   :throws DimensionError: When the sizes of the input and output are invalid. The input needs to be at least as large as the output.
+
+
+.. cpp:function:: void ifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result)
+
+   Performs the inverse fast Fourier transform on the input tensor using the linked FFT library.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      This overload now throws an exception when the inputs have invalid sizes. Previously it did
+      not throw and was instead prone to buffer overruns.
+
+   :param a: The input tensor.
+   :param result: The output tensor.
+   :throws DimensionError: When the sizes of the input and output are invalid. The input needs to be at least as large as the output.

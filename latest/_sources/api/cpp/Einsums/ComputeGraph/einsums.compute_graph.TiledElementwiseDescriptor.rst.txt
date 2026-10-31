@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TiledElementwiseDescriptor:
+
+==================================================
+einsums::compute_graph::TiledElementwiseDescriptor
+==================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TiledElementwiseDescriptor
+
+   Metadata for a TILED elementwise node (scale or axpy).
+
+   Like ``TiledEinsumDescriptor``, these record as ``OpKind::Custom`` and run
+   per tile, so without a descriptor the operation and its scalar are sealed
+   inside a closure. Carrying them lets TiledExpansion lower the node into one
+   dense op per populated tile.
+
+   A distinct type from ``ScaleDescriptor`` and ``AxpbyDescriptor`` for the
+   same reason the tiled einsum has its own: passes probe ``get_if<...>`` for
+   those without checking the node kind, and a tiled operand has no single
+   buffer for them to work on.
+
+   The operand TensorIds are on the node itself. A Scale reads and writes one
+   tensor, listed in both ``Node::inputs`` and ``Node::outputs``; an Axpy
+   reads X and Y and writes Y, so Y appears in both lists too. A Divide reads A
+   and B, writes C, and additionally reads C when ``beta != 0``.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: TiledElementwiseOp op
+
+   .. cpp:member:: std::shared_ptr<TiledElementwiseParams> params
+
+      Live scalar, shared with the executor: a pass that rewrites this changes
+      what the next ``graph.execute()`` computes.

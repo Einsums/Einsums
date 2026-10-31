@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.copy:
+
+===================
+einsums::blas::copy
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void copy(int_t n, const T *x, int_t inc_x, T *y, int_t inc_y)
+
+   Copy data from one vector to another.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements to copy.
+   :param x: The input vector.
+   :param inc_x: The skip value for the input vector. If negative, the vector is traversed backwards. If zero, the values are broadcast to the output vector.
+   :param y: The output vector.
+   :param inc_y: The skip value for the output vector. If negative, the vector is traversed backwards.

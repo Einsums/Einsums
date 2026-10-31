@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.det:
+
+============================
+einsums::linear_algebra::det
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> typename AType::ValueType det(const AType &A)
+
+   Computes the determinant of a matrix.
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the matrix.
+   :param A: The matrix to analyze.
+   :throws DimensionError: If the input matrix is not square.
+   :returns: The determinant of the matrix.

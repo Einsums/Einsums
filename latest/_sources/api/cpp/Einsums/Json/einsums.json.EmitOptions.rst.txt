@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.EmitOptions:
+
+==========================
+einsums::json::EmitOptions
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: EmitOptions
+
+   Knobs for ``emit``.
+
+
+   .. cpp:member:: EmitStyle style
+
+      Layout.
+
+
+   .. cpp:member:: std::size_t inline_width
+
+      Longest canonical rendering that ``EmitStyle::Pretty`` still puts on one
+      line. Ignored by ``EmitStyle::Canonical``.

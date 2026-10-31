@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.CommunicationScheduling:
+
+=======================================================
+einsums::compute_graph::passes::CommunicationScheduling
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/CommunicationScheduling.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: CommunicationScheduling : public OptimizerPass
+
+   Distributed-execution pass: overlaps collective communication with computation.
+
+   .. note::
+
+      Distributed (MPI) execution is a work in progress. This pass runs only on
+      MPI-enabled (or mock) builds, and the distributed backend is not yet complete.
+
+   The distributed analogue of `IOPrefetch` for disk I/O. It converts each synchronous `Allreduce` into
+   a two-phase asynchronous node using the tensor handle's `iallreduce_sum_fn`: `async_start` fires a
+   non-blocking `iallreduce` (storing the `comm::Request`), and `async_finish` waits on it. The
+   synchronous `execute` is cleared, and the `DataflowExecutor` — which already supports
+   `Node::async_start` / `async_finish` — is then free to schedule independent work between the start and
+   the wait, hiding the collective's latency.
+
+   In `create_default()` this runs inside the distributed block
+   (`if constexpr (comm::has_mpi || comm::is_mock)`), as the last distributed pass, after the Allreduces
+   have been inserted and de-duplicated. It self-guards with `world_size() <= 1` and is a no-op on a
+   single rank.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      // Run under MPI, e.g. `mpirun -np 4 ./my_app`.
+      cg::Graph graph("comm_sched");
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("ij <- ik ; kj", 0.0, &C, 1.0, A, B);     // -> allreduce(C)
+          cg::einsum("pq <- pr ; rq", 0.0, &D, 1.0, E, F);     // independent work to overlap
+      }
+      graph.apply(cg::PassManager::create_default());          // allreduce(C) becomes iallreduce + wait
+
+   **Example (Python)**
+
+   No standalone Python entry point: not individually exposed; runs inside the distributed pipeline via
+   `g.apply(cg.default_pass_manager())` and only fires on more than one MPI rank.
+
+   **Limitations**
+
+   - A no-op on a single rank; exercised only under real MPI (or the mock backend with `world_size() > 1`).
+   - Splits **Allreduce** only; despite the family description, Allgather (and other collectives) are not yet converted to async form.
+   - Requires the tensor handle to provide `iallreduce_sum_fn`; nodes without it are left synchronous.
+   - Only marks the node as two-phase — actual overlap depends on the DataflowExecutor finding independent work between start and finish; it does not itself reorder nodes to create that slack.
+
+   **Future improvements**
+
+   - Async-split Allgather and other collectives, not just Allreduce.
+   - Actively hoist independent computation between `async_start` and `async_finish` to widen the overlap window rather than relying on the existing schedule.
+
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Every feature today: it swaps a synchronous allreduce for the asynchronous one over the same tensor.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: size_t num_scheduled() const

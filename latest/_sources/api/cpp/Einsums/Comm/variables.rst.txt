@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Comm_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Platform.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:var:: inline constexpr bool has_mpi
+
+   True when MPI support is compiled in.
+
+
+.. cpp:var:: inline constexpr bool is_mock
+
+   True when running without MPI (serial mock backend).

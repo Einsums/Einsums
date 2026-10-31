@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_tuple_from_array:
+
+================================
+einsums::create_tuple_from_array
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Tuple.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t N, typename T> constexpr auto create_tuple_from_array(const T &arr)
+
+   Converts an array into a tuple with the same representation.
+
+   .. versionadded:: 1.1.0
+
+   :tparam N: The number of elements in the array.
+   :tparam T: The array type, such as std::array or std::vector.
+   :param arr: The array to copy.
+   :returns: A tuple whose elements match the passed array.

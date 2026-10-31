@@ -1,0 +1,21 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_GPU_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Runtime.hpp``.
+
+.. c:macro:: EINSUMS_GPU_MOCK_KERNEL_SCOPE
+
+   Declare a device-kernel scope for the rest of the enclosing block.

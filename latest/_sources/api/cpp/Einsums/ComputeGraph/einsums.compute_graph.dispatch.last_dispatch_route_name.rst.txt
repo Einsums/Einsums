@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.last_dispatch_route_name:
+
+==========================================================
+einsums::compute_graph::dispatch::last_dispatch_route_name
+==========================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Detail/ErasedEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: std::string last_dispatch_route_name()
+
+   The kernel route the most recent contraction on this thread took, as a string.
+
+   A copy of ``last_dispatch_route`` for the Python bindings, which cannot hold the
+   thread-local slot itself. It serves the same purpose: a test asserts that a spec reached its
+   fast path, since a fallback to the generic loop still computes the right values and only the
+   route shows it. Read it on the thread that ran the contraction, straight after the call.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The route name, or ``"none"`` if this thread has run no contraction.

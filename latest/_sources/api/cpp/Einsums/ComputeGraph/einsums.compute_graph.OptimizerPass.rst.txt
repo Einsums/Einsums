@@ -1,0 +1,374 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.OptimizerPass:
+
+=====================================
+einsums::compute_graph::OptimizerPass
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: OptimizerPass
+
+   Abstract base class for optimization passes over a computation graph.
+
+   An optimization pass inspects a Graph's node list and may modify it to improve
+   performance. Passes can fuse operations, eliminate redundancies, reorder nodes
+   for better memory behavior, or analyze the graph and report recommendations.
+
+   **Implementing a custom pass**
+
+   .. code-block:: text
+
+      class MyPass : public OptimizerPass {
+      public:
+          std::string name() const override { return "MyPass"; }
+      protected:
+          bool transform(Graph &graph) override {
+              // Inspect and modify graph.nodes()
+              return false;
+          }
+      };
+
+   A pass implements ``transform`` and is run through ``run``, which records the change on
+   the graph for a later save to read.
+
+   .. note::
+
+      Passes that modify the graph should call graph.mark_sorted() if they
+      produce a valid topological ordering, to prevent unnecessary re-sorting.
+
+
+   .. cpp:function:: OptimizerPass() = default
+
+      Spelled out because the virtual destructor suppresses the implicit move constructor: without
+      these, moving a derived pass (``Graph::apply`` returns one by value) COPIES this base, and
+      copying ``_skips`` allocates. Defaulted, so the behaviour is the compiler's either way.
+      @{
+
+
+   .. cpp:function:: OptimizerPass(const OptimizerPass &) = default
+
+   .. cpp:function:: OptimizerPass(OptimizerPass &&) noexcept = default
+
+   .. cpp:function:: virtual ~OptimizerPass() = default
+
+   .. cpp:function:: OptimizerPass & operator=(const OptimizerPass &) = default
+
+   .. cpp:function:: OptimizerPass & operator=(OptimizerPass &&) noexcept = default
+
+   .. cpp:function:: virtual std::string name() const = 0
+
+      Human-readable pass name, exposed so Python tests can assert which pass they're invoking.
+
+
+   .. cpp:function:: bool run(Graph &graph)
+
+      Run the optimization pass on the given graph.
+
+      Runs ``transform`` and, when it changed ``graph``, records the change on the graph the way a
+      pipeline does: a ``PassPhase::StructuralAlgebraic`` pass joins the provenance
+      (``Graph::structural_passes``), and a ``PassPhase::StructuralResource`` or
+      ``PassPhase::Tuning`` pass whose change a save would write
+      (``changes_saved_form``) makes the save refuse
+      (``Graph::machine_dependent_passes``). Not virtual, so no way of running a pass skips
+      the record.
+
+      Only ``graph`` itself is visited. A pipeline also visits the sub-graphs of a pass that
+      asks for it (``recurse_into_subgraphs``).
+
+      :param graph: The graph to optimize.
+      :returns: True if the graph was modified, false if no changes were made.
+
+
+   .. cpp:function:: virtual PassPhase phase() const
+
+      Which pipeline phase this pass belongs to.
+
+      The default is ``PassPhase::Tuning``, which is the phase whose output is
+      never saved and always re-derived. That is deliberate: a new pass that
+      nobody classified must not have its output silently written into a graph
+      file, so the safe answer is the one that costs a re-run rather than a
+      wrong number on the next machine. Every pass in this library overrides
+      it, and ``PassPhases.cpp`` holds a hard-coded table that fails when one
+      does not, so the default is a backstop and not a convention.
+
+      Two obligations come with the label:
+
+      - ``PassPhase::Analysis`` and ``PassPhase::Diagnostic`` passes must not change the node set. ``PassManager::run`` watches ``Graph::structure_version`` around every pass and throws when one of these moves it, so the rule is mechanical rather than a comment.
+      - ``PassPhase::StructuralAlgebraic`` output is what a save persists, so a pass here may consult a cost model only as a *hint*: its output must remain valid, if not optimal, under a different one.
+
+
+   .. cpp:function:: virtual PassTier tier() const
+
+      What this pass may do to the numbers. See ``PassTier``.
+
+      Defaults to ``PassTier::Tuning``, which is the honest default for the
+      same reason the phase default is: a pass nobody has classified is a pass
+      nobody has measured, and Tuning is the tier that claims least about the
+      algebra while still promising the arithmetic is untouched.
+
+      A pass that CHANGES the arithmetic must say so. Leaving this default on
+      one that re-associates is the failure this is worth guarding against, and
+      the tier table in ``PassPhases.cpp`` is what turns that into a test
+      rather than a comment.
+
+
+   .. cpp:function:: virtual bool changes_saved_form() const
+
+      Whether a change this pass makes reaches what a save writes.
+
+      True by default. A pass that writes only state a save leaves out (a node's thread width,
+      stream, or cost estimate) returns false, and ``run`` then does not count it against a
+      save: refusing would protect a file that is the same either way. Only meaningful for
+      a ``PassPhase::StructuralResource`` or ``PassPhase::Tuning`` pass, the phases whose
+      changes a save refuses.
+
+      .. versionadded:: 2.0.0
+
+      :returns: False when every change the pass makes is one a save drops.
+
+
+   .. cpp:function:: virtual bool recurse_into_subgraphs() const
+
+      Should ``PassManager`` re-invoke this pass on every sub-graph?
+
+      Controls whether the PassManager automatically descends into
+      loop bodies and conditional branches (via
+      ``Graph::for_each_subgraph``) and calls ``transform()`` again at each
+      level. Default ``false``.
+
+      Passes whose semantics are *correct on a flat sub-graph* (CSE,
+      ScaleAbsorption, PermuteFusion, …) should return ``true`` once
+      verified: that lets the same per-pass tests cover bodies.
+
+      Passes whose effect must *cross the loop boundary* (Materialization
+      hoisting allocs to the parent, FreeInsertion placing frees after
+      the loop, TransferInsertion hoisting H2D for loop-invariant inputs)
+      should keep this ``false`` and instead walk children themselves
+      inside ``transform()`` via ``Graph::for_each_subgraph``. Their output
+      lands in the *parent* graph, not the child.
+
+      Passes that need parent context to decide correctness must also keep
+      this ``false`` until they grow the required cross-graph reasoning.
+      ``DeadNodeElimination`` and ``CSE`` are the current instances, and both
+      opt out here while walking the tree THEMSELVES inside ``transform()``, which
+      is not the same as not running on bodies.
+
+      What it takes to recurse safely, by example:
+      ``ConstantFolding`` folds only nodes whose tensors are materialized at
+      pass time, so a body's deferred workspace is skipped rather than
+      executed against unallocated storage;
+      ``Reorder`` encodes WAR edges (reader → writer) and not just
+      ``last_writer``, which is exactly what keeps a loop-carried
+      read-before-write ahead of the write that would otherwise overtake it.
+
+      Known gap: the program-order guard in ``PassManager::run`` checks the
+      TOP-LEVEL graph only, so a pass that returns ``true`` here rewrites
+      bodies unguarded. Extending it to bodies gives false positives: its
+      scan-order "earlier writer" test is only a proxy for "this read has a
+      producer", and Reorder trips it without changing semantics. Closing the
+      gap needs the guard to use real dependence edges.
+
+      One thing recursion does NOT buy you: a rewrite that bakes a lambda over
+      ``TensorHandle::tensor_ptr`` is wrong at every level, loop or not. Use
+      ``Graph::live_tensor_ptr``.
+
+
+   .. cpp:function:: virtual std::optional<NodeFeatures> understood_features() const
+
+      The node features this pass understands, or nothing for a pass that has not said.
+
+      A pass must leave every node carrying a feature outside this set exactly as it found it:
+      not rewritten, not merged, not removed. Asking ``understands`` where the pass picks its
+      candidates is how it keeps that promise, and with ``einsums:pass:verify`` on the pass manager
+      checks it, fingerprinting every such node before the pass and throwing, naming the pass and
+      the feature, if one came back different or not at all.
+
+      Every pass in this library declares a set. A pass that never interprets a node, and only
+      moves, schedules or deletes by dataflow, declares ``NodeFeatures::all``. A pass written
+      outside the library that does not override this is left unchecked, as before.
+
+      The point is the NEXT feature. A pass written before a feature existed reads a node
+      carrying it as the plain operation it knows; with a declared set it leaves that node alone
+      instead, until someone teaches it the feature and adds it here.
+
+      :returns: The set, or ``std::nullopt`` when the pass has not declared one.
+
+
+   .. cpp:function:: bool understands(const Graph &graph, const Node &node) const
+
+      Whether this pass may rewrite ``node``: every feature it carries is one the pass understands.
+
+      :param graph: The graph ``node`` belongs to.
+      :param node: The node.
+      :returns: True when ``understood_features`` covers ``features_of`` the node, or declares nothing.
+
+
+   .. cpp:function:: virtual void reset_stats()
+
+      Zero this pass's per-apply statistics.
+
+      ``PassManager::run`` calls this ONCE per ``apply()``, before descending,
+      so the counter getters report totals over the whole subgraph tree rather
+      than whatever the last-visited subgraph happened to contribute.
+
+      Any pass that maintains counters must override this and must NOT zero
+      them inside ``transform()``: with ``recurse_into_subgraphs() == true`` the
+      driver calls ``transform()`` once per subgraph, so a reset there discards every
+      earlier level. That is silent for a single loop (the body is visited
+      last, so its count survives) and wrong the moment a graph has a
+      conditional -- the empty else-branch resets the counters to zero -- or
+      more than one loop. ``graph.explain()`` reads these getters.
+
+      The corollary is that a counter is a RUNNING TOTAL inside one ``apply()``, so ``transform()``
+      cannot test it against zero to decide what it returns. ``PassCounter`` is that test.
+
+
+   .. cpp:function:: void reset_all_stats()
+
+      Zero everything the manager owns, then the pass's own counters.
+
+      ``PassManager::run`` calls THIS, not ``reset_stats``, so the skip-reason
+      tally is cleared once per ``apply()`` without every pass having to
+      remember to chain to a base implementation.
+
+
+   .. cpp:function:: std::vector<Decision> decisions() const
+
+      Everything this pass did, declined and reported on its last apply, as records.
+
+      The reader's counterpart of ``explain`` and ``skip_reasons``, which print from the same
+      calls: match a decision's ``Decision::code`` rather than its words.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The decisions in the order they were made, each with the graph it was made in.
+
+
+   .. cpp:function:: std::size_t num_decisions() const noexcept
+
+      How many decisions this pass holds: where a driver starts stamping a graph's name.
+
+      :returns: The count.
+
+
+   .. cpp:function:: void name_graph(std::size_t from, std::string_view graph)
+
+      Name ``graph`` on every decision from ``from`` on that names none, for a driver that has just run the pass on that graph.
+
+      :param from: The first decision the run made.
+      :param graph: The graph's name.
+
+
+   .. cpp:function:: std::vector<std::pair<std::string, std::size_t>> skip_reasons() const
+
+      Why this pass declined the candidates it looked at.
+
+      One entry per distinct reason, with the number of candidates that hit it,
+      ordered most-frequent first. Populated by ``note_skip`` during
+      ``transform()``; empty for a pass that never declines anything or has not been
+      taught to explain itself yet.
+
+      This is the negative half of ``explain``: `explain()` says what a pass
+      DID, `skip_reasons()` says what it declined and why. A pipeline that
+      looks inert usually has a full skip tally - that is the useful signal,
+      and reading it should not require rebuilding with a debugger attached.
+
+      Exposed because "reading it should not require a debugger" is a claim
+      about every language the library is used from, and the passes whose whole
+      behaviour is a list of refusals are the ones a caller most needs it for.
+      The report ``PassManager::explain`` builds carries the REGION-level
+      declines only, so a per-candidate reason is otherwise reachable from C++
+      and nowhere else.
+
+      :returns: One (reason, count) pair per distinct reason.
+
+
+   .. cpp:function:: virtual std::vector<std::string> explain() const
+
+      What this pass did on its last run, for ``PassManager::explain``.
+
+      One entry per line of the report; empty means there is nothing worth
+      saying, which is the default and what a pass with no counters wants. A
+      pass that did nothing should return empty rather than a line saying so,
+      so a quiet report means a quiet pipeline.
+
+      Lives here, next to the counters it reads, rather than in a type switch
+      inside the manager: a pass that grows a statistic updates one file, and a
+      pass defined outside this library gets summarized like any other.
+
+      The default prints the text of every decision recorded with ``applied`` at level 1, so a
+      pass that records its work that way says it here with no override; one that records
+      nothing says nothing.
+
+      Inline, as every virtual here is: an out-of-line one would be the class's key function,
+      putting its vtable in the library, where hidden visibility keeps it from the programs that
+      derive their own passes.
+
+
+   .. cpp:function:: virtual std::vector<std::pair<NodeId, TensorId>> compensated_reads() const
+
+      Reads this pass intentionally redirected to a tensor's INITIAL contents by compensating the reader, exempted from the program-order validator.
+
+      The validator in ``PassManager::run`` throws when a read that observed an
+      in-graph writer flips to observing the tensor's initial contents - the
+      writer-removed-under-a-reader bug class. A pass that removes a
+      writer and instead COMPENSATES the reader (e.g. ScaleAbsorption deleting a
+      ``scale`` and folding its factor into a downstream einsum's
+      ``ab_prefactor``, so the read is exact despite losing the writer) declares
+      the affected ``(reader NodeId, TensorId)`` pairs here; the validator skips
+      exactly those. The pass owns the compensation's correctness — its own
+      numeric tests must cover it, since the structural guard is waived. Return
+      the pairs recorded during ``transform()``; empty by default (no exemptions).
+
+
+   .. cpp:function:: void set_verbosity(int level)
+
+      Set the pass's introspection verbosity.
+
+      Levels: 0 = silent (default), 1 = summary (aggregate effect),
+      2 = detail (each modification applied), 3 = trace (each candidate
+      examined, including why it was rejected). Output goes to the passes
+      logger, prefixed with the pass name: standard error unless
+      ``--einsums:log:destination`` says otherwise, at any log level. Usually set in bulk via
+      ``PassManager::set_verbosity`` rather than per pass.
+
+      From level 2 up, ``PassManager::explain()`` also grows a "not applied"
+      section built from ``skip_reasons`` - the aggregated form of what
+      level 3 narrates per candidate. Reach for that first when a pipeline
+      looks inert: the tally names the gate, and is a returned string rather
+      than narration you have to read past.
+
+
+   .. cpp:function:: int verbosity() const
+
+      Current verbosity level (see set_verbosity).
+
+
+   .. cpp:function:: void set_budget(SearchBudget budget)
+
+      Give this pass a wall-clock allowance for its next ``run``.
+
+      ``PassManager::run`` sets one before every pass, freshly, so an allowance is per-run and
+      not per-pipeline; a pass that kept a deadline across runs would give the second graph
+      whatever the first one left. Passes that do not search ignore it.
+
+      :param budget: The allowance. A default-constructed one is unlimited.
+
+
+   .. cpp:function:: const SearchBudget & budget() const noexcept
+
+      The allowance for this run.
+
+      :returns: The budget the manager set, or an unlimited one when nobody set anything.

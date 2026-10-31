@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.DistributionMap:
+
+==============================
+einsums::comm::DistributionMap
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/DistributionMap.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: template <size_t Rank> DistributionMap
+
+   Describes how a tensor is partitioned across MPI ranks.
+
+   Each dimension has an independent distribution strategy. The default
+   is `auto_distribute()` which replicates small tensors and block-distributes
+   large ones along the largest dimension.
+
+   :tparam Rank: Number of tensor dimensions.
+
+
+   .. cpp:function:: constexpr bool is_replicated() const
+
+      Check if this distribution is fully replicated (all dims replicated).
+
+
+   .. cpp:function:: size_t num_blocks(size_t dim) const
+
+      Number of blocks along dimension ``dim`` for this strategy.
+
+
+   .. cpp:function:: std::pair<size_t, size_t> local_range(size_t dim, int rank) const
+
+      Compute the range [start, end) of elements owned by ``rank`` along ``dim``.
+
+
+   .. cpp:function:: std::array<size_t, Rank> local_dims(int rank) const
+
+      Compute local dimensions for ``rank``.
+
+
+   .. cpp:member:: std::array<DistStrategy, Rank> strategy
+
+   .. cpp:member:: std::array<size_t, Rank> block_size
+
+   .. cpp:member:: std::array<size_t, Rank> global_dims
+
+   .. cpp:member:: int num_ranks

@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.ctrsyl:
+
+=============================
+einsums::blas::vendor::ctrsyl
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t ctrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const std::complex<float> *a, int_t lda, const std::complex<float> *b, int_t ldb, std::complex<float> *c, int_t ldc, float *scale)
+
+   Solve a Sylvester equation of the form :math:`\mathbf{AX} \pm \mathbf{XB} = \alpha\mathbf{C}`.
+
+   .. versionadded:: 2.0.0
+
+   :param trana: Whether to transpose the first matrix. Case insensitive. Can be either 't', 'c', or 'n'.
+   :param tranb: Whether to transpose the second matrix. Case insensitive. Can be either 't', 'c', or 'n'.
+   :param isgn: Whether the operation between the terms is addition or subtraction. Can be either 1 or -1.
+   :param m: The number of rows in the output matrix.
+   :param n: The number of columns in the output matrix.
+   :param a: The first input matrix.
+   :param lda: The leading dimension of the first input matrix.
+   :param b: The second matrix.
+   :param ldb: The leading dimension of the second matrix.
+   :param c: On entry, the right-hand side matrix. On exit, the :math:`\mathbf{X}` matrix, scaled to avoid overflow/underflow.
+   :param ldc: The leading dimension of the right-hand side matrix.
+   :param scale: The scale factor that avoid overflow/underflow in the solution matrix.
+   :returns: 0 on success, 1 if the inputs have similar eigenvalues that needed to be perturbed. If negative, then there was a parameter with an invalid value. The absolute value of the return gives the parameter.

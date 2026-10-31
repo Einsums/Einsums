@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.register_arguments:
+
+===========================
+einsums::register_arguments
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/RuntimeConfiguration.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void register_arguments(const std::function<void ()> &)
+
+   Add a function to the list of startup functions to add module-specific command line arguments.
+
+   Call before initialization; the function runs during it to register arguments. For example:
+
+   .. code-block:: text
+
+      void add_Einsums_BufferAllocator_arguments() {
+          // The descriptors in Einsums/BufferAllocator/Options.hpp carry the
+          // names, help, and defaults; registration is all that is left here.
+          cl::register_option(option::BufferSize);
+          cl::register_option(option::WorkBufferSize);
+
+          // Ask to hear about later changes to them.
+          cl::on_change(option::BufferSize, &detail::Einsums_BufferAllocator_vars::update_max_size);
+      }
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0

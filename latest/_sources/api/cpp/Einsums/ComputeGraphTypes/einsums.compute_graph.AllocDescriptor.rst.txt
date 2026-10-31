@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.AllocDescriptor:
+
+=======================================
+einsums::compute_graph::AllocDescriptor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: AllocDescriptor
+
+   Metadata for memory allocation/deallocation nodes.
+
+   A tensor's lifetime boundaries, for MemoryPlanning; the graph owns the storage.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: TensorId tensor_id
+
+      Which tensor this alloc/free refers to
+
+
+   .. cpp:member:: size_t size_bytes
+
+      Size of the allocation in bytes
+
+
+   .. cpp:member:: std::string tensor_name
+
+      Name for debugging

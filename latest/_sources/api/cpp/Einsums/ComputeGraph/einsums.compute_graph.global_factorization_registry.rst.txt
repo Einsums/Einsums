@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.global_factorization_registry:
+
+=====================================================
+einsums::compute_graph::global_factorization_registry
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Factorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: FactorizationRegistry & global_factorization_registry()
+
+   The process-wide provider registry.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The registry. Never null.

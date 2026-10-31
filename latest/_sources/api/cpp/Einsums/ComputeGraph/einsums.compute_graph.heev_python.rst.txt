@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.heev_python:
+
+===================================
+einsums::compute_graph::heev_python
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename AType, typename WType> requires (IsComplexV<typename AType::ValueType> && std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>> && DenseOrTiled<AType> && DenseOrTiled<WType>) void heev_python(AType *A, WType *W)
+
+   Python-facing heev: Hermitian eigendecomposition (complex A, real W). See
+   syev_python for why this wrapper exists.

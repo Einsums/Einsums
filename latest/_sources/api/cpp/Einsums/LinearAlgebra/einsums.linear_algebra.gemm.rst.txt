@@ -1,0 +1,151 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.gemm:
+
+=============================
+einsums::linear_algebra::gemm
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U> requires (std::convertible_to<U, typename AType::ValueType> && SameUnderlying<AType, BType, CType>) void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C)
+
+   General matrix multiplication.
+
+   Takes two rank-2 tensors ( ``A`` and ``B`` ) performs the multiplication and stores the result in to another
+   rank-2 tensor that is passed in ( ``C`` ).
+
+   In this equation, ``TransA`` is op(A) and ``TransB`` is op(B).
+
+   .. math::
+
+      C = \alpha \;op(A) \;op(B) + \beta C
+
+   .. code-block:: text
+
+      auto A = einsums::create_random_tensor("A", 3, 3);
+      auto B = einsums::create_random_tensor("B", 3, 3);
+      auto C = einsums::create_tensor("C", 3, 3);
+
+      einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+
+   All operands must share the same stored type, one of `float`, `double`, `std::complex<float>`, or
+   `std::complex<double>`; the type of the scale factors may differ and will be converted to match. The following
+   tensor type combinations are supported.
+
+   - `BasicTensor * BasicTensor = BasicTensor`
+   - `BlockTensor * BlockTensor = BlockTensor`
+   - `TiledTensor * TiledTensor = TiledTensor`
+   - `OtherTensor * OtherTensor = OtherTensor`
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam TransA: Transpose A? true or false
+   :tparam TransB: Transpose B? true or false
+   :tparam AType: The tensor type of A.
+   :tparam BType: The tensor type of B.
+   :tparam CType: The tensor type of C.
+   :tparam U: The type for the scale factors.
+   :param alpha: Scaling factor for the product of A and B
+   :param A: First input tensor
+   :param B: Second input tensor
+   :param beta: Scaling factor for the output tensor C
+   :param C: Output tensor
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.
+
+
+.. cpp:function:: template <MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U> requires (std::convertible_to<U, typename AType::ValueType> && SameUnderlying<AType, BType, CType>) void gemm(char transA, char transB, const U alpha, const AType &A, const BType &B, const U beta, CType *C)
+
+   General matrix multiplication.
+
+   Takes two rank-2 tensors ( ``A`` and ``B`` ) performs the multiplication and stores the result in to another
+   rank-2 tensor that is passed in ( ``C`` ).
+
+   In this equation, ``TransA`` is op(A) and ``TransB`` is op(B).
+
+   .. math::
+
+      C = \alpha \;op(A) \;op(B) + \beta C
+
+   .. code-block:: text
+
+      auto A = einsums::create_random_tensor("A", 3, 3);
+      auto B = einsums::create_random_tensor("B", 3, 3);
+      auto C = einsums::create_tensor("C", 3, 3);
+
+      einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+
+   All operands must share the same stored type, one of `float`, `double`, `std::complex<float>`, or
+   `std::complex<double>`; the type of the scale factors may differ and will be converted to match. The following
+   tensor type combinations are supported.
+
+   - `BasicTensor * BasicTensor = BasicTensor`
+   - `BlockTensor * BlockTensor = BlockTensor`
+   - `TiledTensor * TiledTensor = TiledTensor`
+   - `OtherTensor * OtherTensor = OtherTensor`
+
+   .. versionadded:: 2.0.0
+
+   :tparam AType: The tensor type of A.
+   :tparam BType: The tensor type of B.
+   :tparam CType: The tensor type of C.
+   :tparam U: The type for the scale factors.
+   :param transA: Whether to transpose A. Case insensitive. Can be 'n', 't', or 'c'.
+   :param transB: Whether to transpose B. Case insensitive. Can be 'n', 't', or 'c'.
+   :param alpha: Scaling factor for the product of A and B
+   :param A: First input tensor
+   :param B: Second input tensor
+   :param beta: Scaling factor for the output tensor C
+   :param C: Output tensor
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.
+   :throws std::invalid_argument: If the transpose characters are invalid.
+
+
+.. cpp:function:: template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, typename U> requires (std::is_same_v<RemoveViewT<AType>, RemoveViewT<BType>> && std::convertible_to<U, typename AType::ValueType> && SameUnderlying<AType, BType>) RemoveViewT<AType> gemm(const U alpha, const AType &A, const BType &B)
+
+   General matrix multiplication. Returns new tensor.
+
+   Takes two rank-2 tensors performs the multiplication and returns the result. This is a wrapper around the in-place
+   gemm and supports the same tensor type combinations; when passed views, the result is the corresponding non-view
+   tensor type.
+
+   .. code-block:: text
+
+      auto A = einsums::create_random_tensor("A", 3, 3);
+      auto B = einsums::create_random_tensor("B", 3, 3);
+
+      auto C = einsums::linear_algebra::gemm<false, false>(1.0, A, B);
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam TransA: Transpose A?
+   :tparam TransB: Transpose B?
+   :tparam AType: The tensor type of A.
+   :tparam BType: The tensor type of B.
+   :tparam U: The type for the scale factors.
+   :param alpha: Scaling factor for the product of A and B
+   :param A: First input tensor
+   :param B: Second input tensor
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.
+   :returns: resulting tensor

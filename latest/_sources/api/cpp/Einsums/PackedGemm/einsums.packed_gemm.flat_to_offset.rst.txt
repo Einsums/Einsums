@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.flat_to_offset:
+
+====================================
+einsums::packed_gemm::flat_to_offset
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: int64_t flat_to_offset(int64_t idx, const std::vector<DimSpec> &dims)
+
+   Compute the byte offset for a flat index into a multi-dim group.
+
+   Converts flat index `idx` into multi-dimensional coordinates for `dims`
+   and returns the sum of coordinate * stride products.

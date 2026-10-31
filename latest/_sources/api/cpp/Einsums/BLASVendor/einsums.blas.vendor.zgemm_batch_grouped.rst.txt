@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.zgemm_batch_grouped:
+
+==========================================
+einsums::blas::vendor::zgemm_batch_grouped
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void zgemm_batch_grouped(const char *transa_array, const char *transb_array, const int_t *m_array, const int_t *n_array, const int_t *k_array, const std::complex<double> *alpha_array, const std::complex<double> **a_array, const int_t *lda_array, const std::complex<double> **b_array, const int_t *ldb_array, const std::complex<double> *beta_array, std::complex<double> **c_array, const int_t *ldc_array, int_t group_count, const int_t *group_size)
+
+   See ``sgemm_batch_grouped``.

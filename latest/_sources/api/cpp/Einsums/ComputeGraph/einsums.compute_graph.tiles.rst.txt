@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.tiles:
+
+=============================
+einsums::compute_graph::tiles
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: SpaceTiling tiles(std::vector<int> sizes)
+
+   A tiled axis with a partition and no space.
+
+   The tiled counterpart of ``fixed``: an axis that is cut up but means nothing chemically,
+   so it gets no space and no dim symbol and a bind may not move it.
+
+   .. versionadded:: 2.0.0
+
+   :param sizes: The tile sizes.
+   :returns: The axis.

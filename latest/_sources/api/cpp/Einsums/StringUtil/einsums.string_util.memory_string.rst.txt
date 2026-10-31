@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.string_util.memory_string:
+
+===================================
+einsums::string_util::memory_string
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/MemoryString.hpp``.
+
+.. cpp:namespace:: einsums::string_util
+
+.. cpp:function:: size_t memory_string(const std::string &mem_spec)
+
+   Converts a memory specification string into a number of bytes.
+
+   A positive number (integer or decimal, with a period or comma) followed by an optional binary
+   prefix (k, m, g, t; any case) and a unit: b or o for bytes, w for words of sizeof(size_t).
+
+   .. versionadded:: 1.1.0
+
+   :throws std::runtime_error: If the string is improperly formatted.

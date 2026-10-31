@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.gerc:
+
+============================
+einsums::compute_graph::gerc
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType, RuntimeRankTensorConcept XType, RuntimeRankTensorConcept YType> requires SameUnderlying<AType, XType, YType> void gerc(typename AType::ValueType alpha, const XType &X, const YType &Y, AType *A)
+
+   Graph-aware conjugating rank-1 update (GERC): ``A += alpha * X * Y^H``.
+
+   The Hermitian counterpart of ``ger``, which computes ``A += alpha * X * Y^T``:
+   here the second vector is conjugated. Complex operands only; for real operands
+   use ``ger``. Backed by linear_algebra::gerc (BLAS cgerc/zgerc).

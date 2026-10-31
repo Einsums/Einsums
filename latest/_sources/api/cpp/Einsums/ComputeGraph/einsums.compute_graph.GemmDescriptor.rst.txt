@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GemmDescriptor:
+
+======================================
+einsums::compute_graph::GemmDescriptor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GemmDescriptor
+
+   Metadata for ``OpKind::Gemm`` nodes: ``C = alpha*op(A)*op(B) + beta*C``.
+
+   ``trans_a`` and ``trans_b`` are the BLAS transpose characters -- ``'n'``,
+   ``'t'`` or ``'c'``, lower or upper case -- rather than the pair of bools two
+   of the three capture overloads take, because the third overload accepts
+   ``Transpose::C`` and a bool cannot spell a conjugate transpose. Recording
+   chars loses nothing and lets one descriptor serve all three.
+
+   The prefactors are SNAPSHOTS, with no live params block beside them, which is
+   the one place this descriptor departs from ``AxpbyDescriptor`` and
+   ``ElementwiseBinaryDescriptor``. Nothing rewrites a gemm's prefactors today:
+   ``ScaleAbsorption::fold_site`` folds into Einsum and Axpby only, and
+   ``Graph::update_prefactors`` refuses any node that is not an einsum. A
+   shared block exists to be written between replays, and an unwritten one is
+   only a second place for the same number to live. A pass that wants to fold
+   into a gemm adds the block then, and the rule of ``ExecutorBuilder.hpp``
+   applies until it does: rewrite these fields and call ``build_executor``
+   again.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: PrefactorScalar alpha
+
+      Prefactor on the matrix product (at-capture snapshot).
+
+
+   .. cpp:member:: PrefactorScalar beta
+
+      Prefactor on the destination (0 = overwrite).
+
+
+   .. cpp:member:: char trans_a
+
+      BLAS transpose character for A: 'n', 't' or 'c'.
+
+
+   .. cpp:member:: char trans_b
+
+      BLAS transpose character for B: 'n', 't' or 'c'.

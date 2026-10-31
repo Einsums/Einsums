@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.load_graph_string:
+
+=========================================
+einsums::compute_graph::load_graph_string
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<Graph, GraphError> load_graph_string(std::string_view text)
+
+   Read ``einsums_graph_ir`` text back as a runnable graph.
+
+   .. versionadded:: 2.0.0
+
+   :param text: The document.
+   :returns: The graph, or the first reason it could not be built.
+
+
+.. cpp:function:: expected<Graph, GraphError> load_graph_string(std::string_view text, SpaceRegistry &registry)
+
+   As ``load_graph_string``, resolving index spaces against ``registry``.
+
+   .. versionadded:: 2.0.0
+
+   :param text: The document.
+   :param registry: The registry to resolve space names in. Must outlive the graph.
+   :returns: The graph, or the failure.

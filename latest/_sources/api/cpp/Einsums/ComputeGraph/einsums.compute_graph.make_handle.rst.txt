@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_handle:
+
+===================================
+einsums::compute_graph::make_handle
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <GraphCapturableTensor TensorType> TensorHandle make_handle(const TensorType &tensor, TensorId id, const void *identity)
+
+   Construct a TensorHandle from a typed tensor.
+
+   Extracts metadata (name, rank, dims, strides, dtype) from the tensor and
+   sets up a validation function that can detect if the tensor is destroyed.
+
+   .. code-block:: text
+
+      auto A = create_random_tensor<double>("A", 10, 10);
+      auto handle = make_handle(A, 0);
+      // handle.name == "A", handle.rank == 2, handle.dims == {10, 10}
+
+   :tparam TensorType: Any type satisfying CoreBasicTensorConcept.
+   :param tensor: The tensor to create a handle for. The tensor must outlive the graph.
+   :param id: Initial ID (will be reassigned by Graph::register_tensor()).
+   :param identity: Address to record as ``TensorHandle::tensor_ptr``, when that must differ from ``tensor's`` own. Capture passes the caller's wrapper here while handing ``tensor`` the graph's stand-in (see ``Graph::adopt_operand``): the lambdas below then bake in an object the graph keeps alive, while ``tensor_ptr`` keeps naming the tensor the caller knows, which is what every identity comparison against a user-held tensor relies on. Null means "use ``tensor's`` address".
+   :returns: A fully populated TensorHandle.

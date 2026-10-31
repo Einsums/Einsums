@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.ThreadGrid:
+
+================================
+einsums::packed_gemm::ThreadGrid
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: ThreadGrid
+
+   How blis_contraction's threads divide the output: ``tn`` groups along N, each split ``tm`` ways along M, with N cut into blocks of ``nc_blk`` columns.
+
+
+   .. cpp:member:: int tn
+
+   .. cpp:member:: int tm
+
+   .. cpp:member:: int64_t nc_blk

@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.gesv:
+
+=============================
+einsums::linear_algebra::gesv
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType, TensorConcept BType> requires (SameUnderlying<AType, BType> && (MatrixConcept<BType> || VectorConcept<BType>)) int gesv(AType *A, BType *B)
+
+   Solve a system of linear equations.
+
+   .. math::
+
+      \mathbf{Ax} = \mathbf{B}
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      The B matrix can now be a rank-1 tensor. A bug was also fixed where the B matrix was implicitly transposed.
+      Can also handle non-unit strides and row- and column-major layouts.
+
+   :tparam AType: The type of the A tensor.
+   :tparam BType: The type of the B tensor. Can be a matrix or vector.
+   :param A: The coefficient matrix. On exit, it is overwritten by the LU decomposition of the input. The diagonal elements of the lower-triangular matrix are all 1, and are not stored.
+   :param B: The right-hand side matrix. On exit, it will contain the values of the variables that satisfy the system of equations.
+   :throws RankError: If the coefficient matrix is not rank-2 or the result matrix is not rank-1 or rank-2.
+   :throws DimensionError: If the coefficient matrix is not square, or the number of rows of the result matrix is not the same as the number of rows of the coefficient matrix.
+   :returns: 0 on success. If positive, then the coefficient matrix was singular. The decomposition was performed, but the system was unable to be solved. If negative, then one of the parameters in the underlying LAPACK call was invalid. The absolute value gives which parameter was invalid.

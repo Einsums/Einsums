@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_permute.transpose:
+
+==================================
+einsums::tensor_permute::transpose
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorPermute/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_permute
+
+.. cpp:function:: template <bool ConjA = false, typename T> void transpose(detail::TensorImpl<T> *C, const detail::TensorImpl<T> &A)
+
+   Compute :math:`C = A^T` for rank-2 tensors.
+
+   .. versionadded:: 2.0.0
+
+   :throws RankError: when either operand is not rank 2.
+   :throws DimensionError: when ``C`` does not have the extents of the transposed ``A``.
+
+
+.. cpp:function:: template <bool ConjA = false, HasTensorImpl CType, HasTensorImpl AType> requires std::is_same_v<typename CType::ValueType, typename AType::ValueType> void transpose(CType *C, const AType &A)
+
+   Compute :math:`C = A^T` for rank-2 tensors.
+
+   .. versionadded:: 2.0.0
+
+   :throws RankError: when either operand is not rank 2.
+   :throws DimensionError: when ``C`` does not have the extents of the transposed ``A``.

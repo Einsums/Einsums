@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.create_plan:
+
+==========================
+einsums::hptt::create_plan
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/HPTT.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const int *perm, int dim, T alpha, const T *A, const size_t *sizeA, const size_t *outerSizeA, T beta, T *B, const size_t *outerSizeB, SelectionMethod selectionMethod, int numThreads, const int *threadIds, bool useRowMajor)
+
+   Create a transposition plan (basic).
+
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const std::vector<int> &perm, int dim, T alpha, const T *A, const std::vector<size_t> &sizeA, const std::vector<size_t> &outerSizeA, T beta, T *B, const std::vector<size_t> &outerSizeB, SelectionMethod selectionMethod, int numThreads, const std::vector<int> &threadIds, bool useRowMajor)
+
+   Create a transposition plan (basic, vector arguments).
+
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const int *perm, int dim, T alpha, const T *A, const size_t *sizeA, const size_t *outerSizeA, const size_t *offsetA, T beta, T *B, const size_t *outerSizeB, const size_t *offsetB, SelectionMethod selectionMethod, int numThreads, const int *threadIds, bool useRowMajor)
+
+   Create a transposition plan with offsets.
+
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const std::vector<int> &perm, int dim, T alpha, const T *A, const std::vector<size_t> &sizeA, const std::vector<size_t> &outerSizeA, const std::vector<size_t> &offsetA, T beta, T *B, const std::vector<size_t> &outerSizeB, const std::vector<size_t> &offsetB, SelectionMethod selectionMethod, int numThreads, const std::vector<int> &threadIds, bool useRowMajor)
+
+   Create a transposition plan with offsets (vector arguments).
+
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const int *perm, int dim, T alpha, const T *A, const size_t *sizeA, const size_t *outerSizeA, const size_t *offsetA, size_t innerStrideA, T beta, T *B, const size_t *outerSizeB, const size_t *offsetB, size_t innerStrideB, SelectionMethod selectionMethod, int numThreads, const int *threadIds, bool useRowMajor)
+
+   Create a transposition plan with offsets and inner strides.
+
+
+.. cpp:function:: template <typename T> std::shared_ptr<Transpose<T>> create_plan(const std::vector<int> &perm, int dim, T alpha, const T *A, const std::vector<size_t> &sizeA, const std::vector<size_t> &outerSizeA, const std::vector<size_t> &offsetA, size_t innerStrideA, T beta, T *B, const std::vector<size_t> &outerSizeB, const std::vector<size_t> &offsetB, size_t innerStrideB, SelectionMethod selectionMethod, int numThreads, const std::vector<int> &threadIds, bool useRowMajor)
+
+   Create a transposition plan with offsets and inner strides (vector arguments).

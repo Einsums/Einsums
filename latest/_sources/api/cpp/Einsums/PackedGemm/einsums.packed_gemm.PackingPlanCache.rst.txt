@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.PackingPlanCache:
+
+======================================
+einsums::packed_gemm::PackingPlanCache
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: PackingPlanCache
+
+   Thread-safe cache of filled PackingPlans, keyed by ContractionKey.
+
+   Skips recomputation of compute_packing_topology on cache hits.
+
+
+   .. cpp:function:: PackingPlanCache(const PackingPlanCache &) = delete
+
+   .. cpp:function:: static PackingPlanCache & instance()
+
+   .. cpp:function:: const PackingPlan * lookup(const ContractionKey &key) const
+
+      Look up a cached PackingPlan.  Returns nullptr if not found.
+
+
+   .. cpp:function:: void insert(const ContractionKey &key, PackingPlan plan)
+
+      Insert a filled PackingPlan into the cache.
+
+
+   .. cpp:function:: PackingPlanCache & operator=(const PackingPlanCache &) = delete

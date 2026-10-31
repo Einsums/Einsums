@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.finalize:
+
+=================
+einsums::finalize
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/InitRuntime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: int finalize()
+
+   Signal the runtime that it may be stopped.
+
+   .. admonition:: Precondition
+
+      the runtime is initialized
+
+   .. versionadded:: 1.0.0

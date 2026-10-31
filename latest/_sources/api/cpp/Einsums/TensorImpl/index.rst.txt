@@ -1,0 +1,19 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorImpl_api:
+
+==================
+TensorImpl C++ API
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorImpl>` of this module for background and usage guidance.
+
+No public API is documented in this module yet.

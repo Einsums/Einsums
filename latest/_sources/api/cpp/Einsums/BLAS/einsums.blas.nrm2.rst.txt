@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.nrm2:
+
+===================
+einsums::blas::nrm2
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> RemoveComplexT<T> nrm2(int_t n, const T *x, int_t incx)
+
+   Compute the Euclidean norm of a vector.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vector.
+   :param x: The input vector.
+   :param incx: The skip value for the vector.
+   :returns: The Euclidean norm of the vector.

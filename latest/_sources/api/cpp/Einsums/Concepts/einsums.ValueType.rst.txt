@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ValueType:
+
+==================
+einsums::ValueType
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename D> ValueType
+
+   Gets the data type of tensor/scalar.
+
+   Normally, you can get the data type using an expression such as typename AType::ValueType. However, if you want
+   to support both zero-rank tensors and scalars, then this typedef can help with brevity.

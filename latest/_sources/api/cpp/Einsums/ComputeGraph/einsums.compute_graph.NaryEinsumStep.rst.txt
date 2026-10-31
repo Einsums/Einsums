@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NaryEinsumStep:
+
+======================================
+einsums::compute_graph::NaryEinsumStep
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NaryEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NaryEinsumStep
+
+   One contraction of an ``plan_nary_einsum`` plan.
+
+   Operands are numbered as the spec names them, from zero, and the result of step ``k`` is operand
+   ``n + k`` for a spec over ``n`` operands. The last step writes the einsum's output.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::size_t left
+
+      The left operand's number.
+
+
+   .. cpp:member:: std::size_t right
+
+      The right operand's number.
+
+
+   .. cpp:member:: std::string spec
+
+      The two-operand spec this step runs, ``conj(...)`` and permutation operators included.
+
+
+   .. cpp:member:: std::vector<std::size_t> dims
+
+      The extents of the partial product it forms; the output's own for the last step.

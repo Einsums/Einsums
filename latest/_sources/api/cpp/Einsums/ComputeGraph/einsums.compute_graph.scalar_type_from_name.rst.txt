@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.scalar_type_from_name:
+
+=============================================
+einsums::compute_graph::scalar_type_from_name
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<packed_gemm::ScalarType> scalar_type_from_name(std::string_view name) noexcept
+
+   The element type spelled ``name``, if there is one.
+
+   ``"unknown"`` resolves to ``packed_gemm::ScalarType::Unknown``, which is a
+   legitimate thing for a handle to carry (an integral scalar has no BLAS type);
+   a name that is not one of the five is the empty optional a loader reports.
+
+   .. versionadded:: 2.0.0
+
+   :param name: A spelling ``scalar_type_name`` produces.
+   :returns: The type, or an empty optional when nothing is spelled that way.

@@ -1,0 +1,131 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Logging_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Logging.hpp``.
+
+.. c:macro:: EINSUMS_DETAIL_DECLARE_SPDLOG(name)
+
+   Create the prototype of a logger.
+
+   .. versionadded:: 1.0.0
+
+   :param name: The name of the logger to create.
+
+
+.. c:macro:: EINSUMS_DETAIL_DEFINE_SPDLOG(name, loglevel)
+
+   Create the definition of a logger.
+
+   .. versionadded:: 1.0.0
+
+   :param name: The name of the logger to create.
+   :param loglevel: The log level for the sink.
+
+
+.. c:macro:: EINSUMS_DETAIL_SPDLOG(name, loglevel, ...)
+
+   Implementation detail for the log macros.
+
+   This macro can also take a format string and the arguments to support it.
+
+   .. versionadded:: 1.0.0
+
+   :param name: The name of the logger.
+   :param loglevel: The level of the message.
+   :param ...: The format string and arguments to support it.
+
+
+.. c:macro:: EINSUMS_DETAIL_SPDLOG_ENABLED(name, loglevel)
+
+   Checks to see if the logger can handle the given log level.
+
+   .. versionadded:: 1.0.0
+
+   :param name: The name of the logger.
+   :param loglevel: The level to check.
+
+
+.. c:macro:: EINSUMS_LOG(loglevel, ...)
+
+   Log a message at the given level.
+
+   .. versionadded:: 1.0.0
+
+   :param loglevel: The level to log at.
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_CRITICAL(...)
+
+   Log an unrecoverable error. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_DEBUG(...)
+
+   Log a debug message. Compiled out in Release builds. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_ENABLED(loglevel)
+
+   Determine if Einsums has the given log level enabled.
+
+   .. versionadded:: 1.0.0
+
+   :param loglevel: The level to test.
+
+
+.. c:macro:: EINSUMS_LOG_ERROR(...)
+
+   Log an error, often alongside an exception. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_INFO(...)
+
+   Log an informational message, such as a configuration value. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_TRACE(...)
+
+   Log a trace message, the lowest priority. Compiled out in Release builds. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.
+
+
+.. c:macro:: EINSUMS_LOG_WARN(...)
+
+   Log a warning about a recoverable issue. Takes a format string and arguments.
+
+   .. versionadded:: 1.0.0
+
+   :param ...: The format string and arguments.

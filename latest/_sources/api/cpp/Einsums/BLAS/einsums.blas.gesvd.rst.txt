@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gesvd:
+
+====================
+einsums::blas::gesvd
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> auto gesvd(char jobu, char jobvt, int_t m, int_t n, T *a, int_t lda, RemoveComplexT<T> *s, T *u, int_t ldu, T *vt, int_t ldvt, T *superb)
+
+   Performs singular value decomposition for a matrix using the QR algorithm.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{U\Sigma V}^T
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param jobu: Whether to compute the U matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+   :param jobvt: Whether to compute the transpose of the V matrix. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+   :param m: The number of rows of the input matrix.
+   :param n: The number of columns of the input matrix.
+   :param a: The input matrix.
+   :param lda: The leading dimension of the input matrix.
+   :param s: The singular values output.
+   :param u: The U matrix from the singular value decomposition.
+   :param ldu: The leading dimension of U.
+   :param vt: The transpose of the V matrix from the singular value decomposition.
+   :param ldvt: The leading dimension of the transpose of the V matrix.
+   :param superb: Temporary storage area for intermediates in the computation.
+   :returns: 0 on success. If positive, the algorithm did not converge. If negative, then one of the parameters had a bad value. The absolute value of the return gives the parameter.

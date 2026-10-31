@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_random_fn:
+
+======================================
+einsums::compute_graph::make_random_fn
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename TensorType> std::function<void ()> make_random_fn(TensorType *tensor)
+
+   The post-materialize random fill a deferred tensor's ``TensorHandle::random_fn`` runs.
+
+   Uniform on ``[-1, 1)`` through ``std::rand``, which is what every ``declare_random_*`` spelled
+   inline. Deliberately NOT the library's seeded generator: this is scratch initialization whose
+   values nothing reads for their distribution, and the six copies it replaces all used
+   ``std::rand``, so keeping it is what makes the consolidation a refactor rather than a change of
+   what a random workspace tensor contains.
+
+   .. seealso::
+
+      make_zero_fn
+
+   :tparam TensorType: The tensor's type. Must expose ``materialize()``, ``data()`` and ``size()``.
+   :param tensor: The tensor to fill. Must outlive the handle.
+   :returns: The callable.

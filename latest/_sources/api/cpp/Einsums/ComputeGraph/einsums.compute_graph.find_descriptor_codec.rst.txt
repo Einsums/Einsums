@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.find_descriptor_codec:
+
+=============================================
+einsums::compute_graph::find_descriptor_codec
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorRegistry.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: const DescriptorCodec * find_descriptor_codec(std::string_view name) noexcept
+
+   The codec registered for the descriptor named ``name``, or null. Thread-safe; the codec lives for the rest of the process.

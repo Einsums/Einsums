@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.sum_axes:
+
+================================
+einsums::compute_graph::sum_axes
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> void sum_axes(ResultType *out, const AType &A, std::vector<size_t> axes)
+
+   Graph-aware reduction: sum ``A`` over ``axes``, writing the surviving axes to
+   ``out`` in their original order.
+
+   ``sum`` already reduces a whole tensor to a scalar; this is the axis-wise
+   form, numpy's ``A.sum(axis=...)``. ``out`` must have rank
+   ``rank(A) - axes.size()`` with the extents of the axes not being summed.
+   ``out`` is zeroed first, so this assigns rather than accumulates.

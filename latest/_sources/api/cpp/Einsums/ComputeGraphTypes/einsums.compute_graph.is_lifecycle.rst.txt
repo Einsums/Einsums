@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.is_lifecycle:
+
+====================================
+einsums::compute_graph::is_lifecycle
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Enums.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool is_lifecycle(OpKind kind)
+
+   Lifecycle/bookkeeping kinds that produce no value of their own (Alloc, Free, Materialize, Initialize). Passes counting value-producing nodes or resolving readers/writers skip these; must stay in lockstep with Graph::effective_io.

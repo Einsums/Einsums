@@ -1,0 +1,200 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Tensor_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TensorForward.hpp``.
+
+.. c:macro:: TENSOR_ALLOC_DEFINE(tensortype, alloc)
+
+   Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to define.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_ALLOC_EXPORT(tensortype, alloc)
+
+   Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to declare.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_DEFINE(tensortype)
+
+   Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to define.
+
+
+.. c:macro:: TENSOR_DEFINE_ALLOC_RANK(tensortype, rank, alloc)
+
+   Creates exported template definitions for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to define.
+   :param rank: The rank of the tensor.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_DEFINE_ALLOC_TR(tensortype, type, rank, alloc)
+
+   Creates an exported template definition for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to define.
+   :param type: The type held by that tensor.
+   :param rank: The rank of the tensor.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_DEFINE_DISK_VIEW(tensortype)
+
+   Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks and view ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to define.
+
+
+.. c:macro:: TENSOR_DEFINE_RANK(tensortype, rank)
+
+   Creates exported template definitions for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to define.
+   :param rank: The rank of the tensor.
+
+
+.. c:macro:: TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)
+
+   Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all view ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to define.
+   :param rank: The rank of the base tensor.
+
+
+.. c:macro:: TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)
+
+   Creates exported template definitions for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to define.
+   :param view_rank: The rank of the view.
+   :param rank: The rank of the base tensor.
+
+
+.. c:macro:: TENSOR_DEFINE_TR(tensortype, type, rank)
+
+   Creates an exported template definition for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to define.
+   :param type: The type held by that tensor.
+   :param rank: The rank of the tensor.
+
+
+.. c:macro:: TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+
+   Creates an exported template definition for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to define.
+   :param type: The type held by that tensor.
+   :param view_rank: The rank of the view
+   :param rank: The rank of the tensor.
+
+
+.. c:macro:: TENSOR_EXPORT(tensortype)
+
+   Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to declare.
+
+
+.. c:macro:: TENSOR_EXPORT_ALLOC_RANK(tensortype, rank, alloc)
+
+   Creates exported template declarations for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to declare.
+   :param rank: The rank of the tensor.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_EXPORT_ALLOC_TR(tensortype, type, rank, alloc)
+
+   Creates an exported template declaration for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to declare.
+   :param type: The type held by that tensor.
+   :param rank: The rank of the tensor.
+   :param alloc: The allocator template, instantiated with the stored type.
+
+
+.. c:macro:: TENSOR_EXPORT_DISK_VIEW(tensortype)
+
+   Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks and view ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to declare.
+
+
+.. c:macro:: TENSOR_EXPORT_RANK(tensortype, rank)
+
+   Creates exported template declarations for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to declare.
+   :param rank: The rank of the tensor.
+
+
+.. c:macro:: TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)
+
+   Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` ,
+   ``std::complex<float>`` , and ``std::complex<double>`` , and for all view ranks between 1 and 4 inclusive.
+
+   :param tensortype: The type of tensor to declare.
+   :param rank: The rank of the base tensor.
+
+
+.. c:macro:: TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)
+
+   Creates exported template declarations for a tensor with the given rank, and for each stored type from
+   ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+
+   :param tensortype: The type of tensor to declare.
+   :param view_rank: The rank of the view.
+   :param rank: The rank of the base tensor.
+
+
+.. c:macro:: TENSOR_EXPORT_TR(tensortype, type, rank)
+
+   Creates an exported template declaration for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to declare.
+   :param type: The type held by that tensor.
+   :param rank: The rank of the tensor.
+
+
+.. c:macro:: TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+
+   Creates an exported template declaration for a tensor with the given type and rank.
+
+   :param tensortype: The kind of tensor to declare.
+   :param type: The type held by that tensor.
+   :param view_rank: The rank of the view.
+   :param rank: The rank of the base tensor.

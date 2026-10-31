@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EinsumIndexLists:
+
+========================================
+einsums::compute_graph::EinsumIndexLists
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EinsumIndexLists
+
+   The index lists and operators an einsum will actually run with.
+
+   References into the descriptor: the live index block when the node carries one, the snapshot
+   otherwise. Valid while the descriptor is.
+
+
+   .. cpp:member:: const std::vector<std::string> &c
+
+      The output's indices.
+
+
+   .. cpp:member:: const std::vector<std::string> &a
+
+      The first operand's indices.
+
+
+   .. cpp:member:: const std::vector<std::string> &b
+
+      The second operand's indices.
+
+
+   .. cpp:member:: const std::vector<std::string> &link
+
+      The contracted indices (in A and B, not in C).
+
+
+   .. cpp:member:: const std::vector<PermutationOperator> &operators
+
+      The permutation operators wrapping the term.

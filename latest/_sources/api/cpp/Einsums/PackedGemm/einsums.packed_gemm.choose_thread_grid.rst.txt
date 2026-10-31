@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.choose_thread_grid:
+
+========================================
+einsums::packed_gemm::choose_thread_grid
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: ThreadGrid choose_thread_grid(int threads, int64_t M, int64_t N, int64_t m_unit, int NR, int64_t nc_cap)
+
+   The thread grid for an M x N contraction with ``threads`` threads, M groups a whole number of ``m_unit`` rows, and N blocks no wider than ``nc_cap``.
+
+   Splitting M as well as N keeps a contraction with few N columns from idling threads, and packs A
+   once per N block instead of once per thread. The grid minimizes the busiest thread's share of
+   the output and, among grids within 3% of that, the elements packed (M * n_blocks + N * tm per
+   unit of K). N blocks are cut equal rather than at the cap with a runt, which would idle the
+   threads that draw it.
+
+   N blocks are whole multiples of NR and M groups whole multiples of ``m_unit``, so every thread
+   owns its buffers and a region of C no other thread touches.

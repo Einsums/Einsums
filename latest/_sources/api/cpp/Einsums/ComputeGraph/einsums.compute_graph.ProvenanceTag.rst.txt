@@ -1,0 +1,82 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ProvenanceTag:
+
+=====================================
+einsums::compute_graph::ProvenanceTag
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ProvenanceTag
+
+   What a tensor is, for a pass that has to recognize it rather than merely size it.
+
+   A ``name`` from an open vocabulary, plus optional key/value attributes for anything the name
+   alone cannot carry (which basis a set of integrals is over, which order a denominator is).
+   Attributes are kept SORTED by key, so two tags built in different orders compare equal and a
+   saved graph's bytes do not depend on the order a caller happened to set them in.
+
+   .. seealso::
+
+      TensorHandle::tag
+
+
+   .. cpp:function:: static ProvenanceTag make(std::string name)
+
+      Build a tag carrying just a vocabulary name.
+
+      A factory rather than a constructor, and the reason is that this type is an AGGREGATE:
+      C++ code writes ``ProvenanceTag{.name = "eri"}``, and any user-declared constructor
+      would end that. Python needs some way to make one, since the binding generator gives an
+      exposed aggregate no constructor at all and the type was reachable but unbuildable.
+
+      :param name: The vocabulary name.
+      :returns: The tag.
+
+
+   .. cpp:function:: static ProvenanceTag make_with_attributes(std::string name, std::vector<std::pair<std::string, std::string>> attributes)
+
+      Build a tag with attributes.
+
+      A separate name rather than a defaulted argument on ``make``, because the generator
+      copies a default argument through verbatim and a braced empty one does not compile.
+
+      :param name: The vocabulary name.
+      :param attributes: Key/value qualifications.
+      :returns: The tag.
+
+
+   .. cpp:function:: bool valid() const noexcept
+
+      Whether this tag says anything at all.
+
+      :returns: True when ``name`` is non-empty.
+
+
+   .. cpp:function:: std::optional<std::string> attribute(std::string_view key) const
+
+      The value of one attribute.
+
+      :param key: The attribute to look up.
+      :returns: The value, or an empty optional when the tag does not carry that key.
+
+
+   .. cpp:member:: std::string name
+
+      The vocabulary name, or empty for untagged. Compared exactly, including case.
+
+
+   .. cpp:member:: std::vector<std::pair<std::string, std::string>> attributes
+
+      Sorted key/value attributes. Empty for a tag that needs no qualification.

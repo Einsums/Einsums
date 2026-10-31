@@ -1,0 +1,16 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.0.3 Release
+==============
+
+Bug Fixes
+---------
+
+* Fixed how the Python module is linked to hopefully produce smaller binaries.

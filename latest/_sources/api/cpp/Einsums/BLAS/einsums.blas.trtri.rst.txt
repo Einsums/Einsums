@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.trtri:
+
+====================
+einsums::blas::trtri
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t trtri(char uplo, char diag, int_t n, T *a, int_t lda)
+
+   Invert a triangular matrix in place.
+
+   Computes :math:`\mathbf{A}^{-1}` for upper or lower triangular
+   :math:`\mathbf{A}`, overwriting the referenced triangle.
+
+   :param uplo: 'U': A is upper triangular; 'L': lower triangular.
+   :param diag: 'U': A is unit triangular; 'N': non-unit.
+   :param n: Order of A.
+   :param a: On entry the triangular matrix; on exit its inverse.
+   :param lda: Leading dimension of a.
+   :returns: 0 on success; i > 0 if A(i,i) is exactly zero (singular).

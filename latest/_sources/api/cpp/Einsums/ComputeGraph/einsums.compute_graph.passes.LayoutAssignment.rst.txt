@@ -1,0 +1,138 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.LayoutAssignment:
+
+================================================
+einsums::compute_graph::passes::LayoutAssignment
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/LayoutAssignment.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: LayoutAssignment : public OptimizerPass
+
+   Choose the storage order of every graph-owned intermediate so contractions read flat.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("layout");
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("mbej <- mnef ; njfb", 0.0, &W, 1.0, I, T);
+          cg::einsum("ijab <- imae ; mbej", 1.0, &R, 1.0, T2, W);
+      }
+      cg::PassManager pm;
+      pm.add<cg::passes::LayoutAssignment>();
+      graph.apply(pm);   // W's axes are reordered and both index lists follow
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums.graph as cg
+      la = cg.LayoutAssignment()
+      pm = cg.PassManager(); pm.add(la); pm.run(g)
+      # la.num_relaid_out -> 1  (getters are properties, not methods)
+
+   It also runs as part of ``cg.default_pass_manager()``.
+
+   **Limitations**
+
+   - Candidates are rank-3-and-up graph-owned deferred intermediates only; see the file note for why each half of that is there.
+   - The search is coordinate descent over the layouts some participant asked for, not an exhaustive one over ``r``! orders per tensor. A layout nobody wants cannot beat one that at least one node does, which is what makes the restriction defensible rather than merely cheap; it is not a proof of optimality, and the pass does not claim one.
+   - A ``Permute`` is folded away only when its copy is one of the decision variables above, which is where ``PermuteFusion`` still has cases of its own: a rank-two copy, a copy the caller owns, a copy already allocated, and a copy read by something other than a contraction are each pinned here and each still absorbed there. A ``Transpose`` carries no descriptor and is rank two by definition, so it is never a candidate.
+   - The copy's source keeps its captured axes, so a chain of two permutes folds neither.
+   - A contraction with a repeated letter in one operand (a diagonal) is not modelled, and pins its tensors.
+
+
+   .. cpp:function:: LayoutAssignment()
+
+      Construct against the detected hardware profile.
+
+
+   .. cpp:function:: explicit LayoutAssignment(CostModel cost_model)
+
+      Price the copies against a supplied profile instead of the detected one.
+
+      :param cost_model: The profile. ``populate_default()`` passes the one it shares with the other cost-model passes, so every decision is made against one machine.
+
+
+   .. cpp:function:: std::string name() const override
+
+      The pass name.
+
+      :returns: ``"LayoutAssignment"``.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      Storage order is mathematics-preserving and machine-independent to state, so a save keeps
+      it. The permute costs it is chosen from are a hint; see the file note.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not permutation operators, views, complex prefactors or redirected slots: a permute fold ignores operators and reads snapshot
+      scalars.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      The same products summed over the same letters, through a different kernel. See the file
+      note on why that is this tier and not the one above it.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Safe on loop bodies and conditional branches: every tensor it moves is one the escape
+      analysis says nothing outside the graph it was handed can observe, and a sub-graph is
+      such a graph.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: std::size_t num_relaid_out() const
+
+      How many intermediates were given an order other than the captured one.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_permutes_folded() const
+
+      How many ``Permute`` nodes the chosen layout turned into identity copies and deleted.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_copies_removed() const
+
+      How many operand copies the chosen assignment removes, per replay.
+
+      :returns: The count, over every contraction the pass modelled.
+
+
+   .. cpp:function:: double estimated_saving_us() const
+
+      What those copies were modelled to cost, in microseconds per replay.
+
+      :returns: The estimate. A modelled number and not a measured one; see the file note.

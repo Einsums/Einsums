@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.pseudoinverse:
+
+======================================
+einsums::linear_algebra::pseudoinverse
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType, typename T> requires (CoreTensorConcept<AType> && std::is_same_v<typename AType::ValueType, T>) Tensor<T, 2> pseudoinverse(const AType &A, T tol)
+
+   Compute the pseudoinverse of a matrix.
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the matrix.
+   :tparam T: The type for the tolerance.
+   :param A: The matrix to invert.
+   :param tol: The zero cutoff.
+   :throws RankError: If the tensor being decomposed is not rank-2.
+   :throws std::invalid_argument: If one of the parameters passed to the internal functions is invalid.
+   :throws std::runtime_error: If the SVD algorithm did not converge.
+   :returns: The pseudoinverse of a matrix.

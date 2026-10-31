@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.op_kind_name:
+
+====================================
+einsums::compute_graph::op_kind_name
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Enums.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view op_kind_name(OpKind kind)
+
+   Convert an OpKind enum value to its string name.
+
+   :param kind: The operation kind.
+   :returns: A string_view (e.g., "Einsum", "Scale", "Gemm").

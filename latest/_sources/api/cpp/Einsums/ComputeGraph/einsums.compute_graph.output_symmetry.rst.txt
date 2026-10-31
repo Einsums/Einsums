@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.output_symmetry:
+
+=======================================
+einsums::compute_graph::output_symmetry
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymmetryRules.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<SymmetryDescriptor> output_symmetry(const Graph &graph, const Node &node)
+
+   The symmetry ``node's`` single output unconditionally has once the node has run.
+
+   Reads only the node and the ``symmetry_hint`` of its inputs. The rules, one per op kind:
+
+   - **Scale**, ``C`` = alpha A: C has A's symmetry.
+   - **Axpby**, ``C`` = alpha A + beta B: when A and B carry identical descriptors, C has that one.
+   - **Einsum** with the same tensor in both operand slots, rank 2 by rank 2 into rank 2 over one summed index (A^T A and its relatives): C is symmetric in its two axes, or Hermitian when the element type is complex and exactly one operand is conjugated.
+   - **Einsum** of any rank with the same tensor in both operand slots and a zero destination prefactor: C has the symmetry ``self_product_symmetry`` finds.
+   - **Permute** or **Transpose** of a rank-2 input with a symmetric or Hermitian pair descriptor and a zero destination prefactor: C has the input's descriptor.
+
+   :param graph: The graph ``node`` belongs to, for its inputs' handles.
+   :param node: The node.
+   :returns: The descriptor, or nothing when no rule applies.

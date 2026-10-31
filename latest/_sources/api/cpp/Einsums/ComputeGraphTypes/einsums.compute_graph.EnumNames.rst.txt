@@ -1,0 +1,66 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EnumNames:
+
+=================================
+einsums::compute_graph::EnumNames
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/EnumNames.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: template <typename E, std::size_t N> EnumNames
+
+   A value-to-spelling table for one enumeration.
+
+   Construct one at namespace scope with the enumerators and their spellings,
+   and the fallback ``name`` returns for a value the table does not list:
+
+   .. code-block:: text
+
+      constexpr EnumNames kBisectModeNames{std::array<std::pair<BisectMode, std::string_view>, 2>{{
+          {BisectMode::Individual, "individual"},
+          {BisectMode::Cumulative, "cumulative"},
+      }}, "individual"};
+
+   A linear scan, usable in constant expressions.
+
+   .. versionadded:: 2.0.0
+
+   :tparam E: The enumeration.
+   :tparam N: How many enumerators the table names.
+
+
+   .. cpp:function:: constexpr std::string_view name(E value) const noexcept
+
+      The spelling of ``value``.
+
+      :param value: The enumerator to name.
+      :returns: Its spelling, or ``fallback`` when the table does not list it.
+
+
+   .. cpp:function:: constexpr std::optional<E> from_name(std::string_view spelling) const noexcept
+
+      The enumerator spelled ``spelling``, if there is one.
+
+      :param spelling: A spelling ``name`` produces.
+      :returns: The enumerator, or an empty optional so a loader can report the string.
+
+
+   .. cpp:member:: std::array<std::pair<E, std::string_view>, N> entries
+
+      The enumerators and their spellings, in the order a listing should show them.
+
+
+   .. cpp:member:: std::string_view fallback
+
+      What ``name`` answers for a value the table does not list.

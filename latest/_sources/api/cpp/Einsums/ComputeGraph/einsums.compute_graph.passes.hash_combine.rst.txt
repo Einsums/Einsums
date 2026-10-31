@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.hash_combine:
+
+============================================
+einsums::compute_graph::passes::hash_combine
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: template <typename T> void hash_combine(std::size_t &h, const T &v)
+
+   Fold ``v`` into the running hash ``h``.
+
+   The golden-ratio mix for keying an ``unordered_map`` on a composite struct.
+   Use it instead of a bare XOR, which is commutative: permuted index lists
+   would land in one bucket.
+
+   Only bucketing depends on this. Two keys that compare equal still hash equal,
+   because the fold is a pure function of the values fed to it in order.

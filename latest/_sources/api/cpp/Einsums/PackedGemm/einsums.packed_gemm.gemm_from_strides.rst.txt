@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.gemm_from_strides:
+
+=======================================
+einsums::packed_gemm::gemm_from_strides
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> bool gemm_from_strides(T *c_data, const T *a_data, const T *b_data, T alpha, T beta, int64_t M, int64_t N, int64_t k_len, int64_t m_stride, int64_t n_stride, int64_t ksa, int64_t ksb, bool c_col_major, int64_t c_n_stride, int64_t ldc_col, int64_t ldc_row, bool conj_a, bool conj_b)
+
+   Map one strided M x N x K slice onto a single BLAS gemm.
+
+   Returns false and calls nothing when the strides admit no gemm form, which
+   is what lets a caller probe a candidate slicing without computing anything.
+
+   BLAS gemm(transA, transB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc)
+   expects column-major storage: for transA='N', A is lda x K with lda >= M.
+   The operands here are
+   A[m,k]: m * m_stride + k * ksa
+   B[k,n]: k * ksb     + n * n_stride
+   C[m,n]: m * (c_col_major ? 1 : ...) + n * c_n_stride
+   For complex types with conjugation BLAS uses 'C' rather than 'T', and it has
+   no way to conjugate WITHOUT transposing, so those combinations report false
+   and leave the caller to conjugate during packing.

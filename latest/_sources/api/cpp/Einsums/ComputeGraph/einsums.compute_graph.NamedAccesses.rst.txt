@@ -1,0 +1,49 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NamedAccesses:
+
+=====================================
+einsums::compute_graph::NamedAccesses
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NamedAccesses
+
+   The parameters and named resources a node touches outside its tensor lists.
+
+   A parameter is an entry of the graph's ``ParamTable``, by name; a node whose executor reads one
+   through ``Graph::params_ptr`` must list it here, or nothing orders it after the ``WriteParam``
+   that sets it. A named resource is any other state two nodes can share without sharing a tensor,
+   as an opaque key: a dataset (``"disk:<file>#<dataset>"``), a cache, a communicator. Keys from
+   different libraries should carry the library's prefix (``"nectar:plan-cache"``).
+
+
+   .. cpp:member:: std::vector<std::string> param_reads
+
+      ``ParamTable`` entries read at run time.
+
+
+   .. cpp:member:: std::vector<std::string> param_writes
+
+      ``ParamTable`` entries written at run time.
+
+
+   .. cpp:member:: std::vector<std::string> named_reads
+
+      Other named resources read.
+
+
+   .. cpp:member:: std::vector<std::string> named_writes
+
+      Other named resources written.

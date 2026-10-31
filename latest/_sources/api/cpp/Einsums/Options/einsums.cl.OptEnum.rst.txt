@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.OptEnum:
+
+====================
+einsums::cl::OptEnum
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: template <typename Enum> OptEnum : public OptionBase
+
+   An option whose value is one of a fixed set of named choices.
+
+   .. code-block:: text
+
+      enum struct Mode { Fast, Accurate };
+      OptEnum<Mode> mode{"mode", {'m'}, Mode::Fast,
+                         {{"fast", Mode::Fast}, {"accurate", Mode::Accurate}},
+                         "Execution mode"};
+
+
+   .. cpp:function:: template <typename... Args> OptEnum(std::string_view longName, std::initializer_list<char> shorts, Enum defaultValue, std::initializer_list<std::pair<std::string_view, Enum>> choices, std::string_view helpText, Args &&... args)
+
+   .. cpp:function:: template <typename... Args> OptEnum(std::string_view longName, std::initializer_list<char> shorts, std::initializer_list<std::pair<std::string_view, Enum>> choices, std::string_view helpText, Args &&... args)
+
+   .. cpp:function:: template <typename F> requires SetterCallable<F, Enum> OptEnum<Enum> & OnSet(F &&f)
+
+   .. cpp:function:: void finalize_default() override
+
+   .. cpp:function:: bool parse_token(std::string_view, std::optional<std::string_view> val, std::string &error, Source src) override
+
+   .. cpp:function:: HelpEntry help_entry() const override
+
+   .. cpp:function:: const Enum & get() const
+
+   .. cpp:function:: std::string to_string() const
+
+      The choice name matching the current value, or empty if none matches.
+
+
+   .. cpp:function:: std::string name_of(Enum v) const
+
+      The choice name mapped to ``v``, or empty if none matches.
+
+
+   .. cpp:member:: Enum value
+
+   .. cpp:member:: Enum default_value
+
+      The declared default, so help text is unaffected by parsing order.
+
+
+   .. cpp:member:: Enum *bound
+
+   .. cpp:member:: bool has_default
+
+   .. cpp:member:: std::map<std::string, Enum, std::less<>> mapping
+
+   .. cpp:member:: std::function<void (const Enum &, Source)> setter

@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.param_source_type_name:
+
+==============================================
+einsums::compute_graph::param_source_type_name
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view param_source_type_name(ParamSourceType type) noexcept
+
+   The name of a ``ParamSourceType``, for diagnostics and the saved form.
+
+   The spelling is the TYPE's own, which is the point of naming these at all: a
+   reader can check the name against the tensor it is about to bind, where a
+   numeric enumerator would only say "the fourteenth one".
+
+   ``ParamSourceType::Int64`` is an alias for whichever of ``long`` /
+   ``long`` long is 64 bits on this platform, so it shares that one's name rather
+   than getting a spelling of its own; naming it separately would make the file
+   say something platform-dependent about a type that is not.
+
+   .. versionadded:: 2.0.0
+
+   :param type: The stored type to name.
+   :returns: Its C++ spelling ("bool", "char", "signed char", ... "long double").

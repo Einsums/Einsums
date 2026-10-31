@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ViewAxis:
+
+================================
+einsums::compute_graph::ViewAxis
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ViewAxis
+
+   Per-axis specification for a ``View`` op.
+
+   Each axis of the parent tensor maps to one of:
+
+   - Full: keep the entire axis (the result preserves this dimension).
+   - Range: half-open ``[lo, hi)`` slice; the result keeps this dimension with extent ``hi - lo``.
+   - Drop: pick a single index; the result loses this dimension (rank-reducing). Honored by the runtime-rank ``view_runtime``; the typed ``cg::view`` throws on it.
+
+   Bounds are ``BoundExpr`` values, so they may be compile-time constants
+   (``0``, ``5``), references to a Pipeline parameter (``"n_occ"``), or
+   arbitrary callbacks (interpreted-mode only).
+
+
+   .. cpp:function:: static ViewAxis full()
+
+   .. cpp:function:: static ViewAxis range(BoundExpr lo, BoundExpr hi)
+
+   .. cpp:function:: static ViewAxis drop(BoundExpr i)
+
+   .. cpp:member:: Kind kind
+
+   .. cpp:member:: BoundExpr lo
+
+      Range/Drop start (Drop reads only this).
+
+
+   .. cpp:member:: BoundExpr hi
+
+      Range exclusive end. Unused for Full / Drop.
+
+
+   .. cpp:enum-class:: Kind
+
+      .. cpp:enumerator:: Full
+
+      .. cpp:enumerator:: Range
+
+      .. cpp:enumerator:: Drop

@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.scatter:
+
+===============================
+einsums::compute_graph::scatter
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept DstType, CoreBasicTensorConcept SrcType> requires std::is_same_v<typename DstType::ValueType, typename SrcType::ValueType> void scatter(DstType *dst, const SrcType &src, const std::vector<std::vector<size_t>> &indices)
+
+   Write ``src`` into an arbitrary index selection of ``dst``.
+
+   The inverse of ``gather``, with the index lists naming positions in the
+   DESTINATION rather than the source:
+
+   dst[indices[0][i0], indices[1][i1], ...] = src[i0, i1, ...]
+
+   which is numpy's `A[np.ix_(rows, cols)] = B`. Elements of dst outside the
+   selection are left alone, so this is a placement, not an assignment of the
+   whole tensor. That is what a domain-restricted result needs: a pair's block
+   is computed in its own small domain basis and then dropped into its slot in
+   the full-length container.
+
+   As with gather, an empty index list selects nothing rather than acting as a
+   whole-axis wildcard, and a whole axis is an explicit range at the call site.
+
+   **Repeated indices are rejected.** In a gather a repeat is harmless - the
+   same element is read twice - but in a scatter it means two writes to one
+   destination element, and which one survives depends on iteration order. The
+   callers here build index lists from orbital domains, where a repeat is a
+   bug rather than an intent, so it is diagnosed instead of silently resolved.
+   An accumulating scatter would be a different operation, and is not this one.

@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExtentQuery:
+
+===================================
+einsums::compute_graph::ExtentQuery
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExtentQuery
+
+   What an ``output_extents`` hook is given.
+
+   ``input_extents`` holds the current extents of every input, in the node's input order (an
+   input whose extents are not known yet has an empty list). ``params`` is the graph's
+   ``ParamTable``, for a node whose output size is a parameter's value; it may be null.
+
+
+   .. cpp:member:: ExtentList input_extents
+
+   .. cpp:member:: const ParamTable *params

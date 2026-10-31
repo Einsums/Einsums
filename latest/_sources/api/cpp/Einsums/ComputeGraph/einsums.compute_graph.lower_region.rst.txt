@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.lower_region:
+
+====================================
+einsums::compute_graph::lower_region
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<void, RaiseFailure> lower_region(Graph &graph, const Region &region, const TensorExpr &expr)
+
+   Rebuild ``region`` of ``graph`` from ``expr``, in place.
+
+   The region's nodes are erased and the expression's statements are emitted at
+   the region's first position, so program order is preserved by construction and
+   no writer can end up behind a surviving reader.
+
+   Every node is built from the algebra through ``build_executor``, the one
+   lowering point capture and ``load_graph`` share. Nothing is reused from the
+   nodes that were raised; see the file note on why that is the point rather than
+   an inefficiency.
+
+   :param graph: The graph to rewrite.
+   :param region: The region being replaced.
+   :param expr: The algebra to emit.
+   :returns: Nothing, or the reason the expression could not be lowered, in which case ``graph`` is left exactly as it was.

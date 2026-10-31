@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_ops.global_element_op_registry:
+
+===============================================================
+einsums::compute_graph::element_ops::global_element_op_registry
+===============================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ElementOps.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:function:: ElementOpRegistry & global_element_op_registry()
+
+   The process-wide element-op registry.
+
+   Defined in the ComputeGraph library rather than inline, for the reason
+   ``global_space_registry`` gives: a function-local static in a header gets one
+   instance per binary that includes it, so libEinsums and the Python ``_core``
+   extension would each hold their own and an op registered on one side would be
+   missing on the other.
+
+   The starter ops of ``register_builtin_element_ops`` are already in it.
+
+   :returns: The single registry every graph in this process looks names up in.

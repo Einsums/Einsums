@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.seed_random:
+
+====================
+einsums::seed_random
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Random.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void seed_random(std::linear_congruential_engine<unsigned long, 16807, 0, 2147483647>::result_type seed)
+
+   Set the seed of the random number generator.
+
+   Seeds ``random_engine``, behind ``create_random_tensor``, ``create_random_definite`` and the
+   randomized algorithms (``truncated_svd``, ``truncated_syev``). Exposed so Python tests can
+   reproduce draws made inside C++.
+
+   .. warning::
+
+      The engine is process-global and unsynchronized. Seed during setup,
+      not concurrently with threads that draw from it.
+
+   .. versionadded:: 1.0.0
+
+   :param seed: The new seed for the random number generator.

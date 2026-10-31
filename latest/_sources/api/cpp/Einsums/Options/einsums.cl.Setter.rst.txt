@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.Setter:
+
+===================
+einsums::cl::Setter
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: template <typename T> Setter
+
+   A callback invoked every time an option receives a value.
+
+   Takes `(T const &)`, or `(T const &, Source)` to learn where the value came from.
+
+
+   .. cpp:function:: Setter() = default
+
+   .. cpp:function:: template <typename F> requires std::invocable<F, const T &, Source> explicit Setter(F &&f)
+
+   .. cpp:function:: template <typename F> requires (std::invocable<F, const T &> && !std::invocable<F, const T &, Source>) explicit Setter(F &&f)
+
+   .. cpp:member:: std::function<void (const T &, Source)> fn

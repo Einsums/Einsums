@@ -1,0 +1,201 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.DiskTensor:
+
+===================
+einsums::DiskTensor
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/DiskTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank> DiskTensor final : public tensor_base::DiskTensor, public design_pats::Lockable<std::recursive_mutex>
+
+   Represents a tensor stored on disk.
+
+   :tparam T: The data type stored by the tensor.
+   :tparam Rank: The rank of the tensor.
+
+
+   .. cpp:function:: DiskTensor() = delete
+
+      Default constructor.
+
+
+   .. cpp:function:: DiskTensor(const DiskTensor<T, rank> &other)
+
+      Default copy constructor.
+
+
+   .. cpp:function:: DiskTensor(DiskTensor<T, rank> &&other) noexcept
+
+      Default move constructor.
+
+
+   .. cpp:function:: explicit DiskTensor(hid_t file, std::string name, Dim<Rank> dims, int deflate_level)
+
+      Create a new disk tensor bound to a file.
+
+      :param file: The file to use for the storage. Can also be a parent object.
+      :param name: The name for the tensor.
+      :param dims: The dimensions of the tensor.
+      :param deflate_level: The gzip compression level for a newly created dataset, 0 for none. A negative value, the default, compresses at level 1 only when the tensor has more than 2^32 - 1 elements.
+
+
+   .. cpp:function:: template <std::integral... Dims> explicit DiskTensor(hid_t file, const std::string &name, Dims... dims)
+
+      Create a new disk tensor bound to a file.
+
+      :param file: The file to use for the storage. Can also be a parent object.
+      :param name: The name for the tensor.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: template <typename... Dims> explicit DiskTensor(const std::string &name, Dims &&... dims)
+
+      Create a new disk tensor in the process-wide HDF5 file.
+
+      :param name: The name for the tensor.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: ~DiskTensor()
+
+      Default destructor.
+
+
+   .. cpp:function:: template <std::integral... Dims> void resize(Dims... dims)
+
+   .. cpp:function:: void resize(const Dim<Rank> &new_dims)
+
+   .. cpp:function:: DiskTensor<T, rank> & operator=(const DiskTensor<T, rank> &other)
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Get the dimension along a given axis.
+
+      :param d: The axis to query.
+
+
+   .. cpp:function:: Dim<Rank> dims() const
+
+      Get the dimensions.
+
+
+   .. cpp:function:: bool existed() const
+
+      Check whether the data already existed on disk.
+
+
+   .. cpp:function:: hid_t file() const
+
+      Get the parent object/file.
+
+
+   .. cpp:function:: hid_t dataspace() const
+
+      Get the dataspace.
+
+
+   .. cpp:function:: hid_t dataset() const
+
+      Get the dataset.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Get the name of the tensor.
+
+
+   .. cpp:function:: void set_name(const std::string &new_name)
+
+      Set the name of the tensor.
+
+      .. versionchanged:: 2.0.0
+
+         When changing the name of a tensor, links are now moved within the file.
+
+
+   .. cpp:function:: size_t stride(int d) const
+
+      Get the stride along a given axis.
+
+
+   .. cpp:function:: Stride<Rank> strides() const
+
+      Get the array of strides for this tensor.
+
+
+   .. cpp:function:: size_t size() const
+
+      Get the size of the tensor.
+
+
+   .. cpp:function:: constexpr bool full_view_of_underlying()
+
+      Returns whether this tensor is viewing the entirety of the data.
+
+      For this kind of tensor, this will always return true.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0) DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(MultiIndex... index)
+
+      This creates a Disk object with its Rank being equal to the number of All{} parameters
+      Range is not inclusive. Range{10, 11} === size of 1
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0) const DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(MultiIndex... index) const
+
+      This creates a Disk object with its Rank being equal to the number of All{} parameters
+      Range is not inclusive. Range{10, 11} === size of 1
+
+
+   .. cpp:function:: template <CoreBasicTensorConcept TensorType> requires (RankTensorConcept<TensorType, rank>) void write(const TensorType &tensor)
+
+   .. cpp:function:: BufferTensor<T, rank> & get()
+
+      Gets the underlying tensor holding the data.
+
+
+   .. cpp:function:: const BufferTensor<T, rank> & get() const
+
+      Gets the underlying tensor holding the data.
+
+
+   .. cpp:function:: BufferTensor<T, rank> & get_update()
+
+      Gets the underlying tensor holding the data. If the tensor has already been created,
+      update it with what is stored on disk.
+
+
+   .. cpp:function:: const BufferTensor<T, rank> & get_update() const
+
+      Gets the underlying tensor holding the data. If the tensor has already been created,
+      update it with what is stored on disk.
+
+
+   .. cpp:function:: void unget()
+
+      Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+      There is no const version.
+
+
+   .. cpp:function:: void put()
+
+      Push any changes to the view to the disk. There is no const version.
+
+
+   .. cpp:function:: void unlink() const
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of this tensor.

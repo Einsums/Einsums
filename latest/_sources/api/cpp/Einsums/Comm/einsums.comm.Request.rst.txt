@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.Request:
+
+======================
+einsums::comm::Request
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Collectives.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: Request
+
+   Handle for a non-blocking collective operation.
+
+   Call wait() to block until the operation completes, or test() to poll.
+   Integrates with DataflowExecutor's async_start/async_finish pattern.
+
+
+   .. cpp:function:: Request() = default
+
+   .. cpp:function:: explicit Request(std::shared_ptr<Impl> impl)
+
+      Construct from implementation (used by collective functions).
+
+
+   .. cpp:function:: void wait()
+
+      Block until the operation completes.
+
+
+   .. cpp:function:: bool test()
+
+      Non-blocking poll. Returns true if complete.
+
+
+   .. cpp:function:: void * native_handle() const
+
+      Access the underlying native handle (MPI_Request* or nullptr).

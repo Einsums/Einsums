@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TypeSupport_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/AreAllConvertible.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:var:: template <typename R, typename... Ts> inline constexpr bool are_all_convertible_v
+
+   Checks to see if all arguments can be converted to the first argument.
+
+   Equivalent to are_all_convertible::value.
+
+   .. versionadded:: 1.0.0
+
+   :tparam R: The target type. The rest of the parameters should be convertible to this.
+   :tparam Ts: The types to test.

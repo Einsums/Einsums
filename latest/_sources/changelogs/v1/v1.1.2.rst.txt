@@ -1,0 +1,20 @@
+.. 
+    ---------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. Rename this file to be vX.Y.Z.rst, with X, Y, and Z replaced with the version number.
+
+==============
+v1.1.2 Release
+==============
+
+What's New
+----------
+* You can now install the Python module where ever you want.
+
+
+Bug Fixes
+---------
+* Fixed a compilation error with HPTT using AVX512 intrinsics on incompatible systems.

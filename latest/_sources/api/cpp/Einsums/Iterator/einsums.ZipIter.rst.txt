@@ -1,0 +1,115 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ZipIter:
+
+================
+einsums::ZipIter
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Iterator/Zip.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename... ContainerIters> ZipIter final
+
+   An iterator that iterates over several containers simultaneously.
+
+   .. versionadded:: 1.1.0
+
+   :tparam ContainerIters: A list of container and iterable types that this will zip over.
+
+
+   .. cpp:function:: constexpr ZipIter()
+
+      Default constructor.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter(const ZipIter<ContainerIters...> &other)
+
+      Copy constructor.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter(const std::tuple<ContainerIters &...> &containers)
+
+      Initialize the iterator with the given iterators.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter(const ContainerIters &... containers)
+
+      Initialize the iterator with the given iterators.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter<ContainerIters...> & operator=(const ZipIter<ContainerIters...> &other)
+
+      Copy assignment.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr value_type operator*() const
+
+      Dereference the iterator.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr reference operator*()
+
+      Dereference the iterator.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter<ContainerIters...> & operator++()
+
+      Increment the iterator.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr ZipIter<ContainerIters...> & operator++(int)
+
+      Increment the iterator.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr bool operator==(const ZipIter<ContainerIters...> &other) const
+
+      Check whether any of the iterators are equal.
+
+      Any one equal is enough, so iteration stops at the shortest container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr bool operator!=(const ZipIter<ContainerIters...> &other) const
+
+      Check whether all of the iterators are not equal.
+
+      The negation of operator==, so iteration stops at the shortest container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr void swap(ZipIter<ContainerIters...> &other)
+
+      Swap the contents of two iterators.
+
+      .. versionadded:: 1.1.0

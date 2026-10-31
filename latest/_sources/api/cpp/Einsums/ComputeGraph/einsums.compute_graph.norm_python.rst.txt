@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.norm_python:
+
+===================================
+einsums::compute_graph::norm_python
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, typename AType> requires std::is_same_v<typename ResultType::ValueType, RemoveComplexT<typename AType::ValueType>> && DenseOrTiled<AType> void norm_python(ResultType *result, linear_algebra::Norm norm_type, const AType &A)
+
+   Python-friendly graph-aware norm: writes the result into ``result->data()[0]``.
+
+   For complex inputs the result is real-valued (e.g. complex<double> input
+   requires a ``double`` result tensor). Use ``Norm::ONE``, ``Norm::TWO``,
+   ``Norm::INFINITY_``, ``Norm::FROBENIUS``, etc.

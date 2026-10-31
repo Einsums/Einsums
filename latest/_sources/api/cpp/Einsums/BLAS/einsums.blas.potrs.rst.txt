@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.potrs:
+
+====================
+einsums::blas::potrs
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t potrs(char uplo, int_t n, int_t nrhs, const T *a, int_t lda, T *b, int_t ldb)
+
+   Solve a linear system from a Cholesky factorization.
+
+   Solves :math:`\mathbf{A}\mathbf{X} = \mathbf{B}` where :math:`\mathbf{A}`
+   is symmetric (Hermitian) positive definite, using the triangular factor
+   previously computed by potrf(). Note the input contract: ``a`` is the
+   FACTORED matrix from potrf, not the original A.
+
+   :param uplo: Which triangle holds the factor, matching the potrf call.
+   :param n: Order of A.
+   :param nrhs: Number of right-hand sides (columns of B).
+   :param a: The Cholesky factor from potrf().
+   :param lda: Leading dimension of a.
+   :param b: On entry the right-hand sides B; on exit the solutions X.
+   :param ldb: Leading dimension of b.
+   :returns: 0 on success; < 0 for an illegal argument.

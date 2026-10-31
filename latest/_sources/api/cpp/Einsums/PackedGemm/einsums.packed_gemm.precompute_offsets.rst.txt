@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.precompute_offsets:
+
+========================================
+einsums::packed_gemm::precompute_offsets
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void precompute_offsets(int64_t start, int64_t len, const std::vector<DimSpec> &dims, std::vector<int64_t> &out)
+
+   Precompute offsets for a range of flat indices into a multi-dim group.
+
+   For 2-dim and 3-dim groups (rank-3 and rank-4 tensors), uses nested loops
+   with direct stride multiplication instead of the generic flat_to_offset
+   which requires expensive division/modulo per element.

@@ -1,0 +1,69 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.LoopDescriptor:
+
+======================================
+einsums::compute_graph::LoopDescriptor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: LoopDescriptor
+
+   Metadata for loop nodes.
+
+   Contains a body subgraph executed repeatedly until the condition is false or
+   max_iterations is reached. The condition is evaluated AFTER each iteration
+   and can inspect tensor values for convergence checking.
+
+   .. code-block:: text
+
+      auto &body = graph.add_loop("converge", 100, [&](size_t iter) {
+          return std::abs(energy - energy_old) > 1e-8;
+      });
+
+
+   .. cpp:function:: size_t last_iteration_count() const noexcept
+
+      How many iterations the most recent execute() ran.
+
+      :returns: The count, or 0 when the node has never run or carries no live state.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::shared_ptr<Graph> body
+
+      Subgraph to execute each iteration
+
+
+   .. cpp:member:: size_t max_iterations
+
+      Safety limit
+
+
+   .. cpp:member:: PredExpr condition
+
+      After each iteration: true = continue, false = stop. A default-constructed
+      ``PredExpr`` is an unconditional true, which is what an absent condition
+      has always meant: run to ``max_iterations``.
+
+
+   .. cpp:member:: std::shared_ptr<LoopState> state
+
+      Live loop state, shared with the executor. Null on a node some pass
+      assembled by hand; ``build_executor`` then synthesizes a private block,
+      so the node still runs and simply reports no iteration count.

@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphAnchor:
+
+===================================
+einsums::compute_graph::GraphAnchor
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GraphAnchor
+
+   A name for a graph that stays correct when the graph is moved.
+
+   An executor a pass bakes into a node often looks its tensors up by id when it runs, and so
+   needs the graph those ids belong to. The graph's address is the wrong name for that: a
+   ``Graph`` can be moved, and an executor holding the old address then reads the moved-from
+   object. The anchor lives on the heap, the graph points it at itself again on every move, and
+   detaches it when the graph is destroyed or assigned over, so an executor holding one reaches
+   the graph that owns it now, or fails with an exception rather than a dangling read.
+
+   .. seealso::
+
+      Graph::anchor
+
+
+   .. cpp:function:: Graph & graph() const
+
+      The graph this anchor names.
+
+      :throws std::logic_error: If the graph has been destroyed or assigned over.
+      :returns: The graph, wherever it has been moved to.

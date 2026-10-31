@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cgeev:
+
+============================
+einsums::blas::vendor::cgeev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t cgeev(char jobvl, char jobvr, int_t n, std::complex<float> *a, int_t lda, std::complex<float> *w, std::complex<float> *vl, int_t ldvl, std::complex<float> *vr, int_t ldvr)
+
+   See ``sgeev``.

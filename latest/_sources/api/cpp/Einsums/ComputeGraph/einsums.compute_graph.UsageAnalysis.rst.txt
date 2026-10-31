@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.UsageAnalysis:
+
+=====================================
+einsums::compute_graph::UsageAnalysis
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/UsageAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: UsageAnalysis
+
+   Graph-wide reader/writer/liveness index: one forward scan, shared by every pass, with one alias convention. Build once, query everywhere.
+
+   Canonical semantics: TensorIds are resolved through Graph::resolve_alias,
+   control-flow nodes contribute their sub-graphs' IO via effective-IO
+   expansion (marked ``via_subtree``). Positions refer to the node order at
+   build time - the table is invalidated by the same mutation-declaration
+   points as DependencyInfo (add_node / mark_sorted / topological_sort), so
+   the cached copy on Graph is only valid until the next declared mutation.
+
+
+   .. cpp:function:: static UsageAnalysis build(Graph &graph)
+
+      Scan ``graph`` and build the full table (no caching; see Graph::usage()
+      for the cached accessor). Also usable standalone for before/after
+      snapshots (the pass program-order validator).
+
+
+   .. cpp:function:: const TensorUsage * find(const Graph &graph, TensorId id) const
+
+      Usage of the buffer ``id`` belongs to (alias chain resolved here), or
+      nullptr if the buffer is never used by any node.
+
+
+   .. cpp:function:: const TensorUsage * find_owner(TensorId owner) const
+
+      Direct access when ``owner`` is already alias-resolved.
+
+
+   .. cpp:function:: const std::unordered_map<TensorId, TensorUsage> & table() const
+
+      Owner-keyed table (alias chains resolved).
+
+
+   .. cpp:function:: size_t node_count() const
+
+      Number of nodes the table was built from (staleness defense).

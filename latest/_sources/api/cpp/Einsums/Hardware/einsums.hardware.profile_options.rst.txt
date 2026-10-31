@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.profile_options:
+
+==================================
+einsums::hardware::profile_options
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::map<std::string, std::string, std::less<>> profile_options()
+
+   The ``options`` section of the profile in effect, as the option parser's config layer.
+
+   Each value spelled as the command line would spell it, keyed by the option's long name.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The options, or an empty map when no profile is in use or it sets none.

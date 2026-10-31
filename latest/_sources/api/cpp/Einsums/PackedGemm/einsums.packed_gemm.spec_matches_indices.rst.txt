@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.spec_matches_indices:
+
+==========================================
+einsums::packed_gemm::spec_matches_indices
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool spec_matches_indices(const ContractionSpec &spec, const std::vector<std::string> &c_indices, const std::vector<std::string> &a_indices, const std::vector<std::string> &b_indices, const std::vector<std::string> &link_indices, bool conj_a, bool conj_b)
+
+   Whether ``spec`` already describes this contraction's topology.
+
+   Lets a caller reuse a spec (a ``ContractionSite``'s) instead of rebuilding it. Allocation-free.

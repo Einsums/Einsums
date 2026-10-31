@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.diagonal:
+
+=================
+einsums::diagonal
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/Diagonal.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T> Tensor<T, 2> diagonal(const Tensor<T, 1> &v)
+
+   Creates a diagonal matrix from a vector.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The datatype of the underlying data.
+   :param v: The input vector.
+   :returns: A new rank-2 tensor with the diagonal elements set to ``v`` .

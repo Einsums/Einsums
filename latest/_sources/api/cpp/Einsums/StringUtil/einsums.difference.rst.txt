@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.difference:
+
+===================
+einsums::difference
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/StringOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::string difference(const std::string &st1, const std::string &st2)
+
+   Figures out the characters in the first string that are not in the second.
+
+   .. versionadded:: 2.0.0
+
+   :param st1: The minuend.
+   :param st2: The subtrahend.
+   :returns: A string containing the characters in the first string that are not in the second.

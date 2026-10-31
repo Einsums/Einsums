@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgemm:
+
+============================
+einsums::blas::vendor::sgemm
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, const float *a, int_t lda, const float *b, int_t ldb, float beta, float *c, int_t ldc)
+
+   Performs matrix multiplication for general square matrices.
+
+   .. versionadded:: 1.0.0
+
+   :param transa: Whether to transpose the left matrix. Case insensitive. Can be 'c', 't', or 'n'.
+   :param transb: Whether to transpose the right matrix. Case insensitive. Can be 'c', 't', or 'n'.
+   :param m: The number of rows in the output matrix.
+   :param n: The number of columns in the output matrix.
+   :param k: The number of columns in the first input matrix if ``transa`` is 'n'. May be different.
+   :param alpha: The scale factor for the product.
+   :param a: The left matrix.
+   :param lda: The leading dimension for the left matrix.
+   :param b: The right matrix.
+   :param ldb: The leading dimension for the right matrix.
+   :param beta: The scale factor for the output matrix.
+   :param c: The output matrix.
+   :param ldc: The leading dimension for the output matrix.
+   :throws std::invalid_argument: If ``transa`` or ``transb`` are not one of the valid options.
+   :throws std::domain_error: If any of the integer arguments have invalid values.

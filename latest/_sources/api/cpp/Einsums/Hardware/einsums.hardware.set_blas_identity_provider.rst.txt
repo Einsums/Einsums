@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.set_blas_identity_provider:
+
+=============================================
+einsums::hardware::set_blas_identity_provider
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: void set_blas_identity_provider(std::string (*provider)())
+
+   Register the function that names the BLAS in use.
+
+   The BLAS sits above this module, so it registers itself at start-up rather than this module
+   reaching up for it. Until it does, the BLAS is named "unidentified".
+
+   .. versionadded:: 2.0.0
+
+   :param provider: Returns the name; called once, on first use of ``software_identity``.

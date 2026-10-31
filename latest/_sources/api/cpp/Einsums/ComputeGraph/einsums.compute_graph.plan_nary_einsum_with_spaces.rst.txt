@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.plan_nary_einsum_with_spaces:
+
+====================================================
+einsums::compute_graph::plan_nary_einsum_with_spaces
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NaryEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<NaryEinsumStep> plan_nary_einsum_with_spaces(const Graph &graph, std::string spec, std::vector<std::vector<std::size_t>> dims, std::vector<std::vector<SpaceId>> spaces, std::size_t max_intermediate_elements)
+
+   The cheapest order to contract an einsum's operands, ranked by the index spaces they are annotated with.
+
+   ``plan_nary_einsum`` with each letter bound to the space its axes are annotated with, by the rules a
+   two-operand einsum binds its letters at capture, and ranked by the scaling ``graph's`` registry
+   declares: an order that is cheaper asymptotically wins even where these extents would favour
+   another, as ``MultiTermFactorization`` ranks it. A letter no annotated axis carries is
+   anonymous and ranked by its extent.
+
+   .. versionadded:: 2.0.0
+
+   :param graph: The graph whose space registry the annotations belong to.
+   :param spec: The spec, three or more operands; two are planned too, as one step.
+   :param dims: Each operand's extents, in the spec's order.
+   :param spaces: Each operand's per-axis spaces in the spec's order, then C's, each empty where the tensor is not annotated; or empty altogether.
+   :param max_intermediate_elements: As for ``plan_nary_einsum``.
+   :throws std::invalid_argument: as ``plan_nary_einsum`` does, when ``spaces`` does not hold one entry per operand and one for C, or when one letter is annotated with two different spaces.
+   :returns: The steps, in the order to run them.

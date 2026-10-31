@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.read_async:
+
+==================================
+einsums::compute_graph::read_async
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType, typename StartFn, typename FinishFn, typename SyncFn> void read_async(std::string label, std::string file_path, std::string dataset, TensorType *output, StartFn &&start_fn, FinishFn &&finish_fn, SyncFn &&sync_fn)
+
+   Record an async-capable disk read operation.
+
+   The DataflowExecutor calls ``start_fn`` to begin the read as soon as
+   predecessors complete, then calls ``finish_fn`` before any consumer runs.
+   Independent compute nodes can execute between start and finish, overlapping
+   I/O with computation.
+
+   SequentialExecutor and OpenMPExecutor call ``sync_fn`` (the synchronous
+   fallback) and ignore the async lambdas.
+
+   .. code-block:: text
+
+      std::future<void> io_future;
+      cg::read_async("load ERI", "integrals.h5", "/eri", &ERI,
+          [&]() { io_future = std::async(std::launch::async, [&]{ load(ERI); }); },
+          [&]() { io_future.get(); },
+          [&]() { load(ERI); }
+      );
+
+   :param label: Human-readable name.
+   :param file_path: Path to the file.
+   :param dataset: Dataset/key name within the file.
+   :param output: Tensor to populate with data from disk.
+   :param start_fn: Lambda that begins the async read (should return quickly).
+   :param finish_fn: Lambda that waits for the read to complete and finalizes the tensor.
+   :param sync_fn: Lambda that performs the full synchronous read (fallback).

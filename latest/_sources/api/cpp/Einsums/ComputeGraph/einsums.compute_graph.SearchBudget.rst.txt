@@ -1,0 +1,71 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SearchBudget:
+
+====================================
+einsums::compute_graph::SearchBudget
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SearchBudget
+
+   A wall-clock allowance for one pass's run.
+
+   Every pass in this library up to now has been cheap and deterministic, so nothing needed one.
+   A SEARCH pass does: its runtime is a function of how many candidates a graph offers rather than
+   of how many nodes it has, and a graph that offers too many is not an error condition anyone can
+   predict from the outside. The contract is therefore that a search pass checks this, stops when
+   it is spent, keeps the best candidate it had found, and SAYS it was cut off, so a report never
+   reads the same for "this graph was already optimal" and "I ran out of time on the first
+   candidate".
+
+   Default-constructed means unlimited, which is what every non-searching pass gets and what a
+   budget of zero requests explicitly.
+
+   Deliberately not a thread count, a node count, or a candidate count. The thing that has to be
+   bounded is the wait, and the other three are proxies whose relation to it changes with the
+   machine.
+
+
+   .. cpp:function:: SearchBudget() = default
+
+      An unlimited budget.
+
+
+   .. cpp:function:: explicit SearchBudget(std::chrono::milliseconds allowance)
+
+      A budget of ``allowance`` from now.
+
+      :param allowance: How long the pass may take. Zero or negative means unlimited.
+
+
+   .. cpp:function:: bool unlimited() const noexcept
+
+      Whether this budget bounds anything.
+
+      :returns: True when the pass may take as long as it likes.
+
+
+   .. cpp:function:: bool expired() const noexcept
+
+      Whether the allowance is gone.
+
+      :returns: True when the pass must stop. Always false for an unlimited budget.
+
+
+   .. cpp:function:: std::chrono::milliseconds remaining() const noexcept
+
+      What is left of the allowance.
+
+      :returns: The remaining time, zero once expired, and zero for an unlimited budget, which callers must distinguish with ``unlimited`` rather than by testing this.

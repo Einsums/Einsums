@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.DimSpec:
+
+=============================
+einsums::packed_gemm::DimSpec
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: DimSpec
+
+   Describes one dimension of a tensor as seen during packing.
+
+
+   .. cpp:member:: size_t tensor_pos
+
+      Position of this dim in the tensor's raw index list
+
+
+   .. cpp:member:: int64_t size
+
+      Runtime extent of this dimension
+
+
+   .. cpp:member:: int64_t tensor_stride
+
+      Stride (in elements) in the source/destination tensor

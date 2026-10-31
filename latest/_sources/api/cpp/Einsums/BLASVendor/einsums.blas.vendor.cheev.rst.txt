@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cheev:
+
+============================
+einsums::blas::vendor::cheev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t cheev(char job, char uplo, int_t n, std::complex<float> *a, int_t lda, float *w, std::complex<float> *work, int_t lwork, float *rwork)
+
+   Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
+
+   .. versionadded:: 1.0.0
+
+   :param job: Whether to compute the eigenvectors. Case insensitive. Can be 'v' or 'n'.
+   :param uplo: Indicates how the data is stored. Case insensitive. Can be 'u' if the data is stored in the upper triangle, or 'l' if the data is stored in the lower triangle.
+   :param n: The number of rows and columns in the matrix.
+   :param a: The input matrix. On exit, it will be overwritten. If the eigenvectors are computed, then they will be stored in the columns of this parameter.
+   :param lda: The leading dimension of the matrix.
+   :param w: The output for the eigenvalues.
+   :param work: A work array. If ``lwork`` is -1, then the optimal work array size will be placed in the first element of the work array.
+   :param lwork: The size of the work array. If it is -1, then a workspace query is performed and nothing else. The optimal workspace size will then be placed in the first element of the work array.
+   :param rwork: A work array for real data. Must be at least :math:`3n - 2` elements.
+   :returns: 0 on success. If positive, then the eigenvalue algorithm failed to converge. If negative, then one of the inputs had an invalid value. The absolute value of the return indicates which parameter was invalid.

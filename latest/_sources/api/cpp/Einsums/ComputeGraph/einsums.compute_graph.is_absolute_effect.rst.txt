@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.is_absolute_effect:
+
+==========================================
+einsums::compute_graph::is_absolute_effect
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Approximation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr bool is_absolute_effect(ApproximationEffect effect) noexcept
+
+   Whether ``effect`` is an ABSOLUTE bound rather than a relative one.
+
+   The one place the absolute/relative split is written down, because a comparison has to
+   decide which of its two knobs a bound widens and two answers to that would drift.
+
+   .. versionadded:: 2.0.0
+
+   :param effect: The effect to classify.
+   :returns: True for ``ApproximationEffect::ElementWise`` and ``ApproximationEffect::EnergyLike``.

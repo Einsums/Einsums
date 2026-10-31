@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.stream_contract:
+
+=====================================
+einsums::packed_gemm::stream_contract
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Stream.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void stream_contract(const T *s, const StreamLayout &s_layout, const std::vector<StreamTerm<T>> &terms, const std::vector<int> &partition_axes)
+
+   Evaluate every term with one read of :math:`S`, in storage order.
+
+   A contraction in which one operand supplies every index and the other operands are small is
+   memory-bandwidth bound: its cost is one read of :math:`S`. This walks :math:`S` once, fastest axis
+   innermost, and adds each element's contribution to every term's output, so :math:`N` terms over one
+   tensor cost one read of it instead of :math:`N`.
+
+   The team is sized to the work: a stream too short to pay for forking threads runs serially and
+   writes every output in place. A parallel walk accumulates outputs in per-thread private buffers and
+   reduces them at the end, unless ``partition_axes`` names axes of :math:`S` the walk may split between
+   threads instead: the kernel partitions one of them (preferring an axis with a block for every
+   thread, then the largest stride), and each term whose output carries that axis writes its own
+   disjoint slice directly. Terms sharing an output must put the axis in the same place in it: one on
+   the rows and another on the columns would hand each thread crossing stripes, so such a term is
+   privatized instead. Every term whose output does not carry the chosen axis is privatized too, so
+   the caller must keep those outputs small enough for a copy per thread to stay in cache.
+
+   Each output's ``c_pf`` is applied once, before any accumulation, even when :math:`S` is empty. The work
+   is split over the threads the parallel region actually receives, so a call from inside another
+   parallel region, where the region does not fork, runs correctly on one thread.
+
+   .. versionadded:: 2.0.0
+
+   :param s: The streamed tensor's data.
+   :param s_layout: Its geometry.
+   :param terms: The contractions to evaluate. No output may overlap :math:`S`, a small operand, or another output.
+   :param partition_axes: Axes of :math:`S` the walk may partition for direct writes; empty to privatize every output.
+   :throws std::invalid_argument: If a term's axis maps do not match :math:`S`'s rank, or a term after the first on an output has a ``c_pf`` other than 1.

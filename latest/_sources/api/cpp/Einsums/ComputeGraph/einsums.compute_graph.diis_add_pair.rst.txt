@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.diis_add_pair:
+
+=====================================
+einsums::compute_graph::diis_add_pair
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AmpType, RuntimeRankTensorConcept StepType> requires SameUnderlying<AmpType, StepType> void diis_add_pair(DiisAccelerator<typename AmpType::ValueType> *accelerator, AmpType *amplitude, StepType *step)
+
+   Register one ``(amplitude, step)`` pair with a DIIS accelerator.
+
+   ``amplitude`` is the tensor the iteration updates and ``step`` is the update
+   the body computed, which DIIS also uses as the error vector. Both are bound
+   by storage, so they must outlive the accelerator, and every pair has to be
+   added before the first step - the snapshots are shaped for the pair list.
+
+   This is bookkeeping, not an operation: it records nothing into an active
+   capture and works the same inside and outside one.

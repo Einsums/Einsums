@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.trtrs:
+
+====================
+einsums::blas::trtrs
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t trtrs(char uplo, char trans, char diag, int_t n, int_t nrhs, const T *a, int_t lda, T *b, int_t ldb)
+
+   Solve a triangular system with multiple right-hand sides, with a singularity check.
+
+   Solves :math:`op(\mathbf{A})\mathbf{X} = \mathbf{B}` for triangular
+   :math:`\mathbf{A}`, like trsv() but for multiple right-hand sides and with
+   a check for EXACT singularity (a zero diagonal element) before solving.
+   Near-singular matrices are not detected; the solve proceeds.
+
+   :param uplo: 'U': A is upper triangular; 'L': lower triangular.
+   :param trans: 'N', 'T', or 'C' selecting op(A).
+   :param diag: 'U': A is unit triangular; 'N': non-unit.
+   :param n: Order of A.
+   :param nrhs: Number of right-hand sides (columns of B).
+   :param a: The triangular matrix A.
+   :param lda: Leading dimension of a.
+   :param b: On entry the right-hand sides B; on exit the solutions X.
+   :param ldb: Leading dimension of b.
+   :returns: 0 on success; i > 0 if A(i,i) is exactly zero (singular, no solve performed).

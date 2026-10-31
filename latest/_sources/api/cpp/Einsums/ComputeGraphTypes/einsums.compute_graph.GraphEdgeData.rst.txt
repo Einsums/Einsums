@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphEdgeData:
+
+=====================================
+einsums::compute_graph::GraphEdgeData
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/GraphData.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GraphEdgeData
+
+   Serialized representation of a data-flow edge in a graph snapshot.
+
+
+   .. cpp:member:: uint64_t from
+
+   .. cpp:member:: uint64_t to
+
+   .. cpp:member:: uint64_t tensor_id
+
+   .. cpp:member:: bool loop_back
+
+      True if this edge goes from a later node to an earlier one (cycle)

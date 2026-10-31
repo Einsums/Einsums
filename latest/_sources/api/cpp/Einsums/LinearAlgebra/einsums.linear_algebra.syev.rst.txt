@@ -1,0 +1,94 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.syev:
+
+=============================
+einsums::linear_algebra::syev
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType> requires (InSamePlace<AType, WType> && SameUnderlying<AType, WType> && !Complex<AType>) void syev(AType *A, WType *W)
+
+   Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+
+   This routines assumes the upper triangle of A is stored. The lower triangle is not referenced if the eigenvectors are not computed.
+
+   The stored types of ``A`` and ``W`` must match and be real. The following tensor types are supported.
+
+   - `BasicTensor` matrix with `BasicTensor` eigenvalue vector
+   - `BlockTensor` matrix with `BasicTensor` eigenvalue vector
+
+   .. code-block:: text
+
+      // Create tensors A and b.
+      auto A = einsums::create_tensor("A", 3, 3);
+      auto b = einsums::create_tensor("b", 3);
+
+      // Fill A with the symmetric data.
+      A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+
+      // On exit, A is destroyed and replaced with the eigenvectors.
+      // b is replaced with the eigenvalues in ascending order.
+      einsums::linear_algebra::syev(&A, &b);
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType: The type of the tensor A
+   :tparam WType: The type of the tensor W
+   :tparam ComputeEigenvectors: If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to true.
+   :param A: On entry, the symmetric matrix A in the leading N-by-N upper triangular part of A. On exit, if eigenvectors are requested, the orthonormal eigenvectors of A. Any data previously stored in A is destroyed.
+   :param W: On exit, the eigenvalues in ascending order.
+   :throws RankError: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+   :throws DimensionError: If the matrix input is not square.
+   :throws TensorCompatError: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+   :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or zero-size tensors.
+   :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, MatrixConcept AType> requires (NotComplex<AType>) std::tuple<RemoveViewT<AType>, BasicTensorLike<AType, typename AType::ValueType, 1>> syev(const AType &A)
+
+   Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+
+   This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.
+
+   .. code-block:: text
+
+      // Create tensors A and b.
+      auto A = einsums::create_tensor("A", 3, 3);
+
+      // Fill A with the symmetric data.
+      A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+
+      // On exit, A is not destroyed. The eigenvectors and eigenvalues are returned in a std::tuple.
+      auto [evecs, evals ] = einsums::linear_algebra::syev(A);
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType: The type of the tensor A
+   :tparam ComputeEigenvectors: If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to true.
+   :param A: The symmetric matrix A in the leading N-by-N upper triangular part of A.
+   :throws RankError: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+   :throws DimensionError: If the matrix input is not square.
+   :throws TensorCompatError: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix.
+   :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or zero-size tensors.
+   :throws std::runtime_error: If the eigenvalue algorithm fails to converge.
+   :returns: std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.

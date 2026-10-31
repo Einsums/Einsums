@@ -1,0 +1,95 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Concepts_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/Concepts/Complex.hpp``, ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:type:: template <typename T> AddComplexT
+
+   If given a real type, it will give the complex equivalent. If given a complex type, no change will happen.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to modify.
+
+
+.. cpp:type:: template <TensorConcept D, typename T, size_t Rank> BasicTensorLike
+
+   Gets the type of basic tensor with the same storage location, but with different rank and underlying type.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The underlying tensor type.
+   :tparam T: The new type.
+   :tparam Rank: The new rank.
+
+
+.. cpp:type:: template <typename... Args> BiggestTypeT
+
+   Gets the type with the biggest storage specification.
+
+   .. versionadded:: 1.0.0
+
+
+.. cpp:type:: template <typename D> LocationTensorBaseOfT
+
+   Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
+
+   This typedef can be used as a base class for tensors.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor type to query.
+
+
+.. cpp:type:: template <typename T> RemoveComplexT
+
+   If given a complex type, it will give the real equivalent. If given a real type, no change will happen.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to modify.
+
+
+.. cpp:type:: template <typename D> RemoveViewT
+
+   Gets the underlying type of a view.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor type to strip.
+
+
+.. cpp:type:: template <TensorConcept D, typename T, size_t Rank> TensorLike
+
+   Gets the type of tensor, but with a new rank and type.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The underlying tensor type.
+   :tparam T: The new type.
+   :tparam Rank: The new rank.
+
+
+.. cpp:type:: template <typename D> ValueTypeT
+
+   Gets the data type of tensor/scalar.
+
+   Normally, you can get the data type using an expression such as typename AType::ValueType. However, if you want
+   to support both zero-rank tensors and scalars, then this typedef can help with brevity.
+
+   .. versionadded:: 1.0.0

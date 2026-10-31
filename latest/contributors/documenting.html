@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Documenting the Code &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributors/documenting';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/contributors/documenting.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating Module Skeletons" href="create_module_skeleton.html" />
+    <link rel="prev" title="Coding Style" href="style.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding Style</a></li>
+
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../libs/overview.html">Library Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Documenting the Code</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="documenting-the-code">
+<span id="contributing-documentation"></span><h1>Documenting the Code<a class="headerlink" href="#documenting-the-code" title="Link to this heading">#</a></h1>
+<p>Einsums does not use Doxygen or Breathe. The C++ API reference is produced
+by <a class="reference external" href="https://github.com/Einsums/Apiary">Apiary</a>, a standalone libclang tool, which parses the public headers,
+reads the documentation comments, and emits reStructuredText in Sphinx’s C++ domain. The
+same comments become the docstrings of the Python
+bindings. You therefore write one doc comment per declaration and it feeds
+both surfaces.</p>
+<p>This page covers two things:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#writing-doc-comments"><span class="std std-ref">how to write a doc comment</span></a> that the tool
+understands, and</p></li>
+<li><p><a class="reference internal" href="#cross-referencing"><span class="std std-ref">how to cross-reference other items</span></a> from hand-written
+<code class="docutils literal notranslate"><span class="pre">.rst</span></code> pages and from within doc comments.</p></li>
+</ol>
+<section id="writing-a-doc-comment">
+<span id="writing-doc-comments"></span><h2>Writing a doc comment<a class="headerlink" href="#writing-a-doc-comment" title="Link to this heading">#</a></h2>
+<section id="what-gets-documented">
+<h3>What gets documented<a class="headerlink" href="#what-gets-documented" title="Link to this heading">#</a></h3>
+<p>A declaration appears in the generated reference only when all of the following hold:</p>
+<ul class="simple">
+<li><p>it lives in a module’s public <code class="docutils literal notranslate"><span class="pre">include/Einsums/&lt;Module&gt;/</span></code> header (not under
+<code class="docutils literal notranslate"><span class="pre">detail/</span></code>, not in an anonymous or <code class="docutils literal notranslate"><span class="pre">detail</span></code> namespace),</p></li>
+<li><p>it is not marked <code class="docutils literal notranslate"><span class="pre">&#64;internal</span></code>, and</p></li>
+<li><p>it carries a doc comment.</p></li>
+</ul>
+<p>A public symbol with no doc comment is silently skipped. If you reference such
+a symbol from prose the link will dangle, so document the things you link to.</p>
+</section>
+<section id="comment-syntax">
+<h3>Comment syntax<a class="headerlink" href="#comment-syntax" title="Link to this heading">#</a></h3>
+<p>Use a <code class="docutils literal notranslate"><span class="pre">///</span></code> line block or a <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">...</span> <span class="pre">*/</span></code> block immediately above the
+declaration. A trailing <code class="docutils literal notranslate"><span class="pre">///&lt;</span></code> documents the preceding member:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Compute the trace of a square matrix.</span>
+<span class="c1">///</span>
+<span class="c1">/// @tparam AType  Any rank-2 tensor type.</span>
+<span class="c1">/// @param  A      The matrix whose diagonal is summed.</span>
+<span class="c1">/// @return The sum of the diagonal elements.</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">MatrixConcept</span><span class="w"> </span><span class="n">AType</span><span class="o">&gt;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">trace</span><span class="p">(</span><span class="n">AType</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">AType</span><span class="o">::</span><span class="n">ValueType</span><span class="p">;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Options</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w">   </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w">  </span><span class="c1">///&lt; Print a summary after each pass.</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">///&lt; 0 means "use every core".</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="structured-fields">
+<h3>Structured fields<a class="headerlink" href="#structured-fields" title="Link to this heading">#</a></h3>
+<p>These become the field list of the generated declaration:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;brief</span></code></dt><dd><p>One-sentence summary. The first paragraph is treated as the brief even if
+<code class="docutils literal notranslate"><span class="pre">&#64;brief</span></code> is omitted.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;param[in]</span> <span class="pre">name</span></code></dt><dd><p>A parameter. The optional <code class="docutils literal notranslate"><span class="pre">[in]</span></code> / <code class="docutils literal notranslate"><span class="pre">[out]</span></code> / <code class="docutils literal notranslate"><span class="pre">[in,out]</span></code> direction is
+preserved.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;tparam</span> <span class="pre">name</span></code></dt><dd><p>A template parameter.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;return</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;returns</span></code></dt><dd><p>The return value.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;throws</span> <span class="pre">name</span></code> (also <code class="docutils literal notranslate"><span class="pre">&#64;throw</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;exception</span></code>)</dt><dd><p>An exception the function may raise.</p>
+</dd>
+</dl>
+</section>
+<section id="inline-markup">
+<h3>Inline markup<a class="headerlink" href="#inline-markup" title="Link to this heading">#</a></h3>
+<p>Doxygen inline commands are converted to reST inline markup:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;c</span> <span class="pre">x</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;p</span> <span class="pre">x</span></code></dt><dd><p>Inline code. Renders <code class="docutils literal notranslate"><span class="pre">x</span></code> as a literal.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;ref</span> <span class="pre">Thing</span></code></dt><dd><p>A code-styled name. Einsums renders it as a literal, not an auto-link.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;a</span> <span class="pre">x</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;e</span> <span class="pre">x</span></code></dt><dd><p><em>Italic</em> emphasis.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;b</span> <span class="pre">x</span></code></dt><dd><p><strong>Bold</strong>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;f$</span> <span class="pre">...</span> <span class="pre">&#64;f$</span></code></dt><dd><p>Inline math using LaTeX.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;f[</span> <span class="pre">...</span> <span class="pre">&#64;f]</span></code></dt><dd><p>Display math, which gives a centered <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">math::</span></code> block.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;c</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;p</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;ref</span></code> automatically absorb a trailing <code class="docutils literal notranslate"><span class="pre">()</span></code> or <code class="docutils literal notranslate"><span class="pre">[k]</span></code>
+so the closing backtick is not followed by a bracket, which reST rejects.</p>
+</section>
+<section id="block-callouts">
+<h3>Block callouts<a class="headerlink" href="#block-callouts" title="Link to this heading">#</a></h3>
+<p>These become reST admonitions. Everything until the next command or a blank line
+is the body:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;note</span></code> (also <code class="docutils literal notranslate"><span class="pre">&#64;remark</span></code>)</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">note::</span></code> admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;warning</span></code></dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">warning::</span></code> admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;attention</span></code></dt><dd><p>An <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">attention::</span></code> admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;see</span></code> (also <code class="docutils literal notranslate"><span class="pre">&#64;sa</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;seealso</span></code>)</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">seealso::</span></code> admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;pre</span></code></dt><dd><p>A “Precondition” admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;post</span></code></dt><dd><p>A “Postcondition” admonition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&#64;par</span> <span class="pre">Title</span></code></dt><dd><p>A bold-titled paragraph.</p>
+</dd>
+</dl>
+</section>
+<section id="version-history">
+<h3>Version history<a class="headerlink" href="#version-history" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// @versionadded{1.0.0}</span>
+<span class="c1">/// @versionchanged{2.0.0} Now handles general-rank tensors.</span>
+</pre></div>
+</div>
+<p>For a multi-paragraph note, use the <code class="docutils literal notranslate"><span class="pre">desc</span></code> form and close it with
+<code class="docutils literal notranslate"><span class="pre">&#64;endversion</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// @versionaddeddesc{1.0.0}</span>
+<span class="c1">///     The initial implementation only supported rank-1 tensors. See the</span>
+<span class="c1">///     migration notes for the rank-N generalisation in 2.0.0.</span>
+<span class="c1">/// @endversion</span>
+</pre></div>
+</div>
+</section>
+<section id="lists">
+<h3>Lists<a class="headerlink" href="#lists" title="Link to this heading">#</a></h3>
+<p>Bullet (<code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>) and numbered (<code class="docutils literal notranslate"><span class="pre">1.</span></code>, <code class="docutils literal notranslate"><span class="pre">2)</span></code>) lists are recognized,
+and a wrapped continuation line is joined back onto its item automatically:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Dispatch picks the first backend that fits:</span>
+<span class="c1">///</span>
+<span class="c1">/// 1. a vendor BLAS call,</span>
+<span class="c1">/// 2. the in-tree packed-GEMM backend, falling back to</span>
+<span class="c1">///    a generic loop nest when neither applies.</span>
+</pre></div>
+</div>
+</section>
+<section id="raw-passthrough">
+<h3>Raw passthrough<a class="headerlink" href="#raw-passthrough" title="Link to this heading">#</a></h3>
+<p>When you need reST markup that the normalizer will not touch, like a table, a directive, or a code
+block, wrap it in one of the following:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;rst</span> <span class="pre">...</span> <span class="pre">&#64;endrst</span></code>: emit the body as raw reStructuredText.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;code</span> <span class="pre">...</span> <span class="pre">&#64;endcode</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;verbatim</span> <span class="pre">...</span> <span class="pre">&#64;endverbatim</span></code>: a literal block.</p></li>
+</ul>
+</section>
+<section id="gotchas">
+<h3>Gotchas<a class="headerlink" href="#gotchas" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Bare <code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> in prose read as the start of emphasis or as a role.
+Write <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">*=</span> <span class="pre">b</span></code> as <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">``A</span> <span class="pre">*=</span> <span class="pre">b</span></code> <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">and</span> <span class="pre">``FILE</span> <span class="pre">*</span></code> as <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">``FILE</span> <span class="pre">*</span></code> <code class="docutils literal notranslate"><span class="pre">`,</span>
+<span class="pre">or</span> <span class="pre">use</span> <span class="pre">``&#64;c</span></code>.</p></li>
+<li><p>Do not hand-write a nested <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">note::</span></code> inside a <code class="docutils literal notranslate"><span class="pre">&#64;versionaddeddesc</span></code>
+block. The indentation will be flattened. Put the text directly in the block.</p></li>
+<li><p>The normalizer only implements the common Doxygen commands, not all of them.
+An unknown <code class="docutils literal notranslate"><span class="pre">&#64;command</span></code> is left as-is,
+so a typo shows up verbatim in the output.</p></li>
+</ul>
+</section>
+</section>
+<section id="cross-referencing-other-items">
+<span id="cross-referencing"></span><h2>Cross-referencing other items<a class="headerlink" href="#cross-referencing-other-items" title="Link to this heading">#</a></h2>
+<section id="c-entities">
+<h3>C++ entities<a class="headerlink" href="#c-entities" title="Link to this heading">#</a></h3>
+<p>Reference a documented C++ symbol with the matching cpp-domain role. Use the
+role that matches the kind of the target:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:func:</span></code></dt><dd><p>Free functions and member functions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:class:</span></code> / <code class="docutils literal notranslate"><span class="pre">:cpp:struct:</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">class</span></code> / <code class="docutils literal notranslate"><span class="pre">struct</span></code> declarations.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:type:</span></code></dt><dd><p>Type aliases (<code class="docutils literal notranslate"><span class="pre">using</span></code> / <code class="docutils literal notranslate"><span class="pre">typedef</span></code>). This is also the permissive choice, as
+it resolves classes and structs too.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:concept:</span></code></dt><dd><p>Concepts.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:member:</span></code></dt><dd><p>Class, struct, and union members.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">:cpp:enum:</span></code> / <code class="docutils literal notranslate"><span class="pre">:cpp:enumerator:</span></code></dt><dd><p>Enums and their values.</p>
+</dd>
+</dl>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>The <span class="na">:cpp:func:</span><span class="nv">`einsums::einsum`</span> entry point dispatches through
+<span class="na">:cpp:class:</span><span class="nv">`einsums::GeneralTensor`</span> and the <span class="na">:cpp:concept:</span><span class="nv">`einsums::TensorConcept`</span>.
+</pre></div>
+</div>
+</section>
+<section id="matching-the-namespace">
+<h3>Matching the namespace<a class="headerlink" href="#matching-the-namespace" title="Link to this heading">#</a></h3>
+<p>A reference must resolve to the symbol’s fully-qualified name. From a page
+that has not set a namespace, an unqualified <code class="docutils literal notranslate"><span class="pre">:cpp:func:`einsum`</span></code> looks only in
+the global scope and dangles. Two ways to fix it:</p>
+<ul>
+<li><p>Qualify the reference. Prefix it with <code class="docutils literal notranslate"><span class="pre">~</span></code> to keep the short display name
+while linking the full path:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="na">:cpp:func:</span><span class="nv">`~einsums::einsum`</span>        renders as "einsum", links the full path
+<span class="na">:cpp:func:</span><span class="nv">`~einsums::blas::getrf`</span>   renders as "getrf"
+</pre></div>
+</div>
+</li>
+<li><p>Set a page default. Put this once near the top of a page so every later
+unqualified reference is resolved in that namespace:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">cpp:namespace</span><span class="p">::</span> einsums
+</pre></div>
+</div>
+</li>
+</ul>
+<p>References resolve across modules. Every declaration registers in one global
+cpp-domain index so you can link any documented symbol from anywhere.</p>
+</section>
+<section id="pages-and-sections">
+<h3>Pages and sections<a class="headerlink" href="#pages-and-sections" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">:doc:`/user/absolute_beginners`</span></code> links another document by path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:ref:`label`</span></code> links a labelled location. Define the label immediately above
+a section title:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="nt">_my_section:</span>
+
+<span class="gh">My Section</span>
+<span class="gh">==========</span>
+
+<span class="c">... referenced elsewhere as :ref:`my_section`.</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="id1">
+<h3>Gotchas<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>A letter immediately after inline markup breaks it. To pluralise a
+reference, escape the join with a backslash-space:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="na">:cpp:type:</span><span class="nv">`Tensor`</span>\ s           (renders "Tensors", links "Tensor")
+<span class="s">``vector``\ s                   (renders "vectors")</span>
+</pre></div>
+</div>
+</li>
+<li><p>Type aliases are not classes. <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code> are
+<code class="docutils literal notranslate"><span class="pre">using</span></code> aliases, so reference them with <code class="docutils literal notranslate"><span class="pre">:cpp:type:</span></code>, not <code class="docutils literal notranslate"><span class="pre">:cpp:class:</span></code>.</p></li>
+<li><p>You cannot reference a template instantiation. Link the bare template
+name (<code class="docutils literal notranslate"><span class="pre">:cpp:type:`einsums::Tensor`</span></code>, never <code class="docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span></code>).</p></li>
+<li><p>Headings/decorations must be at least as long as their title text, or the
+page emits an “underline too short” warning.</p></li>
+</ul>
+</section>
+</section>
+<section id="building-and-checking-the-docs">
+<h2>Building and checking the docs<a class="headerlink" href="#building-and-checking-the-docs" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># configure with the docs toolchain present (conda: add --docs to merge_yml.py)</span>
+cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DEINSUMS_WITH_DOCUMENTATION<span class="o">=</span>ON
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>docs-html
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">docs-html</span></code> target runs Sphinx with <code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">-W</span> <span class="pre">--keep-going</span></code> and writes the
+site to <code class="docutils literal notranslate"><span class="pre">build/share/Einsums/docs/html</span></code>. The <code class="docutils literal notranslate"><span class="pre">-n</span></code> (nitpicky) flag turns every
+unresolved cross-reference into a warning, and <code class="docutils literal notranslate"><span class="pre">-W</span></code> makes any warning fail the
+build. A new warning almost always means a reference is mis-qualified, uses the
+wrong role, or points at an undocumented symbol.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="style.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Coding Style</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="create_module_skeleton.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Creating Module Skeletons</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-a-doc-comment">Writing a doc comment</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-documented">What gets documented</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comment-syntax">Comment syntax</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structured-fields">Structured fields</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inline-markup">Inline markup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#block-callouts">Block callouts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-history">Version history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lists">Lists</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#raw-passthrough">Raw passthrough</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gotchas">Gotchas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-referencing-other-items">Cross-referencing other items</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-entities">C++ entities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matching-the-namespace">Matching the namespace</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pages-and-sections">Pages and sections</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Gotchas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-and-checking-the-docs">Building and checking the docs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

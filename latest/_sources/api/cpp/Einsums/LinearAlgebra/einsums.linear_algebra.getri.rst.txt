@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.getri:
+
+==============================
+einsums::linear_algebra::getri
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept TensorType, typename Pivots> void getri(TensorType *A, const Pivots &pivot)
+
+   Computes the inverse of a matrix using the LU factorization computed by getrf.
+
+   The routine computes the inverse :math:`inv(A)` of a general matrix :math:`A`. Before calling this routine, call getrf to factorize
+   :math:`A`.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      The pivots can now be any contiguous container of blas::int_t , such as vectors and arrays. It can also be spans.
+      Can also handle non-unit strides and row- and column-major layouts. Raises exceptions as opposed to returning a status code.
+      The BlockTensor implementation no longer creates temporary buffers for the pivots at each step. Instead, it uses spans to process
+      sections of the pivots.
+
+   :tparam TensorType: The type of the tensor.
+   :tparam Pivots: The type for the pivots.
+   :param A: The matrix to invert after being processed by getrf.
+   :param pivot: The pivot vector from getrf.
+   :throws RankError: If the input tensor is not a matrix.
+   :throws DimensionError: If the input matrix is not square.
+   :throws std::invalid_argument: If an invalid argument got passed to the internal call. This likely means that the tensor is not initialized.
+   :throws std::runtime_error: If the matrix passed in is singular. This means that the return value from getrf was ignored.
+   :throws std::length_error: If the pivot buffer is too small.
+
+
+   Requires ``requires (Pivots a, size_t ind) { typename Pivots::value_type; typename Pivots::size_type; { a.size() } -> std::same_as<typename Pivots::size_type>; { a.data() } -> std::same_as<typename Pivots::value_type *>; a[ind]; requires std::same_as<blas::int_t, typename Pivots::value_type>; requires (CoreTensorConcept<TensorType>); }``.

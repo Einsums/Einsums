@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgetrf:
+
+=============================
+einsums::blas::vendor::sgetrf
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgetrf(int_t m, int_t n, float *A, int_t lda, int_t *ipiv)
+
+   Computes the LU factorization of a general M-by-N matrix A
+   using partial pivoting with row int_terchanges.
+
+   The factorization has the form
+
+   .. math::
+
+      \mathbf{A} = \mathbf{PLU}
+
+   where :math:`\mathbf{P}` is a permutation matri, :math:`\mathbf{L}` is lower triangular with
+   unit diagonal elements (lower trapezoidal if m > n) and :math:`\mathbf{U}` is upper
+   triangular (upper trapezoidal if m < n).
+
+   .. versionadded:: 1.0.0
+
+   :param m: The number of rows of the matrix.
+   :param n: The number of columns of the matrix.
+   :param A: The matrix to factor.
+   :param lda: The leading dimension of the matrix.
+   :param ipiv: The list of pivots used in the computation.
+   :returns: 0 on success. If positive, the factorization completed successfully, but the matrix is singular so should not be used to solve a system of equations. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.

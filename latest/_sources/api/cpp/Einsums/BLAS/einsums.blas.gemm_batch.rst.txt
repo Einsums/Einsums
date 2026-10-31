@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gemm_batch:
+
+=========================
+einsums::blas::gemm_batch
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void gemm_batch(char transa, char transb, int_t m, int_t n, int_t k, T alpha, const T **a_array, int_t lda, const T **b_array, int_t ldb, T beta, T **c_array, int_t ldc, int_t batch_count)
+
+   Perform a batch of independent GEMMs with uniform parameters.
+
+   All batches share transa, transb, m, n, k, alpha, beta, lda, ldb, ldc.
+   The data pointers are passed as arrays.
+
+   :tparam T: Element type (float, double, complex<float>, complex<double>).

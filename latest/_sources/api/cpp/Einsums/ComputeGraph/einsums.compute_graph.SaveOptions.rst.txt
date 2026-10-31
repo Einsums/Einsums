@@ -1,0 +1,47 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SaveOptions:
+
+===================================
+einsums::compute_graph::SaveOptions
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SaveOptions
+
+   Knobs for ``save_graph``.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: bool pretty
+
+      Lay the file out for diffing (one node per line) rather than canonically.
+      The content is identical either way; only the whitespace differs, and a
+      pretty file reads back to the same canonical bytes and the same hash.
+
+
+   .. cpp:member:: std::vector<std::string> structural_passes
+
+      Names of the structural-algebraic passes that produced this form, for the
+      provenance block. Supplied by the caller because nothing records what ran
+      on a graph; see the file note on provenance.
+
+
+   .. cpp:member:: bool allow_machine_dependent
+
+      Write a graph a structural-resource or tuning pass has changed
+      (``Graph::machine_dependent_passes``), which a save otherwise refuses. The file then
+      holds one machine's and one budget's decisions as if they were the program, and a
+      loader on another machine runs them as written.

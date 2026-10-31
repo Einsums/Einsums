@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.ParseOptions:
+
+===========================
+einsums::json::ParseOptions
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: ParseOptions
+
+   Knobs for ``parse``.
+
+
+   .. cpp:member:: std::size_t max_depth
+
+      Deepest nesting accepted, counting each array and object as one level.
+      A document past it is refused with its position, which is what turns a
+      depth bomb into a diagnostic instead of a stack overflow.

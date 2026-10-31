@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.stream_inner_entry:
+
+========================================
+einsums::packed_gemm::stream_inner_entry
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/StreamKernel.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> StreamInnerFn<T> stream_inner_entry()
+
+   Resolve the best inner-loop kernel for ``T`` at stripes::selected_arch().
+   Cached on first call; safe to invoke on the hot path but callers should
+   still hoist it out of inner loops.

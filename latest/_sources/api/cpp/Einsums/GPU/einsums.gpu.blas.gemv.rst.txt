@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.gemv:
+
+========================
+einsums::gpu::blas::gemv
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: template <typename T> void gemv(char trans, int64_t m, int64_t n, T alpha, const T *a, int64_t lda, const T *x, int64_t incx, T beta, T *y, int64_t incy)
+
+   Template wrapper dispatching to the type-specific GEMV.

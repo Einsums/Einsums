@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.choose_k_split:
+
+====================================
+einsums::packed_gemm::choose_k_split
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename ValueType> KSplit choose_k_split(const PackingPlan &plan, int width, int MR, int NR, int64_t nc_cap, int64_t kc)
+
+   Whether a contraction should sum its contracted extent in shares rather than have its threads divide the output, and into how many shares.
+
+   Every thread packs its rows of A and its columns of B across the whole of K, and threads that
+   cover the same rows or columns pack them again. An output of a few tiles leaves each thread
+   little arithmetic against that packing, so more threads buy nothing: the DF particle ladder's
+   63 x 93 output over K = 28560 took 1.40 ms on one thread and 1.37 ms on four. A share of K is a
+   share of both the arithmetic and the packing.
+
+   The decision is made for ``width`` threads, the machine's (see ``k_split_width``), not for the
+   threads a call happens to run on. Cutting K changes the order of the sums, and a graph node
+   whose width changes between replays must give the same bits at every width; the shares are cut
+   the same way whatever the width, and the width decides only how many threads work through them.
+
+   The busiest thread's cost decides, counted in multiply-adds: one per output element per K, and
+   ``kPackWeight`` per element packed or per output element a share writes and the adds read back.
+   That weight is what packing an element costs against a multiply-add on the M4's tile kernel,
+   measured on that ladder (0.31 ns against 0.0064 ns; a gathered operand costs more, a contiguous
+   one less). A share is at least one K block deep, the depth the engine's blocking amortizes its
+   passes over C against, and the shares' buffers together are at most 64 MiB. A split is taken
+   only when it is clearly cheaper, and only above ``min_parallel_flops``; a batched contraction
+   is never split, since its batch is the parallelism it already has.

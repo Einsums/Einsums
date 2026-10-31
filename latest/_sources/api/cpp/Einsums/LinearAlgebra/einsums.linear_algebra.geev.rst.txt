@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.geev:
+
+=============================
+einsums::linear_algebra::geev
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType, VectorConcept WType, typename LVecPtr, typename RVecPtr> requires (InSamePlace<AType, WType> && std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>> && (std::is_null_pointer_v<LVecPtr> || (MatrixConcept<std::remove_pointer_t<LVecPtr>> && std::is_same_v<typename std::remove_pointer_t<LVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>)) && (std::is_null_pointer_v<RVecPtr> || (MatrixConcept<std::remove_pointer_t<RVecPtr>> && std::is_same_v<typename std::remove_pointer_t<RVecPtr>::ValueType, AddComplexT<typename AType::ValueType>>))) void geev(AType *A, WType *W, LVecPtr lvecs, RVecPtr rvecs)
+
+   Compute the general eigendecomposition of a matrix.
+
+   If a real input matrix has a complex eigenvalue, it will always come in a conjugate pair. In this case, the columns
+   of the eigenvector output act as the real and imaginary parts: the first column of the pair is the real part and the
+   second column is the imaginary part of the first eigenvector of the pair, and the imaginary part of the second
+   eigenvector is the negative of that column. This only applies to real inputs; if the input is complex, the
+   eigenvectors are stored as normal.
+
+   ``W`` must store complex values, while ``A`` may be real or complex. The stored types must match in precision, so a
+   `std::complex<float>` eigenvalue vector pairs with either a `float` or `std::complex<float>` matrix. The following
+   tensor types are supported.
+
+   - `BasicTensor` input with `BasicTensor` outputs
+   - `BlockTensor` input with `BasicTensor` eigenvalues and `BlockTensor` eigenvectors
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Eigenvector output is no longer handled by a template parameter. Now, it is decided by whether the outputs are null pointers.
+      When one of the eigenvector outputs is null, that output will not be calculated. It can now handle non-unit inner strides,
+      though this is done by copying data. It can also handle row- and column-major order without a copy.
+
+   :tparam AType: The tensor type of A.
+   :tparam WType: The tensor type of W.
+   :tparam LVecPtr: A pointer to the left eigenvector tensor type, or `std::nullptr_t` to skip them.
+   :tparam RVecPtr: A pointer to the right eigenvector tensor type, or `std::nullptr_t` to skip them.
+   :param A: The tensor to decompose. On exit, it will be overwritten with values used for the computation.
+   :param W: The eigenvalues.
+   :param lvecs: The left eigenvectors. If null, then these will not be computed.
+   :param rvecs: The right eigenvectors. If null, then these will not be computed.
+   :throws RankError: If the inputs have the wrong ranks. The A tensor needs to be rank-2 and the W tensor needs to be rank-1.
+   :throws DimensionError: If the matrix input is not square.
+   :throws TensorCompatError: If the length of the eigenvalue vector does not have the same size as the number of rows in the matrix, or the eigenvector outputs, if not null, do not have the same dimensions as the input.
+   :throws std::invalid_argument: If values passed to internal functions were invalid. This is often due to passing uninitialized or zero-size tensors.
+   :throws std::runtime_error: If the eigenvalue algorithm fails to converge.

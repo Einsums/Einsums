@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.InitializeDescriptor:
+
+============================================
+einsums::compute_graph::InitializeDescriptor
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: InitializeDescriptor
+
+   Metadata for Initialize nodes (zero fill, random fill, disk load).
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: TensorId tensor_id
+
+   .. cpp:member:: InitKind kind
+
+   .. cpp:member:: std::string source_path
+
+      File path for FromDisk initialization

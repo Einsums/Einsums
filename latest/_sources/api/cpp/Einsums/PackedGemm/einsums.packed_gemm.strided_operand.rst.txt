@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.strided_operand:
+
+=====================================
+einsums::packed_gemm::strided_operand
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename TensorType> auto strided_operand(const TensorType &tensor, int64_t offset, size_t axis, int64_t length)
+
+   ``tensor`` as a ``StridedOperand`` starting ``offset`` elements in, with axis ``axis`` cut to ``length``, or no axis cut when ``axis`` is out of range.

@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TypeSupport_api_operators:
+
+=========
+Operators
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/StringLiteral.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t N1, size_t N2> constexpr bool operator!=(const StringLiteral<N1> &_first, const StringLiteral<N2> &_second)
+
+   Direct inequality comparison between two string literals.
+
+   .. versionadded:: 1.0.0
+
+   :param _first: The first string.
+   :param _second: The second string
+
+
+.. cpp:function:: template <size_t N1, size_t N2> constexpr bool operator==(const StringLiteral<N1> &_first, const StringLiteral<N2> &_second)
+
+   Direct equality comparison between two string literals.
+
+   .. versionadded:: 1.0.0
+
+   :param _first: The first string.
+   :param _second: The second string

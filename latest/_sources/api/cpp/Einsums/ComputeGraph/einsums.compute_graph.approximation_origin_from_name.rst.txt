@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.approximation_origin_from_name:
+
+======================================================
+einsums::compute_graph::approximation_origin_from_name
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Approximation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<ApproximationOrigin> approximation_origin_from_name(std::string_view name) noexcept
+
+   The ``ApproximationOrigin`` spelled ``name``, if there is one.
+
+   .. versionadded:: 2.0.0
+
+   :param name: A spelling ``approximation_origin_name`` produces.
+   :returns: The origin, or an empty optional when nothing is spelled that way.

@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.gemm_engine_from_string:
+
+===============================================
+einsums::compute_graph::gemm_engine_from_string
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool gemm_engine_from_string(std::string_view name, GemmEngine &out)
+
+   Parse a ``GemmEngine`` name. Returns false and leaves ``out`` alone for an unknown name.

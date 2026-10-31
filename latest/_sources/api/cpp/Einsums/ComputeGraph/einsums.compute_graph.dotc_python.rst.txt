@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dotc_python:
+
+===================================
+einsums::compute_graph::dotc_python
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, typename AType, typename BType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> && std::is_same_v<typename AType::ValueType, typename BType::ValueType> && DenseOrTiled<AType> && DenseOrTiled<BType> void dotc_python(ResultType *result, const AType &A, const BType &B)
+
+   Graph-aware Hermitian inner product: ``result := sum_i conj(A_i) * B_i``.
+
+   The conjugating counterpart of ``dot``, the bilinear ``sum A_i B_i``. For real
+   dtypes this coincides with ``dot``. Backed by ``true_dot``, which uses BLAS
+   dotc on the contiguous complex path.

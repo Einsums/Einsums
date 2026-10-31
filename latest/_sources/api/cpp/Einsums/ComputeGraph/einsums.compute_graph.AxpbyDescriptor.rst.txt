@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.AxpbyDescriptor:
+
+=======================================
+einsums::compute_graph::AxpbyDescriptor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: AxpbyDescriptor
+
+   Metadata for Axpby nodes (Y = alpha*X + beta*Y). Prefactors are type-erased
+   (PrefactorScalar) so complex axpby folds exactly, matching EinsumDescriptor.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: PrefactorScalar alpha
+
+      alpha snapshot (at-capture value)
+
+
+   .. cpp:member:: PrefactorScalar beta
+
+      beta snapshot (at-capture value)
+
+
+   .. cpp:member:: std::shared_ptr<AxpbyParams> params
+
+      live values the executor reads each call

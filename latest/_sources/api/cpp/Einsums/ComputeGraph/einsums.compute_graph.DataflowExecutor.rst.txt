@@ -1,0 +1,66 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DataflowExecutor:
+
+========================================
+einsums::compute_graph::DataflowExecutor
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Executor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DataflowExecutor : public Executor
+
+   TaskPool dataflow executor, maximum overlap via continuations.
+
+   Uses the TaskPool module to execute graph nodes as dataflow tasks.
+   Each node is submitted when all its predecessors complete, using
+   TaskHandle continuations for zero-barrier scheduling.
+
+   Independent nodes run concurrently across TaskPool workers. The
+   work-stealing deque provides automatic load balancing.
+
+   .. note::
+
+      Requires the TaskPool module. Falls back to SequentialExecutor
+      if TaskPool is not available.
+
+   **Example**
+
+   .. code-block:: text
+
+      cg::DataflowExecutor df_exec;
+      graph.execute(df_exec);  // Maximum overlap via TaskPool
+
+
+   .. cpp:function:: DataflowExecutor()
+
+   .. cpp:function:: ~DataflowExecutor() override
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: void execute(Graph &graph) override
+
+   .. cpp:function:: void set_memory_budget(size_t bytes)
+
+      Set a memory budget for execution.
+
+      When set (> 0), the executor tracks live tensor memory and gates
+      Materialize node submissions to stay within the budget. Free nodes
+      release memory and wake blocked submissions.
+
+      :param bytes: Maximum bytes of simultaneously live tensor data. 0 = unlimited (default).
+
+
+   .. cpp:function:: size_t memory_budget() const
+
+      Get the current memory budget (0 = unlimited).

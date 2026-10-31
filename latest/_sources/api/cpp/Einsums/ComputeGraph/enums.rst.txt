@@ -1,0 +1,606 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/Approximation.hpp``, ``Einsums/ComputeGraph/BisectDriver.hpp``, ``Einsums/ComputeGraph/CostModel.hpp``, ``Einsums/ComputeGraph/Decision.hpp``, ``Einsums/ComputeGraph/DescriptorHooks.hpp``, ``Einsums/ComputeGraph/EinsumSpec.hpp``, ``Einsums/ComputeGraph/ElementOps.hpp``, ``Einsums/ComputeGraph/EscapeAnalysis.hpp``, ``Einsums/ComputeGraph/InterfaceManifest.hpp``, ``Einsums/ComputeGraph/Node.hpp``, ``Einsums/ComputeGraph/NodeFeatures.hpp``, ``Einsums/ComputeGraph/Observer.hpp``, ``Einsums/ComputeGraph/Optimizer.hpp``, ``Einsums/ComputeGraph/Passes/ContractionPlanning.hpp``, ``Einsums/ComputeGraph/Passes/CrossSpaceValidation.hpp``, ``Einsums/ComputeGraph/Passes/DistributiveFactoring.hpp``, ``Einsums/ComputeGraph/Passes/PassUtil.hpp``, ``Einsums/ComputeGraph/Passes/TiledExpansion.hpp``, ``Einsums/ComputeGraph/PredExpr.hpp``, ``Einsums/ComputeGraph/SymbolicCost.hpp``, ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:enum-class:: ApproximationEffect
+
+   What a lossy pass's tolerance is a bound ON.
+
+   A number without units is not a bound, and the three kinds below do not convert into one
+   another: an element-wise bound says nothing about a norm, and a norm bound says nothing
+   about the worst element. So a record carries which one it means and composition happens
+   within a kind, never across.
+
+   Records of different kinds coexist on one output rather than being refused. There is
+   nothing that needs them as a single number: ``Graph::accuracy_spent`` counts one kind at
+   a time and ``ApproximationTolerance`` reports the two sides separately, which is the
+   honest description of a result that is off by so much in norm and so much per element.
+   A declared BUDGET is the exception, because a budget claims to be a cap and can only cap
+   its own units; see ``Graph::can_approximate``.
+
+   .. seealso::
+
+      ApproximationRecord
+
+   .. seealso::
+
+      compose_approximation
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: ElementWise
+
+   .. cpp:enumerator:: NormRelative
+
+   .. cpp:enumerator:: EnergyLike
+
+
+.. cpp:enum-class:: ApproximationOrigin
+
+   Where a bound's number came from.
+
+   A bound and a guess are the same double, and months later a reader of a saved graph cannot
+   tell them apart from the number alone. They deserve different trust, so the file carries
+   which it is.
+
+   ``Asserted`` is not a lesser answer, it is the only one available wherever measuring would
+   mean computing the exact result the approximation exists to avoid computing. A metric fit is
+   that case: its error is the difference from the exact tensor, and a caller holding that had
+   no reason to fit. ``Measured`` belongs to a provider that genuinely knows, a truncated
+   decomposition holding its own discarded singular values being the plain example.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: Measured
+
+   .. cpp:enumerator:: Asserted
+
+
+.. cpp:enum-class:: BisectMode
+
+   How many passes a trial turns on at once.
+
+
+   .. cpp:enumerator:: Individual
+
+   .. cpp:enumerator:: Cumulative
+
+
+.. cpp:enum-class:: CmpOp
+
+   The comparison a ``PredExpr::Compare`` or ``PredExpr::Iteration`` arm performs.
+
+
+   .. cpp:enumerator:: Eq
+
+   .. cpp:enumerator:: Ne
+
+   .. cpp:enumerator:: Lt
+
+   .. cpp:enumerator:: Le
+
+   .. cpp:enumerator:: Gt
+
+   .. cpp:enumerator:: Ge
+
+
+.. cpp:enum-class:: CompareRung
+
+   Which rung of the fallback chain decided a comparison.
+
+
+   .. cpp:enumerator:: ScaleOrder
+
+   .. cpp:enumerator:: TypicalExtent
+
+   .. cpp:enumerator:: BoundExtent
+
+   .. cpp:enumerator:: Lexicographic
+
+
+.. cpp:enum-class:: CostComponent
+
+   Which polynomial of a ``SymbolicCost`` a comparison came down to.
+
+
+   .. cpp:enumerator:: Flops
+
+   .. cpp:enumerator:: Traffic
+
+   .. cpp:enumerator:: Resident
+
+
+.. cpp:enum-class:: DecisionKind
+
+   Whether a pass applied something, declined a candidate, or only had something to say.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: Applied
+
+   .. cpp:enumerator:: Declined
+
+   .. cpp:enumerator:: Note
+
+
+.. cpp:enum-class:: DeviceType
+
+   Device type for profile classification.
+
+
+   .. cpp:enumerator:: CPU
+
+   .. cpp:enumerator:: GPU
+
+
+.. cpp:enum-class:: EinsumOperand
+
+   Which operand of an einsum an index list belongs to.
+
+
+   .. cpp:enumerator:: C
+
+   .. cpp:enumerator:: A
+
+   .. cpp:enumerator:: B
+
+
+.. cpp:enum-class:: Escape
+
+   Why a tensor may or may not be dissolved into a region rewrite.
+
+   Exactly one reason is reported, and the order the checks run in is fixed
+   (see ``EscapeAnalysis::classify``) so a tensor with two problems always
+   reports the same one. A varying reason would make a skip tally vary between
+   runs, and the tally is what a declining pass is read through.
+
+
+   .. cpp:enumerator:: Dissolvable
+
+   .. cpp:enumerator:: UserOwned
+
+   .. cpp:enumerator:: ReadOutside
+
+   .. cpp:enumerator:: WrittenOutside
+
+   .. cpp:enumerator:: AliasedFromOutside
+
+   .. cpp:enumerator:: TouchedBySubgraph
+
+   .. cpp:enumerator:: Unknown
+
+
+.. cpp:enum-class:: EventKind
+
+   What an ``ExecutionEvent`` reports.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: ReplayStart
+
+   .. cpp:enumerator:: NodeStart
+
+   .. cpp:enumerator:: NodeEnd
+
+   .. cpp:enumerator:: Read
+
+   .. cpp:enumerator:: Write
+
+   .. cpp:enumerator:: Publish
+
+   .. cpp:enumerator:: ReplayEnd
+
+
+.. cpp:enum-class:: GemmEngine
+
+   Which kernel a GEMM rate describes.
+
+   A contraction whose C interleaves its operands' indices always runs the packed tile kernel; a
+   flat one with a contiguous C may be handed to the vendor's GEMM instead. The two reach different
+   rates on the same shape, so a profile can carry a curve for each.
+
+
+   .. cpp:enumerator:: Routed
+
+   .. cpp:enumerator:: Packed
+
+
+.. cpp:enum-class:: IndexRole
+
+   What one index letter does in a contraction ``C <- A ; B``.
+
+   Every letter of a contraction plays exactly one of these parts. Passes that reason in GEMM terms
+   (batch, M, N, K) share this classification so they agree on the lone letters.
+
+
+   .. cpp:enumerator:: Batch
+
+   .. cpp:enumerator:: Link
+
+   .. cpp:enumerator:: AFree
+
+   .. cpp:enumerator:: BFree
+
+   .. cpp:enumerator:: ALone
+
+   .. cpp:enumerator:: BLone
+
+   .. cpp:enumerator:: OutputOnly
+
+
+.. cpp:enum-class:: KernelFamily
+
+   Kernel families the thread axis distinguishes.
+
+   A family is a group of kernels that scale with thread count the same way, so
+   one measured curve prices all of them. The split is by how the work is
+   parallelized, not by what it computes: ``GemmLarge`` threads inside the
+   vendor BLAS call, ``BatchedGemm`` threads across independent BLAS calls
+   while each one stays serial, ``Permute`` threads inside HPTT, and
+   ``Elementwise`` threads an OpenMP loop over elements. ``GemmSmall`` is the
+   route that never threads at all, and is a family rather than a size class
+   because the kernel is different code, not the same code on less data.
+
+
+   .. cpp:enumerator:: GemmSmall
+
+   .. cpp:enumerator:: GemmLarge
+
+   .. cpp:enumerator:: BatchedGemm
+
+   .. cpp:enumerator:: Permute
+
+   .. cpp:enumerator:: Elementwise
+
+
+.. cpp:enum-class:: ManifestDirection
+
+   Which way data flows across one manifest slot.
+
+   Derived from the graph's own reader/writer sets rather than declared: a slot every
+   node only reads is an ``Input``, a slot only written is an ``Output``, and one both
+   read and written is ``InOut``. That last case is not rare and not a diagnostic - a
+   ``C`` accumulated into by a chain of contractions is read and written by design.
+
+   .. seealso::
+
+      Graph::manifest
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: Input
+
+   .. cpp:enumerator:: Output
+
+   .. cpp:enumerator:: InOut
+
+
+.. cpp:enum-class:: NodeFeature
+
+   One thing a node can carry that a pass must know about to rewrite it correctly.
+
+
+   .. cpp:enumerator:: PermutationOperators
+
+   .. cpp:enumerator:: Views
+
+   .. cpp:enumerator:: Conjugation
+
+   .. cpp:enumerator:: ComplexPrefactor
+
+   .. cpp:enumerator:: MixedPrecision
+
+   .. cpp:enumerator:: Grouped
+
+   .. cpp:enumerator:: ControlFlow
+
+   .. cpp:enumerator:: Tiled
+
+   .. cpp:enumerator:: RawScalar
+
+   .. cpp:enumerator:: RedirectedSlot
+
+   .. cpp:enumerator:: WritesView
+
+
+.. cpp:enum-class:: OptLevel
+
+   Optimization level for Graph::optimize(), compiler-style.
+
+   - O0: no passes; the graph runs exactly as captured.
+   - O1: node-count cleanup only (constant folding, dead-scale removal, permute fusion, CSE, dead-node elimination, elementwise fusion) - cheap, no restructuring, no memory planning.
+   - O2: the full default pipeline (cleanup + loop hoisting + cost-model chain restructuring + batching + reorder + distribution/GPU when available + in-place merging + free insertion + the memory arena).
+
+
+   .. cpp:enumerator:: O0
+
+   .. cpp:enumerator:: O1
+
+   .. cpp:enumerator:: O2
+
+
+.. cpp:enum-class:: ParamSourceType
+
+   The stored C++ type of a ``WriteParam`` node's source scalar.
+
+   ``write_param`` accepts any arithmetic scalar and narrows it to the
+   ``std::int64_t`` a ``ParamTable`` holds, so an executor rebuilt from data has
+   to be told the storage it is reading. One enumerator per arithmetic type
+   rather than a (size, signedness) pair, because a saved graph writes the NAME
+   and a name that spells the type is the one a reader can check against the
+   tensor it binds.
+
+
+   .. cpp:enumerator:: Bool
+
+   .. cpp:enumerator:: Char
+
+   .. cpp:enumerator:: SChar
+
+   .. cpp:enumerator:: UChar
+
+   .. cpp:enumerator:: Short
+
+   .. cpp:enumerator:: UShort
+
+   .. cpp:enumerator:: Int
+
+   .. cpp:enumerator:: UInt
+
+   .. cpp:enumerator:: Long
+
+   .. cpp:enumerator:: ULong
+
+   .. cpp:enumerator:: LongLong
+
+   .. cpp:enumerator:: ULongLong
+
+   .. cpp:enumerator:: Float
+
+   .. cpp:enumerator:: Double
+
+   .. cpp:enumerator:: LongDouble
+
+   .. cpp:enumerator:: Int64
+
+
+.. cpp:enum-class:: PassAnchor
+
+   Which side of its anchor a registered default pass runs on.
+
+
+   .. cpp:enumerator:: Before
+
+   .. cpp:enumerator:: After
+
+
+.. cpp:enum-class:: PassPhase
+
+   Which phase of the pipeline a pass belongs to, and therefore whether a saved graph may keep its output.
+
+   The split exists because "does this pass change the node set" and "is this
+   pass's answer valid on another machine" are independent questions, and a
+   two-way structural/tuning label answers only the first. `TiledExpansion`,
+   `GPUPlacement`, `DistributionPlanning`, `InputSlicing` and `SUMMAExpansion`
+   all rewrite the node set for *machine* reasons: called structural, their
+   output gets written into a file that is then wrong on the next machine;
+   called tuning, nothing stops them running before the algebra is final. So
+   they get a phase of their own.
+
+   What a save persists is exactly ``PassPhase::StructuralAlgebraic`` output.
+   A load re-runs the resource and tuning phases over it, through the same code
+   path a fresh capture takes rather than a second one that can drift. The
+   batched-GEMM cost model (whose optimal bucket moves with thread count) and
+   per-node thread widths (whose safety depends on the BLAS vendor) are the two
+   findings that make this mandatory rather than tidy.
+
+   .. seealso::
+
+      OptimizerPass::phase
+
+   .. seealso::
+
+      PassManager::structural_pass_manager
+
+
+   .. cpp:enumerator:: Analysis
+
+   .. cpp:enumerator:: StructuralAlgebraic
+
+   .. cpp:enumerator:: StructuralResource
+
+   .. cpp:enumerator:: Tuning
+
+   .. cpp:enumerator:: Diagnostic
+
+
+.. cpp:enum-class:: PassTier
+
+   How close to the unoptimized answer a pass's output has to be.
+
+   Orthogonal to ``PassPhase``, and the two are easy to conflate. Phase answers
+   "when does this run, and may a save keep its output"; tier answers "what may
+   it do to the numbers". `RegionIdentity` is structural-algebraic AND bitwise;
+   `FactorizationPass` is structural-algebraic AND lossy.
+
+   The membership here is MEASURED rather than declared, over the six CI legs
+   that carry the tier report (see ``test_tier_opportunities_python.py``). That
+   matters because the obvious classification is wrong: `PermuteFusion` is
+   bit-identical on five of the six and differs on Accelerate, so a table
+   written from any one machine, or from the agreeing majority, would have put
+   it in the wrong tier.
+
+   .. seealso::
+
+      OptimizerPass::tier
+
+
+   .. cpp:enumerator:: BitwiseExact
+
+   .. cpp:enumerator:: ReAssociating
+
+   .. cpp:enumerator:: Tuning
+
+   .. cpp:enumerator:: Lossy
+
+
+.. cpp:enum-class:: SizeClass
+
+   Working-set size classes, cut at the measured cache levels.
+
+   The boundaries come from ``DeviceProfile::caches``, the same calibration
+   that prices the levels, so a size class means "resident in this level" on
+   the machine that was measured rather than a number somebody picked.
+
+
+   .. cpp:enumerator:: L1Resident
+
+   .. cpp:enumerator:: L2Resident
+
+   .. cpp:enumerator:: LLCResident
+
+   .. cpp:enumerator:: Streaming
+
+
+.. cpp:enum-class:: TermKind
+
+   What an ``ExprTerm`` computes.
+
+
+   .. cpp:enumerator:: Leaf
+
+   .. cpp:enumerator:: Contraction
+
+   .. cpp:enumerator:: Elementwise
+
+   .. cpp:enumerator:: Scale
+
+   .. cpp:enumerator:: Sum
+
+
+.. cpp:enum-class:: Threading
+
+   How a node's executor uses threads, which decides whether ThreadPlanning may widen it.
+
+
+   .. cpp:enumerator:: Moldable
+
+   .. cpp:enumerator:: Serial
+
+   .. cpp:enumerator:: OwnPool
+
+
+.. cpp:enum-class:: TiledElementwiseOp
+
+   Which elementwise operation a ``TiledElementwiseDescriptor`` describes.
+
+
+   .. cpp:enumerator:: Scale
+
+   .. cpp:enumerator:: Axpy
+
+   .. cpp:enumerator:: Divide
+
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:enum-class:: ElementOpDomain
+
+   Which element types an op declares itself defined for.
+
+
+   .. cpp:enumerator:: AllDtypes
+
+   .. cpp:enumerator:: RealOnly
+
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:enum-class:: ChainPricing
+
+   What ContractionPlanning prices a bracketing against.
+
+
+   .. cpp:enumerator:: Auto
+
+   .. cpp:enumerator:: Flops
+
+
+.. cpp:enum-class:: CrossSpaceSeverity
+
+   How much a ``CrossSpaceFinding`` is worth acting on.
+
+
+   .. cpp:enumerator:: Note
+
+   .. cpp:enumerator:: Warning
+
+   .. cpp:enumerator:: Error
+
+
+.. cpp:enum-class:: Densify
+
+   When to lower a tiled contraction by densifying rather than per tile.
+
+
+   .. cpp:enumerator:: Never
+
+   .. cpp:enumerator:: Auto
+
+   .. cpp:enumerator:: Always
+
+
+.. cpp:enum-class:: Factor
+
+   Whether to let the cost model decide that a group is worth factoring.
+
+
+   .. cpp:enumerator:: Auto
+
+   .. cpp:enumerator:: Always
+
+
+.. cpp:enum-class:: FoldSite
+
+   Where a scale of some tensor can be folded inside a consumer.
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Operand
+
+   .. cpp:enumerator:: Accumulator
+
+
+.. cpp:enum-class:: FuseTiles
+
+   When to collapse a tiled elementwise op into one node over all its tiles
+   instead of one node per tile.
+
+
+   .. cpp:enumerator:: Never
+
+   .. cpp:enumerator:: Auto
+
+   .. cpp:enumerator:: Always

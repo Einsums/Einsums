@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.IndexSpace:
+
+===================
+einsums::IndexSpace
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledRuntimeTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: IndexSpace
+
+   A per-irrep selection of indices along one axis of a tiled tensor.
+
+   Each axis of a ``TiledRuntimeTensor`` is partitioned into per-irrep blocks.
+   An IndexSpace picks a half-open ``[start, stop)`` sub-range out of each
+   irrep's block, so a single IndexSpace can describe e.g. "the occupied
+   orbitals" (``[0, nocc_h)`` in every irrep ``h``) or "the virtuals"
+   (``[nocc_h, nmo_h)``). Slicing a tiled tensor with one IndexSpace per axis
+   (``A.view({o, v, o, v})``) yields a ``TiledRuntimeTensorView``.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: IndexSpace() = default
+
+   .. cpp:function:: explicit IndexSpace(std::vector<std::pair<int, int>> r)
+
+      Build from explicit per-irrep ``(start, stop)`` ranges.
+
+
+   .. cpp:function:: int nirrep() const
+
+      Number of irreps this space covers.
+
+
+   .. cpp:function:: int start(int h) const
+
+      First index selected in irrep ``h``.
+
+
+   .. cpp:function:: int stop(int h) const
+
+      One past the last index selected in irrep ``h``.
+
+
+   .. cpp:function:: int length(int h) const
+
+      Number of indices selected in irrep ``h``.
+
+
+   .. cpp:member:: std::vector<std::pair<int, int>> ranges
+
+      Per-irrep half-open ``[start, stop)`` ranges; one entry per irrep on the
+      axis this space applies to.

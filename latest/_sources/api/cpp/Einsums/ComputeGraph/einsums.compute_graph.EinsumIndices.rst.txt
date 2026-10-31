@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EinsumIndices:
+
+=====================================
+einsums::compute_graph::EinsumIndices
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EinsumIndices
+
+   Mutable index specification for einsum operations.
+
+   Same story as EinsumParams but for the contraction's index strings
+   (a/b/c indices, link indices). Stored in a shared_ptr so the executor
+   captures it by shared ownership; optimization passes like
+   PermuteFusion can rewrite the indices in place and the updated
+   contraction takes effect on the next execute().
+
+   Holds ``ParsedEinsumSpec`` plus the precomputed link indices so
+   dispatch::string_einsum doesn't have to recompute them per call.
+
+   The spec is stored WHOLE rather than as its three index vectors so the
+   executors can hand it to the dispatch by reference. Assembling one per call
+   copies three ``vector<string>`` -- about fifteen allocations for a rank-4
+   contraction -- and a tiled einsum expanded per tile turns that into tens of
+   thousands per replay: measured at 2.1 us a node, 8 ms of a 33 ms CCSD replay,
+   more than the tile bookkeeping the graph exists to avoid. A pass that rewrites
+   indices writes into this spec and the next execute() sees it, which is the
+   property the per-call rebuild was there to provide.
+
+
+   .. cpp:member:: ParsedEinsumSpec spec
+
+      Live index lists, passed straight to the dispatch
+
+
+   .. cpp:member:: std::vector<std::string> link_indices
+
+      Contracted (shared A/B, not in C) indices

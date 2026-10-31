@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.open_backing:
+
+====================================
+einsums::compute_graph::open_backing
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorBacking.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: TensorBacking open_backing(const std::string &kind, const std::vector<std::pair<std::string, std::string>> &location, bool write)
+
+   Open a saved location through its registered kind.
+
+   :param kind: The kind's name.
+   :param location: The saved location.
+   :param write: Whether the backing is a write backing.
+   :throws std::invalid_argument: when no kind is registered under ``kind``, or when the kind's ``BackingKind::open`` throws.
+   :returns: The backing, its reader rebuilt (a write backing unprepared).

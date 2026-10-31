@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_PackedGemm_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/PackedGemm/MicroKernel.hpp``, ``Einsums/PackedGemm/Packing.hpp``, ``Einsums/PackedGemm/StreamKernel.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:type:: template <typename T> MicroKernelFn = void (*)(int, int, int64_t, T, const T *, const T *, int64_t, int64_t, T *, int64_t, int64_t, bool)
+
+   Signature of a resolved micro-kernel tile function.
+
+   Arguments: (mr_block, nr_block, kc, alpha, Ap_panel, Bp_panel, mr_eff,
+   nr_eff, C, rs_c, cs_c, overwrite) — see MicroKernelBody.hpp for semantics.
+   The tile adds alpha * A B onto C, or with overwrite stores it without
+   reading C, which is how a beta of zero reaches C with no clearing pass.
+
+
+.. cpp:type:: template <typename T> PackTransposeFn = void (*)(T *, const T *const *, int64_t, int64_t, int64_t)
+
+   Signature of a resolved panel transpose: writes `panel[r + k * ld] = rows[r][k]` for `r < nrows`, `k < kc`.
+
+   This is pack_A's K-contiguous case, where every panel row is a K-contiguous
+   run of A. A scalar copy makes one store per element; the per-rung kernels
+   transpose a lanes x lanes tile in registers and store whole vectors.
+
+
+.. cpp:type:: template <typename T> StreamInnerFn = void (*)(T *, const T *, const T *, T, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t)
+
+   Function-pointer type for one term's innermost stream loop.
+
+
+.. cpp:type:: template <typename T> StreamTileFn = void (*)(T *, const T *, const T *, T, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t, int64_t)
+
+   Function-pointer type for one term's two innermost stream loops: m rows of the
+   StreamInnerFn loop, row r offset by (r*dc2, r*ds2, r*dw2).

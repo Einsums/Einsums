@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.validate_einsum_spec:
+
+============================================
+einsums::compute_graph::validate_einsum_spec
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr bool validate_einsum_spec(std::string_view spec)
+
+   Validate an einsum specification string at compile time.
+
+   Checks structural validity: presence of exactly one arrow (`<-` or `->`),
+   presence of exactly one semicolon for operand separation, valid characters.
+   Does NOT check tensor rank compatibility (that requires runtime info).
+
+   .. code-block:: text
+
+      static_assert(validate_einsum_spec("ij <- ik ; kj"));
+      static_assert(!validate_einsum_spec("ij <- ik"));        // Missing semicolon
+      static_assert(!validate_einsum_spec("ij ik ; kj"));      // Missing arrow
+
+   :param spec: The specification string.
+   :returns: True if structurally valid.

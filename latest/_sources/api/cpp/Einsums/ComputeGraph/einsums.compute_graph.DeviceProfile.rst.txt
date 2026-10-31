@@ -1,0 +1,309 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DeviceProfile:
+
+=====================================
+einsums::compute_graph::DeviceProfile
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DeviceProfile
+
+   Performance profile for a single device (CPU or GPU).
+
+   Contains measured or estimated performance characteristics used by
+   the ContractionPlanning pass to estimate execution time.
+
+
+   .. cpp:function:: double estimate_gemm_gflops(size_t M, size_t N, size_t K) const
+
+      GEMM throughput of the routed engine; see the overload taking a ``GemmEngine``.
+
+
+   .. cpp:function:: double estimate_gemm_gflops(size_t M, size_t N, size_t K, GemmEngine engine) const
+
+      GEMM throughput of ``engine`` on an M x N x K GEMM, in GFLOP/s.
+
+      Read from the points measured on ``engine``, or on the routed engine when it has none.
+
+      - Points on a grid of shapes are interpolated trilinearly in log M, log N and log K, on the log of the rate. A corner the grid skipped drops out and the others' weights are renormalized; with no corner at all, the nearest point answers.
+      - Points that are all cubes are read at the cube root of M N K, interpolated in log size. A table of cubes knows nothing of shape; ``estimate_contraction_time_us`` prices a thin GEMM's low intensity with a memory floor instead.
+
+      Either way the rate is clamped at the ends of what was measured and is exact at a measured
+      point. With no points at all, a smooth curve in the volume stands in.
+
+
+   .. cpp:function:: static double run_cost_ns(const std::vector<RunCostPoint> &curve, size_t run)
+
+      Extra nanoseconds per element ``curve`` charges at contiguous run length ``run``: interpolated
+      in log run length, clamped at the ends, zero for an empty curve.
+
+
+   .. cpp:function:: double estimate_gemm_time_us(size_t M, size_t N, size_t K, unsigned int threads) const
+
+      Estimate GEMM time at ``threads`` threads.
+
+      `t(w) = t(1) / s(w) + launch overhead`, with `s(w)` from the family and
+      size class this shape falls in. The launch overhead is not divided: it is
+      paid once whatever the width, and dividing it would make a wide plan look
+      cheaper than it can be. `threads = 1` reproduces the width-1 estimate
+      exactly, so every existing call site is unchanged.
+
+
+   .. cpp:function:: double estimate_memory_time_us(size_t bytes, unsigned int threads) const
+
+      Estimate the time to move ``bytes`` at ``threads`` threads. Bandwidth
+      scales with width along the ``KernelFamily::Elementwise`` curve, which
+      is the family whose kernels are pure traffic.
+
+
+   .. cpp:function:: double estimate_contraction_time_us(const packed_gemm::PackedContractionShape &shape, unsigned int threads, size_t element_size) const
+
+      Time of the contraction ``shape`` describes, at ``threads`` threads.
+
+      The parts the packed engine runs one after another on a thread, added:
+
+      - a call overhead for each share the contracted extent is cut into;
+      - the arithmetic, at the routed rate when one vendor GEMM can take the contraction whole and the ``GemmEngine::Packed`` rate otherwise, scaled by the GEMM family's thread curve, and never less than the time to stream the operands and the output once;
+      - the scatter's extra cost per element of C at C's run length, scaled as elementwise traffic;
+      - the packers' extra cost per element of each operand at its run length, scaled with the arithmetic;
+      - for a cut extent, each share's buffer written and read back into C, at memory bandwidth.
+
+      ``shape`` must be valid; an invalid one has no plan to price and costs one call overhead.
+
+
+   .. cpp:function:: double estimate_total_gemm_time_us(size_t M, size_t N, size_t K, size_t element_size, unsigned int threads) const
+
+   .. cpp:function:: static double default_permute_efficiency(size_t rank)
+
+      Fraction of ``mem_bandwidth_gbps`` a permute of this rank is expected to reach, when no calibration data is available.
+
+      A transpose moves the same bytes as a copy with one side strided, and the
+      penalty grows with rank because the innermost contiguous run shortens.
+
+      Calibrate rather than lean on these. An HPTT sweep on one machine (Apple
+      M4, doubles) put the achieved rate between 52% and 104% of the copy
+      figure for working sets up to about 1 MB, and ABOVE it from 8 MB up,
+      where HPTT's threading beats the single-threaded copy benchmark that
+      mem_bandwidth_gbps comes from. The constants below track the small end,
+      which is where a cost model actually has to make a call, and so they
+      over-price a large permute. ``einsums-tune`` replaces them with
+      measured points.
+
+
+   .. cpp:function:: double estimate_permute_gbps(size_t bytes, size_t rank) const
+
+      Achieved (read + write) bandwidth for permuting a tensor of ``bytes`` at
+      ``rank``. Calibration points win; nearest neighbour prefers an exact rank
+      match and then the closest size on a log scale, the same shape of
+      interpolation ``estimate_gemm_gflops`` uses.
+
+
+   .. cpp:function:: double estimate_permute_time_us(size_t bytes, size_t rank, unsigned int threads) const
+
+      Estimate the time to permute a tensor of ``bytes`` at ``rank``.
+
+      Bandwidth-bound: the source is read once and the destination written
+      once, at the rate ``estimate_permute_gbps`` predicts for that shape.
+      This is what prices a transpose against the contraction that would
+      otherwise absorb it.
+
+
+   .. cpp:function:: size_t cache_bytes(size_t level, size_t fallback) const
+
+      Size of cache level ``level`` (0-based), or ``fallback`` when the profile
+      does not describe that many levels.
+
+
+   .. cpp:function:: SizeClass size_class_for_bytes(size_t bytes) const
+
+      Which ``SizeClass`` a working set of ``bytes`` falls in, cut at this
+      profile's cache levels. Boundaries are forced strictly increasing so a
+      machine that reports an L2 no bigger than its L1 still yields four
+      distinct classes.
+
+
+   .. cpp:function:: static KernelFamily gemm_family(size_t M, size_t N, size_t K)
+
+      Which GEMM family a shape belongs to.
+
+
+   .. cpp:function:: static double default_parallel_fraction(KernelFamily family, SizeClass size_class)
+
+      Parallel fraction of the default (uncalibrated) model.
+
+      The default curve is Amdahl's law, `s(w) = 1 / ((1-p) + p/w)`, with `p`
+      the product of a per-family ceiling and a per-size-class factor. Two
+      properties are deliberate and are what a planner leans on:
+
+      - `s(w)` is non-decreasing in `w` and `e(w) = s(w)/w` is non-increasing, so widening never looks free and the marginal gain shrinks.
+      - An L1-resident working set has `p = 0`, so `s(w) = 1` and `e(w) = 1/w` exactly: below the threshold, width buys nothing and a planner leaves the node narrow without needing a special case. The small-GEMM family is `p = 0` at every size for the same reason.
+
+      The family ceilings are ordered by how much of the kernel is loop and
+      how much is fixed cost: a large BLAS GEMM parallelizes nearly perfectly,
+      a batch of them slightly less, HPTT less again, and a bandwidth-bound
+      elementwise loop least because it saturates the bus before it saturates
+      the cores. All of them are conservative placeholders except the batched
+      one, which is fitted to a measured sweep; see the case below. Calibrate
+      rather than lean on them: ``measure_thread_efficiency`` replaces them
+      wholesale.
+
+
+   .. cpp:function:: static double default_parallel_speedup(KernelFamily family, SizeClass size_class, unsigned int width)
+
+      Speedup the default model predicts. See ``default_parallel_fraction``.
+
+
+   .. cpp:function:: unsigned int clamp_width(unsigned int width) const
+
+      Clamp a requested width to something this profile can speak about:
+      never below 1, never above the `P` the curves were measured at.
+
+
+   .. cpp:function:: const EfficiencyCurve * find_curve(KernelFamily family, SizeClass size_class) const
+
+      The curve for a cell, or nullptr. An exact cell wins; failing that the
+      nearest size class within the same family, because a partly swept
+      profile should still price the cells it did measure.
+
+
+   .. cpp:function:: double parallel_speedup(KernelFamily family, SizeClass size_class, unsigned int width) const
+
+      `s(w)`: how much faster this cell runs at ``width`` than at width 1.
+      Measured when the cell was swept, the default Amdahl curve otherwise.
+      Always strictly positive, so callers may divide by it.
+
+
+   .. cpp:function:: double parallel_speedup(KernelFamily family, size_t bytes, unsigned int width) const
+
+      Same, with the size class derived from a working set of ``bytes``.
+
+
+   .. cpp:function:: double parallel_efficiency(KernelFamily family, size_t bytes, unsigned int width) const
+
+      `e(w) = s(w)/w`: the fraction of the added threads that turns into work.
+      One at width 1, and collapsing toward `1/w` for work that cannot use
+      the machine.
+
+
+   .. cpp:function:: double parallel_efficiency(KernelFamily family, SizeClass size_class, unsigned int width) const
+
+      Same, on an explicit size class.
+
+
+   .. cpp:function:: double gemm_parallel_speedup(size_t M, size_t N, size_t K, unsigned int width) const
+
+      `s(w)` for a GEMM shape: picks the family and the size class for it.
+      The working set is priced in doubles because the GEMM estimator is
+      already an fp64 model (``peak_gflops_fp64``).
+
+
+   .. cpp:function:: std::vector<unsigned int> width_rungs() const
+
+      The width rungs this profile was calibrated at, or the rungs it would
+      be calibrated at on a machine of ``max_threads``.
+
+
+   .. cpp:member:: std::string name
+
+      e.g., "Apple M4 Pro", "NVIDIA A100"
+
+
+   .. cpp:member:: std::string source
+
+      "default", "database", "calibrated", "flop_count"
+
+
+   .. cpp:member:: DeviceType device_type
+
+      CPU or GPU
+
+
+   .. cpp:member:: std::string brand_family
+
+      Normalized key, e.g., "apple_m4_pro"
+
+
+   .. cpp:member:: std::vector<std::string> match_patterns
+
+      Substrings for brand string matching
+
+
+   .. cpp:member:: double peak_gflops_fp64
+
+   .. cpp:member:: double peak_gflops_fp32
+
+   .. cpp:member:: double mem_bandwidth_gbps
+
+   .. cpp:member:: double kernel_launch_overhead_us
+
+   .. cpp:member:: double alloc_overhead_us
+
+   .. cpp:member:: double device_bandwidth_gbps
+
+   .. cpp:member:: double pcie_bandwidth_gbps
+
+   .. cpp:member:: double gpu_launch_latency_us
+
+   .. cpp:member:: double inter_node_bandwidth_gbps
+
+      Network bandwidth (e.g., 25 Gbps InfiniBand)
+
+
+   .. cpp:member:: double inter_node_latency_us
+
+      Network latency (e.g., 1-5 us for IB)
+
+
+   .. cpp:member:: double nccl_bandwidth_gbps
+
+      Measured NCCL throughput for GPU-direct
+
+
+   .. cpp:member:: std::vector<CacheLevel> caches
+
+   .. cpp:member:: std::vector<GemmEfficiencyPoint> gemm_efficiency
+
+   .. cpp:member:: std::vector<PermuteEfficiencyPoint> permute_efficiency
+
+   .. cpp:member:: std::vector<RunCostPoint> scatter_cost
+
+      Extra cost per element of writing C through the scatter, by the length of C's contiguous
+      runs (see ``estimate_contraction_time_us``). Empty prices the scatter at nothing extra.
+
+
+   .. cpp:member:: std::vector<RunCostPoint> pack_cost
+
+      Extra cost per element of gathering an operand into its packed panel, by the length of the
+      operand's contiguous runs. Empty prices every operand as flat.
+
+
+   .. cpp:member:: unsigned int max_threads
+
+      The `P` the efficiency curves were measured at. Zero means the profile
+      was never swept, and then no width is clamped against it.
+
+
+   .. cpp:member:: std::vector<EfficiencyCurve> thread_efficiency
+
+      Measured `e(w)` per kernel family and size class. Empty is the normal
+      state for a database profile; see ``default_parallel_speedup`` for
+      what that costs.
+
+
+   .. cpp:member:: static constexpr double kGemmSmallFlops
+
+      Flop count below which a GEMM takes the small-kernel route. Set at a
+      64-cubed GEMM, which is where the vendor's own threading gate sits on
+      the machines we calibrate; the sweep measures both sides of it.

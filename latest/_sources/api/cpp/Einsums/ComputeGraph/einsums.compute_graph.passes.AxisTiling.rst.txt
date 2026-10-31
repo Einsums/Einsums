@@ -1,0 +1,434 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.AxisTiling:
+
+==========================================
+einsums::compute_graph::passes::AxisTiling
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/AxisTiling.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: AxisTiling : public OptimizerPass
+
+   Rewrite a program as a loop over slices of its free axes, under a memory cap.
+
+   .. code-block:: text
+
+      cg::PassManager manager;
+        auto tiling = std::make_shared<cg::passes::AxisTiling>();
+        tiling->set_memory_cap(4096);
+        manager.add(tiling);
+        graph.apply(manager);
+
+   A member of ``PassManager::create_default``, after the algebraic rewrites. By default the cap
+   is what the ``--einsums:max-memory`` option leaves after every other tensor of the graph, so in the default
+   pipeline the pass streams only a program that would not fit; on one that fits it does no more
+   than run a provably symmetric region as a triangle where that is cheaper. A caller with a smaller footprint to live inside sets a cap of
+   its own.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: AxisTiling() = default
+
+      Default-construct, reading the cap from ``option::GraphTilingMemoryCap``.
+
+
+   .. cpp:function:: explicit AxisTiling(CostModel cost_model)
+
+      Price triangles against ``cost_model`` instead of the detected machine's.
+
+      populate_default() passes the profile it shares with the other cost-model passes, so every
+      planning decision is made against one machine.
+
+
+   .. cpp:function:: std::string name() const override
+
+      See ``OptimizerPass::name``.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      A change of the node set taken for machine reasons, which is what the resource phase is:
+      the algebra is untouched, so nothing here is saved and everything here is re-derived from
+      the algebraic form on a load.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not views, conjugation or redirected slots: a sliced body re-emits a dotc as a dot and bakes the handle's own object.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      See ``OptimizerPass::recurse_into_subgraphs``.
+
+      A loop body is where an iterative method keeps the work worth tiling: a coupled-cluster
+      residual lives in the body of its DIIS loop. A region never crosses out of the graph it was
+      found in, so the loop the rewrite emits nests inside the body, and a loop this pass emitted
+      is not visited again in the same apply.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      The per-slice algebra is bitwise the captured algebra. The reduction that becomes an
+      accumulation across iterations is not, because a sum split into per-slice partial sums
+      adds them in a different order.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      See ``OptimizerPass::reset_stats``.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void set_memory_cap(std::int64_t bytes)
+
+      Override the cap for this pipeline, in bytes.
+
+      Beats ``option::GraphTilingMemoryCap``, which is the two-level shape every other
+      per-pass knob in this module has.
+
+      .. versionadded:: 2.0.0
+
+      :param bytes: Largest a single live intermediate may be. Zero disables the pass, and a negative value derives the cap from the ``--einsums:max-memory`` option and the graph's other tensors.
+
+
+   .. cpp:function:: std::int64_t memory_cap() const
+
+      The cap in force: this pipeline's override, or the option's value.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The cap in bytes; negative when it is derived per graph from the ``--einsums:max-memory`` option.
+
+
+   .. cpp:function:: void set_block_extent(std::int64_t extent)
+
+      Pin the block extent of a triangle's two axes.
+
+      A triangle's block is priced from the machine's measured kernel rates, so the block it
+      chooses moves between machines. A test that checks the emission at a given block pins it
+      here. A pinned block that does not fit the memory the region may take declines the triangle.
+
+      .. versionadded:: 2.0.0
+
+      :param extent: The block, two or more; zero lets the cost model choose, which is the default.
+
+
+   .. cpp:function:: void use_reference_cost_model()
+
+      Price against the cost model's built-in rates instead of the detected machine's.
+
+      The pass prices each candidate from the machine's measured kernel rates, so where two
+      candidates are close the one it chooses moves between machines. With the built-in rates the
+      decision is the same on every machine, which is what a test that checks the choice needs.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::size_t num_tiled() const noexcept
+
+      How many regions the last apply tiled.
+
+      The other getters describe the first of them, the region around the largest intermediate;
+      ``explain`` names every one.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The count, zero when the pass declined.
+
+
+   .. cpp:function:: std::vector<std::string> axis_names() const
+
+      The sliced axes of the last decision, named ``tensor[position]``.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per sliced axis, outermost first.
+
+
+   .. cpp:function:: std::vector<std::string> axis_letters() const
+
+      The index letter each sliced axis carries, where a contraction names one.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per sliced axis, empty where no node names the axis with a letter.
+
+
+   .. cpp:function:: std::vector<std::int64_t> axis_extents() const
+
+      The extent of each sliced axis.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per sliced axis, in the same order as ``axis_names``.
+
+
+   .. cpp:function:: std::size_t slice_count() const noexcept
+
+      How many slices the chosen axes cut the program into.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The product of the sliced extents, zero when the pass declined.
+
+
+   .. cpp:function:: std::size_t depth() const noexcept
+
+      How many slices one iteration of the emitted loop handles.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The chunk depth, the product of the block extents for a range emission, zero when the pass declined.
+
+
+   .. cpp:function:: std::size_t iterations() const noexcept
+
+      How many iterations the emitted loops run.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The iterations summed over every emitted loop, which is ``slice_count`` divided by ``depth`` when the chunks divide the slices, zero when the pass declined.
+
+
+   .. cpp:function:: std::size_t largest_before() const noexcept
+
+      The largest single intermediate any examined graph declared before the rewrite, in bytes.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The size over the graph and every loop body the pass visited, zero when none was examined.
+
+
+   .. cpp:function:: std::size_t largest_after() const noexcept
+
+      The largest single intermediate the body declares after the rewrite, in bytes.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The size at the chosen depth, zero when the pass declined.
+
+
+   .. cpp:function:: std::vector<std::string> streamed() const
+
+      The intermediates the rewrite streams, by name.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per re-declared tensor, in region order.
+
+
+   .. cpp:function:: std::vector<std::string> whole() const
+
+      The tensors the rewrite left whole, by name.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per tensor read or written without a sliced axis.
+
+
+   .. cpp:function:: std::string emission() const
+
+      How the last decision emits a chunk.
+
+      .. versionadded:: 2.0.0
+
+      :returns: ``"range"`` when some sliced axis is cut into blocks the body keeps as an axis, ``"triangle"`` when two such axes are exchangeable and only the tiles on and above their diagonal run, ``"grouped"`` when every sliced axis is a point and a chunk is one grouped node per family, and an empty string when the pass declined.
+
+
+   .. cpp:function:: std::vector<std::int64_t> block_extents() const
+
+      The block extent of each sliced axis.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per sliced axis, in the same order as ``axis_names``: the extent of a full block of a ranged axis, and one for an axis taken a point at a time. Empty when the pass declined or the emission is grouped.
+
+
+   .. cpp:function:: std::size_t loops() const noexcept
+
+      How many loops the rewrite emitted.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One for a grouped emission or a range emission whose blocks divide their axes, up to four for two ranged axes with remainders, zero when the pass declined.
+
+
+   .. cpp:function:: int triangle_sign() const noexcept
+
+      The sign a triangle's mirrored tiles carry.
+
+      .. versionadded:: 2.0.0
+
+      :returns: +1 when the region's contribution is symmetric under exchanging its two sliced axes, -1 when antisymmetric, and 0 when the last decision is not a triangle.
+
+
+   .. cpp:function:: std::string accumulator() const
+
+      The tensor the reduction accumulates into across iterations, if there is one.
+
+      .. versionadded:: 2.0.0
+
+      :returns: Its name, or an empty string when the region has no such reduction.
+
+
+   .. cpp:function:: std::vector<std::string> summed_into() const
+
+      The tensors a contraction of any tiled region sums one of its sliced axes into.
+
+      .. versionadded:: 2.0.0
+
+      :returns: Their names. Each is scaled by its contraction's destination prefactor once, before the loop, and added to at every iteration; empty when no contraction sums a sliced axis.
+
+
+   .. cpp:member:: static constexpr Reason ZeroCap
+
+      The codes this pass records its decisions under (``Decision::code``).
+      @{
+
+
+   .. cpp:member:: static constexpr Reason NoBudget
+
+   .. cpp:member:: static constexpr Reason ResultHeld
+
+   .. cpp:member:: static constexpr Reason FitsBudget
+
+   .. cpp:member:: static constexpr Reason FitsCap
+
+   .. cpp:member:: static constexpr Reason NoSliceableWriter
+
+   .. cpp:member:: static constexpr Reason UnknownFeature
+
+   .. cpp:member:: static constexpr Reason OperandWithoutAxes
+
+   .. cpp:member:: static constexpr Reason StatementBetween
+
+   .. cpp:member:: static constexpr Reason BestEffort
+
+   .. cpp:member:: static constexpr Reason NoAxisSet
+
+   .. cpp:member:: static constexpr Reason ElementType
+
+   .. cpp:member:: static constexpr Reason Sliced
+
+   .. cpp:member:: static constexpr Reason Triangle
+
+   .. cpp:member:: static constexpr Reason TriangleShape
+
+   .. cpp:member:: static constexpr Reason NotExchangeable
+
+   .. cpp:member:: static constexpr Reason TriangleBacked
+
+   .. cpp:member:: static constexpr Reason BlockPinned
+
+   .. cpp:member:: static constexpr Reason TriangleFit
+
+   .. cpp:member:: static constexpr Reason RegionKeptSmall
+
+   .. cpp:member:: static constexpr Reason TrianglePrice
+
+   .. cpp:member:: std::size_t cap
+
+      The cap on each intermediate alone; an intermediate that fits it is not streamed.
+
+
+   .. cpp:member:: std::size_t budget
+
+      The memory budget the loop's buffers are held to together with every tensor outside
+      the loop, or zero when ``cap`` alone bounds them.
+
+
+   .. cpp:member:: std::size_t share
+
+      The most the loop's buffers may hold together whatever the budget leaves, when
+      ``budget`` is set.
+
+
+   .. cpp:member:: const Footprint *footprint
+
+      What the tree's tensors hold before the region is tiled, and when, when ``budget`` is
+      set.
+
+
+   .. cpp:member:: bool triangle_only
+
+      Take only a triangle, and only one the cost model prices below running the region
+      whole: the seed is there for its symmetry, not because it is over its cap.
+
+
+   .. cpp:member:: bool forced
+
+      The program is over its budget, so the loop's buffers may take what the budget leaves,
+      not only the share.
+
+
+   .. cpp:class:: Footprint
+
+      The memory one region may take. What the tree's tensors hold, and when.
+
+      An intermediate of the graph being tiled is held from its first writer to its last reader,
+      in the graph's current order, since the memory passes allocate it before the one and free
+      it after the other. Everything else is counted as held throughout: the caller's tensors,
+      an intermediate read before it is written, and the tensors of the tree's other graphs,
+      whose order this pass does not follow.
+
+
+      .. cpp:function:: std::size_t beside(std::size_t lo, std::size_t hi) const
+
+         What is held while any statement from position ``lo`` to ``hi`` runs.
+
+
+      .. cpp:function:: std::size_t peak() const
+
+         The most held while any one statement runs: the program's peak.
+
+
+      .. cpp:member:: std::size_t total
+
+         Every tensor at once.
+
+
+      .. cpp:member:: std::size_t fixed
+
+         What is held throughout.
+
+
+      .. cpp:member:: std::vector<Life> lives
+
+      .. cpp:class:: Life
+
+         One intermediate held for a span of the graph's statements.
+
+
+         .. cpp:member:: std::size_t bytes
+
+         .. cpp:member:: std::size_t first
+
+            Position of its first writer.
+
+
+         .. cpp:member:: std::size_t last
+
+            Position of its last reader or writer.

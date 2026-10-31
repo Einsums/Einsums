@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.string_permute_impl:
+
+=====================================================
+einsums::compute_graph::dispatch::string_permute_impl
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Detail/ErasedEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename T> void string_permute_impl(const ParsedPermuteSpec &parsed, T beta, detail::TensorImpl<T> *C, T alpha, const detail::TensorImpl<T> &A)
+
+   The character-index permute behind string specs. Defined in StringDispatch.hpp, which
+   string_einsum needs it for, and explicitly instantiated in the library for the four element
+   types, so a caller of cg::permute compiles none of it.

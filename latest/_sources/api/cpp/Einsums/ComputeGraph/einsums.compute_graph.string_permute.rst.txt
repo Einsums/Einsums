@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.string_permute:
+
+======================================
+einsums::compute_graph::string_permute
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename AType, typename CType> requires PermuteOperands<AType, CType> void string_permute(const std::string &spec, CType *C, const AType &A, typename CType::ValueType c_pf, typename AType::ValueType a_pf)
+
+   Graph-aware permute with explicit prefactors.
+
+   ``spec`` is a permutation pattern such as ``"ji <- ij"`` (transpose)
+   or ``"kji <- ijk"`` (rank-3 reorder). Computes
+   ``C = c_pf * C + a_pf * permute(A)`` according to ``spec``. ``c_pf`` defaults to 0 and
+   ``a_pf`` to 1, i.e. ``C = permute(A)``.

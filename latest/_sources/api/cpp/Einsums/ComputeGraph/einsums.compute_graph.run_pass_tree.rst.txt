@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.run_pass_tree:
+
+=====================================
+einsums::compute_graph::run_pass_tree
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool run_pass_tree(OptimizerPass &pass, Graph &graph)
+
+   Run ``pass`` on ``graph`` and, when the pass opts into sub-graph recursion, on every descendant loop body and branch.
+
+   The one recursion driver: PassManager and Graph::apply both go through it, so a pass reaches
+   the same graphs however it is applied.
+
+   :returns: Whether any invocation modified its graph.

@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RuntimeConfiguration:
+
+=============================
+einsums::RuntimeConfiguration
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/RuntimeConfiguration.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: RuntimeConfiguration
+
+   Handles the current configuration state of the running instance.
+
+   Reached through Runtime::config() or runtime_config().
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: RuntimeConfiguration(int argc, const char *const *argv, const std::function<void ()> &user_command_line)
+
+      Constructor of the runtime configuration object of einsums.
+
+      .. versionadded:: 1.0.0
+
+      :param argc: the argc argument from main
+      :param argv: the argv argument from main
+      :param user_command_line: callback function that can be used to register additional command-line options
+
+
+   .. cpp:function:: explicit RuntimeConfiguration(const std::vector<std::string> &argv, const std::function<void ()> &user_command_line)
+
+      Constructor of the runtime configuration object of einsums. This is used when argv has been packaged into a vector.
+
+      .. versionadded:: 1.0.0
+
+      :param argv: The argv that has been packaged up.
+      :param user_command_line: callback function that can be used to register additional command-line options
+
+
+   .. cpp:function:: RuntimeConfiguration() = delete
+
+   .. cpp:function:: const std::vector<std::string> & unknown_arguments() const
+
+   .. cpp:function:: void apply_hardware_profile()
+
+      Apply the hardware profile's options, as a layer below the environment and the command line.
+
+      The profile can only be found once the options are parsed, since the options say where to
+      look and which SIMD rung the machine identity names, so its options are applied by parsing
+      again with them as the config-file layer. Call it after the SIMD options are applied and
+      before anything that the profile may tune reads its options. A profile value the parser
+      rejects is reported and the profile's options are dropped, never fatal: the profile shapes
+      performance, not results.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::vector<std::string> original
+
+      Document.
+
+      .. versionadded:: 1.0.0

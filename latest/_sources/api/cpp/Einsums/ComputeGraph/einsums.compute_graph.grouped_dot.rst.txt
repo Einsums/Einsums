@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_dot:
+
+===================================
+einsums::compute_graph::grouped_dot
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> && std::is_same_v<typename AType::ValueType, typename BType::ValueType> void grouped_dot(std::vector<ResultType *> results, std::vector<const AType *> a_list, std::vector<const BType *> b_list)
+
+   One node holding many independent dot products: ``results[i]->data()[0] = sum(A_i * B_i)`` for every entry.
+
+   The entries run SEQUENTIALLY inside the node, in the order they were passed,
+   each through the same `linear_algebra::dot` a single ``dot_python`` call
+   makes. That is the point of the operation and not an implementation detail:
+   this exists for workloads whose gate is bit-identity, so the result has to be
+   the same bits as the loop of single calls it replaces, entry by entry. A
+   parallel-within-node form would reduce in a different order on nothing but
+   its own schedule, and it would have nothing to gain - a dot into a scalar has
+   no arithmetic to spread. What is saved is the per-node dispatch, which at the
+   block sizes local-correlation methods produce is the whole cost: a DLPNO-CCSD
+   iteration reached ~1,700 of these, one node each.
+
+   Each entry's own reduction runs at VENDOR WIDTH ONE, under
+   ``blas::SerialVendorScope``, and that is part of the contract rather than a
+   tuning choice. A threaded dot sums per-thread partials, so its last bits are
+   a function of how many threads the caller happened to present - and this node
+   is reached at whatever width its context has: eagerly from the main thread,
+   from an executor worker, from inside a node-scoped width. Pinning the width
+   makes every entry a function of its operands alone, so the same inputs give
+   the same bits whatever is running around them. The entries may be dispatched
+   from anywhere; it is each entry's INTERNAL reduction that is fixed, and the
+   entries themselves are already ordered by the caller's list.
+
+   Because the entries are sequential, repeating a destination is well defined
+   and means what the loop means - the last entry writing it wins. Unlike
+   ``grouped_batched_gemm`` there is therefore nothing to reject.
+
+   Outside capture this executes immediately, so the same call works eagerly.
+
+   :param results: One length-1-or-larger destination per entry; only element 0 is written, matching the single form.
+   :param a_list,b_list: The operands, same length as ``results``. Each entry's A and B must agree on rank and shape, as `dot` requires; the entries need not agree with each other.

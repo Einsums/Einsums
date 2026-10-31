@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.write_async:
+
+===================================
+einsums::compute_graph::write_async
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType, typename StartFn, typename FinishFn, typename SyncFn> void write_async(std::string label, std::string file_path, std::string dataset, const TensorType *input, StartFn &&start_fn, FinishFn &&finish_fn, SyncFn &&sync_fn)
+
+   Record an async-capable disk write operation.
+
+   Same async semantics as read_async() but for writing tensor data to disk.
+
+   :param label: Human-readable name.
+   :param file_path: Path to the file.
+   :param dataset: Dataset/key name within the file.
+   :param input: Tensor to write to disk.
+   :param start_fn: Lambda that begins the async write (should return quickly).
+   :param finish_fn: Lambda that waits for the write to complete.
+   :param sync_fn: Lambda that performs the full synchronous write (fallback).

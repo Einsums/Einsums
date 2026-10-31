@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.strsm:
+
+============================
+einsums::blas::vendor::strsm
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void strsm(char side, char uplo, char transa, char diag, int_t m, int_t n, float alpha, const float *a, int_t lda, float *b, int_t ldb)
+
+   Solve a triangular system with a matrix RHS: op(A)*X = alpha*B or X*op(A) = alpha*B.

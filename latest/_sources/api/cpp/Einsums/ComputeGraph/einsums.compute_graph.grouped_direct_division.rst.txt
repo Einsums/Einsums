@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_direct_division:
+
+===============================================
+einsums::compute_graph::grouped_direct_division
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, T> && std::is_same_v<typename BType::ValueType, T> && std::is_same_v<typename CType::ValueType, T> void grouped_direct_division(std::vector<T> alphas, std::vector<const AType *> a_list, std::vector<const BType *> b_list, std::vector<T> betas, std::vector<CType *> c_list)
+
+   One node holding many independent element-wise quotients: ``C_i = alphas[i] * (A_i ⊘ B_i) + betas[i] * C_i`` for every member.
+
+   The grouped counterpart of ``direct_division``, and the shape an amplitude
+   update reaches it in: one residual divided by its own denominator block per
+   entity. Everything ``grouped_direct_product`` says about concurrency,
+   bit-identity and distinct destinations holds here unchanged.
+
+   Outside capture this executes immediately, so the same call works eagerly.

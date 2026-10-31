@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.axpby_beta:
+
+==========================================
+einsums::compute_graph::passes::axpby_beta
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: const PrefactorScalar * axpby_beta(const Node &nd)
+
+   The live ``beta`` of an Axpby node, or null when ``nd`` is not an Axpby or carries no descriptor (a pass-built node) and beta is unknowable.
+
+   Prefer the shared params over the descriptor snapshot: a pass that folded a
+   scale into this axpby wrote beta through the params handle, and that is the
+   value the executor will read.

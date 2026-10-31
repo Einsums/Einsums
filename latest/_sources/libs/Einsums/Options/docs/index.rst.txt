@@ -1,0 +1,712 @@
+..
+    Copyright (c) The Einsums Developers. All rights reserved.
+    Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+.. _modules_Einsums_Options:
+
+=======
+Options
+=======
+
+Einsums' option system: one declaration per setting, feeding one typed value that the rest of the
+library reads. It is also a general C++20 command-line parser in the spirit of LLVM's ``cl::``
+utilities, simplified and dependency-free aside from ``fmt`` for help text.
+
+- **Descriptors**: ``ConfigOption<T>`` declared with ``config_flag`` / ``config_opt``, read with ``config::get``
+- **Options**: ``Flag``, ``Opt<T>``, ``List<T>``, ``OptEnum<Enum>``, ``Alias``
+- **Named parameter tags**: ``Default(...)``, ``ImplicitValue(...)``, ``ValueName("...")``, ``Env("...")``, ``NoEnv``
+- **Bindings**: ``Location<T>`` (write to external storage), ``Setter<T>`` (callback)
+- **Precedence**: *defaults* < *config file* < *environment* < *command line*
+- **Unknown args**: unrecognized options and everything after ``--`` are collected
+- **Built-ins**: ``--help`` and ``--version`` (always available)
+
+Two layers, and which one you want
+----------------------------------
+
+Nearly all Einsums code wants the **descriptor layer**: a setting is declared once, in the module that
+reads it, and every consumer reads it back by naming that declaration. Start at `Declaring an option`_.
+
+The **parser layer** below it (``Flag``, ``Opt<T>``, ``Location``, ``parse``) is what turns argv, the
+environment, and a config file into those values. Reach for it directly only when writing a program with
+its own command line, or when adding a kind of option the descriptor layer does not cover yet.
+
+Declaring an option
+-------------------
+
+An option is declared in the module whose code reads it, in that module's ``Options.hpp``, under the
+``einsums::option`` namespace:
+
+.. code-block:: cpp
+
+   #include <Einsums/Options/Get.hpp>
+
+   EINSUMS_NAMESPACE_BEGIN(option)
+
+   /// Write the text report at shutdown.
+   inline constinit cl::ConfigOption<bool> ProfileReport =
+       cl::config_flag("einsums:profile:report", "Generate a profile report on exit", "Profile", true);
+
+   /// Where that report goes.
+   inline constinit cl::ConfigOption<std::string> ProfileFilename =
+       cl::config_opt<std::string>("einsums:profile:filename", "Profile report file name",
+                                   "Profile", "profile.txt", "filename");
+
+   EINSUMS_NAMESPACE_END(option)
+
+The long name is the only spelling written down. The registry key (``profile-filename``, the form
+``config::get_dynamic`` takes), the environment variable, the ``--help`` entry, and a flag's ``no-`` twin
+are all derived from it, which is what keeps them from drifting apart. A config file is the exception: it
+names an option by its long name (``einsums:profile:filename``), not by the derived key.
+
+- ``config_flag(name, help, category, default)`` declares a boolean. Registration also generates the
+  ``no-`` spelling, so a flag that defaults to on needs no hand-written negation.
+- ``config_opt<T>(name, help, category, default, value_name, range)`` declares a value option. ``T`` is
+  ``bool``, ``std::int64_t``, ``double``, or ``std::string``.
+- ``config_opt_computed<T>(name, help, category, provider, value_name)`` is for a default that cannot be
+  written down at compile time, such as the system temporary directory or a name carrying the process id.
+  The provider runs when the option is registered.
+
+Descriptors are ``constinit`` aggregates, so a namespace-scope descriptor is constant-initialized and
+there is no static initialization order to reason about. That is what makes it safe to read one from a
+constructor as hot and as early as ``Tensor``'s.
+
+Registering
+~~~~~~~~~~~
+
+A descriptor has to be handed to the registry before parsing. Every module exports a
+``register_<Module>_options()`` and invokes it from a namespace-scope initializer in its own
+``Options.hpp``, so registration happens when the library loads. Modules below Runtime in the dependency
+graph could not call ``register_arguments`` without a cycle anyway; the ones that could still do not,
+because that hook fires part-way through ``initialize()`` and anything that enumerates the registry
+earlier - the Python binding layer building its argv - would not see those options at all.
+
+Reading an option
+-----------------
+
+.. code-block:: cpp
+
+   #include <Einsums/Options/Get.hpp>
+
+   if (config::get(option::ProfileReport)) {
+       std::ofstream out(config::get(option::ProfileFilename));
+       // ...
+   }
+
+``config::get`` is the whole reading API. There is no key to spell and no fallback to pass: a typo is a
+compile error, the type comes from the descriptor, and an option read before it is registered yields the
+declared default rather than a zero.
+
+- ``config::try_get(opt)`` returns ``std::optional<T>``, empty when no parse source (command line or
+  environment) supplied a value. Use it to tell *unset* from *set to the default*. A value written with
+  ``config::set`` does not count: ``try_get`` stays empty afterwards even though ``get`` returns it.
+- ``config::set(opt, value)`` writes one, which is mostly what tests want.
+
+``Get.hpp`` is deliberately light: no parser, no help machinery, no ``fmt``. Including it from a header on
+a hot path costs little.
+
+Dynamic keys
+~~~~~~~~~~~~
+
+``config::get_dynamic<T>(key, default)`` and ``config::set_dynamic`` take a runtime string. They exist for
+keys that are genuinely constructed at run time; nothing in the library uses them today (the optimizer
+reads ``--einsums:pass:disable`` through its descriptor). Anything whose name is known at compile time should be a descriptor instead; the dynamic path
+gives back the silent-typo behavior the descriptors were introduced to remove.
+
+Enumerating the options
+~~~~~~~~~~~~~~~~~~~~~~~
+
+``cl::registered_options()`` returns every registered option as data - long name, derived key, flag or
+value, value type, declared default, help text, category, and a flag's generated ``no-`` spelling. It is
+for code that never names an option in source: a binding layer, a generator, a settings dump.
+
+The generated ``no-`` twin of a flag is not listed; it is a second spelling of the option already there,
+named by that option's ``negated_name``. Keys reached only through the dynamic API are not listed either,
+because no descriptor claims them.
+
+This is how the Python surface stays honest. ``einsums.rc``'s fields are generated from the descriptors
+by a static parse of the ``Options.hpp`` headers, and ``PyEinsumsMain.cpp`` builds the argv that starts
+the runtime by walking this enumeration - so a new descriptor reaches Python without anyone editing a
+table, and there is no second spelling of a flag to drift.
+
+.. code-block:: cpp
+
+   #include <Einsums/Options/Parse.hpp>
+
+   for (auto const &opt : cl::registered_options()) {
+       fmt::print("--{} [{}]\n", opt.name, opt.key);
+   }
+
+Quick Start
+-----------
+
+.. code-block:: cpp
+
+   #include <Einsums/Options.hpp>
+
+   using namespace einsums::cl;
+
+   int main(int argc, char** argv) {
+     std::vector<std::string> args(argv, argv + argc);
+
+     // 1) Group options into categories (affects help layout)
+     OptionCategory General{"General"};
+
+     // 2) Declare options
+     Flag Verbose{
+       "verbose", {'v'}, "Enable verbose logging",
+       General, Default(false), ImplicitValue(true)
+     };
+
+     Opt<int> Threads{
+       "threads", {'t'}, "Number of threads", Default(4),
+       General, RangeBetween(1, 256), ValueName("N")
+     };
+
+     Opt<std::string> Output{
+       "output", {'o'}, "Output file", Default(std::string{"a.out"}),
+       General, ValueName("PATH")
+     };
+
+     // Positional "gather the rest"
+     List<std::string> Inputs{"inputs", Positional{}, "Input file(s)"};
+
+     // 3) Let every option read an environment variable derived from its name
+     Registry::instance().set_env_prefix("EINSUMS");
+
+     // 4) Parse with optional config file and unknown-args collection
+     std::vector<std::string> unknown;
+     auto pr = parse_with_config(args, "einsums", "2.0.0",
+                                 "settings.json", &unknown);
+     if (!pr.ok) return pr.exit_code;
+
+     // 5) Use the values
+     fmt::print("threads = {}\n", Threads.get());
+     fmt::print("output  = {}\n", Output.get());
+     fmt::print("verbose = {}\n", Verbose.get());
+     for (auto& f : Inputs.values()) fmt::print("input   = {}\n", f);
+
+     if (!unknown.empty()) {
+       fmt::print("unknown: ");
+       for (auto& u : unknown) fmt::print("{} ", u);
+       fmt::print("\n");
+     }
+     return 0;
+   }
+
+Run it:
+
+.. code-block:: console
+
+   $ ./einsums -v -t 8 -o result.bin a.txt b.txt
+   threads = 8
+   output  = result.bin
+   verbose = true
+   input   = a.txt
+   input   = b.txt
+
+   $ EINSUMS_THREADS=8 ./einsums a.txt
+   threads = 8
+
+Built-ins:
+
+.. code-block:: console
+
+   $ ./einsums --help
+   Usage: einsums [options] <inputs>
+   ...
+
+   $ ./einsums --version
+   einsums 2.0.0
+
+Core Concepts
+-------------
+
+Categories
+~~~~~~~~~~
+
+``OptionCategory`` groups options under a heading in ``--help``.
+
+.. code-block:: cpp
+
+   OptionCategory IO{"I/O"};
+   OptionCategory Perf{"Performance"};
+
+Types of Options
+~~~~~~~~~~~~~~~~
+
+- ``Flag`` - boolean option. Presence sets true (configurable via ``ImplicitValue``).
+- ``Opt<T>`` - single value option. ``T`` can be any integral or floating point type, ``std::string``, or a type of your own (see `Custom value types`_).
+- ``List<T>`` - repeated or comma-separated values. As a positional, a ``List<std::string>`` *gathers remaining tokens*; other element types take one token.
+- ``OptEnum<Enum>`` - map string choices to an enum.
+- ``Alias`` - forwards to a target option, optionally supplying a preset value.
+
+Named Parameter Tags
+~~~~~~~~~~~~~~~~~~~~
+
+- ``Default(value)`` - the value used when no other source supplies one.
+- ``ImplicitValue(value)`` - used when the option appears without an explicit value.
+- ``ValueName("NAME")`` - placeholder in help, e.g., ``--threads <N>``.
+- ``Env("NAME")`` - read this option from a named environment variable.
+- ``NoEnv`` - exempt this option from the registry's automatic environment names.
+
+Bindings & Callbacks
+~~~~~~~~~~~~~~~~~~~~
+
+- ``Location<T>(ref)`` - write the parsed value directly into external storage.
+- ``Setter<T>{...}`` - invoke on assignment. The callable takes either ``(T const&)`` or ``(T const&, Source)``; the two-argument form additionally learns where the value came from.
+
+.. code-block:: cpp
+
+   Opt<int> Batch{
+     "batch", {}, "Batch size", Default(32), Tuning,
+     Setter<int>{[](int v, Source from){
+       fmt::print("batch={} (source: {})\n", v, to_string(from));
+     }}
+   };
+
+A plain lambda works in the same position, without naming ``Setter<T>``, and
+``OnSet(...)`` attaches one after construction.
+
+Occurrences & Visibility
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Occurrence``: ``Optional`` (default), ``Required``, ``ZeroOrMore``, ``OneOrMore``.
+- ``Visibility``: ``Normal`` (default), ``Hidden`` (omits from help).
+
+Value Precedence
+----------------
+
+Every option resolves through four sources, each free to overwrite the one before it:
+
+.. code-block:: text
+
+   1. Default(...)    the value the programmer compiled in
+   2. config file     the committed baseline, via parse_with_config
+   3. environment     the per-shell or per-job override
+   4. command line    the per-invocation override
+
+``OptionBase::value_source`` records which of them supplied the value that is
+in effect, and ``was_specified()`` answers whether anything other than the
+default did.
+
+.. code-block:: cpp
+
+   if (Threads.value_source == Source::Environment) {
+     fmt::print("threads came from {}\n", Threads.effective_env_name());
+   }
+
+Environment Variables
+---------------------
+
+An option becomes environment-sensitive in one of two ways.
+
+Naming one explicitly with ``Env("NAME")`` always works, prefix policy or not:
+
+.. code-block:: cpp
+
+   Opt<std::string> Arch{
+     "einsums:simd:arch", {}, "Highest SIMD rung to use",
+     SimdCat, Env("EINSUMS_SIMD_ARCH")
+   };
+
+Installing a prefix on the registry gives *every* option a derived name at once:
+
+.. code-block:: cpp
+
+   Registry::instance().set_env_prefix("EINSUMS");
+
+Derivation upper-cases the long name, turns each run of separators into a
+single underscore, and prepends the prefix unless the name already carries it:
+
+.. code-block:: text
+
+   einsums:log:level              ->  EINSUMS_LOG_LEVEL
+   einsums:profile:wait-for-viewer -> EINSUMS_PROFILE_WAIT_FOR_VIEWER
+   buffer-size                    ->  EINSUMS_BUFFER_SIZE
+
+An explicit ``Env(...)`` overrides the derived name, and ``NoEnv`` opts an
+option out of derivation entirely. With no prefix set, only options that name
+a variable read the environment.
+
+Rules worth knowing:
+
+- An unset **or empty** variable counts as not specified, so ``FOO=`` leaves the default in place.
+- A value that will not parse is an error naming the variable, not a silent fallback: ``error: environment variable EINSUMS_LOG_LEVEL: invalid integer 'abc'``.
+- Environment names appear in ``--help`` as ``[env: NAME]``.
+
+Flags read presence, not a value
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On the command line a ``Flag`` carries its meaning in its presence. A config
+file or environment variable has no presence to observe, so its value answers
+that question instead: a truthy value applies the flag exactly as if it had
+been named on the command line, and a falsey value leaves the default alone.
+
+This is what makes generated negations behave. A flag declared in the positive
+
+.. code-block:: cpp
+
+   inline constinit cl::ConfigOption<bool> DiagnosticsOnTerminate =
+       cl::config_flag("einsums:debug:diagnostics-on-terminate",
+                       "Print extra diagnostics on the way down", "Debug", true);
+
+registers ``einsums:debug:no-diagnostics-on-terminate`` alongside it.
+``EINSUMS_DEBUG_NO_DIAGNOSTICS_ON_TERMINATE=1`` means *yes, do not print them*, applying the negation
+exactly as if it had been named on the command line, so
+``config::get(option::DiagnosticsOnTerminate)`` reads false. ``=0`` means the negation was not
+requested, leaving the option at its default. Setting ``EINSUMS_DEBUG_DIAGNOSTICS_ON_TERMINATE`` works
+the same way on the positive spelling. An ``Opt<bool>`` is unaffected by this rule: its variable supplies the value directly.
+
+Mutual exclusion respects precedence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Options in the same ``ExclusiveCategory`` conflict only when they are resolved
+at the *same* precedence level. Passing ``--yes --no`` on one command line is a
+contradiction and fails; setting one in the environment and the other on the
+command line is not, because the command line simply outranks the environment.
+
+Custom value types
+------------------
+
+``parse_value`` is an ADL customization point. Declaring one for your own type
+in its own namespace is enough to use it with ``Opt<T>`` and ``List<T>``:
+
+.. code-block:: cpp
+
+   namespace myapp {
+     struct Size { std::size_t bytes; };
+
+     inline bool parse_value(std::string_view sv, Size &out, std::string &err) {
+       // ... fill out.bytes, or set err and return false
+       return true;
+     }
+   }
+
+   Opt<myapp::Size> Buffer{"buffer", {}, "Buffer size", Cat};
+
+The ``Parsable`` concept expresses this requirement, so a type without a
+``parse_value`` is rejected at the point of declaration with a readable
+message rather than at link time.
+
+API Reference
+-------------
+
+Construction (variadic, named-style)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   // Flag
+   Flag(std::string_view longName,
+        std::initializer_list<char> shorts,
+        std::string_view helpText,
+        /* extras: */ OptionCategory&, ExclusiveCategory&, Visibility, Occurrence,
+                     Location<bool>, Setter<bool>, Default(bool), ImplicitValue(bool),
+                     Env("NAME"), NoEnv);
+
+   // Opt<T> (without positional default value)
+   template <Parsable T>
+   Opt(std::string_view longName,
+       std::initializer_list<char> shorts,
+       std::string_view helpText,
+       /* extras: */ OptionCategory&, ExclusiveCategory&, Visibility, Occurrence,
+                    ValueExpected, Range, Location<T>, Setter<T>, Default(T),
+                    ImplicitValue(T), ValueName("NAME"), Env("NAME"), NoEnv);
+
+   // Opt<T> (with positional default value)
+   template <Parsable T>
+   Opt(std::string_view longName,
+       std::initializer_list<char> shorts,
+       T defaultValue,
+       std::string_view helpText,
+       /* extras: ... as above ... */);
+
+   // List<T> (named)
+   template <Parsable T>
+   List(std::string_view longName,
+        std::initializer_list<char> shorts,
+        std::string_view helpText,
+        /* extras: OptionCategory&, ExclusiveCategory&, Visibility, Occurrence,
+                   Env("NAME"), NoEnv */);
+
+   // List<T> (positional gather)
+   template <Parsable T>
+   List(std::string_view positionalName, Positional, std::string_view helpText);
+
+   // OptEnum<Enum>
+   template <typename Enum>
+   OptEnum(std::string_view longName,
+           std::initializer_list<char> shorts,
+           Enum defaultValue,
+           std::initializer_list<std::pair<std::string_view, Enum>> choices,
+           std::string_view helpText,
+           /* extras: OptionCategory&, Location<Enum>, Setter<Enum>, ... */);
+
+   // Alias
+   Alias(std::string_view longName,
+         std::initializer_list<char> shorts,
+         OptionBase& target,
+         std::string_view helpText,
+         /* extras: OptionCategory&, Visibility, Occurrence, a preset value string */);
+
+Parsing
+~~~~~~~
+
+.. code-block:: cpp
+
+   struct ParseResult { bool ok; int exit_code; };
+
+   ParseResult parse(std::span<std::string const> args,
+                     const char* programName = nullptr,
+                     std::string_view version = {},
+                     std::vector<std::string>* unknown_args = nullptr);
+
+   ParseResult parse_with_config(std::span<std::string const> args,
+                                 const char* programName = nullptr,
+                                 std::string_view version = {},
+                                 std::string_view config_path = {},
+                                 std::vector<std::string>* unknown_args = nullptr);
+
+A ``std::vector<std::string>`` converts to the ``args`` span implicitly, so
+existing call sites need no change.
+
+Behavior & Semantics
+--------------------
+
+Option Names
+~~~~~~~~~~~~
+
+- Long: ``--threads``, optionally ``--threads=8``.
+- Short (bundles allowed): ``-v``, ``-abc``, ``-o12`` or ``-o 12``.
+
+Declaring the same long name twice is a programming error and is reported at
+parse time rather than letting one option silently shadow the other.
+
+Implicit Values
+~~~~~~~~~~~~~~~
+
+For options with ``ValueExpected::ValueRequired``, the parser **only consumes the next token
+as a value if it does not look like another option**. Otherwise it passes ``std::nullopt`` to the
+option, allowing ``ImplicitValue(...)`` to apply. Examples:
+
+- ``--level``  => if ``ImplicitValue(7)`` set, then 7
+- ``--level=9`` => 9
+- ``-l`` (last in bundle) => apply implicit value if configured
+
+An option declared ``ValueExpected::ValueDisallowed``, such as ``--help``,
+rejects ``--help=x`` rather than trying to parse the value.
+
+Numeric look-ahead rule
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Tokens like ``-5`` or ``-3.14`` are treated as **values** (not options) when they are expected
+to be consumed as the next value.
+
+Positional List Gathering
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A positional ``List<std::string>`` stays "active" and gathers subsequent bare tokens. A positional
+list of any other element type takes a single token. For example:
+
+.. code-block:: cpp
+
+   List<std::string> Inputs{"inputs", Positional{}, "Input files"};
+   // ./app a.txt b.txt c.txt  => Inputs.values() == {"a.txt","b.txt","c.txt"}
+
+Unknown Arguments
+~~~~~~~~~~~~~~~~~
+
+- Any unrecognized option (e.g., ``--weird``) or short (e.g., ``-z``) is appended to ``unknown_args``.
+- Everything **after** a literal ``--`` is appended to ``unknown_args``.
+
+Config Files
+~~~~~~~~~~~~
+
+``parse_with_config`` accepts:
+
+- **Key/Value** (``.env``-ish): lines of ``key = value``; ``#`` starts a comment.
+- **Flat JSON object**: ``{"threads": 12, "output": "a.bin", "verbose": true}``.
+
+Keys are matched to long option names (case-insensitive).
+
+Built-in Options
+~~~~~~~~~~~~~~~~
+
+- ``--help`` (alias ``-h``)
+- ``--version``
+
+These are always present. The parser **short-circuits**:
+
+- On ``--help``: prints help and returns ``{ok=false, exit_code=0}``
+- On ``--version``: prints version and returns ``{ok=false, exit_code=0}``
+
+Help Layout
+~~~~~~~~~~~
+
+``--help`` prints usage, categories, normal-visibility options, and positional arguments.
+Each line reports the option's environment variable and, where there is one to show, its default: a
+flag shows its default only when it is true, an ``Opt`` declared without a default shows none, and a
+generated ``no-`` twin is noted as ``[negate: --no-...]``. Long help text wraps
+to the terminal width with a hanging indent. ``COLUMNS`` overrides the detected width, which is
+what a test should pin to get stable output.
+
+``format_help(prog)`` returns the same text as a string, for callers that want to
+paginate it or assert on it.
+
+Validation & Errors
+~~~~~~~~~~~~~~~~~~~
+
+- Missing required options or invalid values cause ``{ok=false, exit_code=1}`` and a message to ``stderr``.
+- ``RangeBetween(min, max)`` checks bounds. Integral and floating point bounds are kept separately, so ``RangeBetween(0.0, 1.0)`` is a genuine fractional bound rather than a truncated one.
+- ``OptEnum`` reports invalid choices and lists allowed keys.
+
+Examples
+--------
+
+Flags
+~~~~~
+
+.. code-block:: cpp
+
+   OptionCategory Log{"Logging"};
+   Flag Verbose{
+     "verbose", {'v'}, "Enable verbose logging",
+     Log, Default(false), ImplicitValue(true)
+   };
+
+Integers with Range and Implicit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   OptionCategory Perf{"Performance"};
+   Opt<int> Threads{
+     "threads", {'t'}, "Number of threads", Default(4),
+     Perf, RangeBetween(1, 256), ValueName("N")
+   }; // --threads=8 => 8
+
+Strings & Paths
+~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   OptionCategory IO{"I/O"};
+   Opt<std::string> Output{
+     "output", {'o'}, "Output file", Default(std::string{"a.out"}),
+     IO, ValueName("PATH")
+   };
+
+Lists (named and positional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   List<std::string> Include{
+     "include", {'I'}, "Include directories",
+     IO
+   }; // --include=inc1,inc2 or --include inc1 --include inc2
+
+   List<std::string> Inputs{"inputs", Positional{}, "Input files"};
+   // gathers bare tokens at end: ./app a b c
+
+Enums
+~~~~~
+
+.. code-block:: cpp
+
+   enum struct Mode { Fast, Accurate, Debug };
+   OptionCategory Modes{"Mode"};
+
+   OptEnum<Mode> ModeOpt{
+     "mode", {}, Mode::Fast,
+     { {"fast", Mode::Fast}, {"accurate", Mode::Accurate}, {"debug", Mode::Debug} },
+     "Execution mode", Modes
+   };
+
+Aliases
+~~~~~~~
+
+.. code-block:: cpp
+
+   // Make --fast an alias for --mode=fast
+   Alias FastAlias{
+     "fast", {}, ModeOpt, "Alias: fast mode", Modes, std::string("fast")
+   };
+
+Binding and Callbacks
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   OptionCategory Tuning{"Tuning"};
+
+   // Bind to external storage
+   int threads_bound = 0;
+   Opt<int> Threads{
+     "threads", {'t'}, "Threads", Default(4),
+     Tuning, Location<int>(threads_bound)
+   };
+
+   // Callback on assignment, from any source
+   Opt<int> Batch{
+     "batch", {}, "Batch size", Default(32),
+     Tuning, Setter<int>{[](int v, Source from){
+       fmt::print("Reconfiguring batch={} (source: {})\n", v, to_string(from));
+     }}
+   };
+
+Thread-Safety & Reentrancy
+--------------------------
+
+Reading through a descriptor is safe from any thread at any time. That is a property of the design, not
+of a convention callers have to keep:
+
+- **Descriptors are immutable** once declared, so finding an option needs no synchronization at all.
+- **Each option's value lives in its own slot**, atomic for ``bool``, ``std::int64_t``, and ``double``,
+  and an atomic pointer to an immutable snapshot for ``std::string``. Once a descriptor has found its
+  slot, ``config::get`` is a slot load: no lock, no hash, no map. The first read through each descriptor
+  copy, and every read before the option is registered, takes the registry mutex for one map lookup.
+  ``config::set`` and ``set_dynamic`` are safe against concurrent readers.
+- **Locks are few and ordered.** The registry mutex guards registration and the dynamic keys; each entry
+  also has a snapshot mutex for string values and an observer mutex for its callbacks. Registration takes
+  an entry's snapshot and observer locks while holding the registry mutex, never the other way round.
+- **Callbacks run outside the lock.** A ``Setter`` fires after the value is stored, with nothing held.
+
+Two things remain the caller's responsibility:
+
+- A read followed by a write is not atomic. Each half is safe; the pair is not.
+- Two options read separately can straddle a concurrent write to both. Code that needs a coherent view
+  of several settings should snapshot them into a struct, which is also what a hot path wants.
+
+Registration and parsing are still a single-threaded startup activity, and now say so: the registry is
+frozen once parsing finishes, and a late registration trips an ``assert`` (a debug-build check; a
+release build does not catch it). Values may be written
+after the freeze, which is what makes ``config::set`` usable from a test.
+
+For the parser layer specifically:
+
+- Options add themselves to the registry on construction and remove themselves on destruction, so an option with automatic storage duration is safe to declare inside a scope.
+- Each ``parse`` resets the state left by the previous one, so occurrence counts and gathered ``List`` items do not accumulate across repeated parses in one process.
+- Concurrent calls to ``parse(...)`` are not supported; serialize them.
+- Reading the environment during ``parse`` is a plain ``std::getenv``. Mutating the environment concurrently from another thread is undefined behavior on every platform; configure before threads exist.
+
+FAQ
+---
+
+How do implicit values work with short options?
+  If a short option that requires a value is the last in a bundle (``-l``), the parser will consume
+  the next token only if it **doesn't look like an option**; otherwise ``ImplicitValue(...)`` applies.
+
+Why are unknown options not an error?
+  To emulate LLVM's flexibility and to ease integration with upstream tools, unknown tokens and
+  passthrough arguments (after ``--``) are returned to the caller in ``unknown_args`` for further dispatch.
+
+Can I bind directly into application config structs?
+  Yes, use ``Location<T>`` to a field that outlives parsing, or use ``Setter<T>`` to translate,
+  validate, and write into your own structure.
+
+How do I find out where a value came from?
+  Read ``value_source`` on the option, and ``effective_env_name()`` for the variable it consulted.
+
+See the :ref:`API reference <modules_Einsums_Options_api>` of this module for more
+details.

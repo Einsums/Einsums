@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.load_graph_file_into:
+
+============================================
+einsums::compute_graph::load_graph_file_into
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: Graph * load_graph_file_into(const std::string &path, SpaceRegistry &registry)
+
+   Read ``path`` back against ``registry``, throwing on failure. The Python spelling.
+
+   The counterpart of the ``load_graph`` overload taking a ``SpaceRegistry``, for a caller
+   who keeps their own registry rather than using the process-global one.
+
+   The overload is named in prose rather than written out as a signature: a cross-reference
+   followed immediately by a parameter list renders as an inline literal with an unterminated
+   start-string, and the docs build treats that warning as an error.
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file to read.
+   :param registry: The registry the file's space NAMES resolve in. Must outlive the graph.
+   :throws std::runtime_error: With every problem the file has.
+   :returns: The graph, owned by the caller.

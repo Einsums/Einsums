@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GrowthClass:
+
+===================================
+einsums::compute_graph::GrowthClass
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GrowthClass
+
+   How a space's extent grows with the size of the system.
+
+   The extent scales as ``N^exponent`` for system size ``N`` (``constant``, ``linear``, ``power``).
+   Advisory: lets a pass rank contraction orders before extents are bound.
+
+
+   .. cpp:function:: static constexpr GrowthClass constant() noexcept
+
+      A space whose extent does not grow with the system (exponent 0).
+
+      :returns: The constant growth class.
+
+
+   .. cpp:function:: static constexpr GrowthClass linear() noexcept
+
+      A space whose extent grows proportionally with the system (exponent 1).
+
+      :returns: The linear growth class.
+
+
+   .. cpp:function:: static constexpr GrowthClass power(double exponent) noexcept
+
+      A space whose extent grows as a user-chosen power of the system size.
+
+      :param exponent: The exponent to use.
+      :returns: The requested growth class.
+
+
+   .. cpp:member:: double exponent
+
+      Exponent of the system size that the extent follows. Defaults to linear growth.
+
+      Read-only from Python, as a space's semantics are fixed at registration.

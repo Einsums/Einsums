@@ -1,0 +1,122 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_GPU_api:
+
+===========
+GPU C++ API
+===========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_GPU>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::gpu::DeviceAllocator` - As GeneralTensor's Alloc parameter, switches its storage to DeviceVector<T>.
+- :cpp:any:`~einsums::gpu::DeviceCaps` - What the GPU on THIS machine can actually do, detected at run time.
+- :cpp:any:`~einsums::gpu::GpuError` - Structured error for GPU runtime operations.
+- :cpp:any:`~einsums::gpu::IsDeviceAllocator` - Trait to detect device allocators.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::gpu::available_device_memory` - Free device memory in bytes; on the mock, a configurable limit (default half of RAM).
+- :cpp:any:`~einsums::gpu::blas::axpby` - Axpby on device memory: y = alpha * x + beta * y.
+- :cpp:any:`~einsums::gpu::blas::axpy` - Axpy on device memory: y = alpha * x + y.
+- :cpp:any:`~einsums::gpu::blas::bfgemm` - BFloat16 GEMM: C(fp32) = alpha * A(bf16) * B(bf16) + beta * C(fp32)
+- :cpp:any:`~einsums::gpu::blas::dot` - Dot product on device memory: result = x . y.
+- :cpp:any:`~einsums::gpu::blas::fp8gemm` - FP8 GEMM: C(fp32) = alpha * A(fp8) * B(fp8) + beta * C(fp32)
+- :cpp:any:`~einsums::gpu::blas::gemm` - Template wrapper dispatching to the type-specific GEMM.
+- :cpp:any:`~einsums::gpu::blas::gemm_strided_batched` - Template wrapper dispatching to the type-specific strided-batched GEMM.
+- :cpp:any:`~einsums::gpu::blas::gemv` - Template wrapper dispatching to the type-specific GEMV.
+- :cpp:any:`~einsums::gpu::blas::hgemm` - FP16 GEMM: C(fp32) = alpha * A(fp16) * B(fp16) + beta * C(fp32)
+- :cpp:any:`~einsums::gpu::blas::nrm2` - L2 norm on device memory: result = ||x||_2.
+- :cpp:any:`~einsums::gpu::blas::scal` - Scale a vector on device memory: x = alpha * x.
+- :cpp:any:`~einsums::gpu::char_to_op` - Convert a char ('n'/'t'/'c') to Operation enum.
+- :cpp:any:`~einsums::gpu::device_capabilities` - Detect the capabilities of the GPU this process can see.
+- :cpp:any:`~einsums::gpu::device_free` - Free device memory.
+- :cpp:any:`~einsums::gpu::device_malloc` - Allocate device memory. Returns error on allocation failure.
+- :cpp:any:`~einsums::gpu::device_memset` - Set device memory.
+- :cpp:any:`~einsums::gpu::device_name` - The device name, or "" on the mock.
+- :cpp:any:`~einsums::gpu::device_synchronize` - Synchronize the entire device. Blocks until all queued GPU work completes. Wrap GPU calls in this when timing from Python.
+- :cpp:any:`~einsums::gpu::gpu_available` - True when GPU work can actually run right now.
+- :cpp:any:`~einsums::gpu::memcpy_device_to_device` - Copy from device to device.
+- :cpp:any:`~einsums::gpu::memcpy_device_to_host` - Copy from device to host.
+- :cpp:any:`~einsums::gpu::memcpy_host_to_device` - Copy from host to device.
+- :cpp:any:`~einsums::gpu::not_implemented` - Report a GPU entry point that has no implementation on this backend.
+- :cpp:any:`~einsums::gpu::set_mock_device_memory_limit` - Set the mock backend's device memory limit, for tests that simulate OOM.
+- :cpp:any:`~einsums::gpu::solver::heev` - Hermitian eigenvalue (complex).
+- :cpp:any:`~einsums::gpu::solver::syev` - Symmetric eigensolve: A becomes the eigenvectors (jobz 'V') and W the eigenvalues.
+
+Types
+-----
+
+- :cpp:any:`~einsums::gpu::bfloat16_t`
+- :cpp:any:`~einsums::gpu::blas_handle_t`
+- :cpp:any:`~einsums::gpu::device_complex_t` - Alias: device_complex_t<std::complex<float>> → cuFloatComplex (CUDA)
+- :cpp:any:`~einsums::gpu::event_t`
+- :cpp:any:`~einsums::gpu::fp8_t`
+- :cpp:any:`~einsums::gpu::half_t`
+- :cpp:any:`~einsums::gpu::solver_handle_t`
+- :cpp:any:`~einsums::gpu::stream_t`
+
+Variables
+---------
+
+- :cpp:any:`~einsums::gpu::has_fp16_gemm` - True if the active backend implements FP16 GEMM (gpu::blas::hgemm).
+- :cpp:any:`~einsums::gpu::has_fp8_gemm` - True if the active backend implements FP8 E4M3 GEMM (gpu::blas::fp8gemm).
+- :cpp:any:`~einsums::gpu::has_gpu` - True if any real GPU backend is available.
+- :cpp:any:`~einsums::gpu::has_mock_discrete` - True when the mock backend is configured to imitate a DISCRETE device (EINSUMS_WITH_GPU_MOCK_DISCRETE=ON).
+- :cpp:any:`~einsums::gpu::has_unified_memory` - True if host and device share memory: MPS and the plain mock, not CUDA or mock-discrete. The executor then skips device shadows.
+- :cpp:any:`~einsums::gpu::is_mock` - True if running with the mock CPU backend, meaning no real GPU.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_GPU_MOCK_KERNEL_SCOPE` - Declare a device-kernel scope for the rest of the enclosing block.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.gpu.available_device_memory
+   einsums.gpu.blas.axpby
+   einsums.gpu.blas.axpy
+   einsums.gpu.blas.bfgemm
+   einsums.gpu.blas.dot
+   einsums.gpu.blas.fp8gemm
+   einsums.gpu.blas.gemm
+   einsums.gpu.blas.gemm_strided_batched
+   einsums.gpu.blas.gemv
+   einsums.gpu.blas.hgemm
+   einsums.gpu.blas.nrm2
+   einsums.gpu.blas.scal
+   einsums.gpu.char_to_op
+   einsums.gpu.device_capabilities
+   einsums.gpu.device_free
+   einsums.gpu.device_malloc
+   einsums.gpu.device_memset
+   einsums.gpu.device_name
+   einsums.gpu.device_synchronize
+   einsums.gpu.DeviceAllocator
+   einsums.gpu.DeviceCaps
+   einsums.gpu.gpu_available
+   einsums.gpu.GpuError
+   einsums.gpu.IsDeviceAllocator
+   einsums.gpu.memcpy_device_to_device
+   einsums.gpu.memcpy_device_to_host
+   einsums.gpu.memcpy_host_to_device
+   einsums.gpu.not_implemented
+   einsums.gpu.set_mock_device_memory_limit
+   einsums.gpu.solver.heev
+   einsums.gpu.solver.syev
+   types
+   variables
+   macros

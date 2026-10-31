@@ -1,0 +1,93 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorExpr:
+
+==================================
+einsums::compute_graph::TensorExpr
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorExpr
+
+   The raised algebra of one region.
+
+   .. seealso::
+
+      raise_region, lower_region
+
+
+   .. cpp:function:: const RaggedFamily * family_at(FamilyId id) const
+
+      The family at ``id``, or nullptr when ``id`` is ``invalid_family``.
+
+      :param id: The family index.
+      :returns: The family, or nullptr.
+
+
+   .. cpp:function:: TermId add(ExprTerm term)
+
+      Append a term and return its id.
+
+      :param term: The term to append.
+      :returns: Its arena index.
+
+
+   .. cpp:function:: const ExprTerm & at(TermId id) const
+
+      The term at ``id``.
+
+      :param id: The arena index.
+      :returns: The term.
+
+
+   .. cpp:function:: ExprTerm & at(TermId id)
+
+      Mutable access to the term at ``id``.
+
+      :param id: The arena index.
+      :returns: The term.
+
+
+   .. cpp:function:: std::string to_string(const SpaceRegistry *registry) const
+
+      A one-line-per-statement rendering, for a report or a test.
+
+      Reads as algebra rather than as a node list: ``C[i,j] += 2 * A[i,k] B[k,j]``.
+      A diffable before-and-after of THIS is a far better bug report than a
+      diff of two node dumps, which is the whole argument for dumping at all.
+
+      :param registry: Space registry to name spaces through, or nullptr to print letters alone.
+      :returns: The rendering, one statement per line, newline-terminated.
+
+
+   .. cpp:function:: SymbolicCost total_cost() const
+
+      Total symbolic cost of every contraction in the expression.
+
+      :returns: The summed cost.
+
+
+   .. cpp:member:: std::vector<ExprTerm> terms
+
+      The term arena. Children are named by index into this.
+
+
+   .. cpp:member:: std::vector<ExprStatement> statements
+
+      The statements, in dependency order.
+
+
+   .. cpp:member:: std::vector<RaggedFamily> families
+
+      The grouped families this expression's terms are batched over.

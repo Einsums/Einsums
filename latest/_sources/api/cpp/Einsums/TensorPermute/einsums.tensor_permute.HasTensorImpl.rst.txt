@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_permute.HasTensorImpl:
+
+======================================
+einsums::tensor_permute::HasTensorImpl
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorPermute/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_permute
+
+.. cpp:concept:: template <typename T> HasTensorImpl
+
+   A tensor type that exposes the TensorImpl it wraps, as every dense tensor, view and RuntimeTensor does.
+
+   The overloads below take such tensors directly, so callers never reach for ``impl()``, while
+   this module still depends on nothing above TensorImpl.
+
+   .. versionadded:: 2.0.0

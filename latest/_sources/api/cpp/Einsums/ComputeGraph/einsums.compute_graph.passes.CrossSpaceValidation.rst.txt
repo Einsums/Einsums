@@ -1,0 +1,174 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.CrossSpaceValidation:
+
+====================================================
+einsums::compute_graph::passes::CrossSpaceValidation
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/CrossSpaceValidation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: CrossSpaceValidation : public OptimizerPass
+
+   Flag contraction letters that bind one operand's slot against a slot of another space.
+
+   The bug this exists to catch is a letter binding an ``occ`` slot of one operand against a
+   ``virt`` slot of another. In a coupled-cluster transcription that is almost always a mistake,
+   and it is one the differential fuzzers cannot catch, because a hand-derived reference and its
+   implementation are self-consistently wrong together.
+
+   **What capture already catches, and why this pass is still needed**
+
+   Capture raises when a letter binds two different DECLARED spaces within one contraction, so a
+   program annotated before it is captured is already policed. This pass covers everything capture
+   cannot see:
+
+   - annotations that arrive AFTER capture, through ``Graph::annotate_spaces``, which capture never revisits,
+   - annotations ``SpacePropagation`` inferred, which that pass declines to argue about by design and leaves for diagnosis here,
+   - relation-aware verdicts. Capture asks only whether two ids are equal. This pass asks the registry whether the two spaces are disjoint, whether one contains the other, or whether nothing declared relates them, and reports three different things.
+
+   **The verdicts**
+
+   A letter is re-derived from the operands' CURRENT handle annotations, never from the map frozen
+   into the node at capture, and each slot binding it is compared against the first:
+
+   - Same space: nothing to report.
+   - Declared DISJOINT: an error. The contraction as written sums over an empty intersection, so it is identically zero, which is essentially never what the author meant.
+   - One CONTAINED in the other: a note. Contracting a ``pno`` slot against a ``virt`` slot is a restriction of the parent space to a subspace, which the design's containment reasoning treats as legitimate. Listed because a restriction that was not intended looks exactly like one that was.
+   - Nothing declared either way: a warning. The registry holds only what was declared, and "unknown" is a first-class answer that must be treated as carefully as "no".
+
+   A finding involving a slot whose annotation was INFERRED is reported one level lower and says so.
+   An inference is a derivation from someone else's declaration, and an authoritative verdict resting
+   on a derived premise is worse than a weak verdict resting on a firm one.
+
+   **The pass never fails a pipeline**
+
+   It never throws, never mutates, and ``run`` always reports "not modified". A diagnosis is
+   delivered through ``findings``, ``explain`` and ``print_report``, and what to do about it is
+   the caller's decision.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      graph.annotate_spaces(A, {occ, virt});
+      graph.annotate_spaces(B, {occ, aux});     // 'a' meets virt on A and occ on B
+      auto [modified, check] = graph.apply<cg::passes::CrossSpaceValidation>();
+      for (auto const &finding : check.findings()) {
+          std::cerr << finding.message << '\n';
+      }
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      check = cg.CrossSpaceValidation()
+      pm = cg.PassManager()
+      pm.add(check)
+      pm.run(g)
+      for finding in check.findings:
+          print(finding.severity, finding.message)
+      print(check.report_string())
+
+   **Limitations**
+
+   - Contraction nodes only. Every other kind is counted in ``skip_reasons``; a linear combination whose operands disagree slot by slot is a real cross-space bug and is not yet reported here.
+   - One finding per pair of distinct spaces on one letter, compared against the letter's first binding, so a letter binding three spaces yields two findings rather than three.
+   - An unannotated program yields nothing, which is the honest answer: with no premises the registry can prove nothing. The way to make the pass useful is to annotate.
+   - The verdicts read only DECLARED relations. Two spaces that genuinely never overlap but were never declared disjoint produce a warning, not an error.
+
+   **Future improvements**
+
+   - Cover ``Axpby`` and the element-wise kinds, whose operands must agree slot by slot.
+   - An option to promote errors to an exception, for a build that wants a wrong transcription to stop the run rather than to be reported.
+
+
+   .. cpp:function:: CrossSpaceValidation() = default
+
+   .. cpp:function:: std::string name() const override
+
+      See ``OptimizerPass::name``.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      Every feature: an analysis pass annotates and never rewrites a node, which the pass manager enforces.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      See ``OptimizerPass::reset_stats``.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Recurse into loop bodies and conditional branches.
+
+      Safe: the pass reads op structure and writes nothing, and a body's letters are as worth
+      checking as the top level's. Findings carry their graph's name so they stay attributable.
+
+
+   .. cpp:function:: void print_report(std::ostream &os) const
+
+      Write every finding to a stream, most severe first.
+
+      :param os: The stream to write to.
+
+
+   .. cpp:function:: std::string report_string() const
+
+      The same report ``print_report`` writes, returned as a string.
+
+      The form a caller that is not holding a stream wants, which is every Python caller and every
+      test that asserts on what the report says. Streams are not bound, and a returned string
+      needs no flushing to be readable.
+
+      :returns: The report, most severe finding first. Empty for a clean or an unannotated graph.
+
+
+   .. cpp:function:: const std::vector<CrossSpaceFinding> & findings() const noexcept
+
+      Every finding, in the order the nodes were visited and letters sorted within a node.
+
+      :returns: The findings. Empty for a clean or an unannotated graph.
+
+
+   .. cpp:function:: std::size_t num_errors() const noexcept
+
+      How many findings are errors.
+
+      :returns: The count of ``CrossSpaceSeverity::Error`` findings.
+
+
+   .. cpp:function:: std::size_t num_warnings() const noexcept
+
+      How many findings are warnings.
+
+      :returns: The count of ``CrossSpaceSeverity::Warning`` findings.
+
+
+   .. cpp:function:: std::size_t num_notes() const noexcept
+
+      How many findings are notes.
+
+      :returns: The count of ``CrossSpaceSeverity::Note`` findings.

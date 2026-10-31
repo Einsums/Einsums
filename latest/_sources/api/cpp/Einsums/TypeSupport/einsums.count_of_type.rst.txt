@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.count_of_type:
+
+======================
+einsums::count_of_type
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/CountOfType.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename... Args> constexpr auto count_of_type()
+
+   Finds the number of items with the specified type.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to find.
+   :tparam Args: The types to compare against.
+   :returns: The number of Args that match the T type.

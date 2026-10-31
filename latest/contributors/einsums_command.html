@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The einsums Command &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributors/einsums_command';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/contributors/einsums_command.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Library Modules" href="../libs/overview.html" />
+    <link rel="prev" title="Creating Module Skeletons" href="create_module_skeleton.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../libs/overview.html">Library Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The einsums Command</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="the-einsums-command">
+<span id="einsums-command"></span><h1>The einsums Command<a class="headerlink" href="#the-einsums-command" title="Link to this heading">#</a></h1>
+<p>The Python package carries Einsums’ developer tools behind one command, <code class="docutils literal notranslate"><span class="pre">einsums</span></code>. A build with
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_BUILD_PYTHON=ON</span></code> writes it to <code class="docutils literal notranslate"><span class="pre">build/bin</span></code>, and <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--install</span></code> puts it in
+<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;/bin</span></code> beside the installed package (<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;/${EINSUMS_INSTALL_PYMODDIR}/einsums</span></code>).
+Put that directory on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>. The command runs the interpreter the build used, so <code class="docutils literal notranslate"><span class="pre">_core</span></code>
+loads with the Python it was compiled for, and finds the package relative to itself.
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">einsums</span></code> is the same thing wherever the package is importable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PWD</span>/build/bin:<span class="nv">$PATH</span>
+einsums<span class="w"> </span>info<span class="w">                       </span><span class="c1"># what this Einsums is, for a bug report</span>
+einsums<span class="w"> </span>options<span class="w"> </span>profile<span class="w">            </span><span class="c1"># runtime options matching "profile"</span>
+einsums<span class="w"> </span>tune<span class="w">                       </span><span class="c1"># measure this machine and write its hardware profile</span>
+einsums<span class="w"> </span>profiler<span class="w">                   </span><span class="c1"># attach to a program run with --einsums:profile:server</span>
+einsums<span class="w"> </span>bench<span class="w"> </span>run<span class="w">                  </span><span class="c1"># build and run the performance tests, store the results</span>
+einsums<span class="w"> </span>stages<span class="w"> </span>promote<span class="w"> </span>mymethod/stages.py<span class="w"> </span>--out<span class="w"> </span>cpp/
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">info</span></code></dt><dd><p>The version, commit and build type, which <code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_*</span></code> features are compiled in, the
+package and <code class="docutils literal notranslate"><span class="pre">libEinsums</span></code> locations, the BLAS library <code class="docutils literal notranslate"><span class="pre">libEinsums</span></code> links, the Python and
+its optional packages, and the CPU with the highest x86-64 level it supports (the ceiling for
+the SIMD rung; <code class="docutils literal notranslate"><span class="pre">EINSUMS_SIMD_ARCH</span></code> and <code class="docutils literal notranslate"><span class="pre">STRIPES_ARCH</span></code> overrides are listed when set), and
+the hardware profile in effect or why none is. <code class="docutils literal notranslate"><span class="pre">--json</span></code> for scripts. The runtime is not
+started; the profile is read by a child process, so a runtime that will not start is reported
+rather than ending the report.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">options</span> <span class="pre">[PATTERN]</span></code></dt><dd><p>Every runtime option this build accepts, read from the library’s own option registry: its
+<code class="docutils literal notranslate"><span class="pre">--einsums:</span></code> flag, the <code class="docutils literal notranslate"><span class="pre">EINSUMS_*</span></code> environment variable, the <code class="docutils literal notranslate"><span class="pre">einsums.rc</span></code> field, the
+default and the help text. <code class="docutils literal notranslate"><span class="pre">PATTERN</span></code> is a case-insensitive regular expression over the
+name, category and help. <code class="docutils literal notranslate"><span class="pre">--json</span></code> for scripts.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">tune</span></code></dt><dd><p>Measures this machine and writes its hardware profile, which every later Einsums process on a
+machine of the same kind uses with no flag; <code class="docutils literal notranslate"><span class="pre">--show</span></code> reports the profile in effect and why one
+is not used, <code class="docutils literal notranslate"><span class="pre">--check</span></code> exits 0 only when a current one applies, <code class="docutils literal notranslate"><span class="pre">--export</span></code> prints its path,
+and <code class="docutils literal notranslate"><span class="pre">--import</span> <span class="pre">FILE</span></code> adopts one measured elsewhere, filed under the machine it describes. The
+same code runs as <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">einsums.tune</span></code> and as the <code class="docutils literal notranslate"><span class="pre">einsums-tune</span></code> executable, which a
+C++-only installation has. See <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html#computegraph-hardware-profiles"><span class="std std-ref">Hardware Profiles</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">profiler</span></code></dt><dd><p>The terminal profile viewer, described in <a class="reference internal" href="../user/tutorial_performance.html#tutorial-performance"><span class="std std-ref">Tutorial: Performance Tuning</span></a>; <code class="docutils literal notranslate"><span class="pre">profiler</span> <span class="pre">report</span></code> and
+<code class="docutils literal notranslate"><span class="pre">profiler</span> <span class="pre">diff</span></code> print saved sessions without it.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">bench</span></code></dt><dd><p>Runs the performance tests and keeps their results in a SQLite database, so a run can be
+compared with earlier ones and a regression bisected; see below.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">stages</span></code></dt><dd><p>The promote and extract tools of <code class="docutils literal notranslate"><span class="pre">einsums.stages</span></code>, also reachable as
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">einsums.stages</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">completion</span> <span class="pre">bash|zsh|fish</span></code></dt><dd><p>A completion script generated from the commands’ own parsers, for example
+<code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">completion</span> <span class="pre">bash</span> <span class="pre">&gt;</span> <span class="pre">~/.local/share/bash-completion/completions/einsums</span></code>.</p>
+</dd>
+</dl>
+<p>A command that starts the runtime (<code class="docutils literal notranslate"><span class="pre">stages</span> <span class="pre">promote</span></code> imports the stages module) writes no
+<code class="docutils literal notranslate"><span class="pre">profile.txt</span></code>: the tool turns the profiler’s text report off unless <code class="docutils literal notranslate"><span class="pre">einsums.rc</span></code> asks for it.</p>
+<section id="tracking-performance">
+<h2>Tracking performance<a class="headerlink" href="#tracking-performance" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>einsums<span class="w"> </span>bench<span class="w"> </span>run<span class="w">          </span><span class="c1"># build Tests.Performance, run the contraction suite, store results</span>
+einsums<span class="w"> </span>bench<span class="w"> </span>compare<span class="w">      </span><span class="c1"># the latest run against recent runs on main</span>
+</pre></div>
+</div>
+<p>The performance tests are built with <code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_TESTS_BENCHMARKS=ON</span></code> and are disabled in
+ctest, so they run only through <code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">run</span></code> or <code class="docutils literal notranslate"><span class="pre">ctest</span> <span class="pre">-L</span> <span class="pre">PERFORMANCE_ONLY</span></code>.</p>
+<section id="suites">
+<h3>Suites<a class="headerlink" href="#suites" title="Link to this heading">#</a></h3>
+<p>Every performance test belongs to one suite, given as <code class="docutils literal notranslate"><span class="pre">SUITE</span></code> to
+<code class="docutils literal notranslate"><span class="pre">einsums_add_performance_test</span></code> and carried as the ctest label <code class="docutils literal notranslate"><span class="pre">SUITE_CONTRACTION</span></code> or
+<code class="docutils literal notranslate"><span class="pre">SUITE_INFRASTRUCTURE</span></code>:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">contraction</span></code></dt><dd><p>Contractions and the operations they are built from: einsum dispatch and its routes,
+PackedGemm, sort-GEMM, permutes and transposes, BLAS and LAPACK, and the Tensor Contraction
+Benchmark (below). <code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">run</span></code> runs this suite unless told otherwise.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">infrastructure</span></code></dt><dd><p>The machinery around them: allocators and pooled tensors, the profiler’s own cost, the task
+pool and graph executors, graph overhead, bandwidth and peak-FLOP probes.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">run</span> <span class="pre">--suite</span> <span class="pre">infrastructure</span></code> or <code class="docutils literal notranslate"><span class="pre">--suite</span> <span class="pre">all</span></code> runs the others; <code class="docutils literal notranslate"><span class="pre">--targets</span></code> names
+binaries whatever their suite. <code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">list-tests</span></code> shows each test’s suite.</p>
+</section>
+<section id="the-tensor-contraction-benchmark">
+<h3>The Tensor Contraction Benchmark<a class="headerlink" href="#the-tensor-contraction-benchmark" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BenchmarkTCB</span></code> runs the shapes of the Tensor Contraction Benchmark
+(<a class="reference external" href="https://github.com/HPAC/tccg">TCCG</a>) through the string-spec einsum, the way the paper’s
+head-to-head harness calls Einsums: its four groups (ccsd, ccsd_t, intensli, ao2mo), each case in
+single and double precision. The case table is <code class="docutils literal notranslate"><span class="pre">tcb_cases.csv</span></code> beside it, copied from that
+harness. Each case is first checked at small extents against <code class="docutils literal notranslate"><span class="pre">reference_einsum</span></code>; then it is
+timed with the harness’s protocol (trash the cache, call once, keep the minimum of three) and
+stored as <code class="docutils literal notranslate"><span class="pre">t_einsum</span></code>, with the vendor GEMM of the equivalent M, N, K as <code class="docutils literal notranslate"><span class="pre">t_gemm</span></code>, under the
+label <code class="docutils literal notranslate"><span class="pre">tcb</span> <span class="pre">&lt;group&gt;</span> <span class="pre">&lt;case&gt;</span> <span class="pre">&lt;s|d&gt;</span></code>. GFLOP/s, the percentage of GEMM, the dispatch route and
+M, N, K are annotations.</p>
+<p>It runs on one thread by default, as the harness reports its baseline. Environment variables
+adjust it, since <code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">run</span></code> passes no arguments: <code class="docutils literal notranslate"><span class="pre">EINSUMS_TCB_ONLY</span></code> (a group, or part of a
+case name), <code class="docutils literal notranslate"><span class="pre">EINSUMS_TCB_PRECISION</span></code> (<code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">d</span></code> or <code class="docutils literal notranslate"><span class="pre">sd</span></code>), <code class="docutils literal notranslate"><span class="pre">EINSUMS_TCB_REPS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_TCB_TRASH_MB</span></code> and <code class="docutils literal notranslate"><span class="pre">EINSUMS_TCB_THREADS</span></code> (a count other than 1 is added to each label,
+so serial and threaded results are never compared). Pin it to a memory-attached core, which on a
+Threadripper WX is not every core:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>taskset<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>einsums<span class="w"> </span>bench<span class="w"> </span>run<span class="w"> </span>--targets<span class="w"> </span>BenchmarkTCB
+<span class="nv">EINSUMS_TCB_ONLY</span><span class="o">=</span>intensli<span class="w"> </span>einsums<span class="w"> </span>bench<span class="w"> </span>run<span class="w"> </span>--targets<span class="w"> </span>BenchmarkTCB
+</pre></div>
+</div>
+</section>
+<section id="how-results-are-collected">
+<h3>How results are collected<a class="headerlink" href="#how-results-are-collected" title="Link to this heading">#</a></h3>
+<p>Each test reports through <code class="docutils literal notranslate"><span class="pre">performance::publish_benchmark_result</span></code>, which sends a structured
+<code class="docutils literal notranslate"><span class="pre">benchmark_result</span></code> event to the profiler server and prints one line,
+<code class="docutils literal notranslate"><span class="pre">[label</span> <span class="pre">N=n]</span> <span class="pre">Time:</span> <span class="pre">...</span> <span class="pre">metric:</span> <span class="pre">name</span></code>. <code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">run</span></code> starts each binary with its own server on a
+free port, so a viewer on the default port is undisturbed, and stores the events. In a build
+without the profiler there is no server, and the printed lines are read instead; both paths give
+the same label and metric. The <code class="docutils literal notranslate"><span class="pre">source</span></code> column records which path each result came from
+(<code class="docutils literal notranslate"><span class="pre">profiler</span></code> or <code class="docutils literal notranslate"><span class="pre">stdout</span></code>; rows from before the column existed are <code class="docutils literal notranslate"><span class="pre">stdout</span></code>).</p>
+<p>Results printed before the line carried its metric are stored as <code class="docutils literal notranslate"><span class="pre">t_generic</span></code>, which is also
+what every stdout-parsed row in an older database is called. Comparisons are keyed by label and
+metric, so the first runs collected through the server do not line up with that history.</p>
+</section>
+<section id="the-database">
+<h3>The database<a class="headerlink" href="#the-database" title="Link to this heading">#</a></h3>
+<p>Results go to a per-user database, <code class="docutils literal notranslate"><span class="pre">benchmarks.db</span></code> in <code class="docutils literal notranslate"><span class="pre">~/.local/share/einsums/</span></code> on Linux
+(<code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/einsums/</span></code> when that is set), <code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/einsums/</span></code> on
+macOS and <code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%\einsums\</span></code> on Windows. Every checkout and worktree shares it, and each
+run records the commit and branch it measured, so the history survives removing a worktree.
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_BENCH_DB</span></code> names another file, and <code class="docutils literal notranslate"><span class="pre">--db</span> <span class="pre">PATH</span></code> before the command
+(<code class="docutils literal notranslate"><span class="pre">bench</span> <span class="pre">--db</span> <span class="pre">PATH</span> <span class="pre">run</span></code>) overrides both; a CI job usually sets one of them.</p>
+<p>Einsums Studio’s benchmark bundle reads <code class="docutils literal notranslate"><span class="pre">&lt;checkout&gt;/.einsums-studio/benchmarks.db</span></code>; to keep
+feeding it, point <code class="docutils literal notranslate"><span class="pre">EINSUMS_BENCH_DB</span></code> there.</p>
+<p>The schema has three tables: <code class="docutils literal notranslate"><span class="pre">runs</span></code> (one row per execution, with the commit, branch, host,
+compiler, BLAS vendor, CPU and its frequency and power source), <code class="docutils literal notranslate"><span class="pre">results</span></code> (one row per
+benchmark and metric, in microseconds, with its collection <code class="docutils literal notranslate"><span class="pre">source</span></code>) and <code class="docutils literal notranslate"><span class="pre">baselines</span></code> (named
+runs). Migrations are numbered SQL files in <code class="docutils literal notranslate"><span class="pre">einsums/cli/bench/migrations/</span></code>; to change the
+schema, add the next file and bump <code class="docutils literal notranslate"><span class="pre">SCHEMA_VERSION</span></code> in <code class="docutils literal notranslate"><span class="pre">einsums/cli/bench/models.py</span></code>. A
+database is migrated when it is opened.</p>
+</section>
+<section id="commands">
+<h3>Commands<a class="headerlink" href="#commands" title="Link to this heading">#</a></h3>
+<p>Every command that prints a table also takes <code class="docutils literal notranslate"><span class="pre">--json</span></code>. Where a command takes <code class="docutils literal notranslate"><span class="pre">--metric</span></code> and
+it is left out, the benchmark’s only recorded metric is used; if it has several, the command
+lists them and asks.</p>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">run</span></code></dt><dd><p>Runs the <code class="docutils literal notranslate"><span class="pre">--suite</span></code> (default <code class="docutils literal notranslate"><span class="pre">contraction</span></code>). Builds <code class="docutils literal notranslate"><span class="pre">Tests.Performance</span></code> (skip with
+<code class="docutils literal notranslate"><span class="pre">--no-build</span></code>) with <code class="docutils literal notranslate"><span class="pre">--jobs</span></code> (default:
+<code class="docutils literal notranslate"><span class="pre">$CMAKE_BUILD_PARALLEL_LEVEL</span></code>, else half the cores and at most 16, rather than Ninja’s every
+core), runs the suite’s performance test binaries (<code class="docutils literal notranslate"><span class="pre">--targets</span></code> names binaries instead), and
+stores the results. Each binary is cut off at its ctest <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>, 600 s unless it sets one. <code class="docutils literal notranslate"><span class="pre">--reps</span> <span class="pre">N</span></code> repeats the run, building once; <code class="docutils literal notranslate"><span class="pre">--notes</span></code> is stored with it.
+<code class="docutils literal notranslate"><span class="pre">--build-dir</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">build</span></code> and <code class="docutils literal notranslate"><span class="pre">--source-dir</span></code> to the checkout.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">compare</span></code></dt><dd><p>Classifies each benchmark of a run (default: the latest) as a regression, improvement,
+unchanged, or noisy, by a robust z-score against the median and MAD of the last
+<code class="docutils literal notranslate"><span class="pre">--baseline-count</span></code> runs on <code class="docutils literal notranslate"><span class="pre">--baseline</span></code> (default <code class="docutils literal notranslate"><span class="pre">main</span></code>), or against one run with
+<code class="docutils literal notranslate"><span class="pre">--baseline-run-id</span></code>. <code class="docutils literal notranslate"><span class="pre">--z-threshold</span></code> (3) and <code class="docutils literal notranslate"><span class="pre">--min-pct</span></code> (5) set what is flagged; it
+exits 1 when anything regressed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">diff</span></code></dt><dd><p>One run’s results (<code class="docutils literal notranslate"><span class="pre">--filter</span></code> on labels, <code class="docutils literal notranslate"><span class="pre">--metric</span></code> to pick columns), or two runs side by
+side with the speedup (<code class="docutils literal notranslate"><span class="pre">--before</span></code>, <code class="docutils literal notranslate"><span class="pre">--after</span></code>, <code class="docutils literal notranslate"><span class="pre">--prefix</span></code>; every metric unless
+<code class="docutils literal notranslate"><span class="pre">--metric</span></code> names one).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">trend</span></code>, <code class="docutils literal notranslate"><span class="pre">scaling</span></code></dt><dd><p>One benchmark over successive runs, with a sparkline (<code class="docutils literal notranslate"><span class="pre">--benchmark</span> <span class="pre">&quot;blas-gemm</span> <span class="pre">N=1024&quot;</span></code>), or
+one run’s timings against N for every label starting with <code class="docutils literal notranslate"><span class="pre">--benchmark</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">list-runs</span></code>, <code class="docutils literal notranslate"><span class="pre">list-tests</span></code>, <code class="docutils literal notranslate"><span class="pre">tag-baseline</span></code></dt><dd><p>Browse the history, list the performance binaries in the build tree, and name a run.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">export</span></code></dt><dd><p>A run as JSON on stdout, or with <code class="docutils literal notranslate"><span class="pre">--html</span> <span class="pre">FILE</span></code> as a self-contained HTML report that
+includes its comparison against <code class="docutils literal notranslate"><span class="pre">--baseline</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">bisect</span></code></dt><dd><p>One step of <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">bisect</span> <span class="pre">run</span></code>: build (<code class="docutils literal notranslate"><span class="pre">--jobs</span></code> as for <code class="docutils literal notranslate"><span class="pre">run</span></code>), run the binaries until one
+reports <code class="docutils literal notranslate"><span class="pre">--benchmark</span></code>, and exit 0 if its metric stays under <code class="docutils literal notranslate"><span class="pre">--threshold-us</span></code>, 1 if not
+(a bad result is confirmed by the median of <code class="docutils literal notranslate"><span class="pre">--reps</span></code> runs), and 125 (skip) if the build
+fails or the benchmark or metric is missing.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>bisect<span class="w"> </span>start<span class="w"> </span>HEAD<span class="w"> </span>v2.0
+git<span class="w"> </span>bisect<span class="w"> </span>run<span class="w"> </span>einsums<span class="w"> </span>bench<span class="w"> </span>bisect<span class="w"> </span>--benchmark<span class="w"> </span><span class="s2">"blas-gemm N=1024"</span><span class="w"> </span>--threshold-us<span class="w"> </span><span class="m">500</span>
+</pre></div>
+</div>
+<p>The step runs the tool from the build tree, and a reconfigure at a bisected commit replaces it
+with that commit’s version. For a range that changes the tool itself, copy <code class="docutils literal notranslate"><span class="pre">build/lib</span></code>
+before starting and run the step as <code class="docutils literal notranslate"><span class="pre">env</span> <span class="pre">PYTHONPATH=&lt;copy&gt;</span> <span class="pre">python</span> <span class="pre">-m</span> <span class="pre">einsums</span> <span class="pre">bench</span> <span class="pre">bisect</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">delete-db</span></code></dt><dd><p>Remove the database file (asks first unless <code class="docutils literal notranslate"><span class="pre">--yes</span></code>).</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="create_module_skeleton.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Creating Module Skeletons</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../libs/overview.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Library Modules</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracking-performance">Tracking performance</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#suites">Suites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-tensor-contraction-benchmark">The Tensor Contraction Benchmark</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-results-are-collected">How results are collected</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-database">The database</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#commands">Commands</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

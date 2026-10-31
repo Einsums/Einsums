@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NodeRun:
+
+===============================
+einsums::compute_graph::NodeRun
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/RunMetrics.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NodeRun
+
+   One node's share of a replay.
+
+   A node in a loop body ran once per iteration: ``ms`` is the sum and ``runs`` the count. A
+   control-flow node's own time includes its body's, whose nodes have entries of their own.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string graph
+
+      The name of the graph or body the node is in.
+
+
+   .. cpp:member:: NodeId id
+
+      The node's id within that graph.
+
+
+   .. cpp:member:: OpKind kind
+
+      The node's kind.
+
+
+   .. cpp:member:: std::string label
+
+      The node's label.
+
+
+   .. cpp:member:: double ms
+
+      Wall-clock milliseconds, summed over its runs.
+
+
+   .. cpp:member:: unsigned int width
+
+      The thread width of its last run; 0 when the executor did not place it at a width.
+
+
+   .. cpp:member:: std::size_t runs
+
+      How many times it ran in the replay.

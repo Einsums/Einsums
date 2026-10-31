@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.ParseError:
+
+=========================
+einsums::json::ParseError
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: ParseError
+
+   What went wrong while parsing, and where.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::string to_string() const
+
+      The message with its position prefixed, as a loader would report it.
+
+      :returns: ``"line L column C: message"``.
+
+
+   .. cpp:member:: std::string message
+
+      Human-readable cause.
+
+
+   .. cpp:member:: Position where
+
+      Where in the text it was detected.

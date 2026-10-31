@@ -1,0 +1,158 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_ops.ElementOpRegistry:
+
+======================================================
+einsums::compute_graph::element_ops::ElementOpRegistry
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ElementOps.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:class:: ElementOpRegistry
+
+   Element-wise kernels looked up by name.
+
+   **Identity, and what a conflict is**
+
+   Re-registering a name is idempotent when the registration is the SAME one and
+   an error otherwise, which is ``SpaceRegistry``'s rule and for the same
+   reason: two translation units seeding the same op must not race into a
+   failure, and two DIFFERENT kernels sharing a name must not silently resolve
+   to whichever ran first.
+
+   "The same one" is the callable's C++ TYPE together with the signature. A
+   lambda expression has a unique closure type, so registering the same
+   expression twice -- from a header-scope initializer included in several
+   translation units, say -- is idempotent, and any other lambda under that name
+   conflicts. A plain function POINTER carries no such identity (two unrelated
+   functions share one type), but a function pointer cannot be dtype-generic in
+   the first place, so it is not a shape this registry accepts.
+
+   **Thread safety**
+
+   One mutex guards the table. Registration is expected during startup or setup
+   and lookup from anywhere; the lock exists so a late registration cannot
+   corrupt a concurrent reader, not because this is a hot path. A built executor
+   copies the kernel it needs ONCE, at build time, so a replay never touches the
+   registry at all.
+
+
+   .. cpp:function:: ElementOpRegistry() = default
+
+   .. cpp:function:: ElementOpRegistry(const ElementOpRegistry &) = delete
+
+      The mutex makes a registry neither copyable nor movable. Pass it by reference.
+
+
+   .. cpp:function:: ElementOpRegistry(ElementOpRegistry &&) = delete
+
+   .. cpp:function:: ElementOpRegistry & operator=(const ElementOpRegistry &) = delete
+
+   .. cpp:function:: ElementOpRegistry & operator=(ElementOpRegistry &&) = delete
+
+   .. cpp:function:: ~ElementOpRegistry() = default
+
+   .. cpp:function:: template <typename Kernel> void register_op(std::string name, Kernel kernel, ElementOpSignature signature)
+
+      Register a dtype-generic element-wise kernel under ``name``.
+
+      The four per-dtype instantiations are made here, once, so a lookup is a
+      map probe and a ``std::function`` copy rather than a dispatch.
+
+      :tparam Kernel: A callable invocable as ``kernel(T{})`` for at least the element types ``signature`` declares.
+      :param name: The lookup name. Must not be empty.
+      :param kernel: The kernel.
+      :param signature: What the op promises. Arity must be 1 today.
+      :throws std::invalid_argument: When the name is empty, when the arity is not 1, when the kernel does not compile for a dtype the declared domain requires, or when ``name`` is already registered with different content.
+
+
+   .. cpp:function:: bool contains(std::string_view name) const
+
+      Whether ``name`` is registered.
+
+      :param name: The name to look for.
+      :returns: True when an op of that name exists.
+
+
+   .. cpp:function:: ElementOpSignature signature(std::string_view name) const
+
+      The declared signature of ``name``.
+
+      :param name: The op.
+      :throws std::invalid_argument: When no op of that name is registered.
+      :returns: Its signature.
+
+
+   .. cpp:function:: template <typename T> std::function<T (T)> kernel(std::string_view name, std::optional<double> param) const
+
+      The kernel registered under ``name``, for element type ``T``, ready to apply.
+
+      The parameter is bound HERE, once, and what comes back is a plain
+      ``T(T)``: a replay applies the same unary map per element that an
+      unparameterized op does, and nothing downstream of this call has to know
+      which shape was registered.
+
+      :tparam T: One of the four BLAS element types.
+      :param name: The op.
+      :param param: The policy number to apply a PARAMETERIZED op with. An empty optional takes the default its registration documents.
+      :throws std::invalid_argument: When no op of that name is registered, when the op is not defined for ``T``, or when ``param`` is supplied for an op that takes none. Every message names the op.
+      :returns: A copy of the kernel as a unary map, so the caller may hold it after the registry's lock is released.
+
+
+   .. cpp:function:: std::vector<std::string> names() const
+
+      Every registered name, sorted.
+
+      :returns: The names, for a listing or a diagnostic.
+
+
+   .. cpp:function:: std::size_t size() const
+
+      How many ops are registered.
+
+
+   .. cpp:function:: template <typename T> bool has_arm() const noexcept
+
+      Whether this entry has a kernel for ``T``, in whichever shape it declared.
+
+      :tparam T: One of the four BLAS element types.
+      :returns: True when the arm is installed.
+
+
+   .. cpp:member:: ElementOpSignature sig
+
+      Named ``sig``, not ``signature``: the class already has a public
+      ``signature`` accessor, and the two collide in one scope when the
+      documentation extractor flattens this nested struct onto the class page.
+
+
+   .. cpp:member:: std::type_index content
+
+      The registered callable's C++ type; see the identity note on the class.
+
+
+   .. cpp:member:: std::tuple<Arms<float>, Arms<double>, Arms<std::complex<float>>, Arms<std::complex<double>>> arms
+
+      The installed kernels, one pair per element type. Exactly one of each pair is populated,
+      chosen by ``ElementOpSignature::parameterized``, so a lookup never has to decide which
+      one an entry meant.
+
+
+   .. cpp:class:: template <typename T> Arms
+
+      One element type's kernel, as a plain map or as a map taking the op's parameter.
+
+
+      .. cpp:member:: std::function<T (T)> unary
+
+      .. cpp:member:: std::function<T (T, double)> param

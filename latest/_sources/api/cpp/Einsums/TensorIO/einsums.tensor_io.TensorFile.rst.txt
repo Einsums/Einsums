@@ -1,0 +1,338 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.TensorFile:
+
+==============================
+einsums::tensor_io::TensorFile
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/TensorFile.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:class:: TensorFile
+
+   A handle on an ``.etn`` file.
+
+   Writing, rewriting and reserving entries change the handle's own table until it commits, which
+   ``close``, ``flush`` and the destructor do, and each entry operation (``rename``, ``swap``,
+   ``copy``, ``remove``, ``restage``, ``compact``) does before it returns. A commit puts new data
+   and a new table into space the file's last commit does not use and then rewrites the header, so a
+   process that stops at any point leaves the file as its last commit left it. With
+   ``--einsums:io:sync`` on, the default, a power loss does too. A handle refuses to commit over a
+   file another handle has committed to since this one last read it.
+
+
+   .. cpp:function:: explicit TensorFile(std::string path, Mode mode)
+
+      Open or create a tensor file.
+
+      :param path: File path (creates parent directories if needed).
+      :param mode: Read, Write, or ReadWrite.
+
+
+   .. cpp:function:: TensorFile(const TensorFile &) = delete
+
+   .. cpp:function:: TensorFile(TensorFile &&other) noexcept
+
+   .. cpp:function:: ~TensorFile()
+
+      Commits and closes the file. A commit that fails here is logged and dropped, leaving the
+      file as its last commit left it; ``close`` reports it instead.
+
+
+   .. cpp:function:: TensorFile & operator=(const TensorFile &) = delete
+
+   .. cpp:function:: TensorFile & operator=(TensorFile &&other) noexcept
+
+   .. cpp:function:: template <typename T, size_t Rank> void write(std::string_view name, const Tensor<T, Rank> &tensor)
+
+      Write a full tensor to the file.
+
+
+   .. cpp:function:: template <typename T, size_t Rank> void write_local(std::string_view name, const Tensor<T, Rank> &tensor, int rank, int num_ranks)
+
+      Write this rank's local partition of a distributed tensor.
+
+
+   .. cpp:function:: template <typename T, size_t Rank> void write_slice(std::string_view name, const Tensor<T, Rank> &tensor, const std::array<std::pair<size_t, size_t>, Rank> &ranges)
+
+      Write a hyperslab of an existing entry; ``tensor`` must have the slab's shape.
+
+      :param name: The entry, which must exist (see ``reserve``).
+      :param tensor: The slab's elements.
+      :param ranges: Per-dimension [start, end) ranges into the stored tensor.
+
+
+   .. cpp:function:: template <typename T> void reserve(std::string_view name, const std::vector<size_t> &dims, const std::vector<size_t> &stored_order)
+
+      Create an entry and its data region without writing data, to fill with ``write_slice``.
+
+      :param name: The entry's name.
+      :param dims: Its extents, in its declared axis order.
+      :param stored_order: The declared axis to store at each position (see ``TensorEntry::stored_order``); empty, or the declared order, stores it as declared. Every read and write of the entry takes and returns its declared order whichever order it is stored in; the stored order only decides which boxes of it are long contiguous runs of the file.
+
+
+   .. cpp:function:: template <typename T, size_t Rank> void read(std::string_view name, Tensor<T, Rank> &tensor)
+
+      Read a full tensor. Resizes the tensor if dimensions don't match.
+
+
+   .. cpp:function:: template <typename T, size_t Rank> void read_slice(std::string_view name, Tensor<T, Rank> &tensor, const std::array<std::pair<size_t, size_t>, Rank> &ranges)
+
+      Read a slice (hyperslab) of a tensor.
+
+      :param name: The entry.
+      :param tensor: Where the slab goes, already of its shape.
+      :param ranges: Per-dimension [start, end) ranges.
+
+
+   .. cpp:function:: template <typename T, size_t Rank> void read_local(std::string_view name, Tensor<T, Rank> &tensor, int rank)
+
+      Read this rank's local partition of a distributed tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc> void read(std::string_view name, GeneralRuntimeTensor<T, Alloc> &tensor)
+
+      Read a full tensor into a RuntimeTensor. Resizes the tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc> void write(std::string_view name, const GeneralRuntimeTensor<T, Alloc> &tensor)
+
+      Write a full RuntimeTensor as a new entry.
+
+
+   .. cpp:function:: template <typename T, typename Alloc> void read_slice(std::string_view name, GeneralRuntimeTensor<T, Alloc> &tensor, const std::vector<std::pair<size_t, size_t>> &ranges)
+
+      Read a slice into a pre-sized RuntimeTensor. The tensor's dims
+      must equal the slab (ranges[d].second - ranges[d].first).
+
+
+   .. cpp:function:: template <typename T, typename Alloc> void write_slice(std::string_view name, const GeneralRuntimeTensor<T, Alloc> &tensor, const std::vector<std::pair<size_t, size_t>> &ranges)
+
+      Write a slice (hyperslab) of an existing entry from a RuntimeTensor.
+
+
+   .. cpp:function:: void read_slab(std::string_view name, void *destination, const std::vector<std::pair<size_t, size_t>> &ranges) const
+
+      Read a slab into raw memory, whatever the entry's element type.
+
+      ``destination`` receives the slab's elements densely and in column-major order over the
+      slab's own extents, which is the file's order, so no element is converted or moved: each
+      contiguous run of the slab is one read. It must hold the slab's element count times the
+      entry's element size. An empty range on any axis reads nothing.
+
+      :param name: The entry.
+      :param destination: Where the elements go.
+      :param ranges: Per-dimension [start, end) ranges into the stored tensor.
+
+
+   .. cpp:function:: void write_slab(std::string_view name, const void *source, const std::vector<std::pair<size_t, size_t>> &ranges)
+
+      Write a slab from raw memory into an existing entry, whatever its element type.
+
+      The mirror of ``read_slab``: ``source`` holds the slab's elements densely and in
+      column-major order over the slab's own extents, and each contiguous run is one write.
+
+      :param name: The entry, which must exist (see ``reserve``).
+      :param source: Where the elements come from.
+      :param ranges: Per-dimension [start, end) ranges into the stored tensor.
+
+
+   .. cpp:function:: void rename(std::string_view old_name, std::string_view new_name)
+
+      Give the entry ``old_name`` the name ``new_name``.
+
+      Only the entry table changes, so a rename costs the same whatever the entry holds. It is
+      committed before this returns. Renaming an entry to its own name does nothing.
+
+      :throws std::runtime_error: when there is no entry ``old_name``, or the file is open for reading.
+      :throws std::invalid_argument: when an entry is already named ``new_name``, or no entry can hold that name.
+
+
+   .. cpp:function:: void swap(std::string_view first, std::string_view second)
+
+      Exchange the names of the entries ``first`` and ``second``.
+
+      Only the entry table changes, as for ``rename``. Afterwards ``first`` names what ``second``
+      held and the other way round, which is the step a program that writes the next value of a
+      tensor beside the current one takes to make the next value current. Swapping an entry with
+      itself does nothing.
+
+      :throws std::runtime_error: when either entry is missing, or the file is open for reading.
+
+
+   .. cpp:function:: void replace(std::string_view source, std::string_view target)
+
+      Make the entry ``source`` the entry ``target``, dropping what ``target`` held.
+
+      Only the entry table changes, as for ``rename``, and in one commit: a crash leaves either
+      both entries as they were or ``target`` holding what ``source`` held and no entry ``source``.
+      The space ``target's`` old elements took is free from that commit on. This is the step that
+      makes a value written beside the current one current, leaving no second entry behind.
+      Replacing an entry with itself does nothing.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::runtime_error: when there is no entry ``source``, or the file is open for reading.
+      :throws std::invalid_argument: when no entry can hold the name ``target``.
+
+
+   .. cpp:function:: void replace(const std::vector<std::pair<std::string, std::string>> &moves)
+
+      Make each entry ``source`` the entry ``target``, for every pair of ``moves`` at once.
+
+      Every pair is applied as by the overload for one pair, and all of them
+      in one commit: a crash leaves either every entry as it was or every replacement made. This is
+      the step that makes the values written beside several current ones current together.
+
+      .. versionadded:: 2.0.0
+
+      :param moves: The (source, target) pairs. A pair whose source is its target does nothing.
+      :throws std::runtime_error: when a source is missing, or the file is open for reading.
+      :throws std::invalid_argument: when no entry can hold a target's name, or a name is the source or the target of more than one pair, or both a source and a target, which would make the outcome depend on the order the pairs were applied in.
+
+
+   .. cpp:function:: void copy(const TensorFile &source, std::string_view source_name, std::string_view name, size_t buffer_bytes)
+
+      Copy the entry ``source_name`` of ``source`` into the entry ``name`` of this file.
+
+      The entry ``name`` is created with the source's extents, element type and stored order when
+      it does not exist. When it does, it must have the same extents and element type, keeps its own
+      stored order, and holds its old elements until the copy is committed. The elements pass through a buffer of at most ``buffer_bytes``,
+      so neither entry is ever held whole: entries stored in the same order are copied as runs of the file, and otherwise a box at a time,
+      in runs of the source's order. ``source`` may be this file, and copying an entry of this file onto itself does nothing.
+
+      :param source: The file holding the entry to copy.
+      :param source_name: The entry to copy.
+      :param name: The entry to copy it into.
+      :param buffer_bytes: The most the copy holds in memory at once; zero takes ``--einsums:work-buffer-size``. A buffer smaller than one element holds one element.
+      :throws std::runtime_error: when the source entry is missing or damaged, or this file is open for reading.
+      :throws std::invalid_argument: when the entry ``name`` exists with other extents or another element type, or no entry can hold the name.
+
+
+   .. cpp:function:: void remove(std::string_view name)
+
+      Remove the entry ``name``, for every rank that holds one, and commit.
+
+      Its data region becomes space later entries reuse; ``compact`` gives it back to the disk.
+
+      :throws std::runtime_error: when there is no entry ``name``, or the file is open for reading.
+
+
+   .. cpp:function:: void restage(std::string_view name, const std::vector<size_t> &order, size_t buffer_bytes)
+
+      Store the entry ``name`` with its axes in ``order``, moving its elements, and commit.
+
+      The elements are copied into a new region in the new order through a buffer of at most
+      ``buffer_bytes``, and one commit then points the entry at it, so the entry holds its old layout
+      or its new one whenever the program stops. The file needs room for a second copy of the entry
+      while this runs. Restaging to the order the entry already has does nothing.
+
+      :param name: The entry.
+      :param order: The declared axis to store at each position, as ``stored_order`` returns it.
+      :param buffer_bytes: As for ``copy``.
+      :throws std::runtime_error: when there is no entry ``name``, or the file is open for reading.
+      :throws std::invalid_argument: when ``order`` is not a permutation of the entry's axes.
+
+
+   .. cpp:function:: void compact(size_t buffer_bytes)
+
+      Rewrite the file without the space no entry uses.
+
+      Every entry is copied, in its stored order and through a buffer of at most ``buffer_bytes``,
+      into a new file beside this one, which then replaces it. The file is this one or the
+      compacted one whenever the program stops, and the disk needs room for the entries' bytes
+      while this runs. Another handle open on the file refuses to commit afterwards; backings,
+      which open the file for each slab, see the compacted file at their next slab.
+
+      :param buffer_bytes: As for ``copy``.
+      :throws std::runtime_error: when the file is open for reading.
+
+
+   .. cpp:function:: bool contains(std::string_view name) const
+
+      Check if a tensor exists in the file.
+
+
+   .. cpp:function:: std::vector<size_t> dims(std::string_view name) const
+
+      Get the stored dimensions of a tensor.
+
+
+   .. cpp:function:: DType dtype(std::string_view name) const
+
+      The stored dtype. Not bound to Python, where ``read``/``write`` take ``dtype=``.
+
+
+   .. cpp:function:: std::vector<size_t> stored_order(std::string_view name) const
+
+      The order ``name`` is stored in: the declared axis held at each stored position, which is
+      ``0, 1, ..., rank - 1`` for an entry stored as declared. See ``TensorEntry::stored_order``.
+
+
+   .. cpp:function:: void set_stored_order(std::string_view name, const std::vector<size_t> &order)
+
+      Store ``name`` with its axes in ``order`` from now on, recording it in the entry table.
+
+      Only the record changes: the elements already in the data region are not moved, so this is
+      for an entry nothing has been written to yet, as a program that reserved it and then chose
+      how to lay it out has. Throws when ``order`` is not a permutation of the entry's axes.
+
+
+   .. cpp:function:: size_t unused_bytes() const
+
+      The bytes of the file, as of the last commit, that hold neither the header, an entry's
+      elements nor the entry table: what ``compact`` would give back.
+
+
+   .. cpp:function:: std::vector<std::string> tensor_names() const
+
+      List all tensor names in the file.
+
+
+   .. cpp:function:: size_t num_tensors() const
+
+      Number of tensors in the file.
+
+
+   .. cpp:function:: void flush()
+
+      Commit, and sync the file to disk whatever ``--einsums:io:sync`` says.
+
+
+   .. cpp:function:: void close()
+
+      Commit and close the file. Unlike the destructor, throws when the commit fails.
+
+
+   .. cpp:function:: const std::string & path() const
+
+      Get the file path.
+
+
+   .. cpp:enum-class:: Mode
+
+      .. cpp:enumerator:: Read
+
+      .. cpp:enumerator:: Write
+
+      .. cpp:enumerator:: ReadWrite
+
+
+   .. cpp:class:: TableState
+
+      This handle's table, to put back when a change fails partway.
+
+
+      .. cpp:member:: std::vector<TensorEntry> entries
+
+      .. cpp:member:: bool dirty

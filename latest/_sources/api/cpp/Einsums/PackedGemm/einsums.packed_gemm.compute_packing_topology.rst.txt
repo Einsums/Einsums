@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.compute_packing_topology:
+
+==============================================
+einsums::packed_gemm::compute_packing_topology
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: PackingPlan compute_packing_topology(const ContractionKey &key)
+
+   Compute the BLIS packing topology for a contraction.
+
+   Returns `plan.valid == true` only when:
+
+   - No scalar output
+   - No repeated a_indices or b_indices (Hadamard)
+   - At least one M dim, at least one N dim, at least one K dim
+   - Multi-M, multi-N, and multi-K are all supported
+
+   `plan.m_dims[i].tensor_stride` etc. are left as 0; call `fill_strides` to fill them.

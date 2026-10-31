@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.vec_norm:
+
+=================================
+einsums::linear_algebra::vec_norm
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType> RemoveComplexT<typename AType::ValueType> vec_norm(const AType &a)
+
+   Compute the Euclidean norm of a vector. For higher-rank tensors,
+   this is the same as taking the square root of the sum of the squares of all of the elements.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType: The type of the input tensor.
+   :param a: The tensor to handle.
+   :returns: The vector norm of the tensor.

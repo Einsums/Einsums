@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.khatri_rao:
+
+==================================
+einsums::compute_graph::khatri_rao
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/KhatriRao.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename AType, typename BType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> Tensor<typename AType::ValueType, 2> khatri_rao(std::string_view a_indices, const AType &A, std::string_view b_indices, const BType &B)
+
+   The Khatri-Rao product of ``A`` and ``B``, as a matrix.
+
+   The indices the two operands share are matched, and every other index is an outer product:
+   :math:`R(a, b, c) = A(a, c)\,B(b, c)` for the indices :math:`a` only ``A`` names, :math:`b` only
+   ``B`` names, and :math:`c` both name. The result is that tensor as a matrix: its rows run over
+   :math:`(a, b)` and its columns over :math:`c`, each with its first index varying fastest.
+   With one shared index this is the column-wise Kronecker product.
+
+   The index lists follow the grammar of an einsum operand: ``"ir"`` names two axes, one per
+   character, and ``"mu,r"`` names two with a comma between them.
+
+   .. code-block:: text
+
+      auto KR = cg::khatri_rao("ir", A, "mr", B);  // A is I x R, B is M x R; KR is (I * M) x R
+
+   .. versionadded:: 2.0.0
+
+   :throws std::invalid_argument: when an index list does not parse or names an axis twice.
+   :throws std::logic_error: during graph capture, where a returning form cannot be recorded.
+   :throws RankError: when an index list does not name every axis of its operand.
+   :throws DimensionError: when a shared index has different extents in ``A`` and ``B``.

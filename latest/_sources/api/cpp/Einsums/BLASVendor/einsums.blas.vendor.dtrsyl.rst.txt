@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.dtrsyl:
+
+=============================
+einsums::blas::vendor::dtrsyl
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t dtrsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const double *a, int_t lda, const double *b, int_t ldb, double *c, int_t ldc, double *scale)
+
+   See ``strsyl``.

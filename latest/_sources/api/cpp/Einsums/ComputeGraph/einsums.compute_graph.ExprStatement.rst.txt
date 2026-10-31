@@ -1,0 +1,99 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExprStatement:
+
+=====================================
+einsums::compute_graph::ExprStatement
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExprStatement
+
+   One assignment of the raised region: a target, and the value put in it.
+
+   A region raises to a SEQUENCE of these rather than to one expression, because a
+   region has as many outputs as its escape analysis says it does and because a
+   temporary the rewrite chooses not to dissolve has to stay a statement.
+
+
+   .. cpp:member:: TensorId target
+
+      Where the value lands. Left at its default on a GROUPED statement, whose
+      destination is a list; read ``targets`` and gate on ``family``.
+
+
+   .. cpp:member:: std::vector<TensorId> targets
+
+      The destination member list of a GROUPED statement, in member order.
+      Empty on an ordinary statement.
+
+
+   .. cpp:member:: FamilyId family
+
+      The family this statement's value is batched over, or ``invalid_family``.
+
+
+   .. cpp:member:: std::string target_name
+
+      The target's name, for dumps.
+
+
+   .. cpp:member:: std::vector<ExprIndex> target_indices
+
+      The target's free indices.
+
+
+   .. cpp:member:: PrefactorScalar target_prefactor
+
+      The destination prefactor: zero overwrites, anything else accumulates.
+      Carried algebraically because it is semantics, not an implementation
+      detail: a rewrite that turned an accumulation into an overwrite would
+      silently drop whatever else wrote the target.
+
+
+   .. cpp:member:: TermId value
+
+      The value, by arena index.
+
+
+   .. cpp:member:: std::vector<PermutationOperator> operators
+
+      The permutation operators applied to the value before it lands: ``C = beta C + P(value)``.
+
+      They act on the target's letters, so they belong to the statement rather than to any term.
+      Re-bracketing the value leaves them where they are, while substituting this statement into
+      another statement's product would move them onto one factor of it, where they mean
+      something else; a rewrite must not inline a statement that carries any. On a permute the
+      descriptor carries the same list, and lowering refuses a statement where the two disagree.
+      Only a client whose ``RegionOptions::understood`` admits ``NodeFeature::PermutationOperators`` ever sees a nonempty one.
+
+
+   .. cpp:member:: NodeId origin
+
+      The node this statement was raised from. Diagnostics only; lowering does
+      NOT consult it, see the file note.
+
+
+   .. cpp:member:: OpKind origin_kind
+
+      The node's kind at raise time, for reports.
+
+
+   .. cpp:member:: std::string origin_label
+
+      The origin node's label, carried through a lowering so a report reads the
+      same before and after an identity round-trip. A label names the arithmetic
+      for a person and is not part of it, so carrying one is not the node reuse
+      the file note rules out; a pass that genuinely changes what a statement
+      computes should set its own.

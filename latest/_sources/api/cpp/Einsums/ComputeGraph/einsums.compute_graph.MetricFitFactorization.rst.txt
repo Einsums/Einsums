@@ -1,0 +1,126 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.MetricFitFactorization:
+
+==============================================
+einsums::compute_graph::MetricFitFactorization
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/MetricFitFactorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: MetricFitFactorization : public FactorizationProvider
+
+   Offer a four-index tensor as a metric-fitted product of one three-index factor.
+
+   .. seealso::
+
+      MetricFitFactorization.hpp for the mathematics and for what chemistry calls it
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: MetricFitFactorization(std::string tag, RuntimeTensorView<double> three_index, RuntimeTensorView<double> metric, double bound, double drop_threshold, std::string name)
+
+      Construct the provider.
+
+      .. note::
+
+         The two tensors are taken as ``RuntimeTensorView``, which any dense rank-3 and
+         rank-2 double tensor converts to, ``Tensor<double, N>`` and
+         ``RuntimeTensor<double>`` alike. That is what lets a Python caller register this
+         provider at all, since the bindings carry runtime-rank tensors and nothing else.
+         A view also holds a reference to the storage it names.
+
+      :param tag: The provenance tag this claims, e.g. ``"eri"``.
+      :param three_index: ``R[P,m,n]``. Must outlive the provider and every graph it factorizes, because the fitting reads it on every bind.
+      :param metric: ``J[P,Q]``, symmetric and positive semi-definite. Must outlive the same.
+      :param bound: The relative error the caller asserts this fit has. Required, because nothing here can measure it; see the file note.
+      :param drop_threshold: Auxiliary directions whose metric eigenvalue does not exceed this are dropped from the fit and counted; see ``default_drop_threshold`` and the file note on why the comparison is absolute. Zero reproduces the bare ``x``>0 guard.
+      :param name: The provider's name, which the approximation record and the report carry.
+      :throws std::invalid_argument: When ``drop_threshold`` is negative or not finite. A negative one reads as "keep more than everything" and would mean nothing; the kernel floors it at zero anyway, and silently running at a threshold the caller did not ask for is the failure this whole parameter exists to prevent.
+
+
+   .. cpp:function:: MetricFitFactorization(std::string tag, const RuntimeTensor<double> &three_index, const RuntimeTensor<double> &metric, double bound, double drop_threshold, std::string name)
+
+      The same, taking runtime-rank tensors. This is the overload Python gets.
+
+      A view converts from a ``RuntimeTensor`` in C++, carrying its name, but the bindings
+      will not make that conversion on their own, so the type a Python caller actually holds
+      needs an overload of its own.
+
+      .. note::
+
+         The drop-threshold default is spelled with its class qualifier because the
+         binding generator copies a default argument through verbatim, and an unqualified
+         class-scope constant does not resolve where the generated code spells it.
+
+
+   .. cpp:function:: MetricFitFactorization(std::string tag, const Tensor<double, 3> &three_index, const Tensor<double, 2> &metric, double bound, double drop_threshold, std::string name)
+
+      The same, taking compile-time-rank tensors.
+
+      Kept as its own overload rather than left to the implicit conversion, because that
+      conversion does not carry the NAME: a view built from a ``Tensor<double, N>`` is
+      anonymous, the fitting captures it as an interface tensor, and a manifest binds by
+      name, so two anonymous operands collide and the graph stops being saveable. This
+      overload names the views after the tensors it was handed.
+
+
+   .. cpp:function:: std::string name() const override
+
+      See ``FactorizationProvider::name``.
+
+
+   .. cpp:function:: std::string tag() const override
+
+      See ``FactorizationProvider::tag``.
+
+
+   .. cpp:function:: expected<FactorizationPlan, std::string> propose(const Graph &graph, TensorId tensor) const override
+
+      Offer the fitted split, or say why this tensor is not one.
+
+      :param graph: The graph holding ``tensor``.
+      :param tensor: The tagged tensor.
+      :returns: The plan, or the reason there is not one: a rank other than four, extents that do not match the three-index tensor's, or a metric that is not square over the auxiliary index.
+
+
+   .. cpp:function:: double drop_threshold() const noexcept
+
+      The threshold below which this provider drops an auxiliary direction.
+
+      :returns: The number handed to the constructor, or ``default_drop_threshold``.
+
+
+   .. cpp:function:: static std::string dropped_param_name(const std::string &provider, const std::string &tensor)
+
+      The parameter a fitted graph reports its dropped auxiliary directions under.
+
+      A function rather than a documented convention, so a caller reads the name from the same
+      place the graph writes it. Zero means the metric was well conditioned and the fit kept
+      every direction the caller supplied; anything else is accuracy lost in a way the asserted
+      bound does not describe.
+
+      :param provider: The provider's ``name``.
+      :param tensor: The tagged tensor's name.
+      :returns: The key to read out of the graph's parameter table after an execute.
+
+
+   .. cpp:member:: static constexpr double default_drop_threshold
+
+      The drop threshold a caller who states none gets.
+
+      An eigenvalue of a Coulomb-like metric in atomic units is ``O(1e-3)`` to ``O(1e3)``, so
+      ``1e-10`` is far below anything a well-conditioned auxiliary set produces and far above
+      the noise a linearly dependent one leaves behind. It is the magnitude the conventional
+      relative cutoff uses, applied absolutely; see the file note on the difference.

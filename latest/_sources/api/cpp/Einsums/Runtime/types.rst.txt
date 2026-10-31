@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Runtime_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/Runtime/ShutdownFunction.hpp``, ``Einsums/Runtime/StartupFunction.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:type:: ShutdownFunctionType
+
+   The type of a function which is registered to be executed as a
+   shutdown or pre-shutdown function.
+
+   .. versionadded:: 1.0.0
+
+
+.. cpp:type:: StartupFunctionType
+
+   The type of a function which is registered to be executed as a startup
+   or pre-startup function.

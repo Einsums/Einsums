@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Coding Style &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributors/style';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/contributors/style.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documenting the Code" href="documenting.html" />
+    <link rel="prev" title="Developer Guide" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../libs/overview.html">Library Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Coding Style</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="coding-style">
+<span id="code-style"></span><h1>Coding Style<a class="headerlink" href="#coding-style" title="Link to this heading">#</a></h1>
+<p>When contributing to the Einsums code base, we want to make sure our code fits to certain guidelines.
+The main purpose of these guidelines is to get contributors to think more deeply about their
+code, and to provide a single style to make our code more consistent to read. All files should begin
+with the following statement.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">----------------------------------------------------------------------------------------------</span>
+<span class="w"> </span><span class="n">Copyright</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">Einsums</span><span class="w"> </span><span class="n">Developers</span><span class="p">.</span><span class="w"> </span><span class="n">All</span><span class="w"> </span><span class="n">rights</span><span class="w"> </span><span class="n">reserved</span><span class="p">.</span>
+<span class="w"> </span><span class="n">Licensed</span><span class="w"> </span><span class="n">under</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">MIT</span><span class="w"> </span><span class="n">License</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">LICENSE</span><span class="p">.</span><span class="n">txt</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">license</span><span class="w"> </span><span class="n">information</span><span class="p">.</span>
+<span class="o">----------------------------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<section id="c-style">
+<h2>C++ Style<a class="headerlink" href="#c-style" title="Link to this heading">#</a></h2>
+<p>To make code formatting easier, we have provided two files, <code class="docutils literal notranslate"><span class="pre">.clang-tidy</span></code> and <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code>.
+These files can be used with the <code class="docutils literal notranslate"><span class="pre">clang-tidy</span></code> package to format C++ code, as well as to hint at
+possible errors in your code. The repository also ships a <code class="docutils literal notranslate"><span class="pre">.clangd</span></code> that points clangd at
+the compilation database in <code class="docutils literal notranslate"><span class="pre">build/</span></code>, so clangd sees the real C++20 flags. If clangd warns about
+C++20 features, configure <code class="docutils literal notranslate"><span class="pre">build/</span></code> with <code class="docutils literal notranslate"><span class="pre">-DCMAKE_EXPORT_COMPILE_COMMANDS=ON</span></code> rather than
+replacing that file.</p>
+<section id="coding-conventions">
+<h3>Coding Conventions<a class="headerlink" href="#coding-conventions" title="Link to this heading">#</a></h3>
+<section id="names">
+<h4>Names<a class="headerlink" href="#names" title="Link to this heading">#</a></h4>
+<p>Names should follow these conventions.</p>
+<ul class="simple">
+<li><p>Types, including classes, structs, enums, and typedefs should be in <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code>.
+This means that every word begins with a capital letter, and words are concatenated
+without any extra symbols. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">GPUView</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">DeviceTensorView</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor::ValueType</span></code></p></li>
+</ul>
+</li>
+<li><p>Concepts, requirements, and compile-time boolean statements underlying those concepts and requirements
+should also be in <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code>. Also, requirements and boolean statements should begin
+with <code class="docutils literal notranslate"><span class="pre">Is</span></code> and end in <code class="docutils literal notranslate"><span class="pre">V</span></code>, standing for “value”. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TensorConcept</span></code> is a concept.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">IsTensorV</span></code> is a requirement or compile-time boolean statement.</p></li>
+</ul>
+</li>
+<li><p>Namespaces should be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>, where every word is lower case, and each word is
+separated by underscores. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsums::tensor_algebra</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsums::tensor_props</span></code></p></li>
+</ul>
+</li>
+<li><p>Functions and methods should be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> as well. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">einsum(...)</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A.full_view_of_underlying()</span></code></p></li>
+</ul>
+</li>
+<li><p>Private and protected properties in a class should begin in a single underscore. However,
+some older code may have them end in a single underscore instead. As we work on the code,
+we will bring these outliers into agreement with this style. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">this-&gt;dims_</span></code>: Discouraged for consistency.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">this-&gt;_dims</span></code>: Preferred.</p></li>
+</ul>
+</li>
+<li><p>Variables and parameters should usually be in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>. However, to be consistent with
+mathematical notation, tensor variables and parameters are usually capitalized. This includes
+when the name of a tensor is referenced in a variable name. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>: <code class="docutils literal notranslate"><span class="pre">name</span></code> does not refer to a tensor, so it is in snake case.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TensorType</span> <span class="pre">const</span> <span class="pre">&amp;A</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, so it is capitalized.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::tuple&lt;AIndices...&gt;</span> <span class="pre">const</span> <span class="pre">&amp;A_indices</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> is a tensor, but the variable is not.
+This means that the “A” is capitalized, but the rest of the variable is in snake case.</p></li>
+</ul>
+</li>
+<li><p>Macros and enum members should be in <code class="docutils literal notranslate"><span class="pre">ALL_CAPS</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="order-of-things">
+<h3>Order of Things<a class="headerlink" href="#order-of-things" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cv</span></code> keywords should never come before the pointer or reference type they modify. As an example,</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">const</span> <span class="pre">&amp;name</span></code>, not <code class="code docutils literal notranslate"><span class="pre">const</span> <span class="pre">std::string</span> <span class="pre">&amp;name</span></code>.</p></li>
+<li><p>The same goes for values: write <code class="code docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">const</span> <span class="pre">size</span></code>. <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code> sets
+<code class="docutils literal notranslate"><span class="pre">QualifierAlignment:</span> <span class="pre">Right</span></code>, so the formatter rewrites <code class="code docutils literal notranslate"><span class="pre">const</span> <span class="pre">size_t</span> <span class="pre">size</span></code> to that form.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">constexpr</span></code> goes before the type, so <code class="code docutils literal notranslate"><span class="pre">constexpr</span> <span class="pre">size_t</span> <span class="pre">rank</span></code> is preferred.</p></li>
+</ul>
+</li>
+<li><p>When writing a class, the preferred order of blocks is public, then protected, then private.</p></li>
+<li><p>Place simple return types in front of function names. Place complicated return types after
+function names. Using the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword can sometimes mess with Doxygen, so this is the
+compromise we have to make. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">size_t</span> <span class="pre">size()</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;create_tensor()</span></code> or <code class="code docutils literal notranslate"><span class="pre">auto</span> <span class="pre">create_tensor()</span> <span class="pre">-&gt;</span> <span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span> <span class="pre">&amp;</span></code>
+are both alright. Use your best judgement here.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">auto</span> <span class="pre">common_initialization(TensorType&lt;T,</span> <span class="pre">OtherRank&gt;</span> <span class="pre">const</span> <span class="pre">&amp;other,</span> <span class="pre">Args</span> <span class="pre">&amp;&amp;...args)</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;std::is_base_of_v&lt;::einsums::tensor_base::Tensor&lt;T,</span> <span class="pre">OtherRank&gt;,</span> <span class="pre">TensorType&lt;T,</span> <span class="pre">OtherRank&gt;&gt;&gt;</span></code>
+This is a complicated return type. Use the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword for readability.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="miscellaneous">
+<h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Indents are four spaces. Do not use tabs.</p></li>
+<li><p>Lines should be at most 140 columns long.</p></li>
+<li><p>Avoid using the function call operator on a tensor inside a large loop. This is slow. Here are some options, in order of what should be tried.</p>
+<ul>
+<li><p>Using <code class="code docutils literal notranslate"><span class="pre">tensor.data()[index]</span></code> to directly index a tensor.
+This is fast, but can only be used on certain kinds of tensors, so be careful. It can be used when iterating over
+a tensor’s elements in order. If you are skipping around, it is better to use something else for better readability.</p></li>
+<li><p>Using <a class="reference internal" href="../api/cpp/Einsums/TensorBase/einsums.sentinel_to_sentinels.html#_CPPv4I_6size_t0DpEIQeqrmsZ11StridesIndsL2EL0EEN7einsums21sentinel_to_sentinelsEv6size_tPK6size_tDpRR11StridesInds" title="einsums::sentinel_to_sentinels"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_sentinels</span></code></a> and <code class="code docutils literal notranslate"><span class="pre">tensor.data()[index]</span></code>. This should be faster than subscripting tensors,
+but be careful, since it can only be used on certain kinds of tensors. As with the previous method, it can be used when iterating
+over a tensor’s elements in order. It is still readable even when skipping around, but it will only work on <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Tensor</span></code></a>s
+and <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.TensorView.html#_CPPv4I0_6size_tEN7einsums10TensorViewE" title="einsums::TensorView"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">TensorView</span></code></a>s.</p></li>
+<li><p>Using <a class="reference internal" href="../api/cpp/Einsums/TensorBase/einsums.sentinel_to_indices.html#_CPPv4I_6size_tEN7einsums19sentinel_to_indicesEv6size_tPK6size_tP6size_t" title="einsums::sentinel_to_indices"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">sentinel_to_indices</span></code></a> and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">subscript_tensor</span></code>. This will make the choice between
+the <code class="code docutils literal notranslate"><span class="pre">subscript</span></code> method and the function call syntax, using the <code class="code docutils literal notranslate"><span class="pre">subscript</span></code> method as the primary
+and the function call syntax as a fallback. This is the most general way, and it should be preferred unless
+you can ensure specificity in the kinds of tensors you are being passed.</p></li>
+</ul>
+</li>
+</ul>
+<p>Some constructions need to have serious thought before they are used. Before any code
+with these constructions is accepted, their use will need to be justified.</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">goto</span></code> statements.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">do</span> <span class="pre">{</span> <span class="pre">}</span> <span class="pre">while(false);</span></code> blocks outside of macros. They are fine within macros,
+since their use is considered idiomatic to C/C++ for making a macro require a
+semicolon after the closing parenthesis.</p></li>
+<li><p>Inline assembly. One of the goals of Einsums is portability, and this goes against that goal. The
+few existing uses (a <code class="docutils literal notranslate"><span class="pre">cpuid</span></code> probe in <code class="docutils literal notranslate"><span class="pre">ComputeGraph/src/CostModel.cpp</span></code> and a <code class="docutils literal notranslate"><span class="pre">yield</span></code> hint in
+<code class="docutils literal notranslate"><span class="pre">PackedGemm/PackedGemm.hpp</span></code>) are guarded to the architectures they target.</p></li>
+<li><p>Anything considered to be undefined behavior. Different compilers and systems may have different
+behavior, so it is best to not use this. Some examples of undefined behavior includes the following.</p>
+<ul>
+<li><p>Anything that uses the binary representation of floating point numbers. IEEE 754 states
+that this is only an exchange format. Modifying the underlying binary representation
+is considered to be undefined behavior.</p></li>
+<li><p>Assuming the size of variables. For instance, the presence and size of <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> is highly system dependent.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="python-style">
+<h2>Python Style<a class="headerlink" href="#python-style" title="Link to this heading">#</a></h2>
+<p>The approach to Python style is to generally follow the standard Python style guidelines. Some things to keep in mind.</p>
+<ul class="simple">
+<li><p>Try to use type annotations when writing Python code. Some examples.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name)</span></code>: Bad.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">set_name(name:</span> <span class="pre">str)</span></code>: Good.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param)</span></code>: Fine. <code class="docutils literal notranslate"><span class="pre">param</span></code> can be pretty much any type. <code class="code docutils literal notranslate"><span class="pre">def</span> <span class="pre">iterate_elements(param:</span> <span class="pre">Any)</span></code> would be preferred,
+but brevity is sometimes better than verbosity.</p></li>
+</ul>
+</li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">PascalCase</span></code> for type names.</p></li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> for functions, methods, and variables.</p></li>
+<li><p>However, the same considerations for tensor variables apply as in C++. Tensor variables are in <code class="docutils literal notranslate"><span class="pre">UPPER_CASE</span></code>,
+and any reference to a tensor variable in a non-tensor variable should match the case of the tensor.</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A</span></code>: Tensor variable.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">A_indices</span></code>: References a tensor variable, but is not a tensor variable.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="cmake-style">
+<h2>CMake Style<a class="headerlink" href="#cmake-style" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">.cmake-format.py</span></code> file is provided to ensure consist formatting of CMake files. You may need to
+install the package <code class="docutils literal notranslate"><span class="pre">cmake-format</span></code> to use it.</p>
+</section>
+</section>
+<section id="using-pre-commit-with-einsums">
+<h1>Using pre-commit with Einsums<a class="headerlink" href="#using-pre-commit-with-einsums" title="Link to this heading">#</a></h1>
+<p>Einsums uses <a class="reference external" href="https://pre-commit.com/">pre-commit</a> to enforce consistent code style, license headers, and formatting standards for C++, CMake, and Python files. This helps maintain code quality and reduces stylistic differences across contributors.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>First, install the <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> Python package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+<p>Alternatively, you may use <code class="docutils literal notranslate"><span class="pre">conda</span></code> or <code class="docutils literal notranslate"><span class="pre">pipx</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pre-commit
+<span class="c1"># or</span>
+pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</section>
+<section id="enabling-pre-commit-hooks">
+<h2>Enabling pre-commit Hooks<a class="headerlink" href="#enabling-pre-commit-hooks" title="Link to this heading">#</a></h2>
+<p>Once installed, enable the hooks in your local clone of the Einsums repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/Einsums
+pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This installs Git hook scripts so that <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> runs automatically when you commit.</p>
+<p>To manually run checks on all files (useful before a PR):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</pre></div>
+</div>
+</section>
+<section id="hook-summary">
+<h2>Hook Summary<a class="headerlink" href="#hook-summary" title="Link to this heading">#</a></h2>
+<p>The following hooks are configured in <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>:</p>
+<section id="c-formatting">
+<h3>C++ formatting<a class="headerlink" href="#c-formatting" title="Link to this heading">#</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">Hook<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">clang-format</span></code> (<a class="reference external" href="https://github.com/pre-commit/mirrors-clang-format">v22.1.8</a>)</p>
+</dd>
+<dt class="field-even">Files checked<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">.hpp</span></code></p>
+</dd>
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Uses the project’s <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code> style.</p>
+</dd>
+<dt class="field-even">Purpose<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ensures consistent formatting of C++ source and header files.</p>
+</dd>
+</dl>
+</section>
+<section id="cmake-formatting">
+<h3>CMake formatting<a class="headerlink" href="#cmake-formatting" title="Link to this heading">#</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">Hook<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">cmake-format</span></code> (<a class="reference external" href="https://github.com/cheshirekow/cmake-format-precommit">v0.6.10</a>)</p>
+</dd>
+<dt class="field-even">Files checked<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code></p>
+</dd>
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Applies consistent formatting to all CMake files.</p>
+</dd>
+</dl>
+</section>
+<section id="license-header-checks">
+<h3>License header checks<a class="headerlink" href="#license-header-checks" title="Link to this heading">#</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">Hook<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">insert-license</span></code> (<a class="reference external" href="https://github.com/Lucas-C/pre-commit-hooks">v1.5.4</a>)</p>
+</dd>
+<dt class="field-even">Files checked<span class="colon">:</span></dt>
+<dd class="field-even"><p>C++ <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">.hpp</span></code> with C++-style comments, CMake <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code> with hash comments, and Python <code class="docutils literal notranslate"><span class="pre">.py</span></code> with hash comments.</p>
+</dd>
+<dt class="field-odd">License template<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">devtools/LicenseHeader.txt</span></code></p>
+</dd>
+<dt class="field-even">Purpose<span class="colon">:</span></dt>
+<dd class="field-even"><p>Verifies that all relevant files begin with a consistent license header.</p>
+</dd>
+</dl>
+</section>
+<section id="cmake-audit">
+<h3>CMake audit<a class="headerlink" href="#cmake-audit" title="Link to this heading">#</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">Hook<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">cmake-audit</span></code> (local, <code class="docutils literal notranslate"><span class="pre">tools/cmake-audit/cmake_audit.py</span></code>)</p>
+</dd>
+<dt class="field-even">Files checked<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code></p>
+</dd>
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Flags undefined-variable typos in CMake files.</p>
+</dd>
+</dl>
+</section>
+<section id="repository-wide-checks">
+<h3>Repository-wide checks<a class="headerlink" href="#repository-wide-checks" title="Link to this heading">#</a></h3>
+<p>These local hooks scan every tracked file on every run, whatever was staged:</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">einsums-namespace-macros</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">devtools/check_namespace_macros.py</span></code> - einsums namespaces must be opened with <code class="docutils literal notranslate"><span class="pre">EINSUMS_NAMESPACE_BEGIN</span></code>.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">einsums-version-tags</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">devtools/check_version_tags.py</span></code> - version tags must not name an unreleased version.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">einsums-have-macros</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">devtools/check_have_macros.py</span></code> - every tested <code class="docutils literal notranslate"><span class="pre">EINSUMS_HAVE_*</span></code> macro must be defined somewhere.</p>
+</dd>
+</dl>
+</section>
+<section id="github-actions">
+<h3>GitHub Actions<a class="headerlink" href="#github-actions" title="Link to this heading">#</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">Hook<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">actionlint</span></code> (<a class="reference external" href="https://github.com/rhysd/actionlint">v1.7.12</a>)</p>
+</dd>
+<dt class="field-even">Purpose<span class="colon">:</span></dt>
+<dd class="field-even"><p>Lints the workflows under <code class="docutils literal notranslate"><span class="pre">.github/workflows/</span></code>, and runs shellcheck over their <code class="docutils literal notranslate"><span class="pre">run:</span></code> scripts when shellcheck is on <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+</dd>
+</dl>
+<p>The file-based hooks (formatting, license, and CMake audit) exclude build directories such as <code class="docutils literal notranslate"><span class="pre">build/</span></code> and <code class="docutils literal notranslate"><span class="pre">cmake-build-*</span></code>.</p>
+</section>
+</section>
+<section id="updating-hooks">
+<h2>Updating Hooks<a class="headerlink" href="#updating-hooks" title="Link to this heading">#</a></h2>
+<p>To update all hooks to their latest compatible versions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>autoupdate
+</pre></div>
+</div>
+<p>To update a specific hook:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>autoupdate<span class="w"> </span>--repo<span class="w"> </span>&lt;repo-url&gt;
+</pre></div>
+</div>
+<p>If you encounter caching or hook resolution issues, you can clear the cache:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>clean
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<p>Common tasks:</p>
+<ul>
+<li><p>Run a specific hook manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>clang-format<span class="w"> </span>--all-files
+</pre></div>
+</div>
+</li>
+<li><p>Temporarily skip hooks, which is not recommended unless necessary:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>--no-verify
+</pre></div>
+</div>
+</li>
+<li><p>Reinstall hooks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>uninstall
+pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h2>
+<p>All contributors to Einsums are expected to run <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> before pushing code or submitting a pull request.</p>
+<p>The typical workflow is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Apply pre-commit fixes"</span>
+</pre></div>
+</div>
+<p>This minimizes unnecessary review cycles and helps maintain code consistency.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Developer Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="documenting.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Documenting the Code</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Coding Style</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-style">C++ Style</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-conventions">Coding Conventions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#names">Names</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#order-of-things">Order of Things</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-style">Python Style</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-style">CMake Style</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pre-commit-with-einsums">Using pre-commit with Einsums</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-pre-commit-hooks">Enabling pre-commit Hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hook-summary">Hook Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-formatting">C++ formatting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-formatting">CMake formatting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#license-header-checks">License header checks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-audit">CMake audit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#repository-wide-checks">Repository-wide checks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#github-actions">GitHub Actions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-hooks">Updating Hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

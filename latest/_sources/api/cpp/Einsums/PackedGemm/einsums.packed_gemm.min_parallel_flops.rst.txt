@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.min_parallel_flops:
+
+========================================
+einsums::packed_gemm::min_parallel_flops
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: int64_t min_parallel_flops()
+
+   The flop count from which a contraction's loops run on a team.
+
+   ``CpuConfig::min_parallel_flops``, unless a measurement has set one for its duration through
+   ``set_min_parallel_flops_for_tuning``: the configuration is computed once per process, and the
+   tune has to try thresholds within one.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The threshold in flops.

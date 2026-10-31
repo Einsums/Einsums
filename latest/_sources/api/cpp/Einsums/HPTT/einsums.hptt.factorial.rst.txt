@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.factorial:
+
+========================
+einsums::hptt::factorial
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Utils.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: std::uint64_t factorial(std::uint8_t n)
+
+   Calculate the factorial of a number. Can only take factorials of numbers up to but not
+   including 21.
+
+   :param n: The number to take the factorial of.
+   :throws std::overflow_error: Throws this if the result would be too high to represent.
+   :returns: The factorial of that number.

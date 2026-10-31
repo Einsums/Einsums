@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.align_up:
+
+============================
+einsums::tensor_io::align_up
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Format.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: constexpr uint64_t align_up(uint64_t offset, uint64_t alignment)
+
+   Round up to alignment boundary.

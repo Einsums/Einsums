@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TensorViewConcept:
+
+==========================
+einsums::TensorViewConcept
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D> TensorViewConcept
+
+   Checks to see if the tensor is a view of another.
+
+   Checks whether the tensor inherits TensorViewBaseNoExtra.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor type to check.

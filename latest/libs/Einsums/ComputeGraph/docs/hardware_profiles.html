@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Hardware Profiles &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/hardware_profiles';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/hardware_profiles.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Optimization Passes" href="optimization_passes.html" />
+    <link rel="prev" title="Distributed Computing" href="distributed.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Hardware Profiles</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="hardware-profiles">
+<span id="computegraph-hardware-profiles"></span><h1>Hardware Profiles<a class="headerlink" href="#hardware-profiles" title="Link to this heading">#</a></h1>
+<p>Passes that must choose between alternatives - <code class="docutils literal notranslate"><span class="pre">ContractionPlanning</span></code> and
+<code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code> among them - estimate execution time through a <code class="docutils literal notranslate"><span class="pre">CostModel</span></code>.
+That model is only as good as the machine measurements behind it, and this page
+covers where those measurements come from: the built-in table, and the
+hardware profile that <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures.</p>
+<section id="profile-structure">
+<h2>Profile Structure<a class="headerlink" href="#profile-structure" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">CostModel</span></code> holds two <code class="docutils literal notranslate"><span class="pre">DeviceProfile</span></code> entries (CPU and GPU). An abridged
+view (the full struct is in <code class="docutils literal notranslate"><span class="pre">CostModel.hpp</span></code>):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">DeviceProfile</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">              </span><span class="c1">// "Apple M4 Pro", "NVIDIA A100"</span>
+<span class="w">    </span><span class="n">DeviceType</span><span class="w">  </span><span class="n">device_type</span><span class="p">;</span><span class="w">       </span><span class="c1">// CPU or GPU</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">peak_gflops_fp64</span><span class="p">;</span><span class="w">       </span><span class="c1">// Peak FP64 throughput</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">peak_gflops_fp32</span><span class="p">;</span><span class="w">       </span><span class="c1">// Peak FP32 throughput</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">mem_bandwidth_gbps</span><span class="p">;</span><span class="w">     </span><span class="c1">// Main memory bandwidth</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">device_bandwidth_gbps</span><span class="p">;</span><span class="w">  </span><span class="c1">// GPU device memory bandwidth</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">pcie_bandwidth_gbps</span><span class="p">;</span><span class="w">    </span><span class="c1">// Host↔Device transfer bandwidth</span>
+<span class="w">    </span><span class="c1">// Network (for distributed):</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">inter_node_bandwidth_gbps</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">inter_node_latency_us</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// GEMM efficiency table, per engine:</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GemmEfficiencyPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">gemm_efficiency</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Extra cost per element by contiguous run length:</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">RunCostPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">scatter_cost</span><span class="p">;</span><span class="w">  </span><span class="c1">// writing C through the scatter</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">RunCostPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pack_cost</span><span class="p">;</span><span class="w">     </span><span class="c1">// gathering an operand into its panel</span>
+<span class="w">    </span><span class="c1">// Cache hierarchy:</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CacheLevel</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caches</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The GEMM efficiency table maps matrix shapes to measured GFLOPS, each point tagged with the engine it was measured on: <code class="docutils literal notranslate"><span class="pre">routed</span></code>, whatever the string einsum hands a flat contraction to, or <code class="docutils literal notranslate"><span class="pre">packed</span></code>, PackedGemm’s tile kernel.
+Rates between points are interpolated in log space: trilinearly over a grid of shapes, or by size along a table of cubes, which knows nothing of shape.</p>
+<p>A GEMM’s M, N and K are not all a contraction costs.
+A contraction whose C interleaves its operands’ indices is built in a scratch block and scattered into place, at a cost per element set by how long C’s contiguous runs are, and an operand split by a stride break is gathered into its panel the same way.
+<code class="docutils literal notranslate"><span class="pre">estimate_contraction_time_us</span></code> prices a contraction from <code class="docutils literal notranslate"><span class="pre">packed_gemm::describe_packed_contraction</span></code>, the plan PackedGemm would run: a call per split-K share, the arithmetic at the engine’s rate but never faster than the operands and C can stream, the scatter’s and the packers’ extra costs at their run lengths, and split-K’s buffers.
+AxisTiling prices each tile of a loop this way, so a small block pays for its short runs and its repeated packing rather than only its arithmetic.</p>
+</section>
+<section id="auto-detection">
+<h2>Auto-Detection<a class="headerlink" href="#auto-detection" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CostModel::detect_default()</span></code> matches the current hardware against
+a built-in database of 25+ device profiles:</p>
+<p><strong>CPU profiles</strong>: Apple M1/M2/M3/M4 (Pro/Max), Intel Skylake/Ice Lake/Sapphire
+Rapids, AMD EPYC Rome/Milan/Genoa; an unmatched CPU falls back to a single
+Generic CPU profile</p>
+<p><strong>GPU profiles</strong>: NVIDIA V100/A100/H100/RTX 3090/RTX 4090, AMD MI250X/MI300X,
+Apple MPS</p>
+<p>Detection uses:</p>
+<ul class="simple">
+<li><p>macOS: <code class="docutils literal notranslate"><span class="pre">sysctlbyname(&quot;machdep.cpu.brand_string&quot;)</span></code></p></li>
+<li><p>other x86-64: CPUID brand string</p></li>
+<li><p>aarch64 Linux: implementer and part codes from <code class="docutils literal notranslate"><span class="pre">/proc/cpuinfo</span></code></p></li>
+<li><p>GPU: <code class="docutils literal notranslate"><span class="pre">gpu::device_name()</span></code> (cudaGetDeviceProperties / MTLDevice.name)</p></li>
+</ul>
+<p>The best match is selected by longest-substring-wins on the brand string.
+Cache sizes are detected at runtime and fill in any profile that carries none.</p>
+</section>
+<section id="cost-estimation">
+<h2>Cost Estimation<a class="headerlink" href="#cost-estimation" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CostModel</span><span class="o">::</span><span class="n">detect_default</span><span class="p">();</span>
+
+<span class="c1">// GEMM time with shape-dependent efficiency</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">estimate_gemm_time_us</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="n">Target</span><span class="o">::</span><span class="n">CPU</span><span class="p">);</span>
+
+<span class="c1">// Total time including memory traffic (roofline model)</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">estimate_total_gemm_time_us</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span><span class="w"> </span><span class="n">Target</span><span class="o">::</span><span class="n">GPU</span><span class="p">);</span>
+
+<span class="c1">// Host↔Device transfer</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">xfer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">estimate_transfer_time_us</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+
+<span class="c1">// Network communication</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">profile</span><span class="p">.</span><span class="n">estimate_allreduce_time_us</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="n">num_ranks</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="measuring-a-machine">
+<h2>Measuring a Machine<a class="headerlink" href="#measuring-a-machine" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures the machine it runs on and writes its hardware profile.
+The same code runs as <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">einsums.tune</span></code> and as the <code class="docutils literal notranslate"><span class="pre">einsums-tune</span></code>
+executable, which an installation without Python has:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>einsums<span class="w"> </span>tune<span class="w">                          </span><span class="c1"># this machine's profile, in the cache directory</span>
+einsums<span class="w"> </span>tune<span class="w"> </span>--output<span class="w"> </span>profile.json<span class="w">    </span><span class="c1"># somewhere else, to share or install for a site</span>
+einsums<span class="w"> </span>tune<span class="w"> </span>--show<span class="w">                   </span><span class="c1"># the profile in effect, and why one is not used</span>
+einsums<span class="w"> </span>tune<span class="w"> </span>--check<span class="w">                  </span><span class="c1"># exit 0 only when a current profile applies</span>
+einsums<span class="w"> </span>tune<span class="w"> </span>--import<span class="w"> </span>profile.json<span class="w">    </span><span class="c1"># adopt one measured on another machine of a kind</span>
+einsums<span class="w"> </span>tune<span class="w"> </span>--export<span class="w">                 </span><span class="c1"># the path of the profile in effect</span>
+</pre></div>
+</div>
+<p>An imported file is filed under the machine it describes, so on a cluster whose
+home directories are shared, a login node can import the compute nodes’
+profile and only the compute nodes use it.</p>
+<p>It measures GEMM rates on a grid of shapes, every M, N and K from a log-spaced range (default 16 to 2048 in 8 steps, set by <code class="docutils literal notranslate"><span class="pre">--min-size</span></code>, <code class="docutils literal notranslate"><span class="pre">--max-size</span></code> and <code class="docutils literal notranslate"><span class="pre">--num-points</span></code>) up to 2<sup>30</sup> multiply-adds, once through the string einsum and once through PackedGemm pinned to its tile kernel.
+Each extent is moved just below its power of two (508 rather than 512): a power-of-two leading dimension makes the packers’ reads collide in the cache, and PackedGemm runs 30 to 40% slower there than at the extents around it.
+It measures the scatter’s extra cost per element by timing the CCSD ladder’s tile <code class="docutils literal notranslate"><span class="pre">a,b,e,f</span> <span class="pre">&lt;-</span> <span class="pre">Q,a,e</span> <span class="pre">;</span> <span class="pre">Q,b,f</span></code> against the same contraction writing <code class="docutils literal notranslate"><span class="pre">a,e,b,f</span></code> in place, at runs from 4 to 1024, and the packers’ the same way with an operand split at runs from 2 to 32.
+It also measures copy and per-cache-level bandwidth, permute throughput, the string einsum’s call overhead, per-kernel thread-efficiency curves (skipped with <code class="docutils literal notranslate"><span class="pre">--no-thread-sweep</span></code>) and the OpenMP region cost at every team size.
+It starts from the built-in table rather than from an earlier profile, so nothing it does not measure is inherited from one.
+A profile written before the scatter and pack costs were measured keeps its own rates and takes the built-in table’s curves, with a warning to measure again.</p>
+<p>Then it measures the thresholds that decide between two routes and were set on
+one machine: the outer-product floor, the outer product’s GEMM-to-ger limit,
+the stream minimum, the stream’s elements per thread, and the parallel
+break-even rate. Each runs the decision’s own shape through <code class="docutils literal notranslate"><span class="pre">einsum</span></code> with the
+threshold forced to either extreme, checks that the two sides took different
+routes, and records where one overtakes the other; a probe that cannot separate
+its routes says so and writes nothing. <code class="docutils literal notranslate"><span class="pre">--quick</span></code> skips this part.</p>
+<p>Everything goes into one file, whose <code class="docutils literal notranslate"><span class="pre">cost_model</span></code> section is this page’s
+model, whose <code class="docutils literal notranslate"><span class="pre">options</span></code> section holds tuned option values, applied below the
+environment and the command line so anything a user sets still wins, and whose
+other sections belong to the Hardware module; see
+<a class="reference internal" href="../../Hardware/docs/index.html#modules-einsums-hardware"><span class="std std-ref">the hardware profile</span></a> for its layout and for
+when a profile applies. <code class="docutils literal notranslate"><span class="pre">CostModel::detect_default()</span></code> uses the profile in
+effect, so every cost-model pass in a default pass manager prices against it
+without any code naming a path. To use a particular file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:hardware:profile<span class="w"> </span>profile.json
+<span class="nv">EINSUMS_HARDWARE_PROFILE</span><span class="o">=</span>profile.json<span class="w"> </span>./my_program
+</pre></div>
+</div>
+<p>A profile that does not apply, or will not load, is a warning and a fall back to
+the built-in table rather than a failure: the profile shapes which optimization
+is chosen, never whether the answer is right.</p>
+<p>A model can also be handed to a pass directly. <code class="docutils literal notranslate"><span class="pre">CostModel::save_json</span></code> and
+<code class="docutils literal notranslate"><span class="pre">CostModel::load_json</span></code> write and read a model on its own:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CostModel</span><span class="o">::</span><span class="n">load_json</span><span class="p">(</span><span class="s">"model.json"</span><span class="p">);</span><span class="w">  </span><span class="c1">// expected&lt;CostModel, GraphError&gt;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">profile</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ContractionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">profile</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="shared-profile-in-create-default">
+<h2>Shared Profile in create_default()<a class="headerlink" href="#shared-profile-in-create-default" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PassManager::create_default()</span></code> detects hardware once and shares that one
+profile across every cost-model pass:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Internally:</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">cost_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CostModel</span><span class="o">::</span><span class="n">detect_default</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">TiledExpansion</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4096</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="n">Densify</span><span class="o">::</span><span class="n">Auto</span><span class="p">,</span><span class="w"> </span><span class="n">FuseTiles</span><span class="o">::</span><span class="n">Auto</span><span class="p">,</span><span class="w"> </span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">DistributiveFactoring</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">LayoutAssignment</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">ContractionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">GEMMBatching</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">StreamContractionFusion</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">passes</span><span class="o">::</span><span class="n">GPUPlacement</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cost_model</span><span class="p">);</span><span class="w">   </span><span class="c1">// GPU builds only</span>
+</pre></div>
+</div>
+<p>Sharing matters beyond saving a detection: these passes make interlocking
+decisions, and a densify-or-not choice priced against one profile while the
+batching gate is priced against another can leave the graph in a shape neither
+pass would have picked on its own.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="distributed.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Distributed Computing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="optimization_passes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Optimization Passes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profile-structure">Profile Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-detection">Auto-Detection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cost-estimation">Cost Estimation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measuring-a-machine">Measuring a Machine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-profile-in-create-default">Shared Profile in create_default()</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

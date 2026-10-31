@@ -1,0 +1,382 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Config_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/Config/Alias.hpp``, ``Einsums/Config/BranchHints.hpp``, ``Einsums/Config/CompilerSpecific.hpp``, ``Einsums/Config/Debug.hpp``, ``Einsums/Config/ExportDefinitions.hpp``, ``Einsums/Config/ForceInline.hpp``, ``Einsums/Config/Namespace.hpp``.
+
+.. c:macro:: ALIAS_TEMPLATE_FUNC(highLevelFunction, lowLevelFunction)
+
+   Creates an alias of a template function.
+
+   .. versionadded:: 1.0.0
+
+   :param highLevelFunction: The new name for the function.
+   :param lowLevelFunction: The old name for the function.
+
+
+.. c:macro:: EINSUMS_ALWAYS_INLINE
+
+   Tell the compiler to inline a function.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_BUILD_TYPE
+
+   Evaluates to ``debug`` if compiled in debug mode, ``release`` otherwise.
+
+   .. versionadded:: 1.0.1
+
+
+.. c:macro:: EINSUMS_CDECL
+
+   Mark a function as using the ``__cdecl`` calling convention.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_CLANG_VERSION
+
+   Returns the Clang version einsums is compiled with. Only set if compiled with
+   Clang.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_COMPUTE_CODE
+
+   Only available when Einsums was compiled with GPU capabilities. If not present, then there are no GPU capabilities.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_COMPUTE_DEVICE_CODE
+
+   Only available when Einsums was compiled with GPU capabilities and only during compilation for the graphics device.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_COMPUTE_HOST_CODE
+
+   Available whenever Einsums is not being compiled for the device. This means that it is defined when GPU capabilities
+   are turned off and when they are turned on during compilation for the host.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_CONSTANT
+
+   When compiled with GPU capabilities, this expands to ``__constant__`` . Otherwise, it expands to nothing.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_CUDA_VERSION
+
+   The version of CUDA used to compile Einsums.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DEVICE
+
+   When compiled with GPU capabilities, this expands to ``__device__`` . Otherwise, it expands to nothing.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DISABLE_WARNING(warningNumber)
+
+   Disables a specific warning. The behavior may differ between compilers.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
+
+   Disable warnings of deprecated functions, classes, variables, etc.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DISABLE_WARNING_POP
+
+   Ppp the current warning ignore state to revert the changes to the warning ignore rules.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DISABLE_WARNING_PUSH
+
+   Pushes the current warning ignore state so that ignore rules can be changed and then reverted.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
+
+   Disable warnings that a function that normally returns C's ``_Complex float`` or ``_Complex double`` is externed as
+   a function that returns C++'s ``std::complex<float>`` or ``std::complex<double>``.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_EXPERIMENTAL_EXPORT
+
+   Marks a class or function to be exported from EinsumsExperimental or imported if it is
+   consumed.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_EXPORT
+
+   Marks a class or function to be exported from Einsums or imported if it is
+   consumed.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_EXTERN_TEMPLATE_EXPORT
+
+   Marks an explicit instantiation *declaration* (``extern`` ``template`` ) as
+   exported or imported.
+
+   Not ``EINSUMS_EXPORT``: ``dllexport`` belongs on the definition, so only the exporting Windows
+   build drops the attribute here.
+
+   .. versionadded:: 2.0.0
+
+
+.. c:macro:: EINSUMS_FORCEINLINE
+
+   Marks a function to be forced inline.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_GCC_VERSION
+
+   Returns the GCC version einsums is compiled with. Only set if compiled with GCC.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_HAVE_ADDRESS_SANITIZER
+
+   Defined if Einsums was compiled with address sanitization (ASAN).
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_HAVE_THREAD_SANITIZER
+
+   Defined if Einsums was compiled with thread sanitization.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_HOST
+
+   When compiled with GPU capabilities, this expands to ``__host__`` . Otherwise, it expands to nothing.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_HOSTDEV
+
+   When compiled with GPU capabilities, this expands to ``__host__`` ``__device__`` . Otherwise, it expands to nothing.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_HOST_DEVICE
+
+   See ``EINSUMS_HOSTDEV``.
+
+
+.. c:macro:: EINSUMS_INTEL_VERSION
+
+   Returns the Intel Compiler version einsums is compiled with. Only set if
+   compiled with the Intel Compiler.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_LIKELY(expr)
+
+   Hint at the compiler that ``expr`` is likely to be true.
+
+   .. versionadded:: 1.0.0
+
+   :param expr: The expression to hint at.
+
+
+.. c:macro:: EINSUMS_MINGW
+
+   This macro is set if the compilation is with Mingw.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_MSVC
+
+   This macro is set if the compilation is with MSVC.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_NAMESPACE_BEGIN(...)
+
+   Open `einsums::inline <abi tag>`, optionally descending into a
+   sub-namespace path such as `compute_graph::passes`.
+
+
+.. c:macro:: EINSUMS_NAMESPACE_END(...)
+
+   Close a block opened by EINSUMS_NAMESPACE_BEGIN. Pass the same path.
+
+
+.. c:macro:: EINSUMS_NO_SANITIZE_ADDRESS
+
+   Marks a function to not be sanitized.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_NVCC_PRAGMA_HD_WARNING_DISABLE
+
+   Silences warnings about calling a host function from a device function, which is common when not using host/device specifiers.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_NVHPC_VERSION
+
+   Gives the version of the NVidia HPC compiler used to compile Einsums.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_CRITICAL
+
+   Indicates that the following block should only be executed by one thread at a time.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_FOR_NOWAIT
+
+   Tell the compiler that the following for-loop can be parallelized and it should not wait for threads to finish.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_PARALLEL
+
+   Tell the compiler that the following block should be done in parallel.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_PARALLEL_FOR
+
+   Tell the compiler that the following for-loop can be parallelized.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_PARALLEL_FOR_IF(cond)
+
+   Parallelize the following loop only when ``cond`` holds. See
+   ``EINSUMS_OMP_PARALLEL_FOR_SIMD_IF``.
+
+   .. versionadded:: 2.0.0
+
+
+.. c:macro:: EINSUMS_OMP_PARALLEL_FOR_SIMD
+
+   Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD.
+
+   .. versionadded:: 1.1.0
+
+
+.. c:macro:: EINSUMS_OMP_PARALLEL_FOR_SIMD_IF(cond)
+
+   Parallelize and vectorize the following loop only when ``cond`` holds.
+
+   For loops that can be short, with a condition such as
+   ``elems >= einsums::hardware::omp_min_parallel_elements()``.
+
+   .. versionadded:: 2.0.0
+
+
+.. c:macro:: EINSUMS_OMP_SIMD_CLAUSE_PRAGMA(directive, clauses)
+
+   Combined `<directive> simd` with clauses, keeping `simd` in the directive.
+
+
+.. c:macro:: EINSUMS_OMP_TASK
+
+   Start a new task within a parallel region.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_TASK_FOR
+
+   Tell the compiler that the following for-loop can be parallelized and should use tasks.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_OMP_TASK_FOR_SIMD
+
+   Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD and should use tasks.
+
+   .. versionadded:: 1.1.0
+
+
+.. c:macro:: EINSUMS_PRAGMA(stuff)
+
+   Creates a pragma line. Mostly used within other macros.
+
+   .. versionadded:: 1.1.0
+
+   :param stuff: The pragma line without quotes.
+
+
+.. c:macro:: EINSUMS_TRANSACTION_SAFE_DYN
+
+   If transactional memory is supported by your compiler, expands to the ``synchronized`` keyword.
+
+   .. versionadded:: 2.0.0
+
+
+.. c:macro:: EINSUMS_UNLIKELY(expr)
+
+   Hint at the compiler that ``expr`` is likely to be false.
+
+   .. versionadded:: 1.0.0
+
+   :param expr: The expression to hint at.
+
+
+.. c:macro:: EINSUMS_WINDOWS
+
+   This macro is set if the compilation is for Windows.
+
+   .. versionadded:: 1.0.0

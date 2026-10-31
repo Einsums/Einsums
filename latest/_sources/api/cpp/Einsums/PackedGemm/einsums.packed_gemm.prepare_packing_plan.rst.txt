@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.prepare_packing_plan:
+
+==========================================
+einsums::packed_gemm::prepare_packing_plan
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: PackingPlan prepare_packing_plan(const ContractionKey &key)
+
+   The plan the packed engine runs the contraction ``key`` describes with: its topology, the strides ``key`` records, the K dims ordered for packing, contiguous dims merged, and the roles of A and B exchanged when the micro-kernel for ``key.spec.scalar_type`` wants them so.
+
+   ``try_packed_gemm`` caches exactly this plan, so a caller that prices a contraction sees the
+   plan the engine would run. Invalid when ``compute_packing_topology`` is.

@@ -1,0 +1,169 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.RegionRewrite:
+
+=============================================
+einsums::compute_graph::passes::RegionRewrite
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/RegionRewrite.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: RegionRewrite : public OptimizerPass
+
+   Base class for a pass that rewrites regions through ``TensorExpr``.
+
+   Derive and override ``rewrite``. Everything else - forming regions, raising,
+   lowering, skip reasons, the before/after dump, the statistics ``explain`` reads
+
+   - comes from here.
+
+   Exposed to Python despite being abstract, as ``OptimizerPass`` is and for the
+   same reason: the binding for a concrete pass needs its DIRECT base to be a
+   bound type, or the generated class has no inheritance chain and
+   ``PassManager.add`` refuses it as an unrelated type. Nothing constructs one.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      Region rewrites are machine-independent algebra, so their output is saved.
+
+      :returns: ``PassPhase::StructuralAlgebraic``.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Descend into loop bodies and conditional branches.
+
+      True here, once, for every region rewrite there is. A coupled-cluster iteration is a
+      ``Loop`` whose body is the whole contraction set, so a framework that stopped at the loop
+      header could never see the expression these passes exist to rewrite: the tau-term
+      factorization validated on a flat capture of the CCSD equations could not fire on the same
+      equations written as the iteration they are.
+
+      Two things follow, and both are handled here rather than by each client.
+
+      A SETUP escapes the body. A fitting runs once per bound problem, so a setup node emitted
+      into a loop body would refit on every iteration, which is a different program. Clients ask
+      for one through ``setup_body_for``, which puts it in the graph holding the ``Loop`` node
+      and ahead of it, and declines when the tensors the setup reads are not loop-invariant.
+
+      A SETUP BODY is not itself descended into. It is a fitting this framework emitted; a
+      rewrite of one would have nowhere to hoist a setup of its own, and the once-per-bind
+      contract is a property of the node rather than of the algebra inside it. That is a decline
+      with a reason rather than a silent skip.
+
+      :returns: True.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      Zero the per-apply counters.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const final
+
+      What this pass did, for ``PassManager::explain``.
+
+      FINAL, and that is the point rather than an accident. The report has two halves: what the
+      framework did (regions formed, declined and why, and what each accepted rewrite cost
+      before and after) and what the client did. A client that overrode this would silently
+      drop the first half, which is exactly what happened the first time one did - the pass
+      reported its own counters and the structural section vanished from the report that exists
+      to diagnose it. Clients add their lines through ``describe`` instead.
+
+      :returns: The framework's lines followed by the client's; empty when nothing happened.
+
+
+   .. cpp:function:: const std::vector<RegionDump> & last_dumps() const
+
+      The before/after algebra of every region this run raised.
+
+      Populated whenever ``einsums:graph:dump-regions`` is set or
+      ``set_dump`` is on. A test asserts on this rather than scraping stderr,
+      which is also why it holds the rendering rather than printing it: a dump
+      a test cannot read is a dump nobody checks.
+
+      :returns: The dumps, in region order.
+
+
+   .. cpp:function:: void set_dump(bool on)
+
+      Collect the before/after dumps regardless of the option.
+
+      :param on: Whether to collect.
+
+
+   .. cpp:function:: void set_verify_costs(bool on)
+
+      Check every accepted rewrite's reported cost against the NODES, off by default.
+
+      The cost line is what a report offers as evidence a rewrite paid, and it is derived from
+      the algebra alone: a term the rewrite built carries whatever cost the client gave it, and
+      nothing compared that to the nodes the lowering then emitted. The after side read zero on
+      every rewrite `MultiTermFactorization` had ever made, for exactly that reason, and went
+      unread until a case asked whether a loop space had really left.
+
+      With this on, the before side is checked against the flops of the region's own nodes and
+      the after side against the flops of the nodes the lowering emitted, both through
+      ``symbolic_cost_for``. Two derivations of one number, which is what makes either of them
+      evidence. Off by default because it walks the node set once per rewrite and a pipeline in
+      the default manager should not pay for a self-check.
+
+      :param on: Whether to check.
+
+
+   .. cpp:function:: std::vector<std::string> cost_mismatches() const
+
+      Reported costs the node set disagreed with, from the last run.
+
+      Empty unless ``set_verify_costs`` is on, and empty when the two derivations agree.
+
+      :returns: One line per disagreement, naming the region and both numbers.
+
+
+   .. cpp:function:: std::size_t regions_formed() const
+
+      How many regions were formed on the last run.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t regions_rewritten() const
+
+      How many regions were rewritten on the last run.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::string dump_text() const
+
+      Every dump of the last run, rendered as one block of text.
+
+      The same content as ``last_dumps``, in the form a language without a
+      bound ``RegionDump`` can assert on. Empty when nothing was dumped.
+
+      :returns: The rendering.
+
+
+   .. cpp:class:: SetupSite
+
+      Where a setup emitted while rewriting one sub-graph belongs: the graph holding the node
+      that owns it, and that node's id. The id rather than a position, because a client emits
+      its setups after the region loop and the positions have moved by then.
+
+
+      .. cpp:member:: Graph *host
+
+      .. cpp:member:: NodeId owner
+
+      .. cpp:member:: bool is_setup_body

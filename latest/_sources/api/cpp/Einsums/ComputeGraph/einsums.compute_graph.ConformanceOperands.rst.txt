@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ConformanceOperands:
+
+===========================================
+einsums::compute_graph::ConformanceOperands
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorConformance.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ConformanceOperands
+
+   The tensors one sample's node reads and writes, in the node's order.
+
+
+   .. cpp:member:: std::vector<TensorId> inputs
+
+      The operands the node reads, without its destination.
+
+
+   .. cpp:member:: std::vector<TensorId> outputs
+
+      The tensors the node writes.

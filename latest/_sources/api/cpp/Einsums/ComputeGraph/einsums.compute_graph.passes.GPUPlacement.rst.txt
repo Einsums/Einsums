@@ -1,0 +1,145 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.GPUPlacement:
+
+============================================
+einsums::compute_graph::passes::GPUPlacement
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/GPUPlacement.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: GPUPlacement : public OptimizerPass
+
+   GPU-offload placement pass: flags graph nodes to execute on a GPU.
+
+   .. note::
+
+      GPU offload is a work in progress. This pass runs only on GPU-enabled (or mock)
+      builds, and the transfer/execution backend it targets is not yet complete.
+
+   Walks the whole graph tree (including loop bodies and conditional branches, so a hot
+   GEMM inside an SCF loop is a candidate) and marks profitable einsums (those that lower
+   to a GEMM or GEMV), scales and axpbys with `Target::GPU`, copying each node's executor
+   to its `cpu_fallback`.
+   It does NOT insert host/device copies — ``TransferInsertion`` does that afterward.
+
+   Two placement strategies decide profitability per node:
+
+   1. **Cost model** (used when `estimated_flops > 0`): compares CPU time against GPU time plus transfer and launch overhead —
+      - `cpu_time = flops / cpu_gflops`
+      - `gpu_time = flops / gpu_gflops + bytes / pcie_bandwidth + launch_overhead` and places the node only when `gpu_time < cpu_time`. Constructing with a ``CostModel`` replaces the hardcoded throughput/bandwidth constants.
+
+   2. **Size threshold** (fallback when `estimated_flops == 0`): places the node only when its estimated memory traffic reaches `min_bytes`.
+
+   Profitable candidates are then placed greedily, largest-byte-footprint first, until
+   `gpu::available_device_memory()` is exhausted; nodes that no longer fit stay on CPU.
+
+   In `create_default()` this is the first pass inside the GPU-enabled block
+   (`if constexpr (gpu::has_gpu || gpu::is_mock)`), constructed with the shared
+   `CostModel`; the whole block is compiled out on CPU-only builds.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("gpu_placement");
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("ij <- ik ; kj", 0.0, &C, 1.0, A, B);     // a large GEMM
+      }
+      graph.apply(cg::PassManager::create_default());          // GPUPlacement runs iff a GPU/mock backend is compiled in
+      graph.execute();
+      // When a GPU backend is present and the cost model favors it, the einsum
+      // node's target is now Target::GPU (with its CPU executor kept as fallback).
+
+   **Example (Python)**
+
+   No standalone Python entry point: this pass is not individually exposed and only runs
+   inside the distributed/GPU pipeline.
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("gpu_placement")
+      with cg.capture(g):
+          einsums.einsum("ij <- ik ; kj", C, A, B)
+      g.apply(cg.default_pass_manager())                       # GPUPlacement participates only on a GPU-enabled build
+
+   **Limitations**
+
+   - Compiled out entirely on CPU-only builds; a no-op when `--einsums:gpu:disable` is set, so on the CI default (no GPU, no mock) the pass never fires.
+   - The **MPS** backend supports only `float32`; `float64`/complex nodes are rejected by the dtype guard and left on CPU. CUDA/mock accept `float32`/`float64`/complex64/complex128.
+   - Budget placement is greedy by descending byte footprint, not globally optimal: a node larger than the remaining budget is skipped even if reordering could have fit it.
+   - The budget accounting double-counts residency — a tensor shared by several placed nodes is charged its bytes per node, so the effective budget is conservative.
+   - The default throughput/PCIe/launch constants are coarse; without a `CostModel` they are placeholders rather than measured device numbers.
+
+   **Future improvements**
+
+   - Multi-GPU placement (a single device budget is assumed today).
+   - Credit already-resident tensors in the budget instead of re-charging shared operands.
+   - Feed measured device profiles into the cost-model constants so size-threshold fallback is needed less often.
+
+
+   .. cpp:function:: explicit GPUPlacement(size_t min_bytes)
+
+
+      :param min_bytes: Minimum estimated memory traffic (bytes) for GPU placement.
+
+
+   .. cpp:function:: explicit GPUPlacement(const CostModel &cost_model, size_t min_bytes)
+
+      Construct with a CostModel for cost model parameters.
+
+      The cost_model's CPU and GPU device data replace the hardcoded cost
+      model parameters (cpu_throughput_gflops, gpu_throughput_gflops, etc.).
+
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not permutation operators, views or redirected slots: the device kernels ignore operators and run contiguous over a view.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: size_t num_placed() const
+
+      Number of nodes placed on GPU in the last run.
+
+
+   .. cpp:member:: double cpu_throughput_gflops
+
+      Estimated CPU throughput (GFLOP/s)
+
+
+   .. cpp:member:: double gpu_throughput_gflops
+
+      Estimated GPU throughput (GFLOP/s)
+
+
+   .. cpp:member:: double pcie_bandwidth_gbs
+
+      PCIe bandwidth (GB/s) for transfer overhead
+
+
+   .. cpp:member:: double gpu_launch_overhead_us
+
+      GPU kernel launch overhead (microseconds)

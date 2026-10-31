@@ -1,0 +1,67 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.FactorizationProvider:
+
+=============================================
+einsums::compute_graph::FactorizationProvider
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Factorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: FactorizationProvider
+
+   A way of rewriting one kind of tensor as a product of factors.
+
+   Register one instance per method. The pass asks every provider claiming a tensor's
+   provenance tag, costs each offer, and takes the cheapest that is actually cheaper.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: FactorizationProvider() = default
+
+   .. cpp:function:: FactorizationProvider(const FactorizationProvider &) = delete
+
+   .. cpp:function:: FactorizationProvider(FactorizationProvider &&) = delete
+
+   .. cpp:function:: FactorizationProvider & operator=(const FactorizationProvider &) = delete
+
+   .. cpp:function:: FactorizationProvider & operator=(FactorizationProvider &&) = delete
+
+   .. cpp:function:: virtual ~FactorizationProvider() = default
+
+   .. cpp:function:: virtual std::string name() const = 0
+
+      This provider's name, used in reports and in the approximation record.
+
+      :returns: The name.
+
+
+   .. cpp:function:: virtual std::string tag() const = 0
+
+      The provenance tag whose tensors this provider factorizes.
+
+      :returns: The tag name, e.g. ``"eri"``.
+
+
+   .. cpp:function:: virtual expected<FactorizationPlan, std::string> propose(const Graph &graph, TensorId tensor) const = 0
+
+      Offer a factorization of ``tensor``, or say why there is not one.
+
+      Called at optimize time, once per tagged tensor. A provider that needs a threshold the
+      tag does not carry reads it from its own state, which is why a provider is an object
+      rather than a function.
+
+      :param graph: The graph, for the tensor's extents, spaces and tag attributes.
+      :param tensor: The tagged tensor.
+      :returns: The plan, or a short reason phrased for a skip tally.

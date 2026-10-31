@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.StridedOperand:
+
+====================================
+einsums::packed_gemm::StridedOperand
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: template <typename T> StridedOperand
+
+   An operand as ``blis_contraction_body`` reads it: an element pointer, extents and strides. A share of a split contraction reads its block of A and B, and writes its partial result, through these.
+
+
+   .. cpp:function:: T * data() const
+
+   .. cpp:function:: size_t rank() const
+
+   .. cpp:function:: size_t dim(size_t i) const
+
+   .. cpp:function:: size_t stride(size_t i) const
+
+   .. cpp:member:: T *ptr
+
+   .. cpp:member:: std::vector<int64_t> dims
+
+   .. cpp:member:: std::vector<int64_t> strides

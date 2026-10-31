@@ -1,0 +1,76 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorAlgebra_api:
+
+=====================
+TensorAlgebra C++ API
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorAlgebra>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::Indices` - Identifier for providing index labels to the the einsum function.
+- :cpp:any:`~einsums::tensor_algebra::CUnique` - Looks for a unique type in a tuple, but decays away all cvref modifiers on the tuple.
+- :cpp:any:`~einsums::tensor_algebra::Difference` - Find the elements in ``S1`` that are not in ``S2`` .
+- :cpp:any:`~einsums::tensor_algebra::Intersect` - Find the intersection between two tuples.
+- :cpp:any:`~einsums::tensor_algebra::Reverse` - Reverses the elements of a tuple.
+- :cpp:any:`~einsums::v1::index::LabelBase` - Base struct for index tags. It might not be technically needed but it will allow compile-time checks to be performed.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::compile_index_table` - Turn a list of indices into a link table.
+- :cpp:any:`~einsums::tensor_algebra::compile_permute` - Compiles a permutation so that it can be used multiple times.
+- :cpp:any:`~einsums::tensor_algebra::einsum` - The einsum call. It is the reason this package exists.
+- :cpp:any:`~einsums::tensor_algebra::get_grid_ranges_for_many` - Finds the tile grid dimensions for the requested indices.
+- :cpp:any:`~einsums::tensor_algebra::khatri_rao` - Computes the Khatri-Rao product of tensors A and B.
+- :cpp:any:`~einsums::tensor_algebra::order_indices` - Swap around the indices to the desired order.
+- :cpp:any:`~einsums::tensor_algebra::permute` - Permutes the elements of a tensor and puts it into an output tensor.
+- :cpp:any:`~einsums::tensor_algebra::unfold` - Returns the mode-`mode` unfolding of `tensor` with modes startng at `0`
+
+Types
+-----
+
+- :cpp:any:`~einsums::tensor_algebra::CUniqueT` - Same as UniqueT, but it decays away all cvref modifiers on the tuple.
+- :cpp:any:`~einsums::tensor_algebra::DecayElementsT`
+- :cpp:any:`~einsums::tensor_algebra::DifferenceT` - The result of a difference operation. @sa Difference
+- :cpp:any:`~einsums::tensor_algebra::IntersectT` - Gives the result of an intersection operation. @sa Intersect
+- :cpp:any:`~einsums::tensor_algebra::ReverseT` - Reverses the elements of a tuple.
+- :cpp:any:`~einsums::tensor_algebra::UniqueT`
+
+Macros
+------
+
+- :c:macro:`EINSUMS_TENSOR_ALGEBRA_DETAIL_INDEX_HPP` - Defined whenever this header is included, so that a module which must not reach the compile-time index machinery (ComputeGraph) can assert it at compile time, through any chain of includes.
+- :c:macro:`MAKE_INDEX` - Macro that defines new index tags that can be used with einsums. Also includes code for easy printing using fmtlib.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.compile_index_table
+   einsums.Indices
+   einsums.tensor_algebra.compile_permute
+   einsums.tensor_algebra.CUnique
+   einsums.tensor_algebra.Difference
+   einsums.tensor_algebra.einsum
+   einsums.tensor_algebra.get_grid_ranges_for_many
+   einsums.tensor_algebra.Intersect
+   einsums.tensor_algebra.khatri_rao
+   einsums.tensor_algebra.order_indices
+   einsums.tensor_algebra.permute
+   einsums.tensor_algebra.Reverse
+   einsums.tensor_algebra.unfold
+   einsums.v1.index.LabelBase
+   types
+   macros

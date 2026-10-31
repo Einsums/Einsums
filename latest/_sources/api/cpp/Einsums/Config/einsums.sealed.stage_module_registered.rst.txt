@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sealed.stage_module_registered:
+
+========================================
+einsums::sealed::stage_module_registered
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Config/ABI.hpp``.
+
+.. cpp:namespace:: einsums::sealed
+
+.. cpp:function:: bool stage_module_registered(const char *name)
+
+   Whether register_stage_module() was called on THIS library for ``name``.

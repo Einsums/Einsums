@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TiledDotDescriptor:
+
+==========================================
+einsums::compute_graph::TiledDotDescriptor
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TiledDotDescriptor
+
+   Metadata for a TILED dot / dotc node (``OpKind::Dot``).
+
+   A tiled scalar reduction sums per-tile dense dots over the operands' shared
+   tiles into a dense 1-element result. Without a descriptor the node is an
+   opaque closure whose whole-tensor tiled reads strand every tensor it
+   touches out of TiledExpansion; with it, the pass can lower the node into a
+   single reduction over PER-TILE ids, freeing the whole-tensor ids entirely.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: bool conjugated
+
+      true for dotc (sum conj(A)*B), false for dot

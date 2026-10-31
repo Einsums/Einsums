@@ -1,0 +1,90 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Hardware_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/Hardware/Options.hpp``, ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:var:: inline constexpr std::int64_t profile_format
+
+   The profile format this build reads and writes.
+
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::string> CacheDir
+
+   Directory where measured constants are remembered between runs.
+
+   Empty, the default, uses the platform's cache location: `%LOCALAPPDATA%`,
+   `$XDG_CACHE_HOME` or `~/.cache`, each with an `einsums` subdirectory.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> HardwareL1CacheSize
+
+   L1 data cache size in bytes, in place of the detected one. Zero, the default, detects it.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> HardwareL2CacheSize
+
+   L2 cache size in bytes, in place of the detected one. Zero, the default, detects it.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> HardwareL3CacheSize
+
+   L3 cache size in bytes, in place of the detected one. Zero, the default, detects it.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> HardwareOmpBreakEvenFlopsPerNs
+
+   Flops per nanosecond of region cost at which a contraction goes parallel.
+
+   The break-even work is the region cost times this rate: a calibration, not a flop rate. The
+   default was measured end to end on tiled CCSD residuals on an Apple M4 Pro; ``einsums-tune``
+   measures it on the machine at hand. ``--einsums:hardware:omp-min-parallel-flops`` pins the
+   product instead.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> HardwareOmpMinParallelElements
+
+   Pin the element count at which elementwise kernels go parallel. Negative derives it; zero always.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> HardwareOmpMinParallelFlops
+
+   Pin the flop count at which a contraction goes parallel. Negative derives it; zero always.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> HardwareOmpRegionCostNs
+
+   Pin the cost of entering an OpenMP parallel region, in nanoseconds. Negative reads the profile or measures.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> HardwareProfile
+
+   A hardware profile to use in place of searching for one.
+
+   Empty, the default, looks for this machine's profile under ``CacheDir`` and then under the
+   site directory. A named file is used even when another machine measured it, with a warning,
+   since a user who names a file means it; another Einsums version or BLAS still makes it stale.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> HardwareSiteProfiles
+
+   The site directory of hardware profiles, searched after the user's cache directory.
+
+   Empty, the default, is the installation's `share/einsums/profiles`. An administrator tunes
+   once per node type and installs the files there for every user.

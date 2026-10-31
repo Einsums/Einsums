@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CostEstimate:
+
+====================================
+einsums::compute_graph::CostEstimate
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CostEstimate
+
+   What a node costs to run, in the terms the planners price every node in.
+
+   The planner turns this into a serial time: ``serial_us`` when given, otherwise ``flops``
+   priced as a GEMM of that many flops and ``bytes`` as memory traffic, whichever takes longer.
+   Widening divides the time by ``speedup`` when given, otherwise by the curve of ``family``.
+   A measured run of the node always takes precedence over the estimate.
+
+
+   .. cpp:member:: double flops
+
+      Floating-point operations, independent of the device.
+
+
+   .. cpp:member:: std::size_t bytes
+
+      Bytes moved, independent of the device. Zero leaves it to the planner, which counts the
+      node's tensors.
+
+
+   .. cpp:member:: std::optional<KernelFamily> family
+
+      The speedup curve the node scales along. Empty picks a GEMM curve when ``flops`` is
+      given and the element-wise curve otherwise.
+
+
+   .. cpp:member:: std::optional<double> serial_us
+
+      Serial time on the queried device, when the descriptor knows its rate there.
+
+
+   .. cpp:member:: std::function<double (unsigned int)> speedup
+
+      Speedup at a width, overriding ``family``'s curve for an engine none of them fits. Called
+      with widths of 2 and above; returns how many times faster than serial.

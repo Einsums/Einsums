@@ -1,0 +1,161 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/DescriptorHooks.hpp``, ``Einsums/ComputeGraph/InterfaceManifest.hpp``, ``Einsums/ComputeGraph/Node.hpp``, ``Einsums/ComputeGraph/Pipeline.hpp``, ``Einsums/ComputeGraph/Prefactor.hpp``, ``Einsums/ComputeGraph/SymbolicCost.hpp``, ``Einsums/ComputeGraph/TensorBacking.hpp``, ``Einsums/ComputeGraph/TensorExpr.hpp``, ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:type:: AxpbyParams = ElementwiseParams
+
+   See ``ElementwiseParams``.
+
+   Spelled for axpby's ``Y = alpha*X + beta*Y``.
+
+
+.. cpp:type:: ExtentList
+
+   The extents of a node's outputs, one list per output in the node's output order.
+
+
+.. cpp:type:: ExtentLookup
+
+   Resolves a variable to a numeric extent, or reports that it cannot.
+
+
+.. cpp:type:: FamilyId = std::uint32_t
+
+   Index into ``TensorExpr::families``. Positional and dense, like ``TermId``.
+
+
+.. cpp:type:: LoopCondition
+
+   Convergence/termination predicate for loop stages.
+
+   Called after each iteration of a loop stage with the current iteration number
+   (0-based). Return true to continue iterating, false to break out of the loop.
+
+   The predicate can inspect tensor values (e.g., compute energy differences,
+   density matrix RMS) to implement convergence-based early exit.
+
+   **Example**
+
+   .. code-block:: text
+
+      auto condition = [&](size_t iter) -> bool {
+          double delta = std::abs(energy - energy_old);
+          return delta > 1e-8;  // Continue if not converged
+      };
+
+
+.. cpp:type:: PrefactorScalar
+
+   Type-erased prefactor scalar. Default-constructs to ``double{0}``.
+
+
+.. cpp:type:: SlabReader
+
+   Read one slab of a backed tensor.
+
+   ``ranges`` gives, per axis, the half-open range ``[first, second)`` of the stored tensor to read.
+   The elements land in ``destination`` densely and in column-major order over the slab's own
+   extents, which is the order a freshly constructed tensor of the slab's shape holds them in.
+   Throws on any failure to read; a short read is a failure, never a partial slab.
+
+
+.. cpp:type:: SlabWriter
+
+   Write one slab of a backed tensor.
+
+   The mirror of ``SlabReader``: ``source`` holds the slab densely and in column-major order over
+   its own extents, and the writer stores it at ``ranges`` of the stored tensor. Throws on any
+   failure to write.
+
+
+.. cpp:type:: SlotImplAccessor = void *(*)(void *)
+
+   Recovers a tensor's ``TensorImpl`` from the erased object ``TensorSlot::ptr`` addresses.
+
+   Named rather than spelled inline at each use because a bare
+   ``void *(*)(void *)`` is a declarator the field, the factory's return type
+   and the documentation extractor each have to spell the same way.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:type:: SlotResyncAccessor = void (*)(void *)
+
+   Re-seats the cached data pointer of whatever ``TensorSlot::ptr`` addresses.
+
+   The counterpart of ``SlotImplAccessor`` for the write side of the same
+   problem: the accessor hands back a ``TensorImpl``, and this is what makes
+   sure the one it hands back is reading the storage block's CURRENT buffer.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:type:: TensorScopeMap
+
+   Ownership scopes of tensors a scope declared, keyed by tensor object address.
+
+   A ``Workspace`` and a ``Pipeline`` declare tensors that many graphs then capture, and
+   each capturing graph builds its OWN handle for such a tensor rather than sharing the
+   declaring scope's (see ``make_handle``). Scope would be lost at that boundary, so the
+   declaring scope publishes it here and the graph attaches the table - the same shape of
+   plumbing ``ParamTable`` already uses, and shared by ``shared_ptr`` for the same reason:
+   a declaration made after a stage was added still has to reach that stage.
+
+   Keyed on the tensor object's address, which is the identity that survives the
+   per-graph re-registration (a ``TensorId`` does not).
+
+   .. seealso::
+
+      Graph::add_scope_map
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:type:: TensorScopeMapPtr
+
+   A scope table shared between the scope that declares tensors and the graphs that use them.
+
+
+.. cpp:type:: TermId = std::uint32_t
+
+   Index into ``TensorExpr::terms``. Positional and dense, like the IR's tensor ids.
+
+
+.. cpp:type:: TileCoord
+
+   A tile's position in a tiled tensor's grid, one coordinate per axis.
+
+
+.. cpp:type:: TiledElementwiseParams = ElementwiseParams
+
+   See ``ElementwiseParams``.
+
+   Spelled for a tiled elementwise node. Only ``TiledElementwiseOp::Divide`` reads
+   ``ElementwiseParams::beta``; Scale and Axpy leave it at its default.
+
+
+.. cpp:type:: ValueKey
+
+   The identity of a value: one tensor, or a grouped family's member list.
+
+   A rewrite asks "do these two statements read the same value" many times, and
+   for an ordinary leaf the answer is a tensor id while for a ragged one it is
+   the ordered member list. One type for the two, with a single-element list
+   standing for a tensor, so a client keys one map instead of two and cannot
+   accidentally compare a member's buffer against a family.

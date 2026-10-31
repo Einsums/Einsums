@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.expand_permutation_operators:
+
+====================================================
+einsums::compute_graph::expand_permutation_operators
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<PermutationTerm> expand_permutation_operators(const std::vector<std::string> &c_indices, const std::vector<PermutationOperator> &operators)
+
+   Expand a product of permutation operators over an output index list.
+
+   **Choice of representative**
+
+   Within each coset the member that displaces the fewest letters is taken, ties
+   broken by pairing the displaced letters between groups in their original
+   order. That reproduces the spelling the literature prints, so
+   `P(i/jk) f = f(ijk) - f(jik) - f(kji)` rather than an equivalent-on-valid-input
+   set with different parities. It is a CONVENTION chosen to match what a user
+   checks against by hand, not a correctness property: see the warning on
+   ``PermutationOperator``.
+
+   With several operators the terms are the Cartesian product of the per-operator
+   expansions, signs multiplied, with the FIRST operator varying slowest.
+
+   .. versionadded:: 2.0.0
+
+   :param c_indices: The output index list the operators permute.
+   :param operators: The operators, which must name disjoint letter sets.
+   :returns: One ``PermutationTerm`` per term, the identity term FIRST. An empty ``operators`` list yields exactly one term, the identity.

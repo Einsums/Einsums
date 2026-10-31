@@ -1,0 +1,61 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ParamTable:
+
+==================================
+einsums::compute_graph::ParamTable
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/BoundExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ParamTable
+
+   Mutable name-keyed table of integer parameters owned by a Pipeline.
+
+   Parameters are runtime values that ``BoundExpr::Param`` references resolve to.
+   They are read every time a node executes, so updates between iterations
+   (e.g., from a ``LoopCondition`` callback or a ``WriteParam`` node) take
+   effect on the next read.
+
+   Optimization passes treat parameter values as opaque. They may inspect
+   the structure of a ``BoundExpr`` (Const vs. Param) but must not branch
+   on the runtime value of a ``Param``. See ``BoundExpr`` documentation.
+
+   Held as a ``std::shared_ptr`` so executor lambdas can capture and read
+   the same table that mutator code (loop conditions, ``WriteParam``
+   executors) writes to.
+
+
+   .. cpp:function:: void set(std::string name, std::int64_t value)
+
+      Set or overwrite a parameter. Allowed at any time: during capture, between
+      iterations, and between Pipeline::execute() invocations.
+
+
+   .. cpp:function:: std::int64_t get(const std::string &name) const
+
+      Read a parameter. Throws ``std::runtime_error`` if ``name`` is unset.
+
+
+   .. cpp:function:: std::int64_t get_or(const std::string &name, std::int64_t fallback) const
+
+      Read with a fallback if the parameter is unset.
+
+
+   .. cpp:function:: bool contains(const std::string &name) const
+
+   .. cpp:function:: size_t size() const noexcept
+
+   .. cpp:function:: const std::unordered_map<std::string, std::int64_t> & entries() const noexcept
+
+      Read-only view of all entries, used by codegen to emit a Params POD.

@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_HPTT_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/HPTTTypes.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:enum:: SelectionMethod
+
+   Determines the duration of the auto-tuning process.
+
+   * ESTIMATE: 0 seconds (i.e., no auto-tuning)
+   * MEASURE: 10 seconds
+   * PATIENT: 60 seconds
+   * CRAZY : 3600 seconds
+
+
+   .. cpp:enumerator:: ESTIMATE
+
+   .. cpp:enumerator:: MEASURE
+
+   .. cpp:enumerator:: PATIENT
+
+   .. cpp:enumerator:: CRAZY

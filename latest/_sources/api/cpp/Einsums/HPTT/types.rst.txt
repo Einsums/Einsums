@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_HPTT_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/HPTTTypes.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:type:: DoubleComplex
+
+   Alias for std::complex<double>.
+
+
+.. cpp:type:: FloatComplex
+
+   Alias for std::complex<float>.

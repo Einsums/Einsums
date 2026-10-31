@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: The Algebraic Optimizer &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/optimizer';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/optimizer.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: Performance Tuning" href="tutorial_performance.html" />
+    <link rel="prev" title="Tutorial: From NumPy to an Optimized CCSD" href="tutorial_ccsd.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: The Algebraic Optimizer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-the-algebraic-optimizer">
+<span id="tutorial-optimizer"></span><h1>Tutorial: The Algebraic Optimizer<a class="headerlink" href="#tutorial-the-algebraic-optimizer" title="Link to this heading">#</a></h1>
+<p>Most optimizers rewrite the schedule of a computation whose mathematics is
+fixed. This one can also rewrite the mathematics: it can substitute a
+factorization for an integral, replace an energy denominator by a quadrature,
+truncate a space, re-bracket a product, and turn a program that declares
+four-index tensors into a loop that never holds one.</p>
+<p>None of that happens by guesswork. Every rewrite is either exact, or opt-in and
+recorded, and each one is taken because the caller said something the graph
+could not otherwise know: what an axis ranges over, what a tensor is, or what
+factored form is available for it. This page is about those statements and what
+each of them buys.</p>
+<p>Everything below is written for the Python surface, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">einsums.graph</span> <span class="pre">as</span>
+<span class="pre">cg</span></code>. The C++ spelling is the same vocabulary with the same names;
+<code class="docutils literal notranslate"><span class="pre">TagsAndProviders.cpp</span></code> in the ComputeGraph examples is the C++ tour of the
+same ground.</p>
+<p>The two runnable tours are <code class="docutils literal notranslate"><span class="pre">optimizer_tour.py</span></code>, which writes one
+density-fitted MP2 energy and drives it through every arm below, and
+<code class="docutils literal notranslate"><span class="pre">annotate_and_rebind.py</span></code>, which is the family story on its own. Both live in
+the ComputeGraph examples directory and both run offline from the fixture the
+DLPNO example carries, so nothing here needs an integral engine.</p>
+<section id="capture-once-optimize-replay">
+<h2>Capture once, optimize, replay<a class="headerlink" href="#capture-once-optimize-replay" title="Link to this heading">#</a></h2>
+<p>The optimizer only ever sees a captured graph. Eager execution gets none of it,
+and that is deliberate: eager is the reference semantics this whole layer is
+validated against, so a numpy-style script stays eager and gets exactly what it
+wrote.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">einsums.graph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cg</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="s2">"mp2"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"Q,i,a ; Q,j,b -&gt; i,a,j,b"</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="o">...</span>
+
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">())</span>
+<span class="n">g</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">default_pass_manager()</span></code> is what a caller gets by asking for nothing. It holds
+the analysis passes, the schedule and memory passes, and the structural rewrites
+that have been proven exact. <strong>No lossy pass is ever in it.</strong> A factorization, a
+quadrature or a basis truncation is something a program asks for by name, and
+until it does, the answer the graph computes is the answer the program wrote.</p>
+</section>
+<section id="saying-what-the-axes-are">
+<span id="optimizer-index-spaces"></span><h2>Saying what the axes are<a class="headerlink" href="#saying-what-the-axes-are" title="Link to this heading">#</a></h2>
+<p>A tensor’s dimensions say how big <em>this</em> problem is. An index space says what an
+axis ranges over and how that set grows, which is a statement about the whole
+family of problems the captured program stands for.</p>
+<p>Spaces are registered once, with the letter each contributes to a cost
+polynomial, an advisory extent for the family, a growth class, and the dim
+symbol a rebind solves for:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registry</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">global_space_registry</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s2">"nocc"</span><span class="p">),</span>
+                                  <span class="p">(</span><span class="s2">"vir"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">,</span> <span class="mf">2700.0</span><span class="p">,</span> <span class="s2">"nvir"</span><span class="p">),</span>
+                                  <span class="p">(</span><span class="s2">"aux"</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="mf">9000.0</span><span class="p">,</span> <span class="s2">"naux"</span><span class="p">)):</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_space</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">index_space</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span>
+                                           <span class="n">cg</span><span class="o">.</span><span class="n">GrowthClass</span><span class="o">.</span><span class="n">linear</span><span class="p">(),</span> <span class="n">dim</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Only the ratios of those extents reach the cost model. What they say is which
+regime the captured geometry stands for, which matters because the geometry in
+front of the optimizer is usually a small one.</p>
+<p>Tensors are annotated one entry per axis, by space name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="s2">"aux"</span><span class="p">,</span> <span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"vir"</span><span class="p">),</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="p">(</span><span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"vir"</span><span class="p">,</span> <span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"vir"</span><span class="p">),</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Only a program’s inputs need annotating. <code class="docutils literal notranslate"><span class="pre">SpacePropagation</span></code> carries the
+annotation through the intermediates, <code class="docutils literal notranslate"><span class="pre">CrossSpaceValidation</span></code> reports a
+contraction letter that binds two different spaces, and <code class="docutils literal notranslate"><span class="pre">ScalingAnalysis</span></code>
+reports what the program costs as a polynomial in the scale symbols. Those three
+are described in the <a class="reference internal" href="tutorial_compute_graph.html#tutorial-compute-graph"><span class="std std-ref">compute graph tutorial</span></a>.</p>
+<p>An einsum over three or more operands captured after the annotation is planned
+by it as well: of the orders it can contract the operands in, it takes the one
+that scales best by the declared spaces, as <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> ranks a
+product, and the extents decide only what the spaces leave open.</p>
+<section id="why-the-family-annotation-decides-rewrites">
+<h3>Why the family annotation decides rewrites<a class="headerlink" href="#why-the-family-annotation-decides-rewrites" title="Link to this heading">#</a></h3>
+<p>Some rewrites are cheaper at every size and some are cheaper only past a
+crossover. The second kind cannot be judged from the extents a capture happens
+to hold, and this is not a corner case: it is where the interesting rewrites
+live.</p>
+<p>The opposite-spin MP2 energy is the plain example. Written as it stands it
+contracts the orbital indices into a four-index integral; with the denominator
+decoupled it contracts them away first and holds an auxiliary-by-auxiliary
+matrix per quadrature point instead. That trades <code class="docutils literal notranslate"><span class="pre">o^2</span> <span class="pre">v^2</span> <span class="pre">Q</span></code> for
+<code class="docutils literal notranslate"><span class="pre">o</span> <span class="pre">v</span> <span class="pre">Q^2</span> <span class="pre">t</span></code>, and neither dominates the other, so the answer is a fact about
+extents. At water in cc-pVDZ, 84 auxiliary functions against 95
+occupied-virtual pairs, the captured form wins and the optimizer says so.
+Annotated for a system of a few thousand basis functions, which is where
+spin-opposite-scaled MP2 is used, the pairless form wins and the optimizer
+reaches it, with no four-index tensor left in the emitted graph.</p>
+<p>Both arms are in <code class="docutils literal notranslate"><span class="pre">annotate_and_rebind.py</span></code>, and the pass is right both times.
+What the annotation changed is which problem it was right about.</p>
+<p>The same holds for the two rewrites that are family wins and constant-factor
+losses at a small molecule:</p>
+<ul class="simple">
+<li><p>The <strong>fourth-order opposite-spin form</strong> above. Annotate the three-index
+tensor with its spaces and the four-index intermediates with theirs; the
+quadrature’s own index is a registered space the transform annotates for you,
+but only where the denominator itself is annotated, all axes or none.</p></li>
+<li><p>The <strong>tensor hypercontraction ladder</strong>, where fitting the integral and the
+amplitude on one grid takes the doubles ladder from degree six to degree five
+while costing more arithmetic at water in cc-pVDZ, because a grid of a few
+hundred points against a basis of a couple of dozen is what a small molecule’s
+grid looks like. What a caller must supply there is the grid space, through
+<code class="docutils literal notranslate"><span class="pre">ThcFactorization.register_grid_space</span></code>, and the annotation on the tensors it
+fits.</p></li>
+</ul>
+<p>Where a rewrite pays only as a family, the optimizer declines it on an
+unannotated program, and the skip tally says the decomposed form is not
+symbolically cheaper. That is the correct answer to the question it was asked.</p>
+</section>
+<section id="dim-symbols-and-a-graph-that-outlives-its-geometry">
+<h3>Dim symbols, and a graph that outlives its geometry<a class="headerlink" href="#dim-symbols-and-a-graph-that-outlives-its-geometry" title="Link to this heading">#</a></h3>
+<p>A space carries a dim symbol, and an axis annotated with one is an axis a later
+bind may resize. Two things follow.</p>
+<p>The first is that the numeric veto on a factorization abstains over such an
+axis. A rewrite that is asymptotically better and slower at the size in hand is
+normally refused, because a graph rewritten into something slower than what it
+replaced is a real regression traded for a promise. Over an axis the graph
+itself declares resizable, the capture-time number is a placeholder and the veto
+says so rather than acting on it.</p>
+<p>The second is reuse. Declare the intermediates over the spaces rather than over
+numbers and the whole program moves:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">annotate_dims</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">[</span><span class="s2">"naux"</span><span class="p">,</span> <span class="s2">"nocc"</span><span class="p">,</span> <span class="s2">"nvir"</span><span class="p">])</span>
+<span class="n">occ</span><span class="p">,</span> <span class="n">vir</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"occ"</span><span class="p">),</span> <span class="n">registry</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"vir"</span><span class="p">)</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">cg</span><span class="o">.</span><span class="n">SpaceDim</span><span class="p">(</span><span class="n">occ</span><span class="p">),</span> <span class="n">cg</span><span class="o">.</span><span class="n">SpaceDim</span><span class="p">(</span><span class="n">vir</span><span class="p">),</span> <span class="n">cg</span><span class="o">.</span><span class="n">SpaceDim</span><span class="p">(</span><span class="n">occ</span><span class="p">),</span> <span class="n">cg</span><span class="o">.</span><span class="n">SpaceDim</span><span class="p">(</span><span class="n">vir</span><span class="p">)]</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_zero_tensor_over</span><span class="p">(</span><span class="s2">"K"</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">declare_zero_tensor_over</span></code> sizes the axes, annotates their spaces and writes
+their dim symbols in one statement, which is the spelling that cannot drift.
+<code class="docutils literal notranslate"><span class="pre">cg.fixed(8)</span></code> is the literal axis for a dimension that means nothing
+chemically. <code class="docutils literal notranslate"><span class="pre">annotate_dims</span></code> is the one-axis-at-a-time form for a tensor the
+caller already allocated.</p>
+<p><code class="docutils literal notranslate"><span class="pre">annotate_and_rebind.py</span></code> captures the energy at water in cc-pVDZ, saves it,
+binds it to cc-pVTZ, and replays it there against a pair-driven oracle. The
+occupied count is unchanged, the virtual count goes from 19 to 53 and the
+auxiliary count from 84 to 141, and every intermediate follows the symbols.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The exact algebra is what crosses a size boundary today. A graph carrying a
+quadrature still binds at the geometry whose orbital energies it was fitted
+from, and the interface is no longer the reason: annotate the energy vectors
+and their slots carry the dim symbols, whichever of the handles behind a slot
+the annotation was written on. What is still literal is the quadrature’s own
+working set, the exponential matrices and the scaled integrals the transform
+declares, so a bind at another size meets them at the extents they were
+fitted on and is refused there.</p>
+</div>
+</section>
+</section>
+<section id="saying-what-a-tensor-is">
+<h2>Saying what a tensor is<a class="headerlink" href="#saying-what-a-tensor-is" title="Link to this heading">#</a></h2>
+<p>Spaces give cost. They cannot say that a tensor <em>is</em> an electron repulsion
+integral, or a Kronecker delta, or an energy denominator, and a pass that wants
+to recognize something has to ask that question instead. A provenance tag is the
+answer: an open vocabulary name plus free-form key/value attributes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">eri</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"eri"</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"identity"</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">eri</span><span class="p">,</span> <span class="n">spaces</span><span class="o">=</span><span class="p">(</span><span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"vir"</span><span class="p">,</span> <span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"vir"</span><span class="p">),</span>
+            <span class="n">tag</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"eri"</span><span class="p">,</span> <span class="s2">"basis"</span><span class="p">:</span> <span class="s2">"cc-pvdz"</span><span class="p">},</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A tag is a <strong>declaration</strong> and is never inferred from a tensor’s contents. A
+pass could notice that a tensor happens to hold an identity today, and that
+would be wrong in a way easy to miss: a structural rewrite is what a saved graph
+keeps, and a later bind may put a different tensor behind the same name.</p>
+<p>A tag crosses an operation only where the output holds the same elements as the
+input, which today is the axis reorderings and nothing else. A view does <strong>not</strong>
+inherit one, and the reason is the tag this rule was written for: a slice of a
+Kronecker delta off the diagonal is an ordinary rectangular matrix of ones and
+zeros, and eliminating a contraction against it would produce a wrong number
+rather than a slower one.</p>
+<p>Two tags in the vocabulary have a shape the pass that reads them requires.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">eri</span></code></dt><dd><p>Claimed by the factorization providers below. Nothing in the mechanism knows
+what an integral is: density fitting is a provider registered on this name,
+and the chemistry lives in the registration.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">laplace_denominator</span></code></dt><dd><p>Read by <a class="reference internal" href="#optimizer-lossy"><span class="std std-ref">the Laplace transform</span></a>. Its attributes are
+the substance rather than decoration: one entry per axis of the tagged
+tensor, naming the orbital-energy vector that supplies that axis, and one
+giving the sign with which that energy enters. The tagged tensor is the
+<strong>reciprocal</strong>, since that is the object a program forms and multiplies.
+<code class="docutils literal notranslate"><span class="pre">cg.LaplaceTransform.denominator_tag(names,</span> <span class="pre">signs)</span></code> builds it.</p>
+</dd>
+</dl>
+</section>
+<section id="registering-a-provider">
+<h2>Registering a provider<a class="headerlink" href="#registering-a-provider" title="Link to this heading">#</a></h2>
+<p>A factorization provider registers on a tag and states a factored form, the
+setup computation that produces the factors, and its accuracy statement. One
+generic pass then does the work for all of them: it queries the providers for
+each tagged tensor, substitutes the factors, hands the whole leaf set to the
+same subset search that brackets ordinary products, and accepts the result only
+if it is cheaper.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registry</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">FactorizationRegistry</span><span class="p">()</span>
+<span class="n">registry</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">MetricFitFactorization</span><span class="p">(</span><span class="s2">"eri"</span><span class="p">,</span> <span class="n">three_index</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">))</span>
+
+<span class="n">factorization</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">FactorizationPass</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">ProvenancePropagation</span><span class="p">())</span>   <span class="c1"># carries a tag to the operand handles</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">factorization</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The substitution alone would make the arithmetic <strong>worse</strong>. Replacing one tensor
+by two factors and contracting them in the captured order is more work, not
+less; the whole value is in the re-association afterwards, which is why the pass
+costs the result twice before emitting anything: symbolically, which is the
+claim about the family, and at the extents the graph holds, which is the veto
+described above.</p>
+<section id="what-the-library-ships">
+<h3>What the library ships<a class="headerlink" href="#what-the-library-ships" title="Link to this heading">#</a></h3>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">MetricFitFactorization</span></code></dt><dd><p>Density fitting: a rank-four tensor as <code class="docutils literal notranslate"><span class="pre">B[Q,m,n]</span> <span class="pre">B[Q,p,q]</span></code> with
+<code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">=</span> <span class="pre">J^{-1/2}</span> <span class="pre">R</span></code> from a caller-supplied three-index tensor and a symmetric
+positive-definite metric. The bound it records is <strong>asserted</strong>, and it has to
+be: the error of a fit is its difference from the exact four-index tensor,
+and a caller holding that tensor had no reason to fit it. What is measured
+instead, per bind, is how many auxiliary directions the guarded inverse
+square root threw away, which is a specific and common way for accuracy to
+degrade quietly.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ThcFactorization</span></code></dt><dd><p>Tensor hypercontraction: a five-factor chain over a grid, fitted by least
+squares from the three-index tensor. The grid is a registered space with a
+symbolic extent, declared by the caller through <code class="docutils literal notranslate"><span class="pre">register_grid_space</span></code>,
+because a grid is chosen per problem. It takes one collocation matrix per
+axis, so it can fit an occupied-virtual block rather than the whole basis,
+and on water in cc-pVDZ that block fit is an order of magnitude more accurate
+than the whole-basis fit of the same integrals. Its tolerance is
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-thc-epsilon"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:thc-epsilon</span></code></a>, asserted in the record, with the
+least-squares residual against the three-index tensor measured per bind.
+A residual far above the asserted tolerance is the signal that the grid was
+too coarse.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NaturalAuxiliaryFactorization</span></code></dt><dd><p>The first provider whose factors <strong>shorten</strong> an index rather than splitting a
+tensor. The three-index tensor, seen as a matrix against the pair index, has
+a singular value decomposition, and the directions below
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-naf-threshold"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:naf-threshold</span></code></a> are dropped. Both occurrences of the
+tensor in a contraction are substituted, and the search then contracts the
+two truncated transformations together first, which is where the saving is.
+Nobody had to teach it that the small matrix is nearly an identity, only that
+it is the cheapest thing to build out of two of them. The record is
+<strong>measured</strong>: the norm of the dropped singular values. At water in cc-pVDZ a
+threshold of <code class="docutils literal notranslate"><span class="pre">1e-1</span></code> keeps 39 of 84 auxiliary functions at a recorded bound
+of <code class="docutils literal notranslate"><span class="pre">1.06e-1</span></code>, against a relative MP2 energy error of <code class="docutils literal notranslate"><span class="pre">5.8e-4</span></code>. That is a bound on
+the tensor, so it is loose against an energy, and loose in the safe
+direction; <code class="docutils literal notranslate"><span class="pre">test_naf_python.py</span></code> sweeps four thresholds and asserts it.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">BasisTruncation</span></code></dt><dd><p>Frozen natural orbitals, and the one member of this list that is <strong>not</strong> a
+provider: nothing is factored, a space is replaced by a contained subspace.
+The MP2 virtual-virtual density is diagonalized, the orbitals above
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-fno-occupation"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:fno-occupation</span></code></a> are kept, every interface tensor
+over the virtual space is projected into the smaller one, and the truncated
+Fock block is semicanonicalized so the denominators are diagonal again. The
+pass takes the amplitudes, the virtual-virtual Fock block and the occupied
+orbital energies rather than building them. At water in cc-pVDZ a cutoff of
+<code class="docutils literal notranslate"><span class="pre">1e-3</span></code> keeps 9 of 19 virtual orbitals.</p>
+<p>Its record is the third kind of thing a record can be: not a claimed
+tolerance and not a dropped norm, but the MP2 correlation energy the
+truncation removed, measured, which composes on the absolute side. A program
+that wants the corrected number reads it off the record and adds it back,
+which is what makes the record worth composing rather than an extra output.
+<code class="docutils literal notranslate"><span class="pre">optimizer_tour.py</span></code> prints the corrected energy landing back on the
+untruncated one.</p>
+</dd>
+</dl>
+<p>Two providers claiming one tag are alternatives ranked by profitability rather
+than a composition. Two passes with a claim on one tensor do not compose at all,
+and the tour shows what that looks like: after the truncation projects the
+three-index tensor, nothing but the setup reads it, so an auxiliary truncation
+looking for a contraction to re-associate around finds none and says so.</p>
+</section>
+</section>
+<section id="trading-accuracy-for-scaling">
+<span id="optimizer-lossy"></span><h2>Trading accuracy for scaling<a class="headerlink" href="#trading-accuracy-for-scaling" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">LaplaceTransform</span></code> is the pass with no provider behind it. It recognizes a
+tagged energy denominator, replaces it by a quadrature, and pushes the resulting
+per-axis exponentials onto the factors of whatever the denominator multiplies,
+which is what decouples the four indices.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">annotate_tag</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">cg</span><span class="o">.</span><span class="n">LaplaceTransform</span><span class="o">.</span><span class="n">denominator_tag</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">"eps_occ"</span><span class="p">,</span> <span class="s2">"eps_vir"</span><span class="p">,</span> <span class="s2">"eps_occ"</span><span class="p">,</span> <span class="s2">"eps_vir"</span><span class="p">],</span> <span class="s2">"+-+-"</span><span class="p">))</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">LaplaceTransform</span><span class="p">()</span>
+<span class="n">transform</span><span class="o">.</span><span class="n">set_epsilon</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">transform</span><span class="o">.</span><span class="n">add_energy</span><span class="p">(</span><span class="s2">"eps_occ"</span><span class="p">,</span> <span class="n">eps_occ</span><span class="p">)</span>
+<span class="n">transform</span><span class="o">.</span><span class="n">add_energy</span><span class="p">(</span><span class="s2">"eps_vir"</span><span class="p">,</span> <span class="n">eps_vir</span><span class="p">)</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The knob is a target accuracy, <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-laplace-epsilon"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:laplace-epsilon</span></code></a>, and
+not a point count. A tolerance is what composes with the accuracy budget and
+what a record can state; a count is a means, and the same count over a wider
+spectral range is a different approximation. The count is derived at optimize
+time from the tolerance and the range the bound orbital energies span. At water
+in cc-pVDZ that is 16 points at <code class="docutils literal notranslate"><span class="pre">1e-3</span></code> and 60 at <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>, and the emitted
+node count is the same at both, because the quadrature index becomes an ordinary
+contracted letter rather than a loop over terms.</p>
+<p>Two things about writing the denominator are worth knowing before the pass
+declines your program.</p>
+<p>The denominator may be built inside the capture, but only as a <strong>recipe the pass
+can read</strong>: an <code class="docutils literal notranslate"><span class="pre">outer_sum</span></code> over the tagged energy vectors followed by the
+registered <code class="docutils literal notranslate"><span class="pre">recip</span></code> element operation. Everything the tag claims is checked
+against those nodes, and the chain is then dissolved along with the tensor, so
+the four-index denominator is never allocated. An anonymous Python callable in
+place of <code class="docutils literal notranslate"><span class="pre">recip</span></code> says only that something is applied to every element, so the
+pass cannot verify that writer and declines, naming it as not the <code class="docutils literal notranslate"><span class="pre">recip</span></code>
+element transform.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">outer_sum</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="p">[</span><span class="n">eps_o</span><span class="p">,</span> <span class="n">eps_v</span><span class="p">,</span> <span class="n">eps_o</span><span class="p">,</span> <span class="n">eps_v</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">])</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">element_transform</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="s2">"recip"</span><span class="p">)</span>     <span class="c1"># the registered op, not a lambda</span>
+</pre></div>
+</div>
+<p>The pass takes its own copy of the numerator it rewrites and leaves the
+definition standing for whatever else reads it, so <strong>one integral is the correct
+program</strong>. A caller who writes the contraction twice gets the same rewrite, the
+same point count and the same energy, from a capture one node larger.</p>
+<section id="records-and-what-they-are-for">
+<h3>Records, and what they are for<a class="headerlink" href="#records-and-what-they-are-for" title="Link to this heading">#</a></h3>
+<p>Every lossy rewrite leaves a record on the graph, saved with the structure:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">approximations</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">pass_name</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">bound</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">effect</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
+
+<span class="n">tolerance</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">approximation_tolerance</span><span class="p">(</span><span class="s2">"E_corr"</span><span class="p">)</span>
+<span class="n">budget</span> <span class="o">=</span> <span class="n">tolerance</span><span class="o">.</span><span class="n">absolute</span> <span class="o">+</span> <span class="n">tolerance</span><span class="o">.</span><span class="n">relative</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A record carries the tolerance the pass was <strong>asked</strong> for and, separately, the
+bound it <strong>states</strong>, which are usually equal and are not the same thing. It
+carries the units that bound is in, because a number without units is not a
+bound and the three kinds do not convert into one another: an element-wise
+bound says nothing about a norm. And it carries whether the number was measured
+or asserted, because a bound and a guess are the same double and a reader of a
+saved graph months later cannot tell them apart otherwise.</p>
+<p>Composition is per unit and is not addition in general. Two absolute bounds add,
+by the triangle inequality. Two relative ones compose as <code class="docutils literal notranslate"><span class="pre">e1</span> <span class="pre">+</span> <span class="pre">e2</span> <span class="pre">+</span> <span class="pre">e1*e2</span></code>,
+because the second rewrite’s error is relative to the already perturbed result,
+and dropping the product term makes a composed budget quietly optimistic, which
+is the one direction an accuracy contract must never fail in. The absolute
+bounds, element-wise and energy-like, add into one number; absolute and relative
+bounds do not combine at all and are reported as two numbers.</p>
+<p>Two passes that compose on one water program are the basis truncation and the
+quadrature, in that order. They act on different quantities, and the one link
+between them is the energy vector the denominator recipe names: the truncation
+points that recipe at the semicanonical energies it produced, and the quadrature
+then verifies the chain it was always going to verify. The other order is
+declined, because a quadrature carries exponentials fitted for the space the
+denominator ran over and nothing re-derives them from a truncated one.</p>
+<p>A graph carries an <strong>accuracy budget</strong> too, which is where a pass refuses rather
+than spends:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">set_accuracy_budget</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">ApproximationEffect</span><span class="o">.</span><span class="n">NormRelative</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The budget caps one kind of error, so a record in other units is refused rather
+than admitted under a cap a caller would reasonably read as covering everything.
+It is a property of the run rather than of the graph, so it is never saved: a
+loaded graph’s caller states their own. The refusal happens before anything is
+rewritten, so a graph is never left half rewritten with an unrecorded
+approximation in it.</p>
+</section>
+<section id="testing-against-a-lossy-graph">
+<h3>Testing against a lossy graph<a class="headerlink" href="#testing-against-a-lossy-graph" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">einsums.testing</span></code> reads the records, so a comparison does not need a tolerance
+picked by hand:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">einsums.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_close</span>
+<span class="n">assert_close</span><span class="p">(</span><span class="n">got</span><span class="p">,</span> <span class="n">want</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">"E_corr"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The helper asks the graph for <code class="docutils literal notranslate"><span class="pre">approximation_tolerance(output)</span></code> and adds both
+sides to the dtype baseline. Added rather than maxed, because rounding and a
+deliberate approximation are both present in the result and the bound that holds
+is their sum.</p>
+</section>
+</section>
+<section id="the-rewrites-you-will-see-in-the-report">
+<h2>The rewrites you will see in the report<a class="headerlink" href="#the-rewrites-you-will-see-in-the-report" title="Link to this heading">#</a></h2>
+<p>Three passes in the default pipeline rewrite what a program computes <em>with</em>
+rather than how it is scheduled, and none of them moves the answer beyond the
+bound its tier declares. They are described in full, with what each one reports,
+in the <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html#computegraph-optimization-passes"><span class="std std-ref">pass catalog</span></a>; what follows is
+what a user meets.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> is the search. It takes two decisions as one: how each
+product of three or more tensors is bracketed, and which partial products
+several of them should share, because fixing either first assumes the other. It
+is <strong>off by default</strong>, which is the point rather than caution: every other
+structural pass walks the graph once, and a search’s runtime is a function of
+how many candidates the program offers, which nobody can predict from outside.
+Switch it on with <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-structural-search"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:structural-search</span></code></a> or, for one
+pipeline, <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization.set_search_enabled(True)</span></code>.</p>
+<p>On the coupled-cluster doubles residual it finds the shape a hand-optimized code
+reaches by hand: the tau term routed through two different intermediates is one
+three-factor product under the flattening, the search shares one <code class="docutils literal notranslate"><span class="pre">o^4</span></code>
+intermediate between both routes, and three contractions replace four with the
+<code class="docutils literal notranslate"><span class="pre">v^4</span></code> tensor never formed.</p>
+<p><strong>You write the integral once.</strong> An author-named intermediate that several
+statements read used to pin the algebra around it, so a program wanting one half
+of an expression re-bracketed had to write the value twice. The flattener now
+inlines a definition into each consumer whose bracketing it improves and keeps
+the definition for the rest, with the cost deciding rather than a rule: a
+consumer that gains nothing reads the definition instead, and the whole rewrite
+is still measured against the captured bracketing before anything is emitted.
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-factorization-max-readers"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:factorization-max-readers</span></code></a> bounds how many consumers a
+definition may be copied into, four by default, and a definition past it is left
+whole with that reason in the tally.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DeltaElimination</span></code> is the exact one, and it is in the default pipeline.
+Contraction against a tagged Kronecker delta is a rename, so it does the rename
+and drops the delta; a letter summed over two spaces the registry says share no
+element has no term to sum, so the contraction becomes a scaling of the
+destination by its own prefactor. Both halves are justified by a <strong>declaration</strong>
+rather than by the data, which is why the delta needs its tag and the disjoint
+spaces need their relation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LayoutAssignment</span></code> treats per-tensor storage order as a global decision. What
+it minimizes is not the cost of <code class="docutils literal notranslate"><span class="pre">Permute</span></code> nodes, of which a real captured
+program has almost none, but the copy a contraction kernel makes inside itself
+for an operand it cannot read as a flat matrix, which never appears as a node at
+all. It also folds away a permuted copy whose chosen storage order equals its
+source’s, which is a case a peephole cannot reach when several contractions read
+the copy.</p>
+</section>
+<section id="fitting-the-program-into-memory">
+<h2>Fitting the program into memory<a class="headerlink" href="#fitting-the-program-into-memory" title="Link to this heading">#</a></h2>
+<p>A full-axis capture declares the tensors the equations mention, and for a
+density-fitted method those are exactly the objects density fitting exists to
+avoid. <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> slices free axes of the program and streams every
+intermediate that carries them, so the body is the same algebra at one slice.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tiling</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">AxisTiling</span><span class="p">()</span>
+<span class="n">tiling</span><span class="o">.</span><span class="n">set_memory_cap</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>          <span class="c1"># bytes</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tiling</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">())</span>   <span class="c1"># the schedule still needs its lifecycles</span>
+</pre></div>
+</div>
+<p>The cap is <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-tiling-memory-cap"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-memory-cap</span></code></a>, in bytes, and it is the
+first knob that describes the <strong>machine</strong> rather than the program or a
+tolerance. It is read three times over: whether to tile at all, since a program
+whose largest intermediate already fits is left alone; which axes and blocks,
+since the pass keeps the candidate the cost model predicts fastest among those
+that bring the footprint under the cap; and how deep, since a chunk of slices is
+the grouped form of the same body. Zero is the spelling for a caller who wants the
+captured schedule.</p>
+<p>By default the cap is derived from the machine. An intermediate may take what
+<a class="reference internal" href="arguments.html#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> leaves after every other tensor alive beside it:
+the caller’s tensors throughout, an intermediate from its first writer to its
+last reader, and nothing only a body running before or after this one uses. In
+a program whose peak fits the budget it takes no more than
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-tiling-budget-share"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-budget-share</span></code></a> of the budget, and in one over its
+budget a loop may take all that the budget leaves. The share is there
+because fitting is not the only reason to stream: an intermediate that takes a
+large part of the machine costs the kernels that write and read it, and a
+program that holds it whole can be slower than one that streams it in blocks. A
+program that fits with no intermediate over its share is left alone. On that
+basis the pass is in the default pipeline, after the algebraic rewrites, and a
+full-axis capture is tiled without being asked when it would not fit or when one
+of its intermediates is that large. A positive cap, as above, bounds each
+intermediate on its own, for a caller who wants a smaller footprint than the
+machine allows, and the share is not read.</p>
+<p>An axis a contraction sums over can be sliced as well, when that contraction’s
+destination keeps none of the sliced axes and nothing else in the loop reads it.
+The destination is scaled by the contraction’s prefactor once, before the loop,
+and each iteration adds its block’s share, so a destination that starts with a
+value keeps it exactly once. The report names each such destination. The
+density-fitted particle ladder is the usual case: both of its contractions
+share the auxiliary index, the first producing it and the second summing it,
+and one loop over blocks of it holds the half-transformed tensor a block at a
+time.</p>
+<p>Only intermediates are streamed, and a declared tensor is an intermediate only
+when its declaration says so. <code class="docutils literal notranslate"><span class="pre">graph.declare_tensor(name,</span> <span class="pre">dims)</span></code> declares a
+result: the caller may read it once the graph has run, so it has to exist whole
+then, and the pass leaves it whole however large. Nothing in the equations says
+which declared tensors the caller reads afterwards, so the declaration is the
+only place that can. A tensor the program builds for its own use, such as the
+half-transformed integrals of a density-fitted ladder, belongs in
+<code class="docutils literal notranslate"><span class="pre">graph.declare_tensor(name,</span> <span class="pre">dims,</span> <span class="pre">intermediate=True)</span></code>. Declared as a result,
+that one is the largest tensor of the program and nothing streams it, and the
+report says so at every verbosity:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>- [structural-resource] AxisTiling: held 'H' whole, 79213800 bytes against a cap
+  of 2684354, because it is declared as a result the caller may read after
+  execute(); declare it as an intermediate if nothing does
+</pre></div>
+</div>
+<p>The other side of the same declaration: an intermediate keeps its values only
+while the graph replays. A pass may free it after its last use, reuse its
+memory for another tensor, or hold it a block at a time, and which of those
+happens depends on its size, the machine and the pipeline. So using an
+intermediate after <code class="docutils literal notranslate"><span class="pre">execute()</span></code> is refused, always, with an error that names
+the tensor and the graph: reading it from Python, and passing it, or a view of
+it, to an eager operation from Python or C++. The same use from inside the
+replay, such as a <code class="docutils literal notranslate"><span class="pre">cg.custom</span></code> node, is not refused. Declare a tensor you use
+afterwards as a result.
+A result the graph declared is still the graph’s to size: a pass that changes
+the extents of a space, such as a basis truncation, resizes it as it would an
+intermediate.</p>
+<p>On the full-axis DF-MP2 capture at water in cc-pVDZ, under a cap of 4096 bytes,
+it chooses the two occupied axes, 25 slices at depth one, and the largest
+intermediate the loop holds falls from 72200 bytes to 2888. With the denominator
+supplied from outside the capture, six captured nodes become two, a <code class="docutils literal notranslate"><span class="pre">Scale</span></code>
+and a <code class="docutils literal notranslate"><span class="pre">Loop</span></code>, and the energy agrees with the untiled replay, with a numpy pair
+loop that never forms a four-index tensor, and with the fixture’s own reference.
+<code class="docutils literal notranslate"><span class="pre">test_axis_tiling_python.py</span></code> asserts every one of those. <code class="docutils literal notranslate"><span class="pre">optimizer_tour.py</span></code>
+prints the axes, the slice count, the footprint and the energy for its own
+capture, which builds the denominator inside it.</p>
+<p>The occupied axes are not chosen because they are the smaller ones, though at
+this molecule they are. The exchange permutation of the MP2 energy
+exchanges the two virtual indices, so a slice of the permuted tensor would need
+a slice of its source at a pair the body is not at, and the virtual pair is
+rejected structurally, at every extent, on every molecule. The size argument
+agrees with that answer at water only by accident.</p>
+<p>Two things about the schedule are worth stating plainly.</p>
+<p>A tensor written by a node the pass cannot re-emit stays whole and outside the
+loop. A denominator built inside the capture is that case, since an
+<code class="docutils literal notranslate"><span class="pre">outer_sum</span></code> records a node the schedule does not slice; the pass streams the
+tensors of the region it rewrote, and the tour prints which buffers the tiled
+graph actually allocates so the difference is visible. Dissolving a denominator
+is what the Laplace transform is for; slicing the rest is what this pass is for.</p>
+<p>A tiled graph does not save, and it is not meant to. The file carries the
+algebra, a load rebinds it to fresh buffers, and the loop is emitted again on
+the other side against whatever cap is in force there. That is the phase rule
+read back rather than a limitation met halfway.</p>
+<section id="tensors-that-live-in-a-file">
+<span id="optimizer-backed-tensors"></span><h3>Tensors that live in a file<a class="headerlink" href="#tensors-that-live-in-a-file" title="Link to this heading">#</a></h3>
+<p>Tiling slices the intermediates a program builds. A tensor the program reads in
+full at every use, the virtual-virtual block of the fitted integrals in a
+DF-CCSD ladder for instance, is not an intermediate, and no slicing of the
+program makes it smaller. A <strong>backing</strong> says where such a tensor lives instead
+of memory: an entry of an <code class="docutils literal notranslate"><span class="pre">.etn</span></code> file, given when the tensor is declared on
+the graph.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bvv</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_tensor</span><span class="p">(</span><span class="s2">"Bvv"</span><span class="p">,</span> <span class="n">backing</span><span class="o">=</span><span class="n">einsums</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">etn</span><span class="p">(</span><span class="s2">"ints.etn"</span><span class="p">,</span> <span class="s2">"Bvv"</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The entry records the tensor’s extents and element type, so a tensor backed for
+reading takes both from it. Extents or a <code class="docutils literal notranslate"><span class="pre">dtype</span></code> given as well have to match
+the entry’s. <code class="docutils literal notranslate"><span class="pre">cg.annotate(bvv,</span> <span class="pre">backing=...,</span> <span class="pre">graph=g)</span></code> attaches the same
+backing to a tensor already declared, and <code class="docutils literal notranslate"><span class="pre">einsums.io.EtnFile</span></code> names a file
+once for all its entries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ints</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">EtnFile</span><span class="p">(</span><span class="s2">"ints.etn"</span><span class="p">)</span>
+<span class="n">bvv</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_tensor</span><span class="p">(</span><span class="s2">"Bvv"</span><span class="p">,</span> <span class="n">backing</span><span class="o">=</span><span class="n">ints</span><span class="o">.</span><span class="n">entry</span><span class="p">(</span><span class="s2">"Bvv"</span><span class="p">))</span>
+<span class="n">bov</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_tensor</span><span class="p">(</span><span class="s2">"Bov"</span><span class="p">,</span> <span class="n">backing</span><span class="o">=</span><span class="n">ints</span><span class="o">.</span><span class="n">entry</span><span class="p">(</span><span class="s2">"Bov"</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>A tensor backed for reading is filled from its entry at every replay, so a file
+rewritten between replays is picked up by the next one. A tensor declared by
+the program and handed in, rather than declared on the graph, cannot be backed:
+the caller already holds it. A node that writes a read-backed tensor is an error
+<code class="docutils literal notranslate"><span class="pre">Graph.verify()</span></code> names.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">write=True</span></code> the direction is the other one. The graph produces the
+tensor, and the entry receives it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bvv</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_tensor</span><span class="p">(</span><span class="s2">"Bvv"</span><span class="p">,</span> <span class="p">[</span><span class="n">naux</span><span class="p">,</span> <span class="n">nvir</span><span class="p">,</span> <span class="n">nvir</span><span class="p">],</span> <span class="n">backing</span><span class="o">=</span><span class="n">einsums</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">etn</span><span class="p">(</span><span class="s2">"ints.etn"</span><span class="p">,</span> <span class="s2">"Bvv"</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Declaring it creates the file when it does not exist and reserves the entry at
+the tensor’s shape and type, leaving the file’s other entries alone. An entry
+of the same shape and type is reused; an entry of any other is refused at the
+declaration rather than at the end of a long replay. A write-backed tensor that
+nothing writes is the other error <code class="docutils literal notranslate"><span class="pre">verify()</span></code> names.</p>
+<p>A tensor the graph builds by adding terms into it, a residual for instance, is
+declared at zero. It starts at zero at every replay and is stored after its
+last term.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r2</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_zero_tensor</span><span class="p">(</span><span class="s2">"r2"</span><span class="p">,</span> <span class="p">[</span><span class="n">nocc</span><span class="p">,</span> <span class="n">nocc</span><span class="p">,</span> <span class="n">nvir</span><span class="p">,</span> <span class="n">nvir</span><span class="p">],</span> <span class="n">backing</span><span class="o">=</span><span class="n">einsums</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">etn</span><span class="p">(</span><span class="s2">"amps.etn"</span><span class="p">,</span> <span class="s2">"r2"</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SlabStreaming</span></code> streams a write-backed tensor only from a writer that
+overwrites it, so such a tensor is held whole while its terms add into it.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">update=True</span></code> the graph does both: each replay starts with the tensor
+holding what the entry holds, and the entry holds the tensor’s final value once
+the replay ends. The amplitudes of an iterative method are the case it is for.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t2</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">declare_tensor</span><span class="p">(</span><span class="s2">"t2"</span><span class="p">,</span> <span class="n">backing</span><span class="o">=</span><span class="n">einsums</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">etn</span><span class="p">(</span><span class="s2">"amps.etn"</span><span class="p">,</span> <span class="s2">"t2"</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="o">...</span>                                        <span class="c1"># terms that read t2 into r2</span>
+    <span class="n">la</span><span class="o">.</span><span class="n">direct_division</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>    <span class="c1"># the new t2</span>
+</pre></div>
+</div>
+<p>The new value is written beside the old one and replaces it in one commit of
+the file at the end of the replay, so a crash leaves the previous value. Every
+update backing a graph has on one file is published in that same commit. A read
+before the first write of the tensor sees the value the replay started from and
+may be streamed from the file; a read after it sees the new value, in memory.</p>
+<p>What a backing changes is where the tensor lives; when it is held whole is the
+<code class="docutils literal notranslate"><span class="pre">SlabStreaming</span></code> pass’s decision, which runs after <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> in the
+default pipeline. A backed tensor larger than its share of
+<a class="reference internal" href="arguments.html#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> (the same
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-tiling-budget-share"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-budget-share</span></code></a> tiling reads) is never held whole:</p>
+<ul class="simple">
+<li><p>A contraction inside a loop that already slices the tensor, such as the
+loop <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> builds, reads or writes the box that loop’s view names,
+at every iteration, in place of the view. The loop has chosen the box, on
+whichever axes it slices.</p></li>
+<li><p>Any other contraction that reads it becomes a loop over blocks of its
+<strong>last</strong> axis, reading one slab per block. The last axis because the file
+keeps elements column-major, so a block of it is one contiguous read.</p></li>
+<li><p>The contraction that produces a write-backed tensor computes one block at a
+time and writes it, in either kind of loop. In a loop of the pass’s own it
+must overwrite the tensor (a destination prefactor of zero), be its only
+writer, and read no backed tensor.</p></li>
+<li><p>A write-backed tensor that several statements write, as a residual is written
+by every term that adds into it, is a loop of <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code>’s own: the pass
+loops over the tensor’s axes with every one of those statements inside, so
+each box is finished in memory and stored once, after the last of them. The
+first of them must overwrite the box, since the storage, only ever written,
+does not hold the value the tensor had before.</p></li>
+</ul>
+<p>A backed tensor that fits, or one the pass declines, is loaded whole before its
+first reader or stored whole after its last writer, once per replay. That is
+also how a graph with the pass switched off runs, so the pass changes the
+footprint and never the answer: a block that writes a slice of the result gives
+the captured result exactly, and a block over a summed letter adds its partial
+sum in a different order, within the re-association tolerance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> counts what moving a backed tensor costs when it chooses its
+loop: a byte of storage weighs <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-storage-byte-weight"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:storage-byte-weight</span></code></a>
+bytes of memory traffic, and each contiguous run of the storage a block takes
+another <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-storage-run-bytes"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:storage-run-bytes</span></code></a>. A loop that slices a backed
+operand on the axis its storage can serve as long runs is preferred over one
+that cuts it into many short ones, and over one that re-reads it whole on every
+iteration once the tensor is large enough for that to cost more.</p>
+<p>How the file lays the tensor out is chosen as well. An entry a write backing
+creates is stored with its axes in the order that makes the boxes the program
+moves of it the fewest runs of the file, which puts the axis a loop slices last.
+The entry records that order, and every read and write takes the declared order
+whatever it is, so a later run reads the tensor back without being told how it
+was stored. An entry another run created keeps its order; when another order
+would at least halve the runs its boxes cost here, the report says which, at
+every verbosity. <code class="docutils literal notranslate"><span class="pre">einsums.io.etn(path,</span> <span class="pre">entry,</span> <span class="pre">write=True,</span> <span class="pre">order=[...])</span></code> fixes
+the order of a new entry, for a caller who knows how a later run will read it.</p>
+<p>The report says which tensors were streamed and why the others were not. A
+decline names its reason: the last-axis letter repeated in an operand, a view
+that permutes the tensor, one backed tensor read on both sides of a
+contraction, a destination whose first writer adds into it. Of two backed
+operands both over their share, the larger is read a slab at a time and the
+smaller held whole. Boxes are read and written independently, so a contraction in a
+loop may read a box of each of two backed operands, two views of one tensor
+among them, and write a box of a third. A box over an axis that is not the last
+is many short runs of the file, and the report gives the count for each box.</p>
+<p><code class="docutils literal notranslate"><span class="pre">out_of_core.py</span></code> in the ComputeGraph examples builds one program as a CC code
+is built, for water in cc-pVTZ under a 16 MB budget: a setup body produces
+<code class="docutils literal notranslate"><span class="pre">Bvv</span></code> into a file, every iteration of the loop runs the particle ladder on it,
+and the file is stored so the blocks the loop reads are contiguous. A second
+part reuses the file from another graph, as a later run would. Its docstring
+says which lines of the report to read; the program’s peak is 11.70 MB, with
+<code class="docutils literal notranslate"><span class="pre">Bvv</span></code> at 3.2 MB and the ladder’s four-index intermediate at 79 MB.</p>
+<p>At a size where a backing matters, the same ladder for benzene in cc-pVDZ
+(<code class="docutils literal notranslate"><span class="pre">Bvv</span></code> 29 MB, the intermediate 12.8 GB) runs under a 128 MB budget at 1.46
+times the time of a resident <code class="docutils literal notranslate"><span class="pre">Bvv</span></code> on one thread and 1.33 times on four, for
+26% less peak memory. Under a 4 GB budget a backing costs 9 to 15%.
+A file another program wrote with <code class="docutils literal notranslate"><span class="pre">Q</span></code> first, the order in which a <code class="docutils literal notranslate"><span class="pre">Q</span></code> block
+is thousands of short runs, makes <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> slice other axes and read
+<code class="docutils literal notranslate"><span class="pre">Bvv</span></code> whole at each iteration; that ran in 4.56 seconds on one thread and
+3.70 on four, against 5.01 and 3.50 for the order the program chooses.</p>
+</section>
+</section>
+<section id="driving-the-pass-manager">
+<h2>Driving the pass manager<a class="headerlink" href="#driving-the-pass-manager" title="Link to this heading">#</a></h2>
+<p>Every pass declares a phase, and the phase answers one question: may a saved
+graph keep this pass’s output, or must the output be re-derived on the machine
+that loads it?</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">.</span><span class="n">analysis_pass_manager</span><span class="p">()</span>     <span class="c1"># read-only; safe on a graph in any state</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">structural_pass_manager</span><span class="p">()</span>   <span class="c1"># machine-independent rewrites; what a file keeps</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">resource_pass_manager</span><span class="p">()</span>     <span class="c1"># tiled-op lowering, placement, distribution; never saved</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">tuning_pass_manager</span><span class="p">()</span>       <span class="c1"># batching, reordering, memory planning, streams</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">()</span>      <span class="c1"># the ones safe by default, in the default order</span>
+</pre></div>
+</div>
+<p>They are views of the default pipeline rather than a re-planned one, built in
+place by <code class="docutils literal notranslate"><span class="pre">populate_analysis</span></code>, <code class="docutils literal notranslate"><span class="pre">populate_structural</span></code>, <code class="docutils literal notranslate"><span class="pre">populate_resource</span></code>,
+<code class="docutils literal notranslate"><span class="pre">populate_tuning</span></code> and <code class="docutils literal notranslate"><span class="pre">populate_default</span></code>. The two a caller runs over a
+loaded graph are the resource and tuning ones, in that order, which is what the
+<a class="reference internal" href="#optimizer-round-trip"><span class="std std-ref">round trip</span></a> below does.</p>
+<section id="switching-a-pass-off">
+<h3>Switching a pass off<a class="headerlink" href="#switching-a-pass-off" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="arguments.html#cmdoption-einsums-pass-disable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:pass:disable</span></code></a> takes a comma-separated list of pass names, and
+<code class="docutils literal notranslate"><span class="pre">PassManager.disable</span></code> / <code class="docutils literal notranslate"><span class="pre">PassManager.enable</span></code> are the programmatic half. An
+explicit <code class="docutils literal notranslate"><span class="pre">enable</span></code> wins over the option, because the more specific statement
+about this pipeline is the one that should win, and a name matching no pass in
+the pipeline is reported rather than ignored. Switching passes off one at a time
+against an unoptimized replay is what <code class="docutils literal notranslate"><span class="pre">cg.BisectDriver</span></code> automates when an
+optimized graph produces a wrong number.</p>
+</section>
+<section id="the-optimizer-s-own-budget">
+<h3>The optimizer’s own budget<a class="headerlink" href="#the-optimizer-s-own-budget" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="arguments.html#cmdoption-einsums-graph-optimizer-budget"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:optimizer-budget</span></code></a> is a wall-clock allowance in
+milliseconds for each search pass, and <code class="docutils literal notranslate"><span class="pre">PassManager.set_optimizer_budget</span></code>
+overrides it for one pipeline. Zero means unlimited.</p>
+<p><strong>A cut-off search returns a different graph.</strong> It is a valid one, the arithmetic
+is equivalent and a lossy pass’s error stays inside the bound it recorded, but
+the tree is the best candidate the search had reached rather than the best one
+there is, so two machines running one script can emit two different programs.
+<code class="docutils literal notranslate"><span class="pre">MultiTermFactorization.was_cut_off</span></code> is what says which happened, and the skip
+tally says so from verbosity 2 up. A program that compares two emitted graphs, or
+a test that pins one, should take the allowance away with
+<code class="docutils literal notranslate"><span class="pre">set_optimizer_budget(0)</span></code> and assert that nothing was cut off; both example
+tours do exactly that and say why in a comment.</p>
+<p>Two more bounds on the search are knobs rather than constants because they are
+properties of the program a caller brings.
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-factorization-max-factors"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:factorization-max-factors</span></code></a> is the largest number of
+factors a term may have before it is declined instead of searched, fourteen by
+default. The per-term program is <code class="docutils literal notranslate"><span class="pre">3^N</span></code> in that count, so a value in the
+twenties is a request to run under the budget and keep the best tree found when
+it expires rather than a way to hang a pipeline; the option help says so.
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-factorization-max-readers"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:factorization-max-readers</span></code></a> is the linear one described
+above.</p>
+</section>
+<section id="the-result-cache">
+<h3>The result cache<a class="headerlink" href="#the-result-cache" title="Link to this heading">#</a></h3>
+<p>The search is a pure function of a region’s structure, so its answer is kept and
+replayed when a structurally identical graph comes back. What an entry holds is
+a <strong>plan</strong> rather than a graph: the shared pairs that were committed, in order,
+the contraction tree chosen for each term, and which consumers a definition was
+kept for, written positionally so a plan found on one graph applies to another
+that hashes the same. The case it pays for is a pipeline whose stages present
+the same program under the same name.</p>
+<p>It does not pay for re-running a script, which is a new process with an empty
+cache; that case is what saving the optimized graph is for. A search cut off by
+its allowance is never stored, so a plan that comes back out is one an unbounded
+search would have found. The cache is on by default, and
+<code class="docutils literal notranslate"><span class="pre">--einsums:graph:no-factorization-cache</span></code> switches it off, which is the first thing to do when bisecting a wrong number, since two
+supposedly identical graphs getting one plan is the cheapest explanation to rule
+out.</p>
+</section>
+</section>
+<section id="saving-loading-and-binding">
+<span id="optimizer-round-trip"></span><h2>Saving, loading and binding<a class="headerlink" href="#saving-loading-and-binding" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">structural_pass_manager</span><span class="p">())</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">save_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s2">"mp2.eig"</span><span class="p">)</span>
+
+<span class="n">loaded</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">load_graph</span><span class="p">(</span><span class="s2">"mp2.eig"</span><span class="p">)</span>            <span class="c1"># or load_graph_into(path, registry)</span>
+<span class="n">cg</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">loaded</span><span class="p">,</span> <span class="p">{</span><span class="s2">"B_ov"</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="n">D</span><span class="p">,</span> <span class="s2">"E_corr"</span><span class="p">:</span> <span class="n">E</span><span class="p">})</span>
+<span class="n">loaded</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">resource_pass_manager</span><span class="p">())</span>
+<span class="n">loaded</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">tuning_pass_manager</span><span class="p">())</span>
+<span class="n">loaded</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Three categories of artifact are kept strictly apart, and the split is a
+correctness rule rather than a convenience.</p>
+<p><strong>Structure is saved</strong>: nodes, descriptors, edges, the interface manifest, space
+annotations, provenance tags and approximation records.</p>
+<p><strong>Tuning is re-derived</strong>: batching and bucket choices, the memory plan, stream
+assignment, GPU placement, the distribution plan, per-node thread widths, and
+the tiling schedule. Nothing machine-dependent is in the file. Reusing a saved
+tuning decision across machines is not a performance risk to weigh against
+convenience; a graph planned with mixed thread widths against one BLAS vendor
+and replayed against another does not merely run slower. So <code class="docutils literal notranslate"><span class="pre">save_graph</span></code>
+refuses a graph that a resource or tuning pass has already changed, and names
+those passes: save after <code class="docutils literal notranslate"><span class="pre">cg.structural_pass_manager()</span></code>, as above, and run the
+other two after loading. A pass counts however it was run, through a manager or
+on its own, unless all it changed is something the file leaves out, such as
+thread widths or stream assignment. A file that will only ever be loaded where it
+was planned can be written anyway with
+<code class="docutils literal notranslate"><span class="pre">cg.save_graph(g,</span> <span class="pre">path,</span> <span class="pre">allow_machine_dependent=True)</span></code>.</p>
+<p><strong>Setup is computed at bind</strong>: fitted factors, inverted metrics, quadrature
+points and weights. A setup body runs at the first <code class="docutils literal notranslate"><span class="pre">execute</span></code> after a bind
+rather than during the bind itself, so a bind that is never executed costs
+nothing, and <code class="docutils literal notranslate"><span class="pre">Graph.run_setup</span></code> is there for a caller who wants the fitting
+paid at a moment of their choosing.</p>
+<p>Repeated binds of one problem can skip the refit. <code class="docutils literal notranslate"><span class="pre">Graph.set_setup_key</span></code> takes a
+caller-supplied problem identity, and a body whose key matches what it last
+computed for is skipped; the default is an empty key, which refits on every
+bind, because refitting is always correct and a graph whose caller has said
+nothing about problem identity should get the behavior that cannot be wrong.</p>
+<p>Save <strong>before</strong> the resource phase runs. A <code class="docutils literal notranslate"><span class="pre">Materialize</span></code> node carries an
+allocating closure, and allocation is a resource decision a load re-derives
+rather than reads. <code class="docutils literal notranslate"><span class="pre">Graph.serializability_report()</span></code> names any node that blocks
+a save and the field that blocks it, so “can this graph be saved” has an
+actionable answer rather than a boolean; a graph holding a grouped batched GEMM,
+a parametric view, or an <code class="docutils literal notranslate"><span class="pre">outer_sum</span></code> is refused with that reason.</p>
+<p>Space names are what a file carries, and a load resolves them against the
+loading process’s registry. That is why the default registry is process-global.
+A program that does not save has no use for a shared namespace and should take
+one of its own, which is one line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registry</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">private_space_registry</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A registry refuses a second declaration of one name with different content
+rather than overwriting it, so two programs at two problem sizes registering a
+space whose extent is derived from the space it sits inside are a conflict, not
+a redeclaration. The message names every field the two declarations disagree on
+and both values.</p>
+</section>
+<section id="reading-the-report">
+<h2>Reading the report<a class="headerlink" href="#reading-the-report" title="Link to this heading">#</a></h2>
+<p>When a pass does nothing, the skip tally is the first thing to read, before the
+node count and long before the numbers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>          <span class="c1"># the tally prints from level 2 up</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">some_pass</span><span class="p">)</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">reason</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">some_pass</span><span class="o">.</span><span class="n">skip_reasons</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">explain()</span></code> reports what each pass did, which regions formed and which
+declined, with the aggregated reason and the number of candidates it applied to.
+A pass that ran, did nothing and said nothing is treated as a defect in this
+library rather than as normal, so a decline has a reason a caller can act on:
+that the structural search is switched off, that a tagged tensor is read by no
+two-operand contraction, that the decomposed form is not symbolically cheaper,
+that no candidate axis set brings the largest intermediate under the cap.</p>
+<p>The same report is there as records a program can read. Every pass keeps a
+<code class="docutils literal notranslate"><span class="pre">Decision</span></code> for each thing it applied, declined or noted: a stable <code class="docutils literal notranslate"><span class="pre">code</span></code>
+such as <code class="docutils literal notranslate"><span class="pre">&quot;slab-streaming.streamed-read&quot;</span></code>, the <code class="docutils literal notranslate"><span class="pre">text</span></code> the report prints, the
+<code class="docutils literal notranslate"><span class="pre">tensors</span></code> and node it is about, and named <code class="docutils literal notranslate"><span class="pre">facts</span></code> with units.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">decisions</span><span class="p">:</span>                    <span class="c1"># every pass's, in pipeline order</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">"slab-streaming.streamed-read"</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">tensors</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="s2">"block"</span><span class="p">),</span> <span class="n">d</span><span class="o">.</span><span class="n">fact</span><span class="p">(</span><span class="s2">"bytes"</span><span class="p">))</span>
+<span class="n">declined</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">some_pass</span><span class="o">.</span><span class="n">decisions</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">cg</span><span class="o">.</span><span class="n">DecisionKind</span><span class="o">.</span><span class="n">Declined</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Match the code, not the words: the words can improve, the codes do not change.
+<code class="docutils literal notranslate"><span class="pre">g.decisions</span></code> holds what the last <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> decided. A decline a pass has
+not yet given a code is still a record, with an empty <code class="docutils literal notranslate"><span class="pre">code</span></code> and its words in
+<code class="docutils literal notranslate"><span class="pre">reason</span></code>.</p>
+<p><a class="reference internal" href="arguments.html#cmdoption-einsums-pass-verbosity"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:pass:verbosity</span></code></a> supplies a level only where a program has not
+chosen its own with <code class="docutils literal notranslate"><span class="pre">set_verbosity</span></code>. Level 1 is a summary line per pass, 2 is
+each modification and each declined candidate, 3 is the per-candidate detail
+behind a decline, including which rung of the cost comparison decided it.
+The narration goes where <a class="reference internal" href="arguments.html#cmdoption-einsums-log-destination"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:destination</span></code></a> says, standard
+error by default, whatever the log level. It is for reading; a program or a test
+reads the same decisions from <code class="docutils literal notranslate"><span class="pre">decisions</span></code>.</p>
+<p>When a rewrite produces a wrong number, <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-dump-regions"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:dump-regions</span></code></a>
+prints the algebra each region rewrite raised, before and after, in the
+algebraic form rather than as a node list. A diff of two node-list dumps says
+which nodes changed; a diff of the algebra says what the rewrite <em>claimed</em>,
+which is where the mistake actually is.</p>
+</section>
+<section id="what-a-replay-did">
+<h2>What a replay did<a class="headerlink" href="#what-a-replay-did" title="Link to this heading">#</a></h2>
+<p>The report says what the passes planned; <code class="docutils literal notranslate"><span class="pre">graph.last_run()</span></code> says what the last
+replay did, measured as it ran.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="n">run</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">last_run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">wall_ms</span><span class="p">,</span> <span class="s2">"ms,"</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">peak_bytes</span><span class="p">,</span> <span class="s2">"bytes held at most"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">run</span><span class="o">.</span><span class="n">backings</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">bytes_read</span><span class="p">,</span> <span class="s2">"read in"</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">reads</span><span class="p">,</span> <span class="s2">"reads,"</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">bytes_written</span><span class="p">,</span> <span class="s2">"written"</span><span class="p">)</span>
+<span class="n">slowest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">ms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">nodes</span></code> holds every node the replay ran, a loop body’s summed over its
+iterations with <code class="docutils literal notranslate"><span class="pre">runs</span></code> counting them. <code class="docutils literal notranslate"><span class="pre">backings</span></code> holds what each file entry
+moved, counted wherever a pass moved it: a whole load or store, a streamed slab,
+a box, a publish. <code class="docutils literal notranslate"><span class="pre">peak_bytes</span></code> is the most the graph held at once of the
+tensors it allocates and frees, plus MemoryPlanning’s arena when there is one,
+which is one block that lives as long as the graph. <code class="docutils literal notranslate"><span class="pre">resident_bytes</span></code> is what
+the replay held from its start to its end beside them: the caller’s own tensors,
+and any intermediate given storage outside the graph’s allocate and free nodes.
+Their sum is what the program held at its peak, library scratch aside, and a
+replay whose sum is over <code class="docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code> reports the missed budget as an
+error, once per graph. <code class="docutils literal notranslate"><span class="pre">MemoryPlanning.managed_peak_memory</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MemoryPlanning.resident_memory</span></code> predict the two to the byte;
+<code class="docutils literal notranslate"><span class="pre">MemoryPlanning.peak_memory</span></code> is the plan’s own estimate, which counts every
+tensor freed after its last use. MemoryPlanning declines its arena where, counted
+as a replay counts it, the arena would hold the program over
+<code class="docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code> and the program without it holds less.</p>
+<p>To hear a replay as it runs, attach an observer. <code class="docutils literal notranslate"><span class="pre">cg.EventLog</span></code> keeps every
+event: each node’s start and end with its duration and thread, each read, write
+and publish of a backing with its bytes, and the replay’s start and end.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">EventLog</span><span class="p">()</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_observer</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="n">ends</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">events</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">cg</span><span class="o">.</span><span class="n">EventKind</span><span class="o">.</span><span class="n">NodeEnd</span><span class="p">]</span>
+<span class="n">log</span><span class="o">.</span><span class="n">write_chrome_trace</span><span class="p">(</span><span class="s2">"replay.json"</span><span class="p">)</span>   <span class="c1"># open in ui.perfetto.dev</span>
+</pre></div>
+</div>
+<p>An observer belongs to the graph and every body under it, and costs one pointer
+test per node while none is attached. In C++ a class derived from
+<code class="docutils literal notranslate"><span class="pre">ExecutionObserver</span></code> hears the events as they happen, on the thread they happen
+on, so it has to be thread-safe; one that throws is detached and the replay goes
+on. Python has the log rather than a callback, because a call into Python per
+node would hold the parallel executors to one thread.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cg.WaggleBridge()</span></code> is the observer for the profiler: while it records, every
+executor opens a zone per node, and the bridge labels it with the graph and node
+and with each read, write and publish of a backing the node made, so the viewer
+on port 19216 and the saved profile name the graph node behind a zone.</p>
+</section>
+<section id="what-s-next">
+<h2>What’s next<a class="headerlink" href="#what-s-next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorial_ccsd.html#tutorial-ccsd"><span class="std std-ref">Tutorial: From NumPy to an Optimized CCSD</span></a>, which applies the declarations on this page to one
+CCSD program, one at a time, and measures each.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optimizer_tour.py</span></code>, <code class="docutils literal notranslate"><span class="pre">annotate_and_rebind.py</span></code> and <code class="docutils literal notranslate"><span class="pre">TagsAndProviders.cpp</span></code>
+in the ComputeGraph examples directory.</p></li>
+<li><p><a class="reference internal" href="tutorial_compute_graph.html#tutorial-compute-graph"><span class="std std-ref">Tutorial: Computation Graphs</span></a> for capture, replay, control flow and the parts
+of the graph this page assumes.</p></li>
+<li><p><a class="reference internal" href="tutorial_performance.html#tutorial-performance"><span class="std std-ref">Tutorial: Performance Tuning</span></a> for the schedule and memory side.</p></li>
+<li><p><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html#computegraph-optimization-passes"><span class="std std-ref">The pass catalog</span></a> for what each pass
+of the default pipeline matches and reports.</p></li>
+<li><p><a class="reference internal" href="arguments.html#arguments"><span class="std std-ref">Command Line Arguments</span></a> for every option named here, with its default, its
+environment variable and its history.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial_ccsd.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: From NumPy to an Optimized CCSD</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorial_performance.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial: Performance Tuning</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#capture-once-optimize-replay">Capture once, optimize, replay</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saying-what-the-axes-are">Saying what the axes are</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-family-annotation-decides-rewrites">Why the family annotation decides rewrites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dim-symbols-and-a-graph-that-outlives-its-geometry">Dim symbols, and a graph that outlives its geometry</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saying-what-a-tensor-is">Saying what a tensor is</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-a-provider">Registering a provider</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-library-ships">What the library ships</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trading-accuracy-for-scaling">Trading accuracy for scaling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#records-and-what-they-are-for">Records, and what they are for</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-against-a-lossy-graph">Testing against a lossy graph</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-rewrites-you-will-see-in-the-report">The rewrites you will see in the report</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-the-program-into-memory">Fitting the program into memory</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors-that-live-in-a-file">Tensors that live in a file</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#driving-the-pass-manager">Driving the pass manager</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-a-pass-off">Switching a pass off</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-optimizer-s-own-budget">The optimizer’s own budget</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-result-cache">The result cache</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-and-binding">Saving, loading and binding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-report">Reading the report</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-a-replay-did">What a replay did</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

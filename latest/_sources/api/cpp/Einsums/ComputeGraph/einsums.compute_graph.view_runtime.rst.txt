@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.view_runtime:
+
+====================================
+einsums::compute_graph::view_runtime
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept ParentT> RuntimeTensorView<typename std::remove_cvref_t<ParentT>::ValueType> & view_runtime(ParentT &parent, std::vector<ViewAxis> axis_vec, std::vector<size_t> perm)
+
+   Runtime-rank counterpart to cg::view: record a non-owning slice of a RuntimeTensor parent.
+
+   Unlike the typed ``cg::view``, this path honors ``Drop`` axes
+   (rank-reducing integer index): the result rank is the parent rank minus
+   the number of Drop axes. The optional trailing ``perm`` vector applies an
+   axis permutation (result axis i aliases parent axis ``perm[i]``); this is
+   the runtime-rank counterpart of ``cg::permute_view``, and the Python
+   binding ``einsums.graph.permute_view`` takes it as a list. A Drop axis
+   and a permutation cannot be combined in one call (chain two views
+   instead). Strides are inherited from the parent. The slice's rank is read
+   from the parent at capture time; the executor rebuilds the slice each
+   iteration by re-emplacing a heap-stored RuntimeTensorView with new
+   pointer / dims / strides.

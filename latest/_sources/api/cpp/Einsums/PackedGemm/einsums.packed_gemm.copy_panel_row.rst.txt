@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.copy_panel_row:
+
+====================================
+einsums::packed_gemm::copy_panel_row
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void copy_panel_row(T *__restrict d, const T *__restrict s, int64_t MR)
+
+   Gather-pack A[mc:mc+mc_len, kc:kc+kc_len] into column-major MR*KC panels.
+
+   Supports single-M (fast paths with memcpy) and multi-M (flat-index-to-offset conversion).
+   Copies one MR-wide panel row. MR is a run-time value, so a plain loop or a
+   run-time-length memcpy puts overlap checks, a remainder loop or a library
+   call around every 8- or 16-element copy; the line-sized rows the tile
+   kernels use get a fixed-size copy instead, which is a few vector moves.

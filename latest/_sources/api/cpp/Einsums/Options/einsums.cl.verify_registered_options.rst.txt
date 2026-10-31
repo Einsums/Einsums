@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.verify_registered_options:
+
+======================================
+einsums::cl::verify_registered_options
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: void verify_registered_options()
+
+   Assert that nothing registered so far contradicts anything else.
+
+   Catches two descriptors on one key, or a key not derived from its name. Debug builds only; call
+   once, after registration and before the parse.
+
+   .. versionadded:: 2.0.0

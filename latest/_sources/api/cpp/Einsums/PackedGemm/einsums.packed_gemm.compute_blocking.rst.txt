@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.compute_blocking:
+
+======================================
+einsums::packed_gemm::compute_blocking
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: BlockingParams compute_blocking(int64_t elem_size)
+
+   Compute blocking parameters for the given element size in bytes.
+
+   Uses the CPU cache hierarchy to choose KC, MC, NC such that:
+
+   - One A panel (MC * KC * elem_size) fits in ~half the L2 cache.
+   - One B panel (KC * NC * elem_size) fits in ~half the L3 cache. This automatically handles complex types (16 bytes) vs real (8 bytes).
+
+
+.. cpp:function:: BlockingParams compute_blocking(int64_t elem_size, int MR, int NR)
+
+   Cache blocking for a kernel whose register tile is MR x NR.
+
+   The tile belongs to the resolved kernel rung, not to cpu_config(): the
+   AVX2 rung's tile is twice as tall as the one the library's own compile
+   flags imply, and KC/MC/NC follow from the tile (one packed A column of
+   MR * KC in L1, and so on), so blis_contraction passes the shape it
+   resolved.
+
+
+.. cpp:function:: BlockingParams compute_blocking(int64_t elem_size, int MR, int NR, int64_t M, int64_t N, int64_t K)
+
+   Cache blocking for a kernel tile MR x NR against a KNOWN contraction shape.
+
+   When C spills the last-level cache, each K block is a full sweep of demand misses over C, so KC
+   grows toward K (worth 4% on ccsd's rank-4 shapes). MC and NC stay put; the packed B block
+   (KC * NC) is what grows, hence the cap.
+
+   M, N and K are the contraction's flat extents (plan.M_total and friends). A
+   non-positive extent means there is nothing to block for and the machine-only
+   answer is returned unchanged.

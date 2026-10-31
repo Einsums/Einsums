@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.pure_overwrite:
+
+==============================================
+einsums::compute_graph::passes::pure_overwrite
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: bool pure_overwrite(const Node &nd)
+
+   True when ``nd`` overwrites its destination without reading it.
+
+   A prefactor-bearing op (Einsum/Permute/BatchedGemm) whose destination
+   prefactor is zero writes C fresh, making any prior write to that tensor dead.
+   Shared by ScaleAbsorption (drop a scale the next op overwrites) and CSE
+   (only a pure-overwrite result is a safe common-subexpression survivor). A
+   registered descriptor's ``destination`` hook answers for its node.

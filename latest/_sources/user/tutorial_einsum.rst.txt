@@ -1,0 +1,391 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _tutorial-einsum:
+
+******************************
+Tutorial: Einstein Summation
+******************************
+
+``einsum`` is the reason this library exists. You write a contraction the way the equation writes
+it, by naming the indices, and Einsums picks the kernel.
+
+Setup
+=====
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            #include <Einsums/ComputeGraph/Operations.hpp>
+            #include <Einsums/Tensor/RuntimeTensor.hpp>
+            #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
+            #include <Einsums/TensorUtilities/CreateZeroTensor.hpp>
+
+            namespace cg = einsums::compute_graph;
+            using namespace einsums;
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            import numpy as np
+            import einsums
+
+Index Notation
+==============
+
+A contraction is written as a spec: the indices of each operand, and the indices of the result.
+
+.. code-block:: text
+
+    "ik;kj->ij"
+     ^^ ^^  ^^
+     A  B   C
+
+The two operands are separated by a semicolon, not by the comma NumPy uses. An index appearing in
+both operands and not in the result is summed over. One appearing in the result is kept.
+
+``"ij <- ik ; kj"`` is the same spec written the other way round, if that reads closer to the
+mathematics you are transcribing. In C++ the spec's structure is checked while your code compiles,
+so a missing arrow or semicolon is a compile error; a letter that does not fit the operands' ranks
+is reported when the call runs.
+
+Matrix Multiplication
+=====================
+
+:math:`C_{ij} = \sum_k A_{ik} B_{kj}`
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto A = create_random_tensor<double>("A", {7, 7});
+            auto B = create_random_tensor<double>("B", {7, 7});
+            auto C = create_zero_tensor<double>("C", {7, 7});
+
+            cg::einsum("ik;kj->ij", &C, A, B);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            A = einsums.create_random_tensor("A", [7, 7])
+            B = einsums.create_random_tensor("B", [7, 7])
+            C = einsums.zeros([7, 7], name="C")
+
+            einsums.einsum("ik;kj->ij", C, A, B)
+
+That call reaches a single vendor ``dgemm``. Nothing is copied and nothing is packed.
+
+The output is an argument rather than a return value. That is what lets a contraction accumulate
+into a result you already have, and what lets a captured graph plan its memory, since the
+destination exists before the operation is recorded.
+
+Dot Product
+===========
+
+A spec with an empty output, ``"i;i->"``, writes a scalar into a rank-0 tensor and runs as one
+``DOT``. For a plain number, use the dot product, which in C++ writes through a pointer:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto u = create_random_tensor<double>("u", {100});
+            auto v = create_random_tensor<double>("v", {100});
+
+            double result = 0.0;
+            cg::dot(&result, u, v);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            u = einsums.create_random_tensor("u", [100])
+            v = einsums.create_random_tensor("v", [100])
+
+            result = einsums.linalg.dot(u, v)
+
+In C++ that pointer-writing form is also the one to use inside a capture, where an operation has
+no value to return until the graph runs. Python's ``linalg.dot`` returns, so inside a capture
+reach for the recorded spellings instead.
+
+Outer Product
+=============
+
+:math:`C_{ij} = u_i v_j`
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto C = create_zero_tensor<double>("C", {100, 100});
+            cg::einsum("i;j->ij", &C, u, v);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            C = einsums.zeros([100, 100], name="C")
+            einsums.einsum("i;j->ij", C, u, v)
+
+No index is shared, so nothing is summed and the result is a rank-1 update.
+
+Transpose
+=========
+
+A generalized transpose is ``permute`` rather than an einsum:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto A  = create_random_tensor<double>("A", {5, 8});
+            auto At = create_zero_tensor<double>("At", {8, 5});
+
+            cg::permute("ij->ji", &At, A);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            A  = einsums.create_random_tensor("A", [5, 8])
+            At = einsums.zeros([8, 5], name="At")
+
+            einsums.permute("ij->ji", At, A)
+
+Einsums will not permute operands to force a contraction onto a faster kernel. It uses the
+transposition flags a BLAS call already offers, so ``"ki;jk->ij"`` still reaches one ``GEMM``,
+but any other index order goes to the packed contraction backend, which rearranges the data as it
+packs it. If you know a permutation would pay, write it and contract the result.
+
+Scaling with Prefactors
+=======================
+
+The six-argument form takes a prefactor for the output and one for the product, computing
+:math:`C = \alpha C + \beta A B`:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            cg::einsum("ik;kj->ij", &C, A, B);              // C = AB
+            cg::einsum("ik;kj->ij", 1.0, &C, 1.0, A, B);    // C = C + AB
+            cg::einsum("ik;kj->ij", 0.0, &C, 0.5, A, B);    // C = 0.5 AB
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            einsums.einsum("ik;kj->ij", C, A, B)                        # C = AB
+            einsums.einsum("ik;kj->ij", C, A, B, c_pf=1.0, ab_pf=1.0)   # C = C + AB
+            einsums.einsum("ik;kj->ij", C, A, B, c_pf=0.0, ab_pf=0.5)   # C = 0.5 AB
+
+Accumulating is how you build a quantity from several contractions without a temporary for each
+one, which is most of what a correlated method does.
+
+Higher-Rank Contractions
+========================
+
+Rank is not special. :math:`C_{ijmn} = \sum_{kl} A_{ijkl} B_{klmn}`:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto T = create_random_tensor<double>("T", {4, 4, 4, 4});
+            auto U = create_random_tensor<double>("U", {4, 4, 4, 4});
+            auto W = create_zero_tensor<double>("W", {4, 4, 4, 4});
+
+            cg::einsum("ijkl;klmn->ijmn", &W, T, U);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            T = einsums.create_random_tensor("T", [4, 4, 4, 4])
+            U = einsums.create_random_tensor("U", [4, 4, 4, 4])
+            W = einsums.zeros([4, 4, 4, 4], name="W")
+
+            einsums.einsum("ijkl;klmn->ijmn", W, T, U)
+
+This one does not map onto a plain ``GEMM``, so it runs on the packed contraction backend, which
+blocks and packs the operands for cache reuse rather than falling back to loops. You write the
+same call either way.
+
+An index repeated **within one operand** is a diagonal rather than a contraction. Einsums reads
+the diagonal as a strided view of the operand, without copying it, so ``"iik;kj->ij"`` still runs
+on the packed contraction backend rather than the generic loop.
+
+.. _tutorial-einsum-many-operands:
+
+More Than Two Operands
+======================
+
+A spec may name any number of operands. :math:`D_{il} = \sum_{jk} A_{ij} B_{jk} C_{kl}`:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            auto A = create_random_tensor<double>("A", {100, 2});
+            auto B = create_random_tensor<double>("B", {2, 100});
+            auto C = create_random_tensor<double>("C", {100, 3});
+            auto D = create_zero_tensor<double>("D", {100, 3});
+
+            cg::einsum("ij;jk;kl->il", &D, A, B, C);
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            A = einsums.create_random_tensor("A", [100, 2])
+            B = einsums.create_random_tensor("B", [2, 100])
+            C = einsums.create_random_tensor("C", [100, 3])
+            D = einsums.zeros([100, 3], name="D")
+
+            einsums.einsum("ij;jk;kl->il", D, A, B, C)
+
+Einsums contracts the operands two at a time, in the order that costs the least arithmetic at
+these extents, and each partial product keeps only the indices a later step still needs. Here
+that means B with C first, a 2 by 3 product, rather than the 100 by 100 one A with B would form:
+1,200 multiply-adds against 50,000. Written as two calls, the order would be yours to get right.
+``einsums.graph.plan_nary_einsum`` returns the steps a spec will take at given extents.
+
+An index carried by more than two operands, or by one operand alone, is summed like any other
+index missing from the output. The prefactors work as they do for two operands, and an operand
+is conjugated by wrapping its indices in ``conj(...)`` in the spec. The particle ladder of a
+density-fitted coupled-cluster program is one call,
+``"i,j,a,b <- Q,a,e ; Q,b,f ; i,j,e,f"`` on ``B, B, tau``, and whether it forms the integrals
+:math:`(ae|bf)` first or contracts ``B`` with the amplitudes first depends on the sizes of the
+auxiliary, occupied and virtual spaces, which is why it is chosen for you.
+
+Captured, the call records one contraction per step, and each partial product is an intermediate
+the graph owns. The order is then ranked by the index spaces the operands are annotated with
+(see :ref:`optimizer-index-spaces`), so a program that says which axes are occupied, virtual or
+auxiliary gets the order that scales best, not only the one cheapest at the extents it was
+captured with. The optimizer may then build one a block at a time when it does not fit in memory
+(see :ref:`optimizer-backed-tensors`). Run eagerly, a partial product is a temporary that stays
+within :option:`--einsums:max-memory` when some order allows it.
+
+.. _tutorial-einsum-graph:
+
+The Same Contractions, Captured
+===============================
+
+Every call above ran immediately. The same ``cg::einsum`` inside a capture is recorded instead,
+and the recording is what the optimizer works on:
+
+.. tab-set::
+
+    .. tab-item:: C++
+        :sync: cpp
+
+        .. code-block:: cpp
+
+            #include <Einsums/ComputeGraph/Graph.hpp>
+
+            cg::Graph graph("two steps");
+
+            auto &tmp = graph.create_runtime_tensor<double>("tmp", {7, 7});      // scratch
+            auto &out = graph.create_runtime_tensor<double>("out", {7, 7},
+                                                            /*intermediate=*/false);  // a result
+
+            {
+                cg::CaptureGuard guard(graph);
+                cg::einsum("ik;kj->ij", &tmp, A, B);
+                cg::einsum("ik;kj->ij", &out, tmp, A);
+            }
+
+            graph.optimize();
+
+            for (int iter = 0; iter < 100; ++iter) {
+                graph.execute();      // no capture or parsing; packed plans are memoized
+            }
+
+    .. tab-item:: Python
+        :sync: python
+
+        .. code-block:: python
+
+            import einsums.graph as cg
+
+            graph = cg.Graph("two steps")
+
+            tmp = graph.create_tensor("tmp", [7, 7])                       # scratch
+            out = graph.create_tensor("out", [7, 7], intermediate=False)   # a result
+
+            with cg.capture(graph):
+                einsums.einsum("ik;kj->ij", tmp, A, B)
+                einsums.einsum("ik;kj->ij", out, tmp, A)
+
+            graph.optimize()
+
+            for _ in range(100):
+                graph.execute()       # no capture or parsing; packed plans are memoized
+
+Two things to notice. The function is the same one in both languages, so nothing about how you
+write a contraction changes; capture is a property of where the call happens, not of which call
+it is. And ``tmp``
+is scratch while ``out`` is a result, which the graph cannot work out for itself: a graph-owned
+tensor you read after ``execute()`` needs ``intermediate=false``, or the optimizer removes the
+contraction that fills it.
+
+Capturing is worth it when the same operations repeat, which is every iterative method. A single
+contraction gains nothing from being recorded.
+
+Dispatch and Performance
+========================
+
+Einsums selects, in order: a vendor BLAS call when the contraction already is one (using the
+transpose flags BLAS offers), an elementwise product with an operand permuted into the output's
+order, the packed contraction backend for patterns with a valid decomposition, and a generic loop
+for the rest.
+
+You do not choose. You can find out what was chosen: every ``einsum`` zone in a profile carries a
+``dispatch`` annotation naming its route, which :doc:`tutorial_performance` covers along with the
+measured route for every common shape.
+
+What's Next
+===========
+
+- :ref:`tutorial-views` for contracting sub-blocks without copying them
+- :ref:`tutorial-linalg` for decompositions and solves
+- :ref:`tutorial-compute-graph` for control flow, pipelines and what the passes do
+- :ref:`howto-contractions` for the recipes: diagonals, traces, conjugation, zero extents, aliasing

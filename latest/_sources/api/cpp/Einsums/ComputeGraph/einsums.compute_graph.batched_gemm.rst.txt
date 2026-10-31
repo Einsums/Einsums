@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.batched_gemm:
+
+====================================
+einsums::compute_graph::batched_gemm
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType> requires (std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>) void batched_gemm(double alpha, std::vector<const AType *> a_list, std::vector<const BType *> b_list, double beta, std::vector<CType *> c_list, bool trans_a, bool trans_b)
+
+   Emit one `blas::gemm_batch` over a batch of independent GEMMs: ``C_i = alpha * op(A_i) op(B_i) + beta * C_i`` for every i.
+
+   The GEMMBatching pass already fuses independent 2D einsums into a single
+   BatchedGemm node, so the fused form was reachable without this. What it was
+   not reachable *cheaply*: the caller had to emit one node per GEMM and let
+   the pass collapse them, and capture costs on the order of tens of
+   microseconds a node. A DLPNO-MP2 residual emitted 8112 nodes for the passes
+   to fuse into 33, spending more time building the graph than replaying it.
+   This lets a caller who already knows the batch say so directly.
+
+   Every member must share m, n, k, the transpose flags, the element type and
+   the leading dimensions, which is what `gemm_batch` takes as scalars. The
+   prefactors are shared too, so a per-member prefactor has to be folded into
+   the operands beforehand. Mismatches throw here rather than at execute time.
+
+   Outside capture this executes immediately, so the same call works eagerly.
+
+   :param alpha: Prefactor on op(A_i) op(B_i), shared by the batch.
+   :param a_list: Left operands. Must all be rank 2 with identical dims.
+   :param b_list: Right operands, same length as ``a_list``.
+   :param beta: Prefactor on C_i. Non-zero means every C_i is read as well as written, which the node records as a dependency.
+   :param c_list: Destinations, same length as ``a_list``. Must be distinct tensors: `gemm_batch` gives no ordering between members, so two members sharing a destination race.
+   :param trans_a: Transpose each A_i.
+   :param trans_b: Transpose each B_i.

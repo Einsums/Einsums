@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.syrk:
+
+===================
+einsums::blas::syrk
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void syrk(char uplo, char trans, int_t n, int_t k, T alpha, const T *a, int_t lda, T beta, T *c, int_t ldc)
+
+   Symmetric rank-k update.
+
+   Computes :math:`\mathbf{C} := \alpha \mathbf{A}\mathbf{A}^T + \beta \mathbf{C}`
+   (trans='N') or :math:`\mathbf{C} := \alpha \mathbf{A}^T\mathbf{A} + \beta \mathbf{C}`
+   (trans='T'), updating only the referenced triangle of the symmetric result.
+
+   :param uplo: Which triangle of C is referenced and updated ('U' or 'L').
+   :param trans: 'N': update with A*A^T (A is n x k); 'T': with A^T*A (A is k x n).
+   :param n: Order of C.
+   :param k: The other dimension of A (see ``trans``).
+   :param alpha: Scalar on the product.
+   :param a: The matrix A.
+   :param lda: Leading dimension of a.
+   :param beta: Scalar on C.
+   :param c: The symmetric matrix C, updated in place.
+   :param ldc: Leading dimension of c.

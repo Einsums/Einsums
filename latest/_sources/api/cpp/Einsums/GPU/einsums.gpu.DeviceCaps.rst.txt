@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.DeviceCaps:
+
+========================
+einsums::gpu::DeviceCaps
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Platform.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:class:: DeviceCaps
+
+   What the GPU on THIS machine can actually do, detected at run time.
+
+   The runtime counterpart of the `has_*` constants. On the mocks `available` is true and
+   `device_count` 1. Not named `DeviceCapabilities`, which winspool.h defines as a macro.
+
+
+   .. cpp:member:: bool available
+
+      A device is present and usable: driver loaded, a device enumerated, a context creatable.
+
+
+   .. cpp:member:: int device_count
+
+      Number of devices visible to this process (honors CUDA_VISIBLE_DEVICES).
+
+
+   .. cpp:member:: int compute_major
+
+      Compute capability of device 0. Zero when `available` is false.
+
+
+   .. cpp:member:: int compute_minor
+
+   .. cpp:member:: bool unified_memory
+
+      Device-reported unified/managed addressing. Distinct from the
+      compile-time has_unified_memory, which is what the executor branches on.
+
+
+   .. cpp:member:: bool fp16_gemm
+
+      Tensor-core FP16 (CUDA sm_70+).
+
+
+   .. cpp:member:: bool bf16_gemm
+
+      BFloat16 (CUDA sm_80+). False on Turing.
+
+
+   .. cpp:member:: bool fp8_gemm
+
+      FP8 E4M3 (CUDA sm_89+). False on Turing.
+
+
+   .. cpp:member:: std::size_t total_memory
+
+      Total device memory in bytes.
+
+
+   .. cpp:member:: std::string name
+
+      Device name, empty when unavailable.

@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_python:
+
+====================
+Python API Reference
+====================
+
+Modules
+-------
+
+- :doc:`einsums` — 9 classes, 15 functions, 2 enums
+- :doc:`einsums._version` — 11 functions
+- :doc:`einsums.gpu` — 4 functions
+- :doc:`einsums.graph` — 81 classes, 30 functions, 10 enums
+- :doc:`einsums.hardware` — 16 functions
+- :doc:`einsums.io` — 3 classes, 11 functions
+- :doc:`einsums.linalg` — 1 classes, 60 functions, 3 enums
+- :doc:`einsums.profile` — 1 functions
+
+.. toctree::
+    :maxdepth: 2
+    :caption: API
+
+    einsums
+    einsums._version
+    einsums.gpu
+    einsums.graph
+    einsums.hardware
+    einsums.io
+    einsums.linalg
+    einsums.profile

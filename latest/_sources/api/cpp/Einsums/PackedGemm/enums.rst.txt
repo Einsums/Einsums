@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_PackedGemm_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:enum-class:: KernelRoute
+
+   Which kernel a contraction is to be run through.
+
+   One vendor GEMM or the packed tile loops. They differ in the last bit on some shapes, and the
+   adaptive choice follows the thread regime (``einsums::blas::vendor_call_is_fenced``), so a caller
+   that re-plans widths pins the route to keep results bit-stable.
+
+
+   .. cpp:enumerator:: Adaptive
+
+   .. cpp:enumerator:: Packed
+
+   .. cpp:enumerator:: Vendor
+
+
+.. cpp:enum-class:: ScalarType
+
+   Scalar element type enumeration for type selection.
+
+
+   .. cpp:enumerator:: Float32
+
+   .. cpp:enumerator:: Float64
+
+   .. cpp:enumerator:: Complex64
+
+   .. cpp:enumerator:: Complex128
+
+   .. cpp:enumerator:: Unknown

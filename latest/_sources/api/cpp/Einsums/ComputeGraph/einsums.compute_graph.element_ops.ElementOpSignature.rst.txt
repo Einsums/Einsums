@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_ops.ElementOpSignature:
+
+=======================================================
+einsums::compute_graph::element_ops::ElementOpSignature
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ElementOps.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:class:: ElementOpSignature
+
+   What a registered op promises about its shape.
+
+   Held beside the kernels so a caller can ask what an op is before calling it,
+   and so a conflicting re-registration is detected on the declaration as well
+   as on the callable.
+
+
+   .. cpp:member:: std::size_t arity
+
+      How many operands the kernel takes. Only 1 (unary) exists today; the
+      field is here so a binary op does not have to change the entry type.
+
+
+   .. cpp:member:: ElementOpDomain domain
+
+      Which element types the op is defined for.
+
+
+   .. cpp:member:: bool parameterized
+
+      Whether the kernel takes a POLICY NUMBER beside the element it maps.
+
+      A parameterized kernel is written ``(T x, double p)`` and is applied with
+      one number chosen by whoever captures the node, which is how a drop
+      threshold reaches a guard without a separately named op per value. It is
+      part of the signature rather than deduced from the callable so that a
+      registration declaring one shape and supplying the other is an error at
+      the registration instead of a lookup that finds no arm later.
+
+
+   .. cpp:member:: double default_param
+
+      The parameter a node that names no value is applied with.
+
+      The DOCUMENTED default of the compatibility policy: a saved node carries
+      its parameter only when the capture site chose one, and an absent one has
+      to mean something a reader of an old file can look up. Ignored entirely
+      when ``parameterized`` is false.
+
+
+   .. cpp:member:: std::string description
+
+      One-line human description, shown in a listing. Not part of identity.

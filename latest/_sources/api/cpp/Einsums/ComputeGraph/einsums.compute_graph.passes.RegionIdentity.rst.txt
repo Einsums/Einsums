@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.RegionIdentity:
+
+==============================================
+einsums::compute_graph::passes::RegionIdentity
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/RegionRewrite.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: RegionIdentity : public RegionRewrite
+
+   Raise every region and lower it unchanged.
+
+   The framework's own test, in pass form, and the gate everything else rests on:
+   raising an expression and lowering it must produce a graph that computes
+   bit-for-bit what the original did. Nothing about that is guaranteed by construction. Lowering
+   rebuilds each node from the algebra rather than reusing what it raised, so
+   anything the IR fails to carry - a conjugation flag, a destination prefactor,
+   an index list a pass had rewritten through the live block - comes back as a
+   different number rather than as a missing field nobody notices.
+
+   It is a pass rather than a test helper so the differential fuzz corpus can
+   drive it: the corpus is where the shapes this would otherwise never see live.
+   Not in ``PassManager::create_default``, because rewriting nothing is not an
+   optimization; it is registered where the fuzzers can reach it.
+
+
+   .. cpp:function:: RegionIdentity() = default
+
+      Default-construct. Explicit so the binding codegen has a constructor to annotate.
+
+
+   .. cpp:function:: std::string name() const override
+
+      The pass name.
+
+      :returns: ``"RegionIdentity"``.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Raises every region and lowers it unchanged, so the lowered nodes run the same kernels over the same values
+      in the same order. The framework's identity test asserts exactly that.

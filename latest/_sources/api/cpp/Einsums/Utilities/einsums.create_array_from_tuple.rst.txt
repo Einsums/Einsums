@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_array_from_tuple:
+
+================================
+einsums::create_array_from_tuple
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Tuple.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename... TupleTypes> requires (std::is_convertible_v<TupleTypes, T> && ...) constexpr std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(const std::tuple<TupleTypes...> &tuple)
+
+   Converts a tuple whose elements can all be converted to the same type into an array.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The datatype of the array.
+   :tparam TupleTypes: The types of the tuple's elements.
+   :param tuple: The tuple to cast.
+   :returns: An array whose elements are cast from the input tuple's elements.
+
+
+.. cpp:function:: template <typename T, typename... TupleTypes> requires (std::is_convertible_v<TupleTypes, T> && ...) constexpr std::array<T, sizeof...(TupleTypes)> create_array_from_tuple(std::tuple<TupleTypes...> &&tuple)
+
+   Converts a tuple whose elements can all be converted to the same type into an array.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The datatype of the array.
+   :tparam TupleTypes: The types of the tuple's elements.
+   :param tuple: The tuple to cast.
+   :returns: An array whose elements are cast from the input tuple's elements.

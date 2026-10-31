@@ -1,0 +1,64 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_permute.permute:
+
+================================
+einsums::tensor_permute::permute
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorPermute/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_permute
+
+.. cpp:function:: template <typename T> void permute(detail::TensorImpl<T> *C, const detail::TensorImpl<T> &A, std::shared_ptr<hptt::Transpose<T>> plan)
+
+   Run a plan from ``compile_permute`` on new data of the same shapes. A null plan, which compile_permute returns for empty operands, does nothing.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:function:: template <bool ConjA = false, typename T> void permute(std::string_view spec, T beta, detail::TensorImpl<T> *C, T alpha, const detail::TensorImpl<T> &A)
+
+   Compute :math:`C = \beta C + \alpha\,\mathrm{permute}(A)`, the axes named by a spec.
+
+   .. code-block:: text
+
+      tensor_permute::permute("kij <- ijk", 0.0, &C, 1.0, A);  // C(k, i, j) = A(i, j, k)
+
+   Empty operands are valid and leave ``C`` as it is.
+
+   .. versionadded:: 2.0.0
+
+   :tparam ConjA: If true, conjugate the elements of ``A`` as they are permuted.
+   :tparam T: The element type of both tensors.
+   :throws RankError: when a side does not have one letter per axis of its operand, or the two sides do not name the same axes.
+   :throws DimensionError: when an axis of ``C`` does not have the extent of the axis of ``A`` it takes.
+
+
+.. cpp:function:: template <bool ConjA = false, HasTensorImpl CType, HasTensorImpl AType> requires std::is_same_v<typename CType::ValueType, typename AType::ValueType> void permute(std::string_view spec, typename AType::ValueType beta, CType *C, typename AType::ValueType alpha, const AType &A)
+
+   Compute :math:`C = \beta C + \alpha\,\mathrm{permute}(A)` on tensors, the axes named by a spec. The same signature as ``compute_graph::permute``.
+
+   .. code-block:: text
+
+      tensor_permute::permute("kij <- ijk", 0.0, &C, 1.0, A);  // C(k, i, j) = A(i, j, k)
+
+   .. versionadded:: 2.0.0
+
+   :throws RankError: when a side does not have one letter per axis of its operand, or the two sides do not name the same axes.
+   :throws DimensionError: when an axis of ``C`` does not have the extent of the axis of ``A`` it takes.
+
+
+.. cpp:function:: template <bool ConjA = false, HasTensorImpl CType, HasTensorImpl AType> requires std::is_same_v<typename CType::ValueType, typename AType::ValueType> void permute(std::string_view spec, CType *C, const AType &A)
+
+   Compute :math:`C = \mathrm{permute}(A)` on tensors, overwriting ``C``.
+
+   .. versionadded:: 2.0.0

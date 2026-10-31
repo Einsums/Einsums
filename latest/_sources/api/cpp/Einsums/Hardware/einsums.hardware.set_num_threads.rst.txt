@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.set_num_threads:
+
+==================================
+einsums::hardware::set_num_threads
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/CpuInfo.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: void set_num_threads(int nthreads)
+
+   Set the OpenMP runtime's ceiling on a parallel region's team size.
+
+   ``omp_set_num_threads()``, which also governs OpenMP-threaded BLAS; for a per-thread BLAS
+   setting see ``einsums::blas::set_num_threads_this_thread``. A no-op without OpenMP.
+
+   .. versionadded:: 2.0.0
+
+   :param nthreads: Thread count ceiling to request.

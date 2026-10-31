@@ -1,0 +1,101 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.AntisymmetrizerLinearity:
+
+========================================================
+einsums::compute_graph::passes::AntisymmetrizerLinearity
+========================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/AntisymmetrizerLinearity.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: AntisymmetrizerLinearity : public OptimizerPass
+
+   Pull a sum of antisymmetrized quantities inside one antisymmetrizer.
+
+   A permutation operator is LINEAR, so
+
+   .. math::
+
+      a\,P[G](B) \;+\; s\,\bigl(c\,P[G](A)\bigr) \;=\; P[G]\bigl(a B + s c A\bigr)
+
+   and a graph that antisymmetrizes two things and adds them can antisymmetrize
+   once instead.
+
+   **Why it matters more than the node it saves**
+
+   On its own the rewrite trades one permuted-accumulation sweep for an add, which
+   is worth having and is not the point. The point is that the sum's producer
+   becomes an OPERATOR again. ``AntisymmetrizerFolding`` matches a contraction
+   whose operand was written by an operator, and a residual writes
+   `V := W + P(Xd)`, so the operand's producer is a linear combination and the
+   fold cannot see the operator standing behind it. This puts it back where the
+   fold can reach, which is what turns an N-term antisymmetrizer into a scalar
+   multiply.
+
+   It is the same move the hand-written folded spelling of
+   `examples/toy/ccsd_t_spinorbital_toy.py` makes when it accumulates
+   `Xc := Xc + Xd` and antisymmetrizes once.
+
+   **What it matches**
+
+   - a tensor written exactly twice: an operator with a ZERO destination prefactor, then an `Axpby` accumulating another tensor into it;
+   - that other tensor written exactly once, by an operator with the SAME groups and a zero destination prefactor;
+   - both tensors graph-owned intermediates untouched by a child sub-graph.
+
+   The first operator's source is replaced by a freshly built sum, its prefactor
+   folded into that sum, and the accumulation deleted. The second operator is left
+   standing, because a residual reads it separately (the toy divides it by the
+   energy denominator) and ``DeadNodeElimination`` removes it when nothing does.
+
+
+   .. cpp:function:: AntisymmetrizerLinearity() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not views or complex prefactors: the merged sum is sized from the root and its alpha is composed as a real number.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Linearity is exact in the algebra, and the sum is formed before the
+      antisymmetrizer rather than after, which reorders the additions.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+   .. cpp:function:: std::size_t num_candidates() const
+
+      Sites where one antisymmetrized quantity accumulates into another.
+
+
+   .. cpp:function:: std::size_t num_merged() const
+
+      Sites rewritten.

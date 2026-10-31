@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EinsumFormatString:
+
+==========================================
+einsums::compute_graph::EinsumFormatString
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EinsumFormatString
+
+   Compile-time validated einsum format string (fmtlib pattern).
+
+   This type has a `consteval` constructor that validates the einsum string
+   at compile time. When used as a function parameter, string literals are
+   checked at compile time for structural validity:
+
+   .. code-block:: text
+
+      cg::einsum(EinsumFormatString("ij <- ik ; kj"), &C, A, B);  // OK, validated at compile time
+      cg::einsum(EinsumFormatString("ij <- ik"),       &C, A, B);  // Compile error! Missing ';'
+
+   For runtime-constructed strings (e.g., from Python), use the `std::string_view`
+   overloads of einsum() directly.
+
+   .. note::
+
+      This follows the same pattern as `fmt::format_string<T...>` in fmtlib.
+
+
+   .. cpp:function:: template <size_t N> consteval EinsumFormatString(const char (&s)[N])
+
+      Construct from a string literal with compile-time validation.
+
+      The `consteval` keyword ensures this constructor runs at compile time
+      for string literals. If the string is invalid, a compile error is produced.
+
+      :param s: The einsum specification string literal.
+
+
+   .. cpp:function:: EinsumFormatString(std::string_view s)
+
+      Construct from a runtime string (no compile-time validation).
+
+      Use this for strings constructed at runtime (e.g., from Python bindings
+      or user input). Validation happens at runtime via parse_einsum_spec().
+
+      Non-explicit to allow Python-facing bindings to receive a Python ``str``
+      pybind11 keeps the converted std::string alive for the duration of
+      the call, so the string_view remains valid throughout the einsum
+      dispatch. C++ callers passing a temporary string should still wrap
+      explicitly for clarity.
+
+      :param s: The einsum specification string.
+
+
+   .. cpp:function:: constexpr operator std::string_view() const
+
+      Implicit conversion to string_view for use with parse_einsum_spec().
+
+
+   .. cpp:member:: std::string_view str

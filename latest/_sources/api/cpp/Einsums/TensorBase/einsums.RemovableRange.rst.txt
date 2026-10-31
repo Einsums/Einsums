@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RemovableRange:
+
+=======================
+einsums::RemovableRange
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/Common.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: RemovableRange : public Range
+
+   A Range treated as a single index, dropping the dimension, when start equals end. For index
+   lists that can only hold ranges, mostly from Python:
+
+   .. code-block:: text
+
+      RuntimeTensor<double> A{"A", 3, 3, 3}; // A is a rank-3 tensor.
+
+      auto A_view_1 = A(Range{0, 1}, Range{0, 1}, Range{0, 0});
+      auto A_view_2 = A(Range{0, 1}, Range{0, 1}, 0);
+      auto A_view_3 = A(Range{0, 1}, Range{0, 1}, RemovableRange{0, 0});
+
+      std::vector<Range> indices{Range{0, 1}, Range{0, 1}, RemovableRange{0, 0}};
+
+      auto A_view_4 = A(indices);
+
+      EINSUMS_ASSERT(A_view_1.rank() == 3);
+      EINSUMS_ASSERT(A_view_2.rank() == 2);
+      EINSUMS_ASSERT(A_view_3.rank() == 2);
+      EINSUMS_ASSERT(A_view_4.rank() == 2);
+
+   With different start and end it behaves as a plain Range.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: template <std::integral First, std::integral Second> constexpr explicit RemovableRange(First first, Second second)
+
+      Initialize a range.
+
+      .. versionadded:: 2.0.0

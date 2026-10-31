@@ -1,0 +1,81 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DescriptorHooksFor:
+
+==========================================
+einsums::compute_graph::DescriptorHooksFor
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorRegistry.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: template <NodeDescriptor D> DescriptorHooksFor
+
+   ``DescriptorHooks`` over ``D`` itself rather than over an ``OpData``.
+
+   Each member takes a ``D const &`` where the ``DescriptorHooks`` member takes the
+   ``OpData`` holding it, and may be left empty as there.
+
+
+   .. cpp:member:: std::function<NamedAccesses (const D &, const Node &)> accesses
+
+      See ``DescriptorHooks::accesses``.
+
+
+   .. cpp:member:: std::function<NodeEffects (const D &)> effects
+
+      See ``DescriptorHooks::effects``.
+
+
+   .. cpp:member:: std::function<DestinationUse (const D &, const Node &)> destination
+
+      See ``DescriptorHooks::destination``.
+
+
+   .. cpp:member:: std::function<Threading (const D &)> threading
+
+      See ``DescriptorHooks::threading``.
+
+
+   .. cpp:member:: std::function<std::optional<ExtentList> (const D &, const Node &, const ExtentQuery &)> output_extents
+
+      See ``DescriptorHooks::output_extents``.
+
+
+   .. cpp:member:: std::function<std::optional<CostEstimate> (const D &, const CostQuery &)> cost
+
+      See ``DescriptorHooks::cost``.
+
+
+   .. cpp:member:: std::function<bool (const D &, const D &)> equal
+
+      See ``DescriptorHooks::equal``.
+
+
+   .. cpp:member:: std::function<std::optional<std::vector<TileCoord>> (const D &, const Node &, const TileQuery &)> tiles
+
+      See ``DescriptorHooks::tiles``.
+
+
+   .. cpp:member:: std::function<std::optional<OpData> (const D &, const TileCoord &)> tile
+
+      See ``DescriptorHooks::tile``.
+
+
+   .. cpp:member:: std::function<std::optional<std::vector<std::vector<std::string>>> (const D &, const Node &)> axes
+
+      See ``DescriptorHooks::axes``.
+
+
+   .. cpp:member:: std::function<std::optional<OpData> (const D &, const SliceRequest &)> slice
+
+      See ``DescriptorHooks::slice``.

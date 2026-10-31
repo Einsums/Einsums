@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.arange:
+
+===============
+einsums::arange
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/ARange.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <NotComplex T> Tensor<T, 1> arange(T start, T stop, T step)
+
+   Creates a new rank-1 tensor filled with digits from ``start`` to ``stop`` in ``step`` increments.
+
+   .. code-block:: text
+
+      // auto -> Tensor<double, 1> with data ranging from 0.0 to 9.0
+      auto a = arange<double>(0, 10);
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: Underlying datatype of the tensor
+   :param start: Value to start the tensor with
+   :param stop: Value to stop the tensor with
+   :param step: Increment value
+   :returns: new rank-1 tensor filled with digits from ``start`` to ``stop`` in ``step`` increments
+
+
+.. cpp:function:: template <NotComplex T> Tensor<T, 1> arange(T stop)
+
+   Creates a new rank-1 tensor filled with digits from 0 to ``stop`` .
+
+   .. code-block:: text
+
+      // auto -> Tensor<double, 1> with data ranging from 0.0 to 9.0
+      auto a = arange<double>(10);
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: Underlying datatype of the tensor
+   :param stop: Value to stop the tensor with
+   :returns: new rank-1 tensor filled with digits from 0 to ``stop``

@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.last_k_split:
+
+==================================
+einsums::packed_gemm::last_k_split
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: int & last_k_split()
+
+   Shares the most recent packed contraction on this thread divided its contracted extent into: 1
+   when its threads divided only the output, more when each summed a share of K into a buffer of
+   its own and the shares were added into C (see ``choose_k_split``). Test introspection only, like
+   ``last_team_size``.

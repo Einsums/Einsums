@@ -1,0 +1,163 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.design_pats.Observable:
+
+================================
+einsums::design_pats::Observable
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/Observable.hpp``.
+
+.. cpp:namespace:: einsums::design_pats
+
+.. cpp:class:: template <typename T> Observable
+
+   Implementation of the Subject part of the Observable pattern from the Gang of Four.
+
+   Here is an example of the use of this class.
+
+   .. code-block:: text
+
+      void thread_observer(Observable<int> &observable) {
+           while (true) {
+               observable.wait_for_change();
+               int new_value = observable; // Use casting operator to get the value
+               std::cout << "Thread observer detected change: " << new_value << '\n';
+           }
+       }
+
+       int main() {
+           Observable<int> observable(0); // Initialize with 0
+
+           // Register a callback observer
+           observable.add_observer([](const int& value) {
+               std::cout << "Callback observer detected change: " << value << '\n';
+           });
+
+           // Launch a thread-based observer
+           std::thread observer_thread(thread_observer, std::ref(observable));
+
+           // Simulate changes in the variable
+           for (int i = 1; i <= 5; ++i) {
+               std::this_thread::sleep_for(std::chrono::seconds(1));
+               observable = i; // Use assignment operator
+           }
+
+           observer_thread.join();
+           return 0;
+       }
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 1.0.1
+
+      The observable can now be locked and unlocked. When unlocked, it can be told to update its observers or not.
+
+
+   .. cpp:function:: Observable(T initial_value) noexcept
+
+      Constructor.
+
+      .. versionadded:: 1.0.0
+
+      :param initial_value: The initial value of the observable.
+
+
+   .. cpp:function:: Observable<T> & operator=(const T &value)
+
+      Assignment operator for setting the value
+
+      .. versionadded:: 1.0.0
+
+      :param value: The value to assign to the observable.
+
+
+   .. cpp:function:: operator T() const
+
+      Casting operator for retrievign the value.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: const T & get_value() const
+
+      Explicit getter.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: T & get_value()
+
+      Get a lock that updates internal values as well as the state.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void lock()
+
+      Lock the state.
+
+      .. versionadded:: 1.0.1
+
+
+   .. cpp:function:: void unlock(bool notify)
+
+      Unlock the state.
+
+      This will automatically notify observers when done if no arguments are passed.
+      If false is passed, then it will not notify the observers.
+
+      .. versionadded:: 1.0.1
+
+
+   .. cpp:function:: bool try_lock()
+
+      Attempt to lock the object.
+
+      .. versionadded:: 1.0.1
+
+      :returns: True if the lock could be acquired. False if otherwise.
+
+
+   .. cpp:function:: void wait_for_change()
+
+      Wait for the value to change.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void attach(std::function<void (const T &)> observer)
+
+      Register an observer callback.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void detach(const std::function<void (const T &)> &observer)
+
+      Remove an observer callback.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: bool changed() const
+
+      Check to see if the observable has recently changed.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void notify()
+
+      Public alias for ``notify_observers()``.
+
+      Lets an aggregate of Observables notify after releasing all their mutexes, since an observer
+      reading the value re-locks one, an inversion while siblings are still locked.

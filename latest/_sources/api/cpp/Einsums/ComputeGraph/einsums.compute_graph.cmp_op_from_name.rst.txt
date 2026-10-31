@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.cmp_op_from_name:
+
+========================================
+einsums::compute_graph::cmp_op_from_name
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/PredExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<CmpOp> cmp_op_from_name(std::string_view name) noexcept
+
+   The ``CmpOp`` spelled ``name``, if there is one.
+
+   The reverse of ``cmp_op_name``, for the IR's by-name rule: a saved predicate
+   writes "lt", never the enumerator's numeric value.
+
+   .. versionadded:: 2.0.0
+
+   :param name: A spelling ``cmp_op_name`` produces.
+   :returns: The operator, or an empty optional when nothing is spelled that way.

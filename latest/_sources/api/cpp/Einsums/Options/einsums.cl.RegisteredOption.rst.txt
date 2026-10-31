@@ -1,0 +1,80 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.RegisteredOption:
+
+=============================
+einsums::cl::RegisteredOption
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Parse.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: RegisteredOption
+
+   One registered option, flattened into data.
+
+   What a descriptor declares, minus the C++ type, for bindings and doc generators.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string name
+
+      The command-line long name, e.g. `einsums:log:level`.
+
+
+   .. cpp:member:: std::string key
+
+      The config key derived from ``name``.
+
+
+   .. cpp:member:: std::string negated_name
+
+      The `--no-` spelling, for a flag; empty for a value option.
+
+
+   .. cpp:member:: std::string env_name
+
+      The environment variable the runtime reads for it (derived from ``name`` unless the
+      descriptor names its own); empty for an option that opts out of the environment.
+
+
+   .. cpp:member:: std::string help
+
+      The `--help` description and heading.
+
+
+   .. cpp:member:: std::string category
+
+   .. cpp:member:: std::string value_name
+
+      The placeholder shown in help for a value option, e.g. `PORT`.
+
+
+   .. cpp:member:: OptionKind kind
+
+   .. cpp:member:: OptionType type
+
+   .. cpp:member:: bool default_bool
+
+      The declared default, in whichever member ``type`` selects.
+
+
+   .. cpp:member:: std::int64_t default_int
+
+   .. cpp:member:: double default_double
+
+   .. cpp:member:: std::string default_string
+
+   .. cpp:member:: bool computed_default
+
+      The default was computed at registration, so a generator must not print it as declared.

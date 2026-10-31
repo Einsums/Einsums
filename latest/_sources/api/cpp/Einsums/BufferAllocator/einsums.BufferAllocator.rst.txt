@@ -1,0 +1,156 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.BufferAllocator:
+
+========================
+einsums::BufferAllocator
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/BufferAllocator.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> BufferAllocator
+
+   Allocator whose maximum size can be restricted by runtime variables.
+
+   The limit is ``--einsums:buffer-size``. Avoid containers that resize often: a resize holds the old and new
+   buffers at once, which can exceed the limit when the final size would not. A standard allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The data type returned by this allocator.
+
+
+   .. cpp:function:: constexpr BufferAllocator() noexcept = default
+
+   .. cpp:function:: constexpr BufferAllocator(const BufferAllocator<T> &) noexcept = default
+
+   .. cpp:function:: template <typename U> constexpr BufferAllocator(const BufferAllocator<U> &) noexcept
+
+   .. cpp:function:: constexpr BufferAllocator(BufferAllocator<T> &&) = default
+
+   .. cpp:function:: template <typename U> constexpr BufferAllocator(BufferAllocator<U> &&)
+
+   .. cpp:function:: constexpr BufferAllocator<T> & operator=(const BufferAllocator<T> &) noexcept = default
+
+   .. cpp:function:: template <typename U> constexpr BufferAllocator<T> & operator=(const BufferAllocator<U> &) noexcept
+
+   .. cpp:function:: constexpr BufferAllocator<T> & operator=(BufferAllocator<T> &&) = default
+
+   .. cpp:function:: template <typename U> constexpr BufferAllocator<T> & operator=(BufferAllocator<U> &&)
+
+   .. cpp:function:: pointer allocate(size_type n)
+
+      Allocate an array of values.
+
+      This does not initialize the values in the array. If given zero, this will return the null pointer.
+
+      .. versionadded:: 1.1.0
+
+      :param n: The number of elements in the array.
+      :throws std::runtime_error: When the allocation size is too large or the allocation returns an unexpected null pointer.
+      :returns: A pointer to the newly allocated memory.
+
+
+   .. cpp:function:: bool reserve(size_type n)
+
+      Reserve a number of elements without allocating.
+
+      For memory allocated elsewhere that should still count against the limit.
+
+      .. versionadded:: 1.1.0
+
+      :param n: The number of elements to reserve.
+      :returns: True if the allocation will be successful, false if it will fail.
+
+
+   .. cpp:function:: void release(size_type n)
+
+      Release a number of elements without freeing.
+
+      The counterpart of ``reserve`` for memory freed elsewhere.
+
+      .. versionadded:: 1.1.0
+
+      :param n: The number of elements to release.
+
+
+   .. cpp:function:: void deallocate(pointer p, size_type n)
+
+      Deallocate a number of elements.
+
+      .. versionadded:: 1.1.0
+
+      :param p: The pointer to free.
+      :param n: The number of elements the pointer points to.
+
+
+   .. cpp:function:: size_type max_size() const
+
+      Query the maximum number of elements the allocator can accept.
+
+      This will return the number of elements as determined by the global buffer size limit.
+
+      .. versionadded:: 1.1.0
+
+      :returns: The number of elements specified by the buffer size option.
+
+
+   .. cpp:function:: size_type available_size() const
+
+      Query the number of elements the allocator has free.
+
+      This will return the number of elements that have not yet been allocated.
+
+      .. versionadded:: 1.1.0
+
+      :returns: The number of elements available to allocate.
+
+
+   .. cpp:function:: size_type work_buffer_size() const
+
+      Query the recommended work buffer size.
+
+      This will give the recommended size of a work buffer.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: constexpr bool operator==(const BufferAllocator<T> &other) const
+
+      Test whether two buffer allocators are the same.
+
+      All buffer allocators are considered to be the same, so this will always return true.
+
+      .. versionadded:: 1.1.0
+
+      :param other: The allocator to compare to.
+      :returns: Always returns true.
+
+
+   .. cpp:function:: constexpr bool operator!=(const BufferAllocator<T> &other) const
+
+      Test whether two buffer allocators are not the same.
+
+      All buffer allocators are considered to be the same, so this will always return false.
+
+      .. versionadded:: 1.1.0
+
+      :param other: The allocator to compare to.
+      :returns: Always returns false.
+
+
+   .. cpp:member:: static constexpr size_t type_size
+
+      The element size, with void counted as one byte.
+
+      .. versionadded:: 1.1.0

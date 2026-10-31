@@ -1,0 +1,62 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphError:
+
+==================================
+einsums::compute_graph::GraphError
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Error.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GraphError
+
+   Structured error for ComputeGraph operations.
+
+   Carries a category (Kind) and human-readable message.
+   Used as the error type in expected<T, GraphError>.
+
+
+   .. cpp:function:: static GraphError io(std::string msg)
+
+      Convenience constructors
+
+
+   .. cpp:function:: static GraphError parse(std::string msg)
+
+   .. cpp:function:: static GraphError validation(std::string msg)
+
+   .. cpp:function:: static GraphError capture(std::string msg)
+
+   .. cpp:function:: static GraphError type_error(std::string msg)
+
+   .. cpp:function:: static GraphError range(std::string msg)
+
+   .. cpp:member:: Kind kind
+
+   .. cpp:member:: std::string message
+
+   .. cpp:enum-class:: Kind
+
+      .. cpp:enumerator:: Validation
+
+      .. cpp:enumerator:: Parse
+
+      .. cpp:enumerator:: IO
+
+      .. cpp:enumerator:: Capture
+
+      .. cpp:enumerator:: Type
+
+      .. cpp:enumerator:: Dispatch
+
+      .. cpp:enumerator:: Range

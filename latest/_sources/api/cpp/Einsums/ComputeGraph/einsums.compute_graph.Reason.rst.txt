@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Reason:
+
+==============================
+einsums::compute_graph::Reason
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Decision.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Reason
+
+   A reason a pass gives, declared once: a stable code and the words a person reads.
+
+   The code is the contract: tests and tools match it, so the words can be improved without
+   breaking anyone, and a test naming a code that no longer exists stops compiling. Codes are
+   ``<pass>.<what>`` in lower case with hyphens, as in ``slab-streaming.read-after-update``.
+
+   .. code-block:: text
+
+      inline constexpr Reason ReadAfterUpdate{"slab-streaming.read-after-update",
+                                              "the update-backed tensor is read after a write of it, so it is read from memory"};
+      note_skip(ReadAfterUpdate, where);
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string_view code
+
+      Stable, matched by programs.
+
+
+   .. cpp:member:: std::string_view text
+
+      The shape-independent phrase a person reads, and skip_reasons() counts.

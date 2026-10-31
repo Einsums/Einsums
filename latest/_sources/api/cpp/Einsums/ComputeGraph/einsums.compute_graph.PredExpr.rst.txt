@@ -1,0 +1,244 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PredExpr:
+
+================================
+einsums::compute_graph::PredExpr
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/PredExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PredExpr
+
+   A boolean expression a conditional or a loop evaluates at execute time.
+
+   One of five arms, four of which are pure data:
+
+   - **Const**:     a literal ``true`` or ``false``.
+   - **Compare**:   ``lhs <op> rhs`` over two ``BoundExpr`` values, so either side may itself be a literal, a named ``ParamTable`` entry, or (unserializably) a callback.
+   - **Iteration**: ``iteration <op> rhs``, where ``iteration`` is the 0-based index of the loop iteration that just finished. Meaningful only inside a loop; ``resolve`` throws elsewhere.
+   - **FlagTest**:  one slot of a ``GateFlags`` array, read through the same shared buffer ``Graph::add_conditional_flag`` has always used. An index past the end reads false, which is the conservative answer a replay can give without erroring.
+   - **Callback**:  a ``std::function``, maximally flexible and the ONLY arm a saved graph cannot hold.
+
+   A default-constructed ``PredExpr`` is ``Const{true}``: for a loop that is
+   "run to ``max_iterations``", which is exactly what an absent
+   ``std::function`` condition has always meant.
+
+   **Construction**
+
+   ``bool`` converts implicitly. Callables do NOT: the conversion is
+   ``explicit`` so that an overload set offering both ``std::function`` and
+   ``PredExpr`` spellings stays unambiguous for a caller passing a lambda. Use
+   ``callback``, ``compare``, ``iteration`` or ``flag`` to say which arm is
+   meant.
+
+   .. code-block:: text
+
+      // "keep iterating while the pipeline still says we have work"
+      auto pred = cg::PredExpr::compare(cg::BoundExpr{"remaining"}, cg::CmpOp::Gt, cg::BoundExpr{0});
+      auto &body = graph.add_loop("iter", 100, pred);
+
+
+   .. cpp:function:: PredExpr() = default
+
+   .. cpp:function:: PredExpr(bool value)
+
+      A literal predicate.
+
+
+   .. cpp:function:: template <typename F> requires (!std::same_as<std::remove_cvref_t<F>, PredExpr> && !std::same_as<std::remove_cvref_t<F>, bool> && std::invocable<F &> && std::convertible_to<std::invoke_result_t<F &>, bool>) explicit PredExpr(F fn)
+
+      Wrap a nullary predicate. Explicit; see the construction note on the class.
+
+
+   .. cpp:function:: template <typename F> requires (!std::same_as<std::remove_cvref_t<F>, PredExpr> && !std::invocable<F &> && std::invocable<F &, std::size_t> && std::convertible_to<std::invoke_result_t<F &, std::size_t>, bool>) explicit PredExpr(F fn)
+
+      Wrap a predicate that reads the iteration index. Explicit; see the class note.
+
+
+   .. cpp:function:: static PredExpr always(bool value)
+
+      A literal predicate.
+
+      :param value: The value to return.
+      :returns: The Const arm.
+
+
+   .. cpp:function:: static PredExpr compare(BoundExpr lhs, CmpOp op, BoundExpr rhs)
+
+      ``lhs <op> rhs``.
+
+      :param lhs: Left operand.
+      :param op: The comparison.
+      :param rhs: Right operand.
+      :returns: The Compare arm.
+
+
+   .. cpp:function:: static PredExpr iteration(CmpOp op, BoundExpr rhs)
+
+      ``iteration <op> rhs``, against the enclosing loop's iteration index.
+
+      :param op: The comparison.
+      :param rhs: Right operand.
+      :returns: The Iteration arm.
+
+
+   .. cpp:function:: static PredExpr flag(const GateFlags &flags, std::size_t index)
+
+      One slot of a gate-flag array.
+
+      :param flags: The array to read. Shared, not copied.
+      :param index: Which slot selects this predicate.
+      :returns: The FlagTest arm.
+
+
+   .. cpp:function:: static PredExpr flag(std::shared_ptr<std::vector<std::uint8_t>> buffer, std::size_t index)
+
+      One slot of a gate-flag array, from the shared buffer directly.
+
+      :param buffer: The array to read.
+      :param index: Which slot selects this predicate.
+      :returns: The FlagTest arm.
+
+
+   .. cpp:function:: static PredExpr callback(std::function<bool ()> fn)
+
+      An opaque nullary predicate.
+
+      :param fn: The predicate. An EMPTY function is legal and throws when evaluated, which is what an empty ``std::function`` predicate has always done.
+      :returns: The Callback arm.
+
+
+   .. cpp:function:: static PredExpr callback(std::function<bool (std::size_t)> fn)
+
+      An opaque predicate that reads the iteration index.
+
+      :param fn: The predicate.
+      :returns: The Callback arm.
+
+
+   .. cpp:function:: const Storage & storage() const noexcept
+
+      The arm this predicate holds.
+
+
+   .. cpp:function:: bool is_const() const noexcept
+
+   .. cpp:function:: bool is_compare() const noexcept
+
+   .. cpp:function:: bool is_iteration() const noexcept
+
+   .. cpp:function:: bool is_flag_test() const noexcept
+
+   .. cpp:function:: bool is_callback() const noexcept
+
+      True for the one arm a saved graph cannot hold. Note that a Compare arm
+      whose OPERAND is a ``BoundExpr`` callback is not this: ask
+      ``names_a_closure`` for the question a save actually needs answered.
+
+
+   .. cpp:function:: bool names_a_closure() const noexcept
+
+      Whether ANY part of this predicate is a closure.
+
+      :returns: True when the predicate itself is a callback, or when a comparison operand is a ``BoundExpr`` callback.
+
+
+   .. cpp:function:: void collect_param_names(std::vector<std::string> &names) const
+
+      Append the ``ParamTable`` names this predicate reads to ``names``.
+
+      Callback arms name nothing and are deliberately not reported, which is
+      the same rule ``param_reads`` applies to a callback-valued view bound:
+      no name means no derivable edge.
+
+      :param names: Destination.
+
+
+   .. cpp:function:: bool resolve(const ParamTable *params, std::size_t iteration) const
+
+      Evaluate the predicate.
+
+      :param params: The active parameter table. May be null when no arm needs it; a ``BoundExpr::Param`` operand without one is an error rather than a silent default.
+      :param iteration: The 0-based index of the loop iteration that just finished. Ignored by every arm but ``Iteration`` and ``Callback``.
+      :throws std::runtime_error: When a named parameter is unset, or when a parameter is named with no table bound.
+      :returns: The predicate's value.
+
+
+   .. cpp:class:: Const
+
+      A literal truth value.
+
+
+      .. cpp:member:: bool value
+
+
+   .. cpp:class:: Compare
+
+      ``lhs <op> rhs`` over two runtime integers.
+
+
+      .. cpp:member:: BoundExpr lhs
+
+         Left operand.
+
+
+      .. cpp:member:: CmpOp op
+
+         The comparison.
+
+
+      .. cpp:member:: BoundExpr rhs
+
+         Right operand.
+
+
+
+   .. cpp:class:: Iteration
+
+      ``iteration <op> rhs``, against the enclosing loop's iteration index.
+
+
+      .. cpp:member:: CmpOp op
+
+         The comparison.
+
+
+      .. cpp:member:: BoundExpr rhs
+
+         Right operand.
+
+
+
+   .. cpp:class:: FlagTest
+
+      One slot of a ``GateFlags`` array, held as the shared buffer itself.
+
+
+      .. cpp:member:: std::shared_ptr<std::vector<std::uint8_t>> flags
+
+         The shared array. Null reads false.
+
+
+      .. cpp:member:: std::size_t index
+
+         Which slot selects this predicate.
+
+
+
+   .. cpp:class:: Callback
+
+      An opaque predicate. The iteration index is passed through for a loop.
+
+
+      .. cpp:member:: std::function<bool (std::size_t)> fn

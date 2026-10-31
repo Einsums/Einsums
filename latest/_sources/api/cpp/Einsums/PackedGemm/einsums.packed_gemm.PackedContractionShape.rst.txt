@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.PackedContractionShape:
+
+============================================
+einsums::packed_gemm::PackedContractionShape
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Describe.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: PackedContractionShape
+
+   What the packed engine would do with a contraction, read from the plan it would run.
+
+   For a caller that prices a contraction without running it: the cost of a packed contraction
+   depends on more than its M, N and K. A C whose indices interleave the two operands' is built in
+   a scratch block and scattered into place, at a cost per element set by how long C's contiguous
+   runs are; an operand whose contracted indices are split by a stride break is gathered into its
+   panel the same way. Everything here comes from ``prepare_packing_plan``, the plan
+   ``try_packed_gemm`` runs, so the description and the engine cannot disagree.
+
+
+   .. cpp:member:: bool valid
+
+      False when the engine has no plan for the contraction: repeated or broadcast indices, or a
+      scalar output. Every other field is then zero.
+
+
+   .. cpp:member:: int64_t M
+
+   .. cpp:member:: int64_t N
+
+   .. cpp:member:: int64_t K
+
+   .. cpp:member:: int64_t batch
+
+   .. cpp:member:: bool c_scattered
+
+      True when C is built in a scratch block and scattered into place.
+
+
+   .. cpp:member:: bool flat
+
+      True when one vendor GEMM can take the contraction whole: C written in place, no batch, and
+      the M, N and K groups each one dim in every operand. Any other contraction runs the packed
+      engine's own loops, whichever route a caller prefers.
+
+
+   .. cpp:member:: int64_t c_run
+
+      Elements in one contiguous run of the scatter's inner walk over C. Zero when C is not
+      scattered.
+
+
+   .. cpp:member:: int64_t a_run
+
+      Elements in one contiguous run of A, and of B, along the dims their packers read
+      innermost: one when neither group has a unit stride.
+
+
+   .. cpp:member:: int64_t b_run
+
+   .. cpp:member:: int k_shares
+
+      Shares the contracted extent is cut into (see ``choose_k_split``); one when it is not cut.

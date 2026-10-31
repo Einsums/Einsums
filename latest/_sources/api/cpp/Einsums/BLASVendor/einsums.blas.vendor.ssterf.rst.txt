@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.ssterf:
+
+=============================
+einsums::blas::vendor::ssterf
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t ssterf(int_t n, float *d, float *e)
+
+   Performs symmetric tridiagonal matrix diagonalization.
+
+   .. versionadded:: 2.0.0
+
+   :param n: The number of elements on the diagonal.
+   :param d: The diagonal. On exit, it contains the eigenvalues.
+   :param e: The subdiagonal.
+   :returns: 0 on success. If positive, then the eigenvalue algorithm failed to converge. If negative, then one of the inputs had a bad value. The absolute value indicates which parameter it was.

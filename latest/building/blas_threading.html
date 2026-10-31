@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BLAS threading and calling Einsums from your own threads &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'building/blas_threading';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/building/blas_threading.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="Compiler selection and customizing a build" href="compilers_and_options.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="compilers_and_options.html">Compiler selection and customizing a build</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">BLAS threading and calling Einsums from your own threads</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Building from source</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">BLAS threading and calling Einsums from your own threads</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="blas-threading-and-calling-einsums-from-your-own-threads">
+<span id="blas-threading"></span><h1>BLAS threading and calling Einsums from your own threads<a class="headerlink" href="#blas-threading-and-calling-einsums-from-your-own-threads" title="Link to this heading">#</a></h1>
+<p>Einsums does not implement its own linear algebra kernels. It calls BLAS and
+LAPACK, and the threading model of the library you link against constrains how
+<em>you</em> are allowed to call Einsums.</p>
+<p>The short version: if every call into Einsums comes from one thread, or from
+threads Einsums itself created, anything works and you can stop reading. If you
+plan to call Einsums concurrently from threads you created, read on, because
+the default conda-forge OpenBLAS will silently give you wrong answers.</p>
+<section id="the-two-conda-forge-openblas-builds">
+<span id="blas-threading-openblas-variants"></span><h2>The two conda-forge OpenBLAS builds<a class="headerlink" href="#the-two-conda-forge-openblas-builds" title="Link to this heading">#</a></h2>
+<p>conda-forge ships OpenBLAS in two threading flavors, distinguished by the build
+string:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>search<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="s1">'libopenblas=0.3.32'</span>
+libopenblas<span class="w">   </span><span class="m">0</span>.3.32<span class="w">   </span>openmp_he657e61_0<span class="w">     </span>conda-forge
+libopenblas<span class="w">   </span><span class="m">0</span>.3.32<span class="w">   </span>pthreads_hddb8425_0<span class="w">   </span>conda-forge
+</pre></div>
+</div>
+<p>The environment file generated by <code class="docutils literal notranslate"><span class="pre">merge_yml.py</span></code> resolves to the <code class="docutils literal notranslate"><span class="pre">openmp_</span></code>
+build. To see which one you actually have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="n">handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">handle</span><span class="o">.</span><span class="n">openblas_get_config</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">openblas_get_config</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+<span class="c1"># OpenBLAS 0.3.32 NO_AFFINITY USE_OPENMP VORTEX MAX_THREADS=128</span>
+</pre></div>
+</div>
+<p>The presence or absence of <code class="docutils literal notranslate"><span class="pre">USE_OPENMP</span></code> in that string is the thing to look
+for. Note that <code class="docutils literal notranslate"><span class="pre">USE_LOCKING</span></code> never appears in it, in either build, so you
+cannot use the config string to check for locking directly.</p>
+</section>
+<section id="why-the-openmp-build-breaks-under-caller-created-threads">
+<span id="blas-threading-the-trap"></span><h2>Why the OpenMP build breaks under caller-created threads<a class="headerlink" href="#why-the-openmp-build-breaks-under-caller-created-threads" title="Link to this heading">#</a></h2>
+<p>An OpenMP-built OpenBLAS indexes its internal scratch buffers by
+<code class="docutils literal notranslate"><span class="pre">omp_get_thread_num()</span></code>. That function returns <code class="docutils literal notranslate"><span class="pre">0</span></code> for any thread that is not
+inside an OpenMP parallel region, which includes every thread you create
+yourself: <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>, a Python <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code>, or anything else.</p>
+<p>So several caller-created threads calling into BLAS at once all select buffer
+zero and write over each other. The failure mode is the bad one:</p>
+<ul class="simple">
+<li><p>No crash, no error, no warning. Just wrong numbers.</p></li>
+<li><p>Non-deterministic, so results differ from run to run.</p></li>
+<li><p>Size-dependent. Small matrices do not reach the buffered path, so the same
+code can be exactly right on a small test case and wrong on a large one.</p></li>
+<li><p><strong>Invisible to ThreadSanitizer</strong>, because OpenBLAS is not instrumented. A
+clean TSan run does not clear a third-party library.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">pthreads_</span></code> build does not have this problem: it manages its own threads
+and locks the buffer pool accordingly.</p>
+<p>This is also why a C++ <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">parallel</span> <span class="pre">for</span></code> over independent BLAS calls
+is safe with the OpenMP build while the equivalent <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> loop is not.
+The OpenMP threads form a real team, so <code class="docutils literal notranslate"><span class="pre">omp_get_thread_num()</span></code> returns
+distinct values and each gets its own buffer.</p>
+</section>
+<section id="what-this-affects-in-einsums-today">
+<span id="blas-threading-what-is-affected"></span><h2>What this affects in Einsums today<a class="headerlink" href="#what-this-affects-in-einsums-today" title="Link to this heading">#</a></h2>
+<p>Most of the public API is out of reach, which is why this has not surfaced
+before, but one Python path is not:</p>
+<ul class="simple">
+<li><p>The Python bindings hold the GIL across the eager numeric entry points, so
+concurrent eager calls from Python threads serialize and never overlap inside BLAS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Graph.execute</span></code>, <code class="docutils literal notranslate"><span class="pre">Graph.run_setup</span></code>, and <code class="docutils literal notranslate"><span class="pre">Pipeline.execute</span></code> are annotated
+<code class="docutils literal notranslate"><span class="pre">APIARY_RELEASE_GIL</span></code>. Python threads that execute graphs concurrently can
+therefore overlap inside BLAS, which is the caller-created-thread pattern
+above. On the <code class="docutils literal notranslate"><span class="pre">openmp_</span></code> build, execute graphs from one Python thread at a time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OpenMPExecutor</span></code> uses OpenMP parallel regions, which are safe.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">GEMMBatching</span></code> pass lowers to <code class="docutils literal notranslate"><span class="pre">blas::gemm_batch</span></code>, whose parallel loop
+is OpenMP, also safe.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code> runs nodes on a <code class="docutils literal notranslate"><span class="pre">TaskPool</span></code> of <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>
+workers, which is the pattern at risk. A stress test of 48 independent
+250x250 GEMMs across three executors, repeated, produced exact results, so
+there is no known reproducer through this path. Treat it as untested rather
+than proven safe, and prefer the OpenMP executor for BLAS-heavy graphs if you
+are on the <code class="docutils literal notranslate"><span class="pre">openmp_</span></code> build.</p></li>
+</ul>
+<p>It becomes reachable more broadly the moment any of these happens:</p>
+<ul class="simple">
+<li><p>a graph is executed from a Python thread pool (see above), or an
+<code class="docutils literal notranslate"><span class="pre">APIARY_RELEASE_GIL</span></code> annotation is added to an eager numeric binding and a
+caller drives it from one,</p></li>
+<li><p>C++ code calls Einsums from <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> workers rather than an OpenMP
+region, or</p></li>
+<li><p>the module starts declaring free-threaded support, see below.</p></li>
+</ul>
+<p>All are reasonable things to want. Parallelizing over independent work items
+from Python, with serial BLAS underneath, is how psi4 structures its DLPNO pair
+loops, and it is a natural fit for Einsums too.</p>
+</section>
+<section id="free-threaded-python">
+<span id="blas-threading-free-threaded"></span><h2>Free-threaded Python<a class="headerlink" href="#free-threaded-python" title="Link to this heading">#</a></h2>
+<p>conda-forge ships free-threaded CPython builds (<code class="docutils literal notranslate"><span class="pre">cp313t</span></code> and later), where
+there is no GIL to serialize anything. That removes the accident that currently
+protects Einsums, so the two features are in direct conflict: <strong>free-threading
+support and the OpenMP OpenBLAS cannot both be adopted.</strong></p>
+<p>Today Einsums is protected on those interpreters, but by accident rather than
+design. Its pybind11 module does not declare <code class="docutils literal notranslate"><span class="pre">Py_MOD_GIL_NOT_USED</span></code>
+(pybind11 spells this <code class="docutils literal notranslate"><span class="pre">py::mod_gil_not_used()</span></code>), so CPython re-enables the
+GIL when it imports Einsums and says so:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RuntimeWarning: The global interpreter lock (GIL) has been enabled to load
+module 'einsums._core', which has not declared that it can run safely
+without the GIL. To override this behavior and keep the GIL disabled (at
+your own risk), run with PYTHON_GIL=0 or -Xgil=0.
+</pre></div>
+</div>
+<p>A free-threaded interpreter loading Einsums therefore stops being
+free-threaded. That is what makes the current state safe, and it is why nobody
+has hit this.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">PYTHON_GIL=0</span></code> overrides the fallback, which is exactly the state
+adding the opt-in would produce permanently. Measured on a <code class="docutils literal notranslate"><span class="pre">cp314t</span></code>
+interpreter with stock bindings, no <code class="docutils literal notranslate"><span class="pre">APIARY_RELEASE_GIL</span></code> anywhere, running 91
+concurrent <code class="docutils literal notranslate"><span class="pre">syev</span></code> calls of order 161 from a ten-worker pool:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Configuration</p></th>
+<th class="head"><p>Max eigenvalue error</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GIL auto-re-enabled (the default today)</p></td>
+<td><p>5.1e-13</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PYTHON_GIL=0</span></code>, <code class="docutils literal notranslate"><span class="pre">openmp_</span></code> OpenBLAS</p></td>
+<td><p><strong>6.2e+05</strong>, and 2.6e+03 on a rerun</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PYTHON_GIL=0</span></code>, <code class="docutils literal notranslate"><span class="pre">pthreads_</span></code> OpenBLAS, <code class="docutils literal notranslate"><span class="pre">OPENBLAS_NUM_THREADS=1</span></code></p></td>
+<td><p>5.1e-13</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>So free-threading requires the <code class="docutils literal notranslate"><span class="pre">pthreads_</span></code> OpenBLAS (or MKL) as a hard
+prerequisite, not as a tuning option. Adding <code class="docutils literal notranslate"><span class="pre">py::mod_gil_not_used()</span></code> while
+still linked against the <code class="docutils literal notranslate"><span class="pre">openmp_</span></code> build would turn a correct library into a
+silently wrong one for any threaded caller.</p>
+<p>Building against a free-threaded interpreter also needs a CMake hint, because
+<code class="docutils literal notranslate"><span class="pre">FindPython</span></code> will otherwise reject the <code class="docutils literal notranslate"><span class="pre">t</span></code> ABI and quietly fall back to
+another interpreter on the system:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DPython_ROOT_DIR<span class="o">=</span><span class="s2">"</span><span class="nv">$CONDA_PREFIX</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DPython_EXECUTABLE<span class="o">=</span><span class="s2">"</span><span class="nv">$CONDA_PREFIX</span><span class="s2">/bin/python"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DPython_FIND_ABI<span class="o">=</span><span class="s2">"OFF;ANY;ANY;ON"</span><span class="w"> </span>-DPython_FIND_STRATEGY<span class="o">=</span>LOCATION
+</pre></div>
+</div>
+<p>The fourth <code class="docutils literal notranslate"><span class="pre">Python_FIND_ABI</span></code> field is the free-threaded flag, and needs CMake
+3.30 or newer.</p>
+<p>A CI leg covers this. <code class="docutils literal notranslate"><span class="pre">merge_yml.py</span> <span class="pre">--free-threaded</span></code> swaps the interpreter pin
+for the <code class="docutils literal notranslate"><span class="pre">t</span></code> ABI, and the <code class="docutils literal notranslate"><span class="pre">free-threaded</span></code> job builds the tree against it, runs
+the full suite, then re-runs the Python tests under <code class="docutils literal notranslate"><span class="pre">PYTHON_GIL=0</span></code>. The second
+pass is the one that matters: without it CPython re-enables the GIL on import and
+the leg would only prove the tree compiles. Reproduce it locally with
+<code class="docutils literal notranslate"><span class="pre">./devtools/docker/run-ci-leg.sh</span> <span class="pre">free-threaded</span></code>.</p>
+<p>That leg drives Einsums from a single Python thread, so it does not exercise the
+hazard described above, which needs concurrent callers. It guards the build and
+the GIL-free serial path, not thread safety.</p>
+</section>
+<section id="switching-to-the-pthreads-build">
+<span id="blas-threading-switching"></span><h2>Switching to the pthreads build<a class="headerlink" href="#switching-to-the-pthreads-build" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="s1">'libopenblas=*=pthreads*'</span>
+</pre></div>
+</div>
+<p>Two things change with it, and both matter:</p>
+<ol class="arabic simple">
+<li><p><strong>You must set</strong> <code class="docutils literal notranslate"><span class="pre">OPENBLAS_NUM_THREADS=1</span></code>. The pthreads build does not read
+<code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code>, so the usual OpenMP knobs do not reach it, and every one
+of your worker threads will spawn a full OpenBLAS thread pool of its own.
+Measured on a DLPNO-MP2 pair loop, leaving it unpinned was <strong>2.6x slower</strong>
+than serial (480 ms to 5097 ms at four workers).</p></li>
+<li><p>Pinning it also turns off OpenBLAS-internal threading for large single GEMMs.
+If your workload is one big contraction at a time rather than many
+independent small ones, that is a real loss. Measure both shapes before
+changing an environment wholesale.</p></li>
+</ol>
+<p>With the pthreads build and <code class="docutils literal notranslate"><span class="pre">OPENBLAS_NUM_THREADS=1</span></code>, a pair-parallel
+DLPNO-MP2 orbital transform gave bit-identical energies at 1, 2, 4 and 10
+workers, and ran 1.74x faster than serial. The same code on the <code class="docutils literal notranslate"><span class="pre">openmp_</span></code>
+build produced a different (wrong) answer on every run.</p>
+<p>MKL is safe to call from caller-created threads and needs none of this, if it is
+an option for your platform.
+It has a different problem instead, described next.</p>
+</section>
+<section id="mkl-inside-einsums-own-openmp-regions">
+<h2>MKL inside Einsums’ own OpenMP regions<a class="headerlink" href="#mkl-inside-einsums-own-openmp-regions" title="Link to this heading">#</a></h2>
+<p>The OpenBLAS hazard above is about <em>caller-created</em> threads.
+MKL’s is the mirror image: it is fine on those, and unsafe inside a parallel
+region Einsums opened.</p>
+<p>MKL carries its own OpenMP runtime, normally <code class="docutils literal notranslate"><span class="pre">libiomp5</span></code>, while Einsums is
+built against the compiler’s, normally <code class="docutils literal notranslate"><span class="pre">libgomp</span></code>.
+The two do not share ICVs, and MKL’s nested check asks <em>its</em> runtime whether a
+region is active.
+Inside a <code class="docutils literal notranslate"><span class="pre">libgomp</span></code> region that check answers no, so MKL does not take its
+nested-serial path: every member of Einsums’ team forks a full MKL team of its
+own.
+The result is not merely oversubscribed.
+The calls disagree about how wide they are, and the answers come back
+nondeterministic: on a water dimer, one DLPNO-CCSD residual evaluated twice at
+identical amplitudes differed in 18 of 82 doubles blocks by up to 2.8e-14, and
+the solve that consumed those residuals diverged.
+Pinning either side to one thread removed both effects and reproduced the
+serial energy exactly.</p>
+<p>Einsums handles this itself, and no environment variable is needed.
+<code class="docutils literal notranslate"><span class="pre">VendorWidthFence</span></code>, on every BLAS wrapper that forwards to the vendor, clamps
+a vendor that exposes a per-thread thread count to one thread whenever
+<code class="docutils literal notranslate"><span class="pre">omp_in_parallel()</span></code> is true, and restores the caller’s count afterwards.
+OpenBLAS needs nothing there because it reads Einsums’ own ICV and takes its
+nested-serial path unaided.
+Removing the clamp is what the DLPNO chunk-invariance and dimer LCCSD tests
+detect, so it is a gate rather than a tuning knob.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="compilers_and_options.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Compiler selection and customizing a build</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-two-conda-forge-openblas-builds">The two conda-forge OpenBLAS builds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-openmp-build-breaks-under-caller-created-threads">Why the OpenMP build breaks under caller-created threads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-affects-in-einsums-today">What this affects in Einsums today</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#free-threaded-python">Free-threaded Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-to-the-pthreads-build">Switching to the pthreads build</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mkl-inside-einsums-own-openmp-regions">MKL inside Einsums’ own OpenMP regions</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

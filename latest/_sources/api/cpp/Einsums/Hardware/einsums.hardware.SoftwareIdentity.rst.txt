@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.SoftwareIdentity:
+
+===================================
+einsums::hardware::SoftwareIdentity
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:class:: SoftwareIdentity
+
+   The software a measurement depends on: this build's version and the BLAS in use.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: bool operator==(const SoftwareIdentity &) const = default
+
+      Field-by-field equality.
+
+
+   .. cpp:member:: int major
+
+      Einsums major version.
+
+
+   .. cpp:member:: int minor
+
+      Einsums minor version.
+
+
+   .. cpp:member:: int patch
+
+      Einsums patch version.
+
+
+   .. cpp:member:: std::string blas
+
+      The BLAS library providing dgemm, with its version where it reports one.

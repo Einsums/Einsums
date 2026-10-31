@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.saxpy:
+
+============================
+einsums::blas::vendor::saxpy
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void saxpy(int_t n, float alpha_x, const float *x, int_t inc_x, float *y, int_t inc_y)
+
+   Scale and add a vector to another. Performs :math:`\mathbf{y} := \alpha\mathbf{x} + \mathbf{y}`.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vectors.
+   :param alpha_x: The scale factor for the input vector.
+   :param x: The input vector.
+   :param inc_x: The skip value for the input vector. If it is negative, the vector is traversed backwards.
+   :param y: The output vector.
+   :param inc_y: The skip value for the output vector. If it is negative, the vector is traversed backwards.

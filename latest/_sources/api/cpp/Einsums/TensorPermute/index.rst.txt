@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorPermute_api:
+
+=====================
+TensorPermute C++ API
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorPermute>` of this module for background and usage guidance.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::tensor_permute::HasTensorImpl` - A tensor type that exposes the TensorImpl it wraps, as every dense tensor, view and RuntimeTensor does.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::tensor_permute::compile_permute` - Build the HPTT plan for :math:`C = \beta C + \alpha\,\mathrm{permute}(A)` without running it.
+- :cpp:any:`~einsums::tensor_permute::permute` - Run a plan from ``compile_permute`` on new data of the same shapes. A null plan, which compile_permute returns for empty operands, does nothing.
+- :cpp:any:`~einsums::tensor_permute::transpose` - Compute :math:`C = A^T` for rank-2 tensors.
+- :cpp:any:`~einsums::tensor_permute::unfold` - Write the mode-``mode`` unfolding of ``A`` into ``C``.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.tensor_permute.compile_permute
+   einsums.tensor_permute.HasTensorImpl
+   einsums.tensor_permute.permute
+   einsums.tensor_permute.transpose
+   einsums.tensor_permute.unfold

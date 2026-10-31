@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.sterf:
+
+====================
+einsums::blas::sterf
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t sterf(int_t n, T *d, T *e)
+
+   Computes the eigenvalues of a symmetric tridiagonal matrix.
+
+   The sterf routine finds the matrices that satisfy the following equation.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^T
+
+   In the above equation, :math:`\mathbf{A}` is a real symmetric tridiagonal matrix, :math:`\mathbf{P}` is a real orthogonal matrix whose
+   columns are the eigenvectors of :math:`\mathbf{A}`, and :math:`\mathbf{\Lambda}` is a diagonal matrix, whose elements are the eigenvalues
+   of :math:`\mathbf{A}`. The eigenvalues are stored in a vector form on exit.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements along the diagonal.
+   :param d: The diagonal elements. On exit, it contains the eigenvalues.
+   :param e: The off-diagonal elements. There is one fewer of these than the diagonal elements.
+   :returns: 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which parameter was bad.

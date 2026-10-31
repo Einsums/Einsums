@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_StringUtil_api:
+
+==================
+StringUtil C++ API
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_StringUtil>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::bad_lexical_cast` - Indicates that a string could not be converted to a different type.
+- :cpp:any:`~einsums::FromStringImpl` - Converts a string to a value.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::check_only_whitespace` - Checks to see if all the characters in the string past a certain point are all whitespace.
+- :cpp:any:`~einsums::check_out_of_range` - Check if the value is within the range of the requested type.
+- :cpp:any:`~einsums::difference` - Figures out the characters in the first string that are not in the second.
+- :cpp:any:`~einsums::find_char_with_position` - Go through the first string and find the index of each character in the second string. Put them in the output vector in the order they show up in the first string.
+- :cpp:any:`~einsums::from_string` - Converts a string to a value.
+- :cpp:any:`~einsums::reverse` - Reverses a string.
+- :cpp:any:`~einsums::string_util::ltrim` - Trim whitespace from the start of the string.
+- :cpp:any:`~einsums::string_util::ltrim_copy` - Trim whitespace from the start of the string.
+- :cpp:any:`~einsums::string_util::memory_string` - Converts a memory specification string into a number of bytes.
+- :cpp:any:`~einsums::string_util::rtrim` - Trim whitespace from the end of the string.
+- :cpp:any:`~einsums::string_util::rtrim_copy` - Trim whitespace from the end of the string.
+- :cpp:any:`~einsums::string_util::trim` - Trim whitespace from the start and end of the string.
+- :cpp:any:`~einsums::string_util::trim_copy` - Trim whitespace from the start and end of the string.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.bad_lexical_cast
+   einsums.check_only_whitespace
+   einsums.check_out_of_range
+   einsums.difference
+   einsums.find_char_with_position
+   einsums.from_string
+   einsums.FromStringImpl
+   einsums.reverse
+   einsums.string_util.ltrim
+   einsums.string_util.ltrim_copy
+   einsums.string_util.memory_string
+   einsums.string_util.rtrim
+   einsums.string_util.rtrim_copy
+   einsums.string_util.trim
+   einsums.string_util.trim_copy

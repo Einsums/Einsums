@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.Flag:
+
+=================
+einsums::cl::Flag
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: Flag : public OptionBase
+
+   A boolean option whose meaning is carried by its presence.
+
+   `--verbose` sets it, `--verbose=false` clears it. ImplicitValue(false) inverts presence, which is
+   how the generated `no-` flags work. See ``Flag::parse_token`` for other sources.
+
+
+   .. cpp:function:: template <typename... Args> Flag(std::string_view longName, std::initializer_list<char> shorts, std::string_view helpText, Args &&... args)
+
+   .. cpp:function:: template <typename F> requires SetterCallable<F, bool> Flag & OnSet(F &&f)
+
+   .. cpp:function:: void finalize_default() override
+
+   .. cpp:function:: bool parse_token(std::string_view, std::optional<std::string_view> val, std::string &error, Source src) override
+
+      Apply a flag from any source.
+
+      From a config file or the environment, a truthy value applies the flag as if named on the
+      command line and a falsey one leaves the default: `EINSUMS_DEBUG_NO_ATTACH_DEBUGGER=1` means
+      "do not attach".
+
+
+   .. cpp:function:: HelpEntry help_entry() const override
+
+   .. cpp:function:: bool get() const
+
+   .. cpp:member:: bool value
+
+   .. cpp:member:: bool *bound
+
+   .. cpp:member:: std::function<void (const bool &, Source)> setter
+
+   .. cpp:member:: bool implicit_on
+
+   .. cpp:member:: bool has_implicit_override
+
+   .. cpp:member:: bool set_on_unseen
+
+   .. cpp:member:: bool default_value
+
+      The declared default, kept apart from `value` so that help text reports
+      what the option defaults to rather than what it currently holds.
+
+
+   .. cpp:member:: std::string extra_annotation
+
+      An extra `--help` note; a generated pair uses it to mention its hidden `--no-` twin.

@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.auto_distribute:
+
+==============================
+einsums::comm::auto_distribute
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/DistributionMap.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:function:: template <size_t Rank> DistributionMap<Rank> auto_distribute(const std::array<size_t, Rank> &dims, size_t element_size, size_t threshold)
+
+   Auto-decide distribution: replicate if small, block-distribute if large.
+
+   :param dims: Global tensor dimensions.
+   :param element_size: Size of one element in bytes (e.g., sizeof(double) = 8).
+   :param threshold: Tensors smaller than this (in bytes) are replicated.
+   :returns: A DistributionMap with the chosen strategy.

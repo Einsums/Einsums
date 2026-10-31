@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sormqr:
+
+=============================
+einsums::blas::vendor::sormqr
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sormqr(char side, char trans, int_t m, int_t n, int_t k, const float *a, int_t lda, const float *tau, float *c, int_t ldc)
+
+   Multiply a general matrix by the orthogonal matrix Q from geqrf.
+
+   Computes C := op(Q) * C  (side='L') or  C := C * op(Q)  (side='R')
+   where Q is defined by the Householder reflectors from geqrf.
+   op(Q) = Q (trans='N') or Q^T (trans='T') for real, Q^H (trans='C') for complex.
+
+   :param side: 'L' or 'R': apply Q from the left or right.
+   :param trans: 'N', 'T', or 'C': no transpose, transpose, or conjugate transpose.
+   :param m: Number of rows of C.
+   :param n: Number of columns of C.
+   :param k: Number of elementary reflectors (from geqrf).
+   :param a: The Householder vectors from geqrf (m×k if side='L', n×k if side='R').
+   :param lda: Leading dimension of a.
+   :param tau: The scalar factors of the reflectors from geqrf.
+   :param c: On entry, the m×n matrix C. On exit, overwritten by op(Q)*C or C*op(Q).
+   :param ldc: Leading dimension of c.
+   :returns: 0 on success; negative value indicates invalid parameter.

@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.compose_approximation:
+
+=============================================
+einsums::compute_graph::compose_approximation
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Approximation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr double compose_approximation(ApproximationEffect effect, double first, double second) noexcept
+
+   The bound that holds after applying an approximation of size ``second`` on top of one of size ``first``.
+
+   **Why the relative case is not a sum**
+
+   For an ABSOLUTE effect this is the triangle inequality and the answer is the sum: if the
+   first rewrite moved the result by at most ``first`` and the second by at most ``second``,
+   the pair moved it by at most their sum.
+
+   For a RELATIVE one, summing is not a bound, it is an under-estimate. The second pass's
+   error is relative to the ALREADY PERTURBED result, so with
+   :math:`\|x_1 - x_0\| \le e_1 \|x_0\|` and :math:`\|x_2 - x_1\| \le e_2 \|x_1\|`,
+   :math:`\|x_2 - x_0\| \le (e_1 + e_2 + e_1 e_2)\|x_0\|`. The product term is what a sum
+   drops, and dropping it makes a composed budget quietly optimistic, which is the one
+   direction an accuracy contract must never fail in.
+
+   .. versionadded:: 2.0.0
+
+   :param effect: The units both bounds are in.
+   :param first: The bound already standing.
+   :param second: The bound being added.
+   :returns: The composed bound, never smaller than either input.

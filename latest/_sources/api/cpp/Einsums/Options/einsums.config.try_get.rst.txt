@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.config.try_get:
+
+========================
+einsums::config::try_get
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::config
+
+.. cpp:function:: template <typename T> std::optional<T> try_get(const cl::ConfigOption<T> &opt)
+
+   The value, but only when something explicitly supplied it.
+
+   Distinguishes "left at the default" from "set to the default's value".
+
+   .. versionadded:: 2.0.0

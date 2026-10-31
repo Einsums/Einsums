@@ -1,0 +1,1169 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api:
+
+====================
+ComputeGraph C++ API
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_ComputeGraph>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::compute_graph::ApproximationRecord` - One lossy rewrite that has been applied to a graph, and what it cost in accuracy.
+- :cpp:any:`~einsums::compute_graph::ApproximationTolerance` - The comparison tolerance a set of approximation records implies.
+- :cpp:any:`~einsums::compute_graph::AxpbyDescriptor` - Metadata for Axpby nodes (Y = alpha*X + beta*Y). Prefactors are type-erased (PrefactorScalar) so complex axpby folds exactly, matching EinsumDescriptor.
+- :cpp:any:`~einsums::compute_graph::BackingCounters` - What a backing's storage has moved, counted as it happens.
+- :cpp:any:`~einsums::compute_graph::BackingKind` - How to open the storage of one backing kind from its saved location.
+- :cpp:any:`~einsums::compute_graph::BackingRun` - What one backing's storage moved in a replay, counted where it moved.
+- :cpp:any:`~einsums::compute_graph::BisectDriver` - Run a program once per structural pass and report which one moved the answer.
+- :cpp:any:`~einsums::compute_graph::BisectReport` - The whole run.
+- :cpp:any:`~einsums::compute_graph::BisectTrial` - What one pass did to the numbers.
+- :cpp:any:`~einsums::compute_graph::BoundExpr` - A scalar integer expression that can be resolved at execute time.
+- :cpp:any:`~einsums::compute_graph::CacheLevel` - Cache level description.
+- :cpp:any:`~einsums::compute_graph::CaptureContext` - Thread-local capture context for recording operations into a graph.
+- :cpp:any:`~einsums::compute_graph::CaptureGuard` - RAII guard for graph capture.
+- :cpp:any:`~einsums::compute_graph::ComparisonContext` - Everything ``compare`` is allowed to consult.
+- :cpp:any:`~einsums::compute_graph::ConditionalDescriptor` - Metadata for conditional (if-then-else) nodes.
+- :cpp:any:`~einsums::compute_graph::ConformanceOperands` - The tensors one sample's node reads and writes, in the node's order.
+- :cpp:any:`~einsums::compute_graph::ConformanceSample` - One case ``check_descriptor`` runs a registered descriptor's node on.
+- :cpp:any:`~einsums::compute_graph::CostComparison` - The verdict of the ``SymbolicCost`` overload of ``compare_explain``.
+- :cpp:any:`~einsums::compute_graph::CostEstimate` - What a node costs to run, in the terms the planners price every node in.
+- :cpp:any:`~einsums::compute_graph::CostModel` - Target-aware cost model built from CPU and GPU device profiles.
+- :cpp:any:`~einsums::compute_graph::CostQuery` - What a ``cost`` hook is asked about: the node, its graph, and the device it is priced on.
+- :cpp:any:`~einsums::compute_graph::DataflowExecutor` - TaskPool dataflow executor, maximum overlap via continuations.
+- :cpp:any:`~einsums::compute_graph::Decision` - One thing a pass did, declined or said, as a record.
+- :cpp:any:`~einsums::compute_graph::DefaultPassRegistration` - A pass registered into the default pipelines from outside the library.
+- :cpp:any:`~einsums::compute_graph::DependencyInfo` - Dependency information for a sorted graph.
+- :cpp:any:`~einsums::compute_graph::DescriptorCodec` - How to save, load and rebuild one descriptor type.
+- :cpp:any:`~einsums::compute_graph::DescriptorHooks` - The optional answers a registered descriptor gives about its node.
+- :cpp:any:`~einsums::compute_graph::DescriptorHooksFor` - ``DescriptorHooks`` over ``D`` itself rather than over an ``OpData``.
+- :cpp:any:`~einsums::compute_graph::DestinationUse` - Whether a node reads the tensor it writes, and how its input list says so.
+- :cpp:any:`~einsums::compute_graph::DeviceProfile` - Performance profile for a single device (CPU or GPU).
+- :cpp:any:`~einsums::compute_graph::DeviceProfileDB` - Database of device profiles for known CPUs and GPUs.
+- :cpp:any:`~einsums::compute_graph::DeviceShadowMap` - Manages device (GPU) shadow allocations for tensors.
+- :cpp:any:`~einsums::compute_graph::DiisAccelerator` - Pulay DIIS extrapolation over a set of (amplitude, step) tensor pairs.
+- :cpp:any:`~einsums::compute_graph::DotDescriptor` - Metadata for the DENSE ``OpKind::Dot`` nodes.
+- :cpp:any:`~einsums::compute_graph::EfficiencyCurve` - Measured speedup against thread count for one kernel family at one size class.
+- :cpp:any:`~einsums::compute_graph::EinsumDescriptor` - Metadata for Einsum nodes, enabling optimization passes.
+- :cpp:any:`~einsums::compute_graph::EinsumFormatString` - Compile-time validated einsum format string (fmtlib pattern).
+- :cpp:any:`~einsums::compute_graph::EinsumIndexLists` - The index lists and operators an einsum will actually run with.
+- :cpp:any:`~einsums::compute_graph::EinsumIndices` - Mutable index specification for einsum operations.
+- :cpp:any:`~einsums::compute_graph::EinsumParams` - Mutable scalar parameters for einsum operations.
+- :cpp:any:`~einsums::compute_graph::element_ops::ElementOpRegistry` - Element-wise kernels looked up by name.
+- :cpp:any:`~einsums::compute_graph::element_ops::ElementOpSignature` - What a registered op promises about its shape.
+- :cpp:any:`~einsums::compute_graph::ElementwiseBinaryDescriptor` - Metadata for the DENSE element-wise binary kinds, ``OpKind::DirectProduct`` and ``OpKind::DirectDivision``.
+- :cpp:any:`~einsums::compute_graph::ElementwiseParams` - Live-mutable scalars for every kind whose operation is ``dst = alpha*<source> + beta*dst``, shared with the executor lambda - the same snapshot + shared-params pattern as ``EinsumParams``.
+- :cpp:any:`~einsums::compute_graph::EscapeAnalysis` - Writers, readers and sub-graph reach for every tensor of one graph.
+- :cpp:any:`~einsums::compute_graph::EventLog` - An observer that keeps every event, for reading after the replay: the way to observe a replay from Python, whose callbacks would serialize the executors on the GIL.
+- :cpp:any:`~einsums::compute_graph::ExecutionEvent` - One thing that happened while a replay ran.
+- :cpp:any:`~einsums::compute_graph::ExecutionObserver` - What hears a graph's replays as they run, once attached with ``Graph::set_observer``.
+- :cpp:any:`~einsums::compute_graph::Executor` - Abstract base class for graph execution backends.
+- :cpp:any:`~einsums::compute_graph::ExprIndex` - One index of a term, with the space it ranges over.
+- :cpp:any:`~einsums::compute_graph::ExprStatement` - One assignment of the raised region: a target, and the value put in it.
+- :cpp:any:`~einsums::compute_graph::ExprTerm` - One node of the expression arena.
+- :cpp:any:`~einsums::compute_graph::ExtentQuery` - What an ``output_extents`` hook is given.
+- :cpp:any:`~einsums::compute_graph::Fact` - A named quantity a decision carries: a block size, a byte count, a run count.
+- :cpp:any:`~einsums::compute_graph::FactorizationPlan` - A provider's offer for one tagged tensor.
+- :cpp:any:`~einsums::compute_graph::FactorizationProvider` - A way of rewriting one kind of tensor as a product of factors.
+- :cpp:any:`~einsums::compute_graph::FactorizationRegistry` - The providers a process knows about.
+- :cpp:any:`~einsums::compute_graph::FactorTensor` - One factor tensor a provider introduces, described in the provider's own alphabet.
+- :cpp:any:`~einsums::compute_graph::GateFlags` - An array of conditional gates a graph reads without calling back into its caller.
+- :cpp:any:`~einsums::compute_graph::GemmDescriptor` - Metadata for ``OpKind::Gemm`` nodes: ``C = alpha*op(A)*op(B) + beta*C``.
+- :cpp:any:`~einsums::compute_graph::GemmEfficiencyPoint` - A single measured GEMM efficiency data point.
+- :cpp:any:`~einsums::compute_graph::GemmHint` - BLAS-level batching hint for 2D×2D→2D einsums.
+- :cpp:any:`~einsums::compute_graph::GemmOperand` - One operand of a GEMM-shaped einsum, recorded as data.
+- :cpp:any:`~einsums::compute_graph::Graph` - A directed acyclic graph (DAG) of tensor operations.
+- :cpp:any:`~einsums::compute_graph::GraphAnchor` - A name for a graph that stays correct when the graph is moved.
+- :cpp:any:`~einsums::compute_graph::GraphError` - Structured error for ComputeGraph operations.
+- :cpp:any:`~einsums::compute_graph::GroupedAxpbyDescriptor` - Metadata for ``OpKind::GroupedAxpby`` nodes.
+- :cpp:any:`~einsums::compute_graph::GroupedDotDescriptor` - Metadata for ``OpKind::GroupedDot`` nodes.
+- :cpp:any:`~einsums::compute_graph::GroupedElementwiseDescriptor` - Metadata for the grouped element-wise kinds: @ref OpKind::GroupedPermute, ``OpKind::GroupedDirectProduct`` and @ref OpKind::GroupedDirectDivision.
+- :cpp:any:`~einsums::compute_graph::GroupedGatherRotateDescriptor` - Metadata for ``OpKind::GroupedGatherRotate`` nodes.
+- :cpp:any:`~einsums::compute_graph::GroupedSandwichDescriptor` - Metadata for ``OpKind::GroupedSandwich`` nodes.
+- :cpp:any:`~einsums::compute_graph::InterfaceManifest` - A graph's named, typed, space-annotated, ownership-scoped interface.
+- :cpp:any:`~einsums::compute_graph::laplace::QuadratureGrid` - One quadrature rule for :math:`1/x` on a bounded positive interval.
+- :cpp:any:`~einsums::compute_graph::laplace::SpectralRange` - The smallest and largest value a signed sum of per-axis vectors can take.
+- :cpp:any:`~einsums::compute_graph::LaplaceQuadratureDescriptor` - Metadata for ``OpKind::LaplaceQuadrature`` nodes.
+- :cpp:any:`~einsums::compute_graph::LetterVars` - Resolves an index letter of one contraction to the variable standing for its extent.
+- :cpp:any:`~einsums::compute_graph::LinkPlacement` - Where an operand's link (contracted) indices sit in its index list.
+- :cpp:any:`~einsums::compute_graph::LoopDescriptor` - Metadata for loop nodes.
+- :cpp:any:`~einsums::compute_graph::LoopNode` - An iterative subgraph with convergence-based early exit.
+- :cpp:any:`~einsums::compute_graph::LoopState` - Live state a ``LoopDescriptor`` shares with its executor.
+- :cpp:any:`~einsums::compute_graph::LuPivots` - The row interchanges ``getrf`` produces, as something a graph can outlive.
+- :cpp:any:`~einsums::compute_graph::ManifestEntry` - One named slot of a graph's interface: an operand the graph does not own.
+- :cpp:any:`~einsums::compute_graph::MetricFitFactorization` - Offer a four-index tensor as a metric-fitted product of one three-index factor.
+- :cpp:any:`~einsums::compute_graph::MPIExecutor` - MPI-aware executor for distributed computation graphs.
+- :cpp:any:`~einsums::compute_graph::NamedAccesses` - The parameters and named resources a node touches outside its tensor lists.
+- :cpp:any:`~einsums::compute_graph::NaryEinsumFormatString` - An einsum spec over three or more operands, its structure checked at compile time.
+- :cpp:any:`~einsums::compute_graph::NaryEinsumStep` - One contraction of an ``plan_nary_einsum`` plan.
+- :cpp:any:`~einsums::compute_graph::NaturalAuxiliaryFactorization` - Offer a three-index tensor over a truncated auxiliary index.
+- :cpp:any:`~einsums::compute_graph::Node` - A single operation node in the computation graph.
+- :cpp:any:`~einsums::compute_graph::NodeEffects` - What a node does that its tensor lists do not show.
+- :cpp:any:`~einsums::compute_graph::NodeFeatures` - A set of ``NodeFeature`` values.
+- :cpp:any:`~einsums::compute_graph::NodeIndexLists` - The letter lists of a node that carries any: an einsum's (live) or a permute's.
+- :cpp:any:`~einsums::compute_graph::NodeRun` - One node's share of a replay.
+- :cpp:any:`~einsums::compute_graph::NodeTiming` - Per-node timing entry.
+- :cpp:any:`~einsums::compute_graph::NodeTimingSample` - One raw timing sample, as a replay records it.
+- :cpp:any:`~einsums::compute_graph::OpData` - A node's operation-specific descriptor, or none.
+- :cpp:any:`~einsums::compute_graph::OpenMPExecutor` - OpenMP task-based executor, launches independent nodes in parallel.
+- :cpp:any:`~einsums::compute_graph::OperandAccessor` - One operand's live geometry, resolved once when an executor is built.
+- :cpp:any:`~einsums::compute_graph::OptimizerPass` - Abstract base class for optimization passes over a computation graph.
+- :cpp:any:`~einsums::compute_graph::OuterSumDescriptor` - Metadata for the ``OpKind::Custom`` node ``cg::outer_sum`` records: ``result(i_0,...,i_{N-1}) = sum_k c_k v_k(i_k)``.
+- :cpp:any:`~einsums::compute_graph::ParamTable` - Mutable name-keyed table of integer parameters owned by a Pipeline.
+- :cpp:any:`~einsums::compute_graph::ParsedEinsumSpec` - Result of parsing an einsum specification string.
+- :cpp:any:`~einsums::compute_graph::ParsedNaryEinsumSpec` - The index lists of an einsum over any number of operands.
+- :cpp:any:`~einsums::compute_graph::ParsedPermuteSpec` - Result of parsing a permute specification string.
+- :cpp:any:`~einsums::compute_graph::PassCounter` - One of a pass's statistics, snapshotted at the top of its ``OptimizerPass::run``.
+- :cpp:any:`~einsums::compute_graph::passes::AntisymmetrizerExpansion` - Lower a contraction's permutation operator into an explicit contraction plus one permuted accumulation per term.
+- :cpp:any:`~einsums::compute_graph::passes::AntisymmetrizerFolding` - Collapse a permutation operator contracted against an antisymmetric operand into a scalar multiple.
+- :cpp:any:`~einsums::compute_graph::passes::AntisymmetrizerLinearity` - Pull a sum of antisymmetrized quantities inside one antisymmetrizer.
+- :cpp:any:`~einsums::compute_graph::passes::AntisymmetryDetection` - Establish, by reading the data, which of a permutation operator's symmetries a bound input actually has.
+- :cpp:any:`~einsums::compute_graph::passes::AntisymmetryInference` - Tag the output of a permutation operator with the antisymmetry it unconditionally has.
+- :cpp:any:`~einsums::compute_graph::passes::AxisTiling` - Rewrite a program as a loop over slices of its free axes, under a memory cap.
+- :cpp:any:`~einsums::compute_graph::passes::BasisTruncation` - Truncate an index space to the natural orbitals a density says are occupied.
+- :cpp:any:`~einsums::compute_graph::passes::CommunicationElimination` - Distributed-execution cleanup pass: removes redundant communication nodes.
+- :cpp:any:`~einsums::compute_graph::passes::CommunicationInsertion` - Distributed-execution pass: inserts collective communication where partial results need combining.
+- :cpp:any:`~einsums::compute_graph::passes::CommunicationScheduling` - Distributed-execution pass: overlaps collective communication with computation.
+- :cpp:any:`~einsums::compute_graph::passes::ConstantFolding` - Constant folding: evaluates nodes whose inputs never change once, at pass time, and replaces them with no-ops.
+- :cpp:any:`~einsums::compute_graph::passes::ContractionPlanning` - Multi-objective contraction planning pass.
+- :cpp:any:`~einsums::compute_graph::passes::CrossSpaceFinding` - One index letter of one contraction binding two different index spaces.
+- :cpp:any:`~einsums::compute_graph::passes::CrossSpaceValidation` - Flag contraction letters that bind one operand's slot against a slot of another space.
+- :cpp:any:`~einsums::compute_graph::passes::CSE` - Common Subexpression Elimination (CSE): merges two nodes that compute the same value -- or one that is a fixed multiple of the other -- and redirects readers of the duplicate onto the survivor's output.
+- :cpp:any:`~einsums::compute_graph::passes::DeadNodeElimination` - Dead node elimination (DNE): removes producers whose every output is an unread graph-owned intermediate.
+- :cpp:any:`~einsums::compute_graph::passes::DeltaElimination` - Eliminate contractions against a tagged Kronecker delta by index substitution.
+- :cpp:any:`~einsums::compute_graph::passes::DistributionPlanning` - Distribution-planning pass: chooses a process-grid layout for each deferred tensor.
+- :cpp:any:`~einsums::compute_graph::passes::DistributiveFactoring` - Distributive factoring pass: factors out shared operands from accumulating einsums.
+- :cpp:any:`~einsums::compute_graph::passes::ElementWiseFusion` - Element-wise operation fusion: collapses directly consecutive Scale or axpby ops on the same tensor into a single node.
+- :cpp:any:`~einsums::compute_graph::passes::FactorizationPass` - Replace a tagged tensor by a provider's factors, and re-associate around them.
+- :cpp:any:`~einsums::compute_graph::passes::FactorizationPlan` - What one region's search decided, written so a structurally identical region can replay it.
+- :cpp:any:`~einsums::compute_graph::passes::FreeInsertion` - FreeInsertion pass: insert Free nodes to release intermediate tensors after their last consumer.
+- :cpp:any:`~einsums::compute_graph::passes::GEMMBatching` - Collapse groups of independent GEMMs into a single `blas::gemm_batch` call.
+- :cpp:any:`~einsums::compute_graph::passes::GPUDiagnostics` - GPU-offload diagnostic pass: summarizes placement and transfers without mutating the graph.
+- :cpp:any:`~einsums::compute_graph::passes::GPUPlacement` - GPU-offload placement pass: flags graph nodes to execute on a GPU.
+- :cpp:any:`~einsums::compute_graph::passes::InplaceOptimization` - InplaceOptimization pass: in-place storage merging for elementwise consumers.
+- :cpp:any:`~einsums::compute_graph::passes::InputSlicing` - Distributed-execution pass: slices pre-allocated inputs to match a distributed output.
+- :cpp:any:`~einsums::compute_graph::passes::IntermediateSize` - The symbolic element count of one graph-owned intermediate.
+- :cpp:any:`~einsums::compute_graph::passes::IOPrefetch` - IOPrefetch pass: move DiskRead nodes as early as legally possible in the schedule.
+- :cpp:any:`~einsums::compute_graph::passes::LaplaceTransform` - Substitute a quadrature for a tagged energy denominator and decouple its consumer.
+- :cpp:any:`~einsums::compute_graph::passes::LayoutAssignment` - Choose the storage order of every graph-owned intermediate so contractions read flat.
+- :cpp:any:`~einsums::compute_graph::passes::LinearCombinationContractionFolding` - Fold transpose-paired contractions into one (the CCSD "2J−K" idiom).
+- :cpp:any:`~einsums::compute_graph::passes::LoopInvariantHoisting` - Loop invariant hoisting: moves body operations whose inputs never change across iterations to run once before the loop.
+- :cpp:any:`~einsums::compute_graph::passes::Materialization` - Materialization pass: give every deferred (shell) tensor a Materialize (and optional Initialize) lifecycle node so it is allocated at the right point during execution.
+- :cpp:any:`~einsums::compute_graph::passes::MemoryPlanning` - MemoryPlanning pass: liveness analysis, memory statistics, and the planned host arena.
+- :cpp:any:`~einsums::compute_graph::passes::MultiTermFactorization` - Jointly choose contraction orders and shared intermediates over one region.
+- :cpp:any:`~einsums::compute_graph::passes::NodeCost` - The symbolic cost attributed to one graph node.
+- :cpp:any:`~einsums::compute_graph::passes::PermuteFusion` - Permute-into-einsum fusion: absorbs an axis-reordering Permute into the subscript of the Einsum that reads it.
+- :cpp:any:`~einsums::compute_graph::passes::ProvenancePropagation` - Propagate provenance tags across identity-preserving operations.
+- :cpp:any:`~einsums::compute_graph::passes::RegionDump` - One region's algebra, before and after a rewrite.
+- :cpp:any:`~einsums::compute_graph::passes::RegionIdentity` - Raise every region and lower it unchanged.
+- :cpp:any:`~einsums::compute_graph::passes::RegionRewrite` - Base class for a pass that rewrites regions through ``TensorExpr``.
+- :cpp:any:`~einsums::compute_graph::passes::Reorder` - Memory-aware topological sort: reschedules independent nodes so the ones that free the most memory run earliest.
+- :cpp:any:`~einsums::compute_graph::passes::ScaleAbsorption` - Scale-elimination pass: removes a Scale by deleting it (dead) or folding its factor into a consumer's prefactor (live).
+- :cpp:any:`~einsums::compute_graph::passes::ScalingAnalysis` - Report how a program scales: every contraction's cost polynomial, and what limits it.
+- :cpp:any:`~einsums::compute_graph::passes::ScratchPrivatization` - Break false dependencies from reused scratch buffers by renaming each reuse onto its own clone.
+- :cpp:any:`~einsums::compute_graph::passes::SlabStreaming` - Read a backed tensor a slab at a time instead of loading it whole.
+- :cpp:any:`~einsums::compute_graph::passes::SpacePropagation` - Infer per-slot index spaces on graph intermediates.
+- :cpp:any:`~einsums::compute_graph::passes::StreamAssignment` - StreamAssignment pass: assign nodes to execution streams for potential async overlap.
+- :cpp:any:`~einsums::compute_graph::passes::StreamContractionFusion` - Fuse contractions that stream the same large tensor into one pass over it (the SCF "J and K from one TEI read" idiom).
+- :cpp:any:`~einsums::compute_graph::passes::SUMMAExpansion` - Distributed-execution pass: rewrites SUMMA-distributed einsums into broadcast+GEMM loops.
+- :cpp:any:`~einsums::compute_graph::passes::SymmetrizedAccumulation` - Fold the CCSD permutational-symmetrization idiom :math:`r2 \mathrel{+}= s\,(t + P(t))`.
+- :cpp:any:`~einsums::compute_graph::passes::SymmetryPropagation` - Phase 3 of the symmetry plan: infer symmetry on graph intermediates.
+- :cpp:any:`~einsums::compute_graph::passes::ThreadPlanning` - ThreadPlanning pass: choose a thread width for every node.
+- :cpp:any:`~einsums::compute_graph::passes::TiledExpansion` - Lower tiled operations into per-tile DENSE nodes.
+- :cpp:any:`~einsums::compute_graph::passes::TransferElimination` - GPU-offload cleanup pass: removes redundant H2D/D2H transfers and inserts budget evictions.
+- :cpp:any:`~einsums::compute_graph::passes::TransferInsertion` - GPU-offload transfer pass: inserts HostToDevice / DeviceToHost nodes around GPU-placed ops.
+- :cpp:any:`~einsums::compute_graph::PassManager` - Manages an ordered sequence of optimization passes.
+- :cpp:any:`~einsums::compute_graph::PermutationOperator` - One permutation (antisymmetrizer) operator, as written `P(i/jk)`.
+- :cpp:any:`~einsums::compute_graph::PermutationTerm` - One term of an expanded permutation operator product.
+- :cpp:any:`~einsums::compute_graph::PermuteDescriptor` - Metadata for ``OpKind::Permute`` nodes.
+- :cpp:any:`~einsums::compute_graph::PermuteEfficiencyPoint` - A single measured permute (tensor transpose) data point.
+- :cpp:any:`~einsums::compute_graph::PermuteFormatString` - Compile-time validated permute format string.
+- :cpp:any:`~einsums::compute_graph::Pipeline` - A pipeline of sequential stages with optional iterative loops.
+- :cpp:any:`~einsums::compute_graph::PolyComparison` - The verdict of ``compare_explain``, with the rung that produced it.
+- :cpp:any:`~einsums::compute_graph::PredExpr` - A boolean expression a conditional or a loop evaluates at execute time.
+- :cpp:any:`~einsums::compute_graph::ProvenanceTag` - What a tensor is, for a pass that has to recognize it rather than merely size it.
+- :cpp:any:`~einsums::compute_graph::PureTag` - Tag that declares a ``custom`` operation pure.
+- :cpp:any:`~einsums::compute_graph::RaggedExtentTable` - Per-instance extents a caller supplied for one ragged axis.
+- :cpp:any:`~einsums::compute_graph::RaggedFamily` - One grouped node's members, raised as a batched axis of the algebra.
+- :cpp:any:`~einsums::compute_graph::RaiseFailure` - Why a region could not be raised.
+- :cpp:any:`~einsums::compute_graph::Reason` - A reason a pass gives, declared once: a stable code and the words a person reads.
+- :cpp:any:`~einsums::compute_graph::Region` - A contiguous run of raisable nodes, and what crosses its boundary.
+- :cpp:any:`~einsums::compute_graph::RegionOptions` - Knobs for ``form_regions``.
+- :cpp:any:`~einsums::compute_graph::RunCostPoint` - The extra cost per element of a memory pattern at one contiguous run length.
+- :cpp:any:`~einsums::compute_graph::RunMetrics` - What the last replay of a graph did, as ``Graph::last_run`` reports it.
+- :cpp:any:`~einsums::compute_graph::SaveOptions` - Knobs for ``save_graph``.
+- :cpp:any:`~einsums::compute_graph::ScalarAccessor` - One SCALAR operand's live address, resolved once when an executor is built.
+- :cpp:any:`~einsums::compute_graph::ScaleDescriptor` - Metadata for ``OpKind::Scale`` nodes: ``A *= factor``.
+- :cpp:any:`~einsums::compute_graph::SearchBudget` - A wall-clock allowance for one pass's run.
+- :cpp:any:`~einsums::compute_graph::SequentialExecutor` - Sequential executor, executes nodes in topological order.
+- :cpp:any:`~einsums::compute_graph::SerializabilityBlocker` - One node that blocks a graph from being saved, and what blocks it.
+- :cpp:any:`~einsums::compute_graph::SetupDescriptor` - Metadata for setup nodes: a body computed once per bound problem.
+- :cpp:any:`~einsums::compute_graph::SetupState` - Live state a ``SetupDescriptor`` shares with its executor.
+- :cpp:any:`~einsums::compute_graph::SliceRequest` - Which axes of a node's operands one slice drops, and where the index of each is.
+- :cpp:any:`~einsums::compute_graph::SpaceDim` - One dimension of a declared tensor, given as an index space rather than a number.
+- :cpp:any:`~einsums::compute_graph::SpaceTiling` - One axis of a declared TILED tensor: what it means, and how it is cut up.
+- :cpp:any:`~einsums::compute_graph::SyevDescriptor` - Metadata for the DENSE ``OpKind::Syev`` nodes: the real symmetric eigendecomposition :math:`A = V \operatorname{diag}(W) V^T`, in place.
+- :cpp:any:`~einsums::compute_graph::SymbolicCost` - The symbolic cost of one operation: three polynomials in index-space scales.
+- :cpp:any:`~einsums::compute_graph::SymbolicFactor` - One variable raised to one power inside a monomial.
+- :cpp:any:`~einsums::compute_graph::SymbolicPoly` - A multivariate polynomial in index-space scales, always in canonical form.
+- :cpp:any:`~einsums::compute_graph::SymbolicTerm` - One term of a cost polynomial: a coefficient times a monomial.
+- :cpp:any:`~einsums::compute_graph::SymbolicVar` - One variable of a cost polynomial: either an annotated space or an unannotated letter.
+- :cpp:any:`~einsums::compute_graph::TensorBacking` - The storage behind a tensor the graph reads, or writes, but never holds whole.
+- :cpp:any:`~einsums::compute_graph::TensorExpr` - The raised algebra of one region.
+- :cpp:any:`~einsums::compute_graph::TensorHandle` - Type-erased handle to a tensor, storing pointer and metadata.
+- :cpp:any:`~einsums::compute_graph::TensorSlot` - A rebindable tensor reference.
+- :cpp:any:`~einsums::compute_graph::TensorUsage` - Every use of one owning buffer, in ascending position order.
+- :cpp:any:`~einsums::compute_graph::TensorUse` - One read or write of a tensor buffer by one node.
+- :cpp:any:`~einsums::compute_graph::ThcFactorization` - Offer a four-index tensor as a fitted chain over two grid indices.
+- :cpp:any:`~einsums::compute_graph::ThreadSweepOptions` - Knobs for ``measure_thread_efficiency``. The defaults are what `einsums-tune` runs; the caps are what keep it to tens of seconds.
+- :cpp:any:`~einsums::compute_graph::TiledDotDescriptor` - Metadata for a TILED dot / dotc node (``OpKind::Dot``).
+- :cpp:any:`~einsums::compute_graph::TiledEinsumDescriptor` - Metadata for a TILED einsum node.
+- :cpp:any:`~einsums::compute_graph::TiledElementwiseDescriptor` - Metadata for a TILED elementwise node (scale or axpy).
+- :cpp:any:`~einsums::compute_graph::TiledPermuteDescriptor` - Metadata for a TILED permute node (``OpKind::Custom``).
+- :cpp:any:`~einsums::compute_graph::TileQuery` - What a ``tiles`` hook is asked about: the tile grid of the node's tiled output and the graph's parameters.
+- :cpp:any:`~einsums::compute_graph::TraceDescriptor` - Metadata for the DENSE ``OpKind::Trace`` nodes: ``result = sum_i A(i,i)``.
+- :cpp:any:`~einsums::compute_graph::UsageAnalysis` - Graph-wide reader/writer/liveness index: one forward scan, shared by every pass, with one alias convention. Build once, query everywhere.
+- :cpp:any:`~einsums::compute_graph::ViewAxis` - Per-axis specification for a ``View`` op.
+- :cpp:any:`~einsums::compute_graph::ViewDescriptor` - Metadata for ``View`` nodes, non-owning slice/alias of another tensor.
+- :cpp:any:`~einsums::compute_graph::WaggleBridge` - An observer that labels the profiler's zones with what the graph was doing in them.
+- :cpp:any:`~einsums::compute_graph::Workspace` - Owns tensors that persist across multiple Graphs and Pipelines.
+- :cpp:any:`~einsums::compute_graph::WriteParamDescriptor` - Metadata for ``WriteParam`` nodes, explicit dataflow write into a Pipeline parameter.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::compute_graph::DenseOrTiled` - A dense in-core tensor or a tiled one: the two operand families most cg:: operations accept.
+- :cpp:any:`~einsums::compute_graph::GraphCapturableTensor` - A tensor the graph can capture into a handle.
+- :cpp:any:`~einsums::compute_graph::HasCompileTimeRank`
+- :cpp:any:`~einsums::compute_graph::MatrixOperand` - A rank-2 operand of the BLAS and LAPACK wrappers below: either a tensor that fixes rank 2 in its type, or a runtime-rank tensor whose rank the wrapper checks at the call. One body serves both families, so one constraint names both.
+- :cpp:any:`~einsums::compute_graph::MatrixOrVectorOperand` - An operand a wrapper takes at either rank, such as the right-hand side of a linear solve: one column vector or a matrix of them.
+- :cpp:any:`~einsums::compute_graph::NodeDescriptor` - A type ``OpData`` can hold: a copyable struct naming itself with a ``static constexpr std::string_view descriptor_name``.
+- :cpp:any:`~einsums::compute_graph::PermuteOperands` - What cg::permute accepts: two tensors of one element type, each any tensor or a tiled one.
+- :cpp:any:`~einsums::compute_graph::RuntimeRankTensorConcept`
+- :cpp:any:`~einsums::compute_graph::VectorOperand` - The rank-1 counterpart of ``MatrixOperand``.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::compute_graph::abs` - Graph-aware magnitude: ``out := |A|``. Real or complex ``A`` produces real ``out``. Dense or tiled.
+- :cpp:any:`~einsums::compute_graph::amplitude_update_writer` - The node of ``graph`` that updates ``tensor``, when ``graph`` is a solver's loop body.
+- :cpp:any:`~einsums::compute_graph::apply_cmp` - Apply ``op`` to two integers.
+- :cpp:any:`~einsums::compute_graph::apply_single_pass` - Run ``pass``, which the caller owns, over ``graph`` through a PassManager.
+- :cpp:any:`~einsums::compute_graph::approximation_effect_from_name` - The ``ApproximationEffect`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::approximation_effect_name` - The name of an approximation effect, for diagnostics and for the saved form.
+- :cpp:any:`~einsums::compute_graph::approximation_origin_from_name` - The ``ApproximationOrigin`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::approximation_origin_name` - The name of an approximation origin, for diagnostics and for the saved form.
+- :cpp:any:`~einsums::compute_graph::as` - Convert a PrefactorScalar to a concrete typed scalar.
+- :cpp:any:`~einsums::compute_graph::as_real` - Lossy projection to a real scalar. Discards any imaginary component.
+- :cpp:any:`~einsums::compute_graph::axpby` - Graph-aware AXPBY: ``Y = alpha * X + beta * Y`` (extended BLAS level-1).
+- :cpp:any:`~einsums::compute_graph::axpy` - Graph-aware AXPY: ``Y += alpha * X`` (BLAS level-1).
+- :cpp:any:`~einsums::compute_graph::batched_gemm` - Emit one `blas::gemm_batch` over a batch of independent GEMMs: ``C_i = alpha * op(A_i) op(B_i) + beta * C_i`` for every i.
+- :cpp:any:`~einsums::compute_graph::batched_gemm_blocked` - ``batched_gemm`` where the destinations are uniform-shaped blocks of a single tensor, described by their offsets rather than enumerated as views.
+- :cpp:any:`~einsums::compute_graph::bisect_mode_name` - Name of a ``BisectMode`` value.
+- :cpp:any:`~einsums::compute_graph::blas_route_is_moldable` - Whether a BLAS call's thread count can be dictated by its caller.
+- :cpp:any:`~einsums::compute_graph::block_copy` - Copy a contiguous N-dimensional sub-region of ``src`` into ``dst``.
+- :cpp:any:`~einsums::compute_graph::build_executor` - Build a ``Node::execute`` callable from data alone.
+- :cpp:any:`~einsums::compute_graph::check_descriptor` - Run the claims of the codec registered as ``name`` against ``samples``.
+- :cpp:any:`~einsums::compute_graph::cmp_op_from_name` - The ``CmpOp`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::cmp_op_name` - Name of a ``CmpOp``, for diagnostics and for the IR's by-name rule.
+- :cpp:any:`~einsums::compute_graph::compare` - Order two cost polynomials, always.
+- :cpp:any:`~einsums::compute_graph::compare_explain` - Order two cost polynomials, always, and report which rung decided.
+- :cpp:any:`~einsums::compute_graph::compare_rung_name` - Name of a ``CompareRung`` value.
+- :cpp:any:`~einsums::compute_graph::compose_approximation` - The bound that holds after applying an approximation of size ``second`` on top of one of size ``first``.
+- :cpp:any:`~einsums::compute_graph::conj` - Graph-aware in-place complex conjugate: ``A := conj(A)``. A no-op for real dtypes, matching ``numpy.conj`` on a real array. Captured as an opaque Custom node, since the einsum-rewriting passes do not reason about conjugation.
+- :cpp:any:`~einsums::compute_graph::contribution_symmetry` - Is what ``writer`` adds to its output unchanged, up to a sign, when its output's axes are permuted by ``sigma``?
+- :cpp:any:`~einsums::compute_graph::cost_component_name` - Name of a ``CostComponent`` value.
+- :cpp:any:`~einsums::compute_graph::custom` - Record a custom (user-defined) operation that writes the given tensors.
+- :cpp:any:`~einsums::compute_graph::derive_gemm_hint` - Derive a node's ``GemmHint``, or decide it has none.
+- :cpp:any:`~einsums::compute_graph::describe_features` - The features in ``features``, by name, for a diagnostic.
+- :cpp:any:`~einsums::compute_graph::descriptor_hooks` - The hooks registered for ``node's`` descriptor, or null.
+- :cpp:any:`~einsums::compute_graph::destination_operand_count` - How many operands ``node`` lists before its destination, when the destination rule covers it.
+- :cpp:any:`~einsums::compute_graph::destination_rule_violation` - Why ``node`` breaks the destination rule, or empty when it keeps it.
+- :cpp:any:`~einsums::compute_graph::det` - Determinant of a square matrix (returning scalar).
+- :cpp:any:`~einsums::compute_graph::diagonal` - Graph-aware diagonal extraction: ``out[i] := A[i, i]``.
+- :cpp:any:`~einsums::compute_graph::diis_add_pair` - Register one ``(amplitude, step)`` pair with a DIIS accelerator.
+- :cpp:any:`~einsums::compute_graph::diis_step` - Take one DIIS step over an accelerator's registered pairs.
+- :cpp:any:`~einsums::compute_graph::dispatch::einsum_empty_operands` - Zero-extent operands: nothing to contract, but BLAS-style semantics still apply the output prefactor. An empty C is a pure no-op; an empty input with a non-empty C (zero-extent link or trace letter) means C = c_pf * C, with c_pf == 0 assigning zero rather than multiplying so stale NaNs never survive. Handled once, before any kernel, so no fast path (BLAS wrappers, PackedGemm tiling, generic loop) needs its own empty-tensor bookkeeping. Returns true when it handled the call.
+- :cpp:any:`~einsums::compute_graph::dispatch::erased_mixed_string_einsum` - The mixed-precision counterpart of ``erased_string_einsum``, on operands whose element types differ.
+- :cpp:any:`~einsums::compute_graph::dispatch::erased_string_einsum` - ``C = c_pf * C + ab_pf * contract(A, B)`` for operands of one element type, on their TensorImpls.
+- :cpp:any:`~einsums::compute_graph::dispatch::fold_repeated_letters` - Fold an operand's repeated letters into one axis each, as a view of the same storage.
+- :cpp:any:`~einsums::compute_graph::dispatch::generic_string_einsum` - Generic runtime nested-loop contraction for arbitrary rank/pattern.
+- :cpp:any:`~einsums::compute_graph::dispatch::last_dispatch_route` - Name of the kernel route the most recent string_einsum call on this thread selected ("packed_gemm", "gemv_mat_vec", "generic_loop", "generic_loop_repeated_indices", "empty_input_scale_only", ...).
+- :cpp:any:`~einsums::compute_graph::dispatch::last_dispatch_route_name` - The kernel route the most recent contraction on this thread took, as a string.
+- :cpp:any:`~einsums::compute_graph::dispatch::mixed_string_einsum` - An einsum whose operands do not all share one element type.
+- :cpp:any:`~einsums::compute_graph::dispatch::reduce_lone_letters` - Sum an operand over its lone letters, the ones in no other operand and not in C.
+- :cpp:any:`~einsums::compute_graph::dispatch::reject_output_alias` - Output aliasing an input is rejected: contractions read operands while writing C, so overlap silently corrupts results. The one provably safe shape is carved out: when C's index list is IDENTICAL to the aliased operand's, every element is read exactly once immediately before its own overwrite (pure elementwise update, e.g. "ij <- ij ; ij" with C aliasing A). A and B sharing a buffer is always fine - inputs are read-only. Must run after the zero-size check so the span arithmetic never sees a zero dimension.
+- :cpp:any:`~einsums::compute_graph::dispatch::string_einsum` - Execute a contraction described by a parsed string spec, on runtime-rank operands.
+- :cpp:any:`~einsums::compute_graph::dispatch::string_permute` - Tensor-object overload of ``string_permute_impl``.
+- :cpp:any:`~einsums::compute_graph::dispatch::string_permute_impl` - The character-index permute behind string specs. Defined in StringDispatch.hpp, which string_einsum needs it for, and explicitly instantiated in the library for the four element types, so a caller of cg::permute compiles none of it.
+- :cpp:any:`~einsums::compute_graph::dot` - Graph-aware dot product writing result to a pre-allocated scalar. Unlike dot(A, B) which throws during capture, this overload records the operation into the graph and can be used with distributed tensors.
+- :cpp:any:`~einsums::compute_graph::dot_python` - Python-friendly graph-aware dot: writes the result into ``result->data()[0]``.
+- :cpp:any:`~einsums::compute_graph::dotc_python` - Graph-aware Hermitian inner product: ``result := sum_i conj(A_i) * B_i``.
+- :cpp:any:`~einsums::compute_graph::eager_einsum_intermediate_limit` - The most elements an eager einsum over several operands lets a partial product hold.
+- :cpp:any:`~einsums::compute_graph::effects_of` - What ``node`` does beyond its tensors: its registered ``effects`` hook's answer, or ``Node::effects``.
+- :cpp:any:`~einsums::compute_graph::einsum` - Graph-aware einsum over three or more operands: ``C = c_pf * C + ab_pf * (A B D ...)``.
+- :cpp:any:`~einsums::compute_graph::einsum_python` - Graph-aware einsum: contract A and B according to ``spec``.
+- :cpp:any:`~einsums::compute_graph::element_ops::global_element_op_registry` - The process-wide element-op registry.
+- :cpp:any:`~einsums::compute_graph::element_ops::register_builtin_element_ops` - Seed ``registry`` with the ops this library ships.
+- :cpp:any:`~einsums::compute_graph::element_ops::register_op` - Register an op in the process-wide registry.
+- :cpp:any:`~einsums::compute_graph::element_transform` - Graph-aware element_transform: apply unary operator element-wise.
+- :cpp:any:`~einsums::compute_graph::element_transform_named_python` - Python-friendly NAMED element_transform: the registry's kernel, chosen by name.
+- :cpp:any:`~einsums::compute_graph::element_transform_python` - Python-friendly element_transform wrapper.
+- :cpp:any:`~einsums::compute_graph::escape_reason` - A short, shape-independent phrase for ``reason``, suitable for ``note_skip``.
+- :cpp:any:`~einsums::compute_graph::expand_permutation_operators` - Expand a product of permutation operators over an output index list.
+- :cpp:any:`~einsums::compute_graph::features_of` - The features ``node`` carries in ``graph``.
+- :cpp:any:`~einsums::compute_graph::find_descriptor_codec` - The codec registered for the descriptor named ``name``, or null. Thread-safe; the codec lives for the rest of the process.
+- :cpp:any:`~einsums::compute_graph::fixed` - An axis whose size is a number and whose meaning is nothing.
+- :cpp:any:`~einsums::compute_graph::for_each_child_graph` - Visit the graphs one node CONTAINS: a loop's body, a conditional's two branches, a setup's body.
+- :cpp:any:`~einsums::compute_graph::form_regions` - Find every region of ``graph``, deterministically.
+- :cpp:any:`~einsums::compute_graph::format_as` - ``fmt`` formats an ``ApproximationOrigin`` as its name, so ``fmt::format("{}", value)`` needs no call to ``approximation_origin_name``.
+- :cpp:any:`~einsums::compute_graph::gather` - Copy an arbitrary index selection out of ``src`` into ``dst``.
+- :cpp:any:`~einsums::compute_graph::gemm` - Graph-aware GEMM: ``C = alpha * op(A) * op(B) + beta * C``.
+- :cpp:any:`~einsums::compute_graph::gemm_engine_from_string` - Parse a ``GemmEngine`` name. Returns false and leaves ``out`` alone for an unknown name.
+- :cpp:any:`~einsums::compute_graph::gemv` - Graph-aware GEMV: ``y = alpha * op(A) * z + beta * y``.
+- :cpp:any:`~einsums::compute_graph::ger` - Graph-aware GER (rank-1 update): ``A += alpha * X * Y^T``.
+- :cpp:any:`~einsums::compute_graph::gerc` - Graph-aware conjugating rank-1 update (GERC): ``A += alpha * X * Y^H``.
+- :cpp:any:`~einsums::compute_graph::gesv` - Solve the linear system ``A * X = B`` in place.
+- :cpp:any:`~einsums::compute_graph::getrf` - LU-factorize ``A`` in place, recording the row interchanges in ``pivots``.
+- :cpp:any:`~einsums::compute_graph::getrs` - Solve ``A * X = B`` in place against a factorization ``getrf`` produced.
+- :cpp:any:`~einsums::compute_graph::global_factorization_registry` - The process-wide provider registry.
+- :cpp:any:`~einsums::compute_graph::global_space_registry` - The process-wide space registry.
+- :cpp:any:`~einsums::compute_graph::grouped_axpby` - One node holding many independent AXPBYs: ``Y_i = alphas[i] * X_i + betas[i] * Y_i`` for every entry.
+- :cpp:any:`~einsums::compute_graph::grouped_batched_gemm` - Emit one `blas::gemm_batch_grouped` over independent GEMMs whose shapes need NOT agree: ``C_i = alpha * op(A_i) op(B_i) + beta * C_i``.
+- :cpp:any:`~einsums::compute_graph::grouped_batched_gemm_blocked` - ``grouped_batched_gemm`` where the destinations are blocks of existing tensors, described by a base and an offset rather than enumerated as views.
+- :cpp:any:`~einsums::compute_graph::grouped_direct_division` - One node holding many independent element-wise quotients: ``C_i = alphas[i] * (A_i ⊘ B_i) + betas[i] * C_i`` for every member.
+- :cpp:any:`~einsums::compute_graph::grouped_direct_product` - One node holding many independent element-wise products: ``C_i = alphas[i] * (A_i ⊙ B_i) + betas[i] * C_i`` for every member.
+- :cpp:any:`~einsums::compute_graph::grouped_dot` - One node holding many independent dot products: ``results[i]->data()[0] = sum(A_i * B_i)`` for every entry.
+- :cpp:any:`~einsums::compute_graph::grouped_gather_rotate` - Emit one node holding many independent gather-and-rotate blocks: ``C_i[q, a, b] = sum_uv src[Q_i[q], U_i[u], U_i[v]] X_i[u, a] X_i[v, b]``, the whole run under one OpenMP region.
+- :cpp:any:`~einsums::compute_graph::grouped_permute` - One node holding many independent permutes: ``C_i = c_pfs[i] * C_i + a_pfs[i] * permute(A_i)`` for every member, all of them under one spec.
+- :cpp:any:`~einsums::compute_graph::grouped_sandwich` - Emit one node holding many independent dressed sandwich accumulations: ``C_i += sum_q B_q S_i B_q^T`` with ``B_q = A_i[q] - P_i^T M_i[q]``, the whole run under one OpenMP region.
+- :cpp:any:`~einsums::compute_graph::has_runtime_view_bounds` - True when a ``View's`` slice is resolved from runtime state (a named parameter or a callback) rather than from literals.
+- :cpp:any:`~einsums::compute_graph::hash` - Hash a PrefactorScalar by its raw bits (per alternative). Stable across runs and discriminates between alternatives via the variant index.
+- :cpp:any:`~einsums::compute_graph::heev` - Hermitian eigendecomposition (in-place): ``A = V * diag(W) * V^H``.
+- :cpp:any:`~einsums::compute_graph::heev_python` - Python-facing heev: Hermitian eigendecomposition (complex A, real W). See syev_python for why this wrapper exists.
+- :cpp:any:`~einsums::compute_graph::hooked_extent_mismatch` - Why ``node's`` outputs in ``graph`` disagree with its registered ``output_extents`` hook: a different number of outputs, or an output whose known extents differ. Empty when they agree, or when there is no hook or it cannot say.
+- :cpp:any:`~einsums::compute_graph::hooked_output_extents` - The extents ``node's`` registered ``output_extents`` hook gives for its inputs' current extents in ``graph``, or empty when it has no such hook or the hook cannot say.
+- :cpp:any:`~einsums::compute_graph::imag` - Graph-aware imaginary part: ``out := Im(A)``. Complex ``A`` produces real ``out``. For real ``A`` it is zeros, since Im(x) == 0, matching numpy ``.imag``. Dense or tiled.
+- :cpp:any:`~einsums::compute_graph::index_role` - The part ``letter`` plays in the contraction whose index lists are ``c``, ``a`` and ``b``.
+- :cpp:any:`~einsums::compute_graph::invert` - In-place matrix inverse: ``A := A^-1``.
+- :cpp:any:`~einsums::compute_graph::is_absolute_effect` - Whether ``effect`` is an ABSOLUTE bound rather than a relative one.
+- :cpp:any:`~einsums::compute_graph::is_grouped_raisable` - Whether a GROUPED node kind can be raised into the algebra.
+- :cpp:any:`~einsums::compute_graph::is_one` - True iff the contained value compares equal to one.
+- :cpp:any:`~einsums::compute_graph::is_ragged_symbol` - Whether ``symbol`` declares a ragged axis rather than a plain one.
+- :cpp:any:`~einsums::compute_graph::is_raisable` - Whether a node kind can be raised into the algebra.
+- :cpp:any:`~einsums::compute_graph::is_real_valued` - True iff the contained value carries no imaginary component (real alternatives always qualify). Passes that flatten prefactors into real arithmetic must gate on this rather than silently truncating with ``as_real``.
+- :cpp:any:`~einsums::compute_graph::is_reconstructible` - Whether nodes of ``kind`` can have their executor rebuilt from data alone.
+- :cpp:any:`~einsums::compute_graph::is_zero` - True iff the contained value compares equal to zero.
+- :cpp:any:`~einsums::compute_graph::kernel_family_from_string` - Parse a ``KernelFamily`` name. Returns false and leaves ``out`` alone when the name is not one of the five; an unknown family in a profile file is dropped rather than silently priced as something else.
+- :cpp:any:`~einsums::compute_graph::kernel_moldability` - Whether this node's kernel will actually see the width it is planned at.
+- :cpp:any:`~einsums::compute_graph::khatri_rao` - The Khatri-Rao product of ``A`` and ``B``, as a matrix.
+- :cpp:any:`~einsums::compute_graph::laplace::build_quadrature` - Build the rule at a fixed point count.
+- :cpp:any:`~einsums::compute_graph::laplace::laplace_quadrature` - Capture an ``OpKind::LaplaceQuadrature`` node.
+- :cpp:any:`~einsums::compute_graph::laplace::measure_quadrature_error` - The worst relative deviation of ``grid`` from :math:`1/x` over the interval it covers.
+- :cpp:any:`~einsums::compute_graph::laplace::quadrature_point_count` - How many points a target accuracy needs over a given range.
+- :cpp:any:`~einsums::compute_graph::laplace::spectral_range` - The range of :math:`\sum_k \sigma_k \varepsilon_k[i_k]` from each axis's own range.
+- :cpp:any:`~einsums::compute_graph::letter_vars_for` - The letter lookup for one einsum node.
+- :cpp:any:`~einsums::compute_graph::link_placement` - Classify ``indices`` by where the members of ``link_indices`` sit.
+- :cpp:any:`~einsums::compute_graph::live_ab_prefactor` - The product prefactor an einsum will actually apply.
+- :cpp:any:`~einsums::compute_graph::live_alpha` - The source prefactor an axpby will actually apply.
+- :cpp:any:`~einsums::compute_graph::live_beta` - The destination prefactor an axpby will actually apply.
+- :cpp:any:`~einsums::compute_graph::live_c_prefactor` - The destination prefactor an einsum will actually apply.
+- :cpp:any:`~einsums::compute_graph::live_conj_a` - Whether an einsum will actually conjugate its first operand.
+- :cpp:any:`~einsums::compute_graph::live_conj_b` - Whether an einsum will actually conjugate its second operand.
+- :cpp:any:`~einsums::compute_graph::live_factor` - The factor a scale will actually apply.
+- :cpp:any:`~einsums::compute_graph::live_index_lists` - The index lists an einsum will actually run with.
+- :cpp:any:`~einsums::compute_graph::live_or_private_params` - The live scalar block a node carries, or a private one seeded from its snapshots.
+- :cpp:any:`~einsums::compute_graph::load_graph` - Read an ``einsums_graph_ir`` file back as a runnable graph.
+- :cpp:any:`~einsums::compute_graph::load_graph_file` - Read ``path`` back as a runnable graph, throwing on failure.
+- :cpp:any:`~einsums::compute_graph::load_graph_file_into` - Read ``path`` back against ``registry``, throwing on failure. The Python spelling.
+- :cpp:any:`~einsums::compute_graph::load_graph_string` - Read ``einsums_graph_ir`` text back as a runnable graph.
+- :cpp:any:`~einsums::compute_graph::lower_region` - Rebuild ``region`` of ``graph`` from ``expr``, in place.
+- :cpp:any:`~einsums::compute_graph::make_approximation_record` - Build an ``ApproximationRecord`` in one call.
+- :cpp:any:`~einsums::compute_graph::make_deferred_handle` - Construct the handle a DEFERRED declaration registers.
+- :cpp:any:`~einsums::compute_graph::make_elementwise_params` - A fresh scalar block holding ``alpha`` and ``beta``.
+- :cpp:any:`~einsums::compute_graph::make_handle` - Construct a TensorHandle from a typed tensor.
+- :cpp:any:`~einsums::compute_graph::make_pipeline` - Construct a Pipeline, run ``build(pipeline)`` to register its stages, and return it un-executed.
+- :cpp:any:`~einsums::compute_graph::make_provenance_tag` - Build a ``ProvenanceTag``.
+- :cpp:any:`~einsums::compute_graph::make_ragged_symbol` - Spell the ragged symbol for ``space``.
+- :cpp:any:`~einsums::compute_graph::make_random_fn` - The post-materialize random fill a deferred tensor's ``TensorHandle::random_fn`` runs.
+- :cpp:any:`~einsums::compute_graph::make_scalar_handle` - Construct a TensorHandle for a scalar value (rank-0 tensor).
+- :cpp:any:`~einsums::compute_graph::make_zero_fn` - The post-materialize zero fill a deferred tensor's ``TensorHandle::zero_fn`` runs.
+- :cpp:any:`~einsums::compute_graph::manifest_direction_from_name` - The ``ManifestDirection`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::manifest_direction_name` - The name of a direction, for diagnostics and for the saved form.
+- :cpp:any:`~einsums::compute_graph::max_python` - Graph-aware maximum element (real dtypes), written into ``result->data()[0]``. Backs the numpy-style ``A.max()``. Real dtypes only, since complex ordering is not meaningful; use ``norm(MAXABS)`` for the largest magnitude.
+- :cpp:any:`~einsums::compute_graph::measure_thread_efficiency` - Measure `e(w)` for every kernel family at every size class it is defined at, on this machine.
+- :cpp:any:`~einsums::compute_graph::named_keys_contain` - True when any key in ``keys`` may touch the same named resource as ``key``.
+- :cpp:any:`~einsums::compute_graph::named_keys_overlap` - True when accesses to ``a`` and ``b`` may touch the same named resource.
+- :cpp:any:`~einsums::compute_graph::named_reads` - Every named resource outside the tensor dataflow this node READS, as ordering keys: ``param_reads`` and the dataset a ``DiskRead`` loads, plus, for a control-flow node, every key read anywhere in its child graphs, plus the named reads a registered descriptor's ``accesses`` hook reports. See ``named_writes``.
+- :cpp:any:`~einsums::compute_graph::named_writes` - Every named resource outside the tensor dataflow this node WRITES, as ordering keys.
+- :cpp:any:`~einsums::compute_graph::node_index_lists` - The letter lists of ``node``, or an empty result for a kind that has none.
+- :cpp:any:`~einsums::compute_graph::norm` - Graph-aware norm writing result to a pre-allocated scalar.
+- :cpp:any:`~einsums::compute_graph::norm_python` - Python-friendly graph-aware norm: writes the result into ``result->data()[0]``.
+- :cpp:any:`~einsums::compute_graph::open_backing` - Open a saved location through its registered kind.
+- :cpp:any:`~einsums::compute_graph::operand_inputs` - The inputs ``node`` reads besides its destination: its input list without the trailing destination entry. All of the inputs for a node the rule does not cover.
+- :cpp:any:`~einsums::compute_graph::outer_sum` - Outer sum of N rank-1 vectors with per-axis coefficients.
+- :cpp:any:`~einsums::compute_graph::output_symmetry` - The symmetry ``node's`` single output unconditionally has once the node has run.
+- :cpp:any:`~einsums::compute_graph::parallel_for` - Graph-aware parallel_for that captures into the computation graph.
+- :cpp:any:`~einsums::compute_graph::parallel_reduce` - Graph-aware parallel_reduce that captures into the computation graph.
+- :cpp:any:`~einsums::compute_graph::param_reads` - Names of ``ParamTable`` entries this node READS - the analogue of ``Node::inputs``.
+- :cpp:any:`~einsums::compute_graph::param_source_type` - The ``ParamSourceType`` naming ``T``.
+- :cpp:any:`~einsums::compute_graph::param_source_type_from_name` - The ``ParamSourceType`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::param_source_type_name` - The name of a ``ParamSourceType``, for diagnostics and the saved form.
+- :cpp:any:`~einsums::compute_graph::param_writes` - Names of ``ParamTable`` entries this node WRITES - the parameter analogue of ``Node::outputs``.
+- :cpp:any:`~einsums::compute_graph::parse_einsum_spec` - Parse an einsum specification string.
+- :cpp:any:`~einsums::compute_graph::parse_nary_einsum_spec` - Parse an einsum spec with any number of operands, two or more.
+- :cpp:any:`~einsums::compute_graph::parse_permute_spec` - Parse a permute specification string.
+- :cpp:any:`~einsums::compute_graph::pass_phase_name` - Lower-case hyphenated name of a phase, for reports and test tables.
+- :cpp:any:`~einsums::compute_graph::pass_tier_name` - Lower-case hyphenated name of a tier, for reports and test tables.
+- :cpp:any:`~einsums::compute_graph::passes::apply_fold` - Multiply ``node's`` prefactor at ``site`` by ``factor``. Caller guarantees ``fold_site`` returned that site. Writes the live params the executor reads AND the snapshot beside them, so later analysis sees the same value.
+- :cpp:any:`~einsums::compute_graph::passes::axpby_beta` - The live ``beta`` of an Axpby node, or null when ``nd`` is not an Axpby or carries no descriptor (a pass-built node) and beta is unknowable.
+- :cpp:any:`~einsums::compute_graph::passes::carries_permutation_operators` - Whether ``node`` applies a permutation operator (``P(ij)``) to its result.
+- :cpp:any:`~einsums::compute_graph::passes::cross_space_severity_name` - Name of a ``CrossSpaceSeverity`` value.
+- :cpp:any:`~einsums::compute_graph::passes::duplicate_materializations` - Tensors with more than one Materialize node, anywhere in ``graph's`` tree.
+- :cpp:any:`~einsums::compute_graph::passes::einsum_is_uniform` - Whether an einsum node's operands all hold one element type.
+- :cpp:any:`~einsums::compute_graph::passes::fold_site` - Where (if anywhere) a scale of ``tensor`` folds inside ``node``.
+- :cpp:any:`~einsums::compute_graph::passes::format_as` - ``fmt`` formats a ``CrossSpaceSeverity`` as its name, so ``fmt::format("{}", value)`` needs no call to ``cross_space_severity_name``.
+- :cpp:any:`~einsums::compute_graph::passes::hash_combine` - Fold ``v`` into the running hash ``h``.
+- :cpp:any:`~einsums::compute_graph::passes::hash_range` - Fold every element of ``range`` into ``h``, in order. @see hash_combine
+- :cpp:any:`~einsums::compute_graph::passes::is_exact_power_of_two` - Whether ``v`` is exactly a power of two, sign included.
+- :cpp:any:`~einsums::compute_graph::passes::make_transfer_node` - Build a host<->device transfer node for ``handle``.
+- :cpp:any:`~einsums::compute_graph::passes::multiply_prefactors` - ``lhs * rhs`` over two type-erased prefactors.
+- :cpp:any:`~einsums::compute_graph::passes::permutation_of` - Where each of ``c's`` letters sits in ``a``, when ``c`` is a permutation of ``a``.
+- :cpp:any:`~einsums::compute_graph::passes::pure_overwrite` - True when ``nd`` overwrites its destination without reading it.
+- :cpp:any:`~einsums::compute_graph::passes::scale_prefactor` - ``pf * a``, preserving the PrefactorScalar's element type.
+- :cpp:any:`~einsums::compute_graph::passes::span_interferes` - Interference gate shared by the passes that collapse a run of nodes into one (DistributiveFactoring, LinearCombinationContractionFolding, GEMMBatching).
+- :cpp:any:`~einsums::compute_graph::passes::stranded_materializations` - Graph-owned intermediates that are materialized and that nothing reads or writes.
+- :cpp:any:`~einsums::compute_graph::passes::value_writes_by_buffer` - Every value write each buffer receives, as node positions in program order.
+- :cpp:any:`~einsums::compute_graph::permute` - String-based graph-aware permute with prefactors.
+- :cpp:any:`~einsums::compute_graph::permute_view` - Typed (compile-time rank) transpose / axis-permutation view.
+- :cpp:any:`~einsums::compute_graph::permute_view_python` - Python-friendly transpose / axis-permutation view.
+- :cpp:any:`~einsums::compute_graph::plan_nary_einsum` - The cheapest order to contract an einsum over several operands two at a time.
+- :cpp:any:`~einsums::compute_graph::plan_nary_einsum_with_spaces` - The cheapest order to contract an einsum's operands, ranked by the index spaces they are annotated with.
+- :cpp:any:`~einsums::compute_graph::pow` - Matrix power: ``A^alpha`` via eigendecomposition.
+- :cpp:any:`~einsums::compute_graph::qr` - QR decomposition (returning): ``A = Q * R``.
+- :cpp:any:`~einsums::compute_graph::ragged_symbol_space` - The index-space name a ragged symbol is ragged over.
+- :cpp:any:`~einsums::compute_graph::raise_region` - Raise ``region`` of ``graph`` into its algebra.
+- :cpp:any:`~einsums::compute_graph::read` - Record a disk read operation: load tensor data from a file.
+- :cpp:any:`~einsums::compute_graph::read_async` - Record an async-capable disk read operation.
+- :cpp:any:`~einsums::compute_graph::reads_destination` - True when ``node`` reads its destination (accumulates into it or updates it in place).
+- :cpp:any:`~einsums::compute_graph::real` - Graph-aware real part: ``out := Re(A)``. Complex ``A`` produces real ``out``. For real ``A`` it is a copy, since Re(x) == x, matching numpy ``.real``. Dense or tiled.
+- :cpp:any:`~einsums::compute_graph::reconstruction_blocker` - Why ``node`` cannot be rebuilt from data alone.
+- :cpp:any:`~einsums::compute_graph::refresh_gemm_hint` - Derive an einsum node's GEMM hint again, from its index lists and the operands it lists now.
+- :cpp:any:`~einsums::compute_graph::register_backing_kind` - Register ``kind`` so a saved graph naming it can be loaded.
+- :cpp:any:`~einsums::compute_graph::register_default_pass` - Run a pass from outside the library in every default pipeline that holds its anchor.
+- :cpp:any:`~einsums::compute_graph::register_descriptor` - Register ``codec`` for the descriptor named ``codec.name``.
+- :cpp:any:`~einsums::compute_graph::register_graph` - Register a graph for profiler visibility.
+- :cpp:any:`~einsums::compute_graph::registered_default_passes` - Every pass registered with ``register_default_pass``, in registration order.
+- :cpp:any:`~einsums::compute_graph::registered_graphs_json` - Get JSON describing all registered compute graphs.
+- :cpp:any:`~einsums::compute_graph::reset_stale_thread_plan_fallbacks` - Forget the recorded fallbacks. For tests and diagnostics.
+- :cpp:any:`~einsums::compute_graph::reshape` - Graph-aware reshape: copy ``A`` into ``out``, which has the same number of elements in a different shape.
+- :cpp:any:`~einsums::compute_graph::resolve_operand` - Bind an ``OperandAccessor`` to ``id``, or explain why it cannot be bound.
+- :cpp:any:`~einsums::compute_graph::resolve_scalar_operand` - Bind a ``ScalarAccessor`` to ``id``, or explain why it cannot be bound.
+- :cpp:any:`~einsums::compute_graph::run` - One-shot: ``make_pipeline`` + ``Pipeline::run()``.
+- :cpp:any:`~einsums::compute_graph::run_pass_tree` - Run ``pass`` on ``graph`` and, when the pass opts into sub-graph recursion, on every descendant loop body and branch.
+- :cpp:any:`~einsums::compute_graph::save_graph` - Write ``graph`` to ``path`` as ``einsums_graph_ir``.
+- :cpp:any:`~einsums::compute_graph::save_graph_file` - Write ``graph`` to ``path``, throwing on refusal.
+- :cpp:any:`~einsums::compute_graph::save_graph_string` - Render ``graph`` as ``einsums_graph_ir`` text.
+- :cpp:any:`~einsums::compute_graph::scalar_type_from_name` - The element type spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::scalar_type_name` - The name of an element type, for diagnostics and for the saved form.
+- :cpp:any:`~einsums::compute_graph::scale` - Graph-aware scale: multiplies ``A`` in place by the scalar ``factor``.
+- :cpp:any:`~einsums::compute_graph::scatter` - Write ``src`` into an arbitrary index selection of ``dst``.
+- :cpp:any:`~einsums::compute_graph::scatter_add` - Graph-aware accumulating scatter: ``dst[indices...] += src[...]``.
+- :cpp:any:`~einsums::compute_graph::self_product_symmetry` - The symmetry the product term of an einsum has when one tensor fills both operand slots.
+- :cpp:any:`~einsums::compute_graph::set_operand_indices` - Rewrite one operand's index list, live and snapshot together.
+- :cpp:any:`~einsums::compute_graph::shift` - Graph-aware in-place scalar shift: ``A += beta``.
+- :cpp:any:`~einsums::compute_graph::size_class_from_string` - Parse a ``SizeClass`` name. Same contract as ``kernel_family_from_string``.
+- :cpp:any:`~einsums::compute_graph::slot_impl_accessor` - The ``TensorSlot::impl_of`` accessor for one static tensor type.
+- :cpp:any:`~einsums::compute_graph::slot_resync_accessor` - The ``TensorSlot::resync_of`` accessor for one static tensor type.
+- :cpp:any:`~einsums::compute_graph::sqrt` - Graph-aware element-wise square root: ``out := sqrt(A)``.
+- :cpp:any:`~einsums::compute_graph::stale_thread_plan_fallbacks` - Replays that ignored their thread plan because the machine changed.
+- :cpp:any:`~einsums::compute_graph::string_permute` - Graph-aware permute with explicit prefactors.
+- :cpp:any:`~einsums::compute_graph::sum_axes` - Graph-aware reduction: sum ``A`` over ``axes``, writing the surviving axes to ``out`` in their original order.
+- :cpp:any:`~einsums::compute_graph::sum_python` - Graph-aware sum of every element, written into ``result->data()[0]``.
+- :cpp:any:`~einsums::compute_graph::svd` - Singular value decomposition (returning): ``A = U * diag(S) * Vt``.
+- :cpp:any:`~einsums::compute_graph::svd_dd` - Divide-and-conquer singular value decomposition (returning): ``A = U * diag(S) * Vt``.
+- :cpp:any:`~einsums::compute_graph::syev` - Real symmetric eigendecomposition (in-place): ``A = V * diag(W) * V^T``.
+- :cpp:any:`~einsums::compute_graph::syev_eig` - Real symmetric eigendecomposition (returning): ``(V, W) = syev_eig(A)``.
+- :cpp:any:`~einsums::compute_graph::syev_python` - Python-facing syev: real-symmetric eigendecomposition (in place; A receives eigenvectors, W the eigenvalues).
+- :cpp:any:`~einsums::compute_graph::symbolic_cost_for` - The symbolic cost of one einsum node, derived mechanically from its contraction spec.
+- :cpp:any:`~einsums::compute_graph::symbolic_size_for` - The symbolic element count of a tensor with the given index list.
+- :cpp:any:`~einsums::compute_graph::symm_gemm` - Graph-aware ``C = op(B)^T op(A) op(B)``, or ``op(B)^H op(A) op(B)`` with ``conjugate``. A, B and C may be compile-time-rank matrices or runtime-rank tensors, as in ``gemm``.
+- :cpp:any:`~einsums::compute_graph::symmetry_at` - The symmetry ``tensor`` has when ``reader`` reads it.
+- :cpp:any:`~einsums::compute_graph::sync_destination_input` - Make ``node's`` input list follow the rule: its operands, then its destination exactly when it reads it. A node the rule does not cover is left alone.
+- :cpp:any:`~einsums::compute_graph::tensor_ownership_from_name` - The ``TensorOwnership`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::tensor_ownership_name` - The name of an ownership scope, for diagnostics and for the saved form.
+- :cpp:any:`~einsums::compute_graph::term_kind_name` - Lower-case name of a term kind, for dumps and test tables.
+- :cpp:any:`~einsums::compute_graph::tier_bound` - The norm-relative gap a pass of ``tier`` may open, at a dtype whose machine epsilon is ``epsilon``.
+- :cpp:any:`~einsums::compute_graph::tile_view_python` - Record a dense, parent-aliasing view of a single tile.
+- :cpp:any:`~einsums::compute_graph::tiles` - A tiled axis with a partition and no space.
+- :cpp:any:`~einsums::compute_graph::to_string` - Format a PrefactorScalar for logs / JSON. Real values print as-is; complex as ``(re,im)``. Used by profile annotations and graph JSON serialization.
+- :cpp:any:`~einsums::compute_graph::trace` - Trace of a square matrix: ``sum(A_ii)``. Returns the scalar.
+- :cpp:any:`~einsums::compute_graph::trace_python` - Python-friendly graph-aware trace: writes the diagonal sum into ``result->data()[0]``. Runtime-rank input must be a square rank-2 tensor.
+- :cpp:any:`~einsums::compute_graph::transfer_graph_registration` - Point the registry entry for ``from`` at ``to``, for a graph that moved.
+- :cpp:any:`~einsums::compute_graph::transpose` - Graph-aware transpose.
+- :cpp:any:`~einsums::compute_graph::truncated_svd` - Rank-``k`` truncated SVD (returning): keeps the top ``k`` singular triples of ``A``. Returns ``(U_k, S_k, Vt_k)`` with ``U_k`` of shape ``(m, k)``, ``S_k`` of shape ``(k,)``, and ``Vt_k`` of shape ``(k, n)``.
+- :cpp:any:`~einsums::compute_graph::truncated_syev` - Rank-``k`` truncated symmetric eigendecomposition (returning): keeps the top ``k`` eigenpairs of a real symmetric ``A``. Returns ``(eigenvectors, eigenvalues)`` where eigenvectors has shape ``(n, k)`` and eigenvalues has shape ``(k,)``.
+- :cpp:any:`~einsums::compute_graph::try_resolve_operand` - Bind an ``OperandAccessor`` to ``id``, or return an unbound one.
+- :cpp:any:`~einsums::compute_graph::tune` - Measure this machine and write its hardware profile, or report on the profile in effect.
+- :cpp:any:`~einsums::compute_graph::unregister_graph` - Unregister a graph from the profiler.
+- :cpp:any:`~einsums::compute_graph::validate_einsum_spec` - Validate an einsum specification string at compile time.
+- :cpp:any:`~einsums::compute_graph::validate_graph_ir` - Check an ``einsums_graph_ir`` file without building a graph, reporting EVERY problem rather than the first.
+- :cpp:any:`~einsums::compute_graph::validate_graph_ir_file` - Check ``path``, throwing with every problem when it is not valid.
+- :cpp:any:`~einsums::compute_graph::validate_graph_ir_string` - Check ``einsums_graph_ir`` text, reporting every problem.
+- :cpp:any:`~einsums::compute_graph::validate_permute_spec` - Validate a permute specification string at compile time.
+- :cpp:any:`~einsums::compute_graph::value_key` - The value ``leaf`` denotes.
+- :cpp:any:`~einsums::compute_graph::verify_after_pass` - When ``einsums:pass:verify`` is set, fail if ``graph`` breaks a structural invariant, naming ``pass_name`` as the pass that left it that way. A no-op otherwise.
+- :cpp:any:`~einsums::compute_graph::view` - Record a non-owning slice of a tensor.
+- :cpp:any:`~einsums::compute_graph::view_indexed_python` - Python-friendly indexed view supporting rank-reducing integer indices.
+- :cpp:any:`~einsums::compute_graph::view_python` - Python-friendly wrapper over ``view_runtime``.
+- :cpp:any:`~einsums::compute_graph::view_runtime` - Runtime-rank counterpart to cg::view: record a non-owning slice of a RuntimeTensor parent.
+- :cpp:any:`~einsums::compute_graph::views_python` - Batched ``view_indexed_python``: record N views of one parent in one call.
+- :cpp:any:`~einsums::compute_graph::width_rungs_for` - Width rungs for a machine with ``max_threads``: powers of two up to it, plus it. Always non-empty and always starts at 1.
+- :cpp:any:`~einsums::compute_graph::write` - Record a disk write operation: save tensor data to a file.
+- :cpp:any:`~einsums::compute_graph::write_async` - Record an async-capable disk write operation.
+- :cpp:any:`~einsums::compute_graph::write_param` - Write a parameter from a scalar variable produced by the graph.
+- :cpp:any:`~einsums::packed_gemm::format_as` - ``fmt`` formats a ``ScalarType`` as its name, so ``fmt::format("{}", dtype)`` needs no call to ``compute_graph::scalar_type_name``. It lives beside that name, which ComputeGraph owns.
+- :cpp:any:`~einsums::register_Einsums_ComputeGraph_options` - Give the compute graph's options their command-line presence. Idempotent.
+- :cpp:any:`~einsums::sealed::layout_fingerprint` - Fold of the sizes and alignments of every type that crosses a stage boundary.
+
+Operators
+---------
+
+- :cpp:any:`~einsums::compute_graph::operator*` - Multiply two polynomials.
+- :cpp:any:`~einsums::compute_graph::operator+` - Add two polynomials.
+- :cpp:any:`~einsums::compute_graph::element_ops::operator==` - Compare two signatures for the identity check.
+- :cpp:any:`~einsums::compute_graph::passes::operator==` - Compare two node costs field by field.
+- :cpp:any:`~einsums::compute_graph::operator==` - Compare two variables for identity.
+- :cpp:any:`~einsums::compute_graph::operator|` - The union of two features.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::compute_graph::ApproximationEffect` - What a lossy pass's tolerance is a bound ON.
+- :cpp:any:`~einsums::compute_graph::ApproximationOrigin` - Where a bound's number came from.
+- :cpp:any:`~einsums::compute_graph::BisectMode` - How many passes a trial turns on at once.
+- :cpp:any:`~einsums::compute_graph::CmpOp` - The comparison a ``PredExpr::Compare`` or ``PredExpr::Iteration`` arm performs.
+- :cpp:any:`~einsums::compute_graph::CompareRung` - Which rung of the fallback chain decided a comparison.
+- :cpp:any:`~einsums::compute_graph::CostComponent` - Which polynomial of a ``SymbolicCost`` a comparison came down to.
+- :cpp:any:`~einsums::compute_graph::DecisionKind` - Whether a pass applied something, declined a candidate, or only had something to say.
+- :cpp:any:`~einsums::compute_graph::DeviceType` - Device type for profile classification.
+- :cpp:any:`~einsums::compute_graph::EinsumOperand` - Which operand of an einsum an index list belongs to.
+- :cpp:any:`~einsums::compute_graph::Escape` - Why a tensor may or may not be dissolved into a region rewrite.
+- :cpp:any:`~einsums::compute_graph::EventKind` - What an ``ExecutionEvent`` reports.
+- :cpp:any:`~einsums::compute_graph::GemmEngine` - Which kernel a GEMM rate describes.
+- :cpp:any:`~einsums::compute_graph::IndexRole` - What one index letter does in a contraction ``C <- A ; B``.
+- :cpp:any:`~einsums::compute_graph::KernelFamily` - Kernel families the thread axis distinguishes.
+- :cpp:any:`~einsums::compute_graph::ManifestDirection` - Which way data flows across one manifest slot.
+- :cpp:any:`~einsums::compute_graph::NodeFeature` - One thing a node can carry that a pass must know about to rewrite it correctly.
+- :cpp:any:`~einsums::compute_graph::OptLevel` - Optimization level for Graph::optimize(), compiler-style.
+- :cpp:any:`~einsums::compute_graph::ParamSourceType` - The stored C++ type of a ``WriteParam`` node's source scalar.
+- :cpp:any:`~einsums::compute_graph::PassAnchor` - Which side of its anchor a registered default pass runs on.
+- :cpp:any:`~einsums::compute_graph::PassPhase` - Which phase of the pipeline a pass belongs to, and therefore whether a saved graph may keep its output.
+- :cpp:any:`~einsums::compute_graph::PassTier` - How close to the unoptimized answer a pass's output has to be.
+- :cpp:any:`~einsums::compute_graph::SizeClass` - Working-set size classes, cut at the measured cache levels.
+- :cpp:any:`~einsums::compute_graph::TermKind` - What an ``ExprTerm`` computes.
+- :cpp:any:`~einsums::compute_graph::Threading` - How a node's executor uses threads, which decides whether ThreadPlanning may widen it.
+- :cpp:any:`~einsums::compute_graph::TiledElementwiseOp` - Which elementwise operation a ``TiledElementwiseDescriptor`` describes.
+- :cpp:any:`~einsums::compute_graph::element_ops::ElementOpDomain` - Which element types an op declares itself defined for.
+- :cpp:any:`~einsums::compute_graph::passes::ChainPricing` - What ContractionPlanning prices a bracketing against.
+- :cpp:any:`~einsums::compute_graph::passes::CrossSpaceSeverity` - How much a ``CrossSpaceFinding`` is worth acting on.
+- :cpp:any:`~einsums::compute_graph::passes::Densify` - When to lower a tiled contraction by densifying rather than per tile.
+- :cpp:any:`~einsums::compute_graph::passes::Factor` - Whether to let the cost model decide that a group is worth factoring.
+- :cpp:any:`~einsums::compute_graph::passes::FoldSite` - Where a scale of some tensor can be folded inside a consumer.
+- :cpp:any:`~einsums::compute_graph::passes::FuseTiles` - When to collapse a tiled elementwise op into one node over all its tiles instead of one node per tile.
+
+Types
+-----
+
+- :cpp:any:`~einsums::compute_graph::AxpbyParams` - See ``ElementwiseParams``.
+- :cpp:any:`~einsums::compute_graph::ExtentList` - The extents of a node's outputs, one list per output in the node's output order.
+- :cpp:any:`~einsums::compute_graph::ExtentLookup` - Resolves a variable to a numeric extent, or reports that it cannot.
+- :cpp:any:`~einsums::compute_graph::FamilyId` - Index into ``TensorExpr::families``. Positional and dense, like ``TermId``.
+- :cpp:any:`~einsums::compute_graph::LoopCondition` - Convergence/termination predicate for loop stages.
+- :cpp:any:`~einsums::compute_graph::PrefactorScalar` - Type-erased prefactor scalar. Default-constructs to ``double{0}``.
+- :cpp:any:`~einsums::compute_graph::SlabReader` - Read one slab of a backed tensor.
+- :cpp:any:`~einsums::compute_graph::SlabWriter` - Write one slab of a backed tensor.
+- :cpp:any:`~einsums::compute_graph::SlotImplAccessor` - Recovers a tensor's ``TensorImpl`` from the erased object ``TensorSlot::ptr`` addresses.
+- :cpp:any:`~einsums::compute_graph::SlotResyncAccessor` - Re-seats the cached data pointer of whatever ``TensorSlot::ptr`` addresses.
+- :cpp:any:`~einsums::compute_graph::TensorScopeMap` - Ownership scopes of tensors a scope declared, keyed by tensor object address.
+- :cpp:any:`~einsums::compute_graph::TensorScopeMapPtr` - A scope table shared between the scope that declares tensors and the graphs that use them.
+- :cpp:any:`~einsums::compute_graph::TermId` - Index into ``TensorExpr::terms``. Positional and dense, like the IR's tensor ids.
+- :cpp:any:`~einsums::compute_graph::TileCoord` - A tile's position in a tiled tensor's grid, one coordinate per axis.
+- :cpp:any:`~einsums::compute_graph::TiledElementwiseParams` - See ``ElementwiseParams``.
+- :cpp:any:`~einsums::compute_graph::ValueKey` - The identity of a value: one tensor, or a grouped family's member list.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::compute_graph::any_named_key` - The named key that stands for every named resource: an access to it conflicts with an access to any key. Compare keys with ``named_keys_overlap``, not with ``==``.
+- :cpp:any:`~einsums::compute_graph::default_region_features` - The node features a region admits unless its client says otherwise: every one but a grouped family and a permutation operator, which a client must be taught to read and so opts into.
+- :cpp:any:`~einsums::compute_graph::graph_ir_schema_version` - The schema version this build writes.
+- :cpp:any:`~einsums::compute_graph::invalid_family` - The family id a term that carries no member letter has.
+- :cpp:any:`~einsums::compute_graph::invalid_term` - The term id no term has, for an empty slot.
+- :cpp:any:`~einsums::compute_graph::kGemmEngineCount` - Number of entries in ``GemmEngine``.
+- :cpp:any:`~einsums::compute_graph::kGemmEngineNames` - The one ``GemmEngine`` name table; both directions read it.
+- :cpp:any:`~einsums::compute_graph::kKernelFamilyCount` - Number of entries in ``KernelFamily``.
+- :cpp:any:`~einsums::compute_graph::kKernelFamilyNames` - The one ``KernelFamily`` name table; both directions read it.
+- :cpp:any:`~einsums::compute_graph::kSizeClassCount` - Number of entries in ``SizeClass``.
+- :cpp:any:`~einsums::compute_graph::kSizeClassNames` - The one ``SizeClass`` name table; both directions read it.
+- :cpp:any:`~einsums::compute_graph::opaque_effects` - Nothing is known about the node beyond its tensor lists: neither hoisted, merged nor removed, and ordered against every access to a named resource (it reads and writes ``any_named_key``).
+- :cpp:any:`~einsums::compute_graph::provenance_identity` - The tag name for a Kronecker delta, the identity over one index space.
+- :cpp:any:`~einsums::compute_graph::pure` - The ``PureTag`` value: ``cg::custom(cg::pure, ...)`` records a pure custom node.
+- :cpp:any:`~einsums::compute_graph::ragged_symbol_prefix` - The prefix that marks a dim symbol as ragged over an index space.
+- :cpp:any:`~einsums::option::GpuDisable` - Keep every node on the host, making GPUPlacement a no-op.
+- :cpp:any:`~einsums::option::GraphDumpRegions` - Dump the algebra a region rewrite raised, before and after it rewrote.
+- :cpp:any:`~einsums::option::GraphFactorizationCache` - Keep a search pass's result and replay it for a structurally identical graph.
+- :cpp:any:`~einsums::option::GraphFactorizationMaxFactors` - The largest number of factors a term may have before a search pass declines it.
+- :cpp:any:`~einsums::option::GraphFactorizationMaxReaders` - How many consumers a definition may be inlined into before it is left whole.
+- :cpp:any:`~einsums::option::GraphFnoOccupation` - The occupation below which a natural orbital is dropped from the correlated space.
+- :cpp:any:`~einsums::option::GraphLaplaceEpsilon` - The relative accuracy a Laplace-transform quadrature is built to.
+- :cpp:any:`~einsums::option::GraphNafThreshold` - The fraction of the largest singular value below which an auxiliary direction is dropped.
+- :cpp:any:`~einsums::option::GraphOptimizerBudget` - How long a search pass may run, in milliseconds. Zero means unlimited.
+- :cpp:any:`~einsums::option::GraphProfileGroups` - Break a grouped batched GEMM into one profiler zone per shape class. Deliberately CHANGES how the GEMM runs, because a per-group breakdown of one parallel loop is not obtainable any other way. See Detail/GroupedBatchedGemm.hpp.
+- :cpp:any:`~einsums::option::GraphStorageByteWeight` - How many bytes of memory traffic one byte read from or written to storage costs, in AxisTiling's choice of loop.
+- :cpp:any:`~einsums::option::GraphStorageRunBytes` - What one contiguous run of storage costs beyond its bytes, in bytes of memory traffic.
+- :cpp:any:`~einsums::option::GraphStructuralSearch` - Let the structural-algebraic phase run its SEARCH passes.
+- :cpp:any:`~einsums::option::GraphThcEpsilon` - The relative accuracy a tensor-hypercontraction fit is asserted to have.
+- :cpp:any:`~einsums::option::GraphTilingBudgetShare` - The largest fraction of ``--einsums:max-memory`` one intermediate may hold before ``AxisTiling`` streams it, in a program that fits the budget as well as in one that does not.
+- :cpp:any:`~einsums::option::GraphTilingMemoryCap` - The largest a single live intermediate may be, in bytes, before ``AxisTiling`` slices the program so that intermediate is produced and consumed a slice at a time.
+- :cpp:any:`~einsums::option::GraphVerifyLevels` - Check, before each level-scheduled replay, that no level holds two nodes touching overlapping storage. On in debug builds; this is how a release build turns it on, which is what a nondeterministic result wants.
+- :cpp:any:`~einsums::option::PassAnalyze` - Report what every pass would do without letting it do anything.
+- :cpp:any:`~einsums::option::PassDisable` - Optimization passes to skip, by name, comma separated.
+- :cpp:any:`~einsums::option::PassVerbose` - Log node count and timing on either side of each pass.
+- :cpp:any:`~einsums::option::PassVerbosity` - How much the optimization passes narrate about what they did and declined.
+- :cpp:any:`~einsums::option::PassVerify` - Check the graph's structural invariants after every optimization pass.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_CG_COMMON_TENSOR_TYPES_FOR` - The tensor types the library precompiles ComputeGraph's per-tensor-type templates for: dense tensors and views of rank 1 to 4 and the runtime-rank tensor and view, over the four element types. Each header that declares such a template ``extern`` for these types, and the source that instantiates it, applies ``X`` to each type through this one list, so the two cannot drift apart. Any other type instantiates the template where it is used.
+- :c:macro:`EINSUMS_CG_ELEMENT_TYPES` - The element types the library precompiles ComputeGraph's per-element-type templates for, such as ``Graph``'s tensor factories. ``X`` is applied to each.
+- :c:macro:`EINSUMS_CG_REAL_ELEMENT_TYPES` - The real element types, for the operations that have no complex form (sqrt, max, the sandwich kernels). ``X`` is applied to each.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.compute_graph.abs
+   einsums.compute_graph.amplitude_update_writer
+   einsums.compute_graph.apply_cmp
+   einsums.compute_graph.apply_single_pass
+   einsums.compute_graph.approximation_effect_from_name
+   einsums.compute_graph.approximation_effect_name
+   einsums.compute_graph.approximation_origin_from_name
+   einsums.compute_graph.approximation_origin_name
+   einsums.compute_graph.ApproximationRecord
+   einsums.compute_graph.ApproximationTolerance
+   einsums.compute_graph.as
+   einsums.compute_graph.as_real
+   einsums.compute_graph.axpby
+   einsums.compute_graph.AxpbyDescriptor
+   einsums.compute_graph.axpy
+   einsums.compute_graph.BackingCounters
+   einsums.compute_graph.BackingKind
+   einsums.compute_graph.BackingRun
+   einsums.compute_graph.batched_gemm
+   einsums.compute_graph.batched_gemm_blocked
+   einsums.compute_graph.bisect_mode_name
+   einsums.compute_graph.BisectDriver
+   einsums.compute_graph.BisectReport
+   einsums.compute_graph.BisectTrial
+   einsums.compute_graph.blas_route_is_moldable
+   einsums.compute_graph.block_copy
+   einsums.compute_graph.BoundExpr
+   einsums.compute_graph.build_executor
+   einsums.compute_graph.CacheLevel
+   einsums.compute_graph.CaptureContext
+   einsums.compute_graph.CaptureGuard
+   einsums.compute_graph.check_descriptor
+   einsums.compute_graph.cmp_op_from_name
+   einsums.compute_graph.cmp_op_name
+   einsums.compute_graph.compare
+   einsums.compute_graph.compare_explain
+   einsums.compute_graph.compare_rung_name
+   einsums.compute_graph.ComparisonContext
+   einsums.compute_graph.compose_approximation
+   einsums.compute_graph.ConditionalDescriptor
+   einsums.compute_graph.ConformanceOperands
+   einsums.compute_graph.ConformanceSample
+   einsums.compute_graph.conj
+   einsums.compute_graph.contribution_symmetry
+   einsums.compute_graph.cost_component_name
+   einsums.compute_graph.CostComparison
+   einsums.compute_graph.CostEstimate
+   einsums.compute_graph.CostModel
+   einsums.compute_graph.CostQuery
+   einsums.compute_graph.custom
+   einsums.compute_graph.DataflowExecutor
+   einsums.compute_graph.Decision
+   einsums.compute_graph.DefaultPassRegistration
+   einsums.compute_graph.DenseOrTiled
+   einsums.compute_graph.DependencyInfo
+   einsums.compute_graph.derive_gemm_hint
+   einsums.compute_graph.describe_features
+   einsums.compute_graph.descriptor_hooks
+   einsums.compute_graph.DescriptorCodec
+   einsums.compute_graph.DescriptorHooks
+   einsums.compute_graph.DescriptorHooksFor
+   einsums.compute_graph.destination_operand_count
+   einsums.compute_graph.destination_rule_violation
+   einsums.compute_graph.DestinationUse
+   einsums.compute_graph.det
+   einsums.compute_graph.DeviceProfile
+   einsums.compute_graph.DeviceProfileDB
+   einsums.compute_graph.DeviceShadowMap
+   einsums.compute_graph.diagonal
+   einsums.compute_graph.diis_add_pair
+   einsums.compute_graph.diis_step
+   einsums.compute_graph.DiisAccelerator
+   einsums.compute_graph.dispatch.einsum_empty_operands
+   einsums.compute_graph.dispatch.erased_mixed_string_einsum
+   einsums.compute_graph.dispatch.erased_string_einsum
+   einsums.compute_graph.dispatch.fold_repeated_letters
+   einsums.compute_graph.dispatch.generic_string_einsum
+   einsums.compute_graph.dispatch.last_dispatch_route
+   einsums.compute_graph.dispatch.last_dispatch_route_name
+   einsums.compute_graph.dispatch.mixed_string_einsum
+   einsums.compute_graph.dispatch.reduce_lone_letters
+   einsums.compute_graph.dispatch.reject_output_alias
+   einsums.compute_graph.dispatch.string_einsum
+   einsums.compute_graph.dispatch.string_permute
+   einsums.compute_graph.dispatch.string_permute_impl
+   einsums.compute_graph.dot
+   einsums.compute_graph.dot_python
+   einsums.compute_graph.dotc_python
+   einsums.compute_graph.DotDescriptor
+   einsums.compute_graph.eager_einsum_intermediate_limit
+   einsums.compute_graph.effects_of
+   einsums.compute_graph.EfficiencyCurve
+   einsums.compute_graph.einsum
+   einsums.compute_graph.einsum_python
+   einsums.compute_graph.EinsumDescriptor
+   einsums.compute_graph.EinsumFormatString
+   einsums.compute_graph.EinsumIndexLists
+   einsums.compute_graph.EinsumIndices
+   einsums.compute_graph.EinsumParams
+   einsums.compute_graph.element_ops.ElementOpRegistry
+   einsums.compute_graph.element_ops.ElementOpSignature
+   einsums.compute_graph.element_ops.global_element_op_registry
+   einsums.compute_graph.element_ops.register_builtin_element_ops
+   einsums.compute_graph.element_ops.register_op
+   einsums.compute_graph.element_transform
+   einsums.compute_graph.element_transform_named_python
+   einsums.compute_graph.element_transform_python
+   einsums.compute_graph.ElementwiseBinaryDescriptor
+   einsums.compute_graph.ElementwiseParams
+   einsums.compute_graph.escape_reason
+   einsums.compute_graph.EscapeAnalysis
+   einsums.compute_graph.EventLog
+   einsums.compute_graph.ExecutionEvent
+   einsums.compute_graph.ExecutionObserver
+   einsums.compute_graph.Executor
+   einsums.compute_graph.expand_permutation_operators
+   einsums.compute_graph.ExprIndex
+   einsums.compute_graph.ExprStatement
+   einsums.compute_graph.ExprTerm
+   einsums.compute_graph.ExtentQuery
+   einsums.compute_graph.Fact
+   einsums.compute_graph.FactorizationPlan
+   einsums.compute_graph.FactorizationProvider
+   einsums.compute_graph.FactorizationRegistry
+   einsums.compute_graph.FactorTensor
+   einsums.compute_graph.features_of
+   einsums.compute_graph.find_descriptor_codec
+   einsums.compute_graph.fixed
+   einsums.compute_graph.for_each_child_graph
+   einsums.compute_graph.form_regions
+   einsums.compute_graph.format_as
+   einsums.compute_graph.GateFlags
+   einsums.compute_graph.gather
+   einsums.compute_graph.gemm
+   einsums.compute_graph.gemm_engine_from_string
+   einsums.compute_graph.GemmDescriptor
+   einsums.compute_graph.GemmEfficiencyPoint
+   einsums.compute_graph.GemmHint
+   einsums.compute_graph.GemmOperand
+   einsums.compute_graph.gemv
+   einsums.compute_graph.ger
+   einsums.compute_graph.gerc
+   einsums.compute_graph.gesv
+   einsums.compute_graph.getrf
+   einsums.compute_graph.getrs
+   einsums.compute_graph.global_factorization_registry
+   einsums.compute_graph.global_space_registry
+   einsums.compute_graph.Graph
+   einsums.compute_graph.GraphAnchor
+   einsums.compute_graph.GraphCapturableTensor
+   einsums.compute_graph.GraphError
+   einsums.compute_graph.grouped_axpby
+   einsums.compute_graph.grouped_batched_gemm
+   einsums.compute_graph.grouped_batched_gemm_blocked
+   einsums.compute_graph.grouped_direct_division
+   einsums.compute_graph.grouped_direct_product
+   einsums.compute_graph.grouped_dot
+   einsums.compute_graph.grouped_gather_rotate
+   einsums.compute_graph.grouped_permute
+   einsums.compute_graph.grouped_sandwich
+   einsums.compute_graph.GroupedAxpbyDescriptor
+   einsums.compute_graph.GroupedDotDescriptor
+   einsums.compute_graph.GroupedElementwiseDescriptor
+   einsums.compute_graph.GroupedGatherRotateDescriptor
+   einsums.compute_graph.GroupedSandwichDescriptor
+   einsums.compute_graph.has_runtime_view_bounds
+   einsums.compute_graph.HasCompileTimeRank
+   einsums.compute_graph.hash
+   einsums.compute_graph.heev
+   einsums.compute_graph.heev_python
+   einsums.compute_graph.hooked_extent_mismatch
+   einsums.compute_graph.hooked_output_extents
+   einsums.compute_graph.imag
+   einsums.compute_graph.index_role
+   einsums.compute_graph.InterfaceManifest
+   einsums.compute_graph.invert
+   einsums.compute_graph.is_absolute_effect
+   einsums.compute_graph.is_grouped_raisable
+   einsums.compute_graph.is_one
+   einsums.compute_graph.is_ragged_symbol
+   einsums.compute_graph.is_raisable
+   einsums.compute_graph.is_real_valued
+   einsums.compute_graph.is_reconstructible
+   einsums.compute_graph.is_zero
+   einsums.compute_graph.kernel_family_from_string
+   einsums.compute_graph.kernel_moldability
+   einsums.compute_graph.khatri_rao
+   einsums.compute_graph.laplace.build_quadrature
+   einsums.compute_graph.laplace.laplace_quadrature
+   einsums.compute_graph.laplace.measure_quadrature_error
+   einsums.compute_graph.laplace.quadrature_point_count
+   einsums.compute_graph.laplace.QuadratureGrid
+   einsums.compute_graph.laplace.spectral_range
+   einsums.compute_graph.laplace.SpectralRange
+   einsums.compute_graph.LaplaceQuadratureDescriptor
+   einsums.compute_graph.letter_vars_for
+   einsums.compute_graph.LetterVars
+   einsums.compute_graph.link_placement
+   einsums.compute_graph.LinkPlacement
+   einsums.compute_graph.live_ab_prefactor
+   einsums.compute_graph.live_alpha
+   einsums.compute_graph.live_beta
+   einsums.compute_graph.live_c_prefactor
+   einsums.compute_graph.live_conj_a
+   einsums.compute_graph.live_conj_b
+   einsums.compute_graph.live_factor
+   einsums.compute_graph.live_index_lists
+   einsums.compute_graph.live_or_private_params
+   einsums.compute_graph.load_graph
+   einsums.compute_graph.load_graph_file
+   einsums.compute_graph.load_graph_file_into
+   einsums.compute_graph.load_graph_string
+   einsums.compute_graph.LoopDescriptor
+   einsums.compute_graph.LoopNode
+   einsums.compute_graph.LoopState
+   einsums.compute_graph.lower_region
+   einsums.compute_graph.LuPivots
+   einsums.compute_graph.make_approximation_record
+   einsums.compute_graph.make_deferred_handle
+   einsums.compute_graph.make_elementwise_params
+   einsums.compute_graph.make_handle
+   einsums.compute_graph.make_pipeline
+   einsums.compute_graph.make_provenance_tag
+   einsums.compute_graph.make_ragged_symbol
+   einsums.compute_graph.make_random_fn
+   einsums.compute_graph.make_scalar_handle
+   einsums.compute_graph.make_zero_fn
+   einsums.compute_graph.manifest_direction_from_name
+   einsums.compute_graph.manifest_direction_name
+   einsums.compute_graph.ManifestEntry
+   einsums.compute_graph.MatrixOperand
+   einsums.compute_graph.MatrixOrVectorOperand
+   einsums.compute_graph.max_python
+   einsums.compute_graph.measure_thread_efficiency
+   einsums.compute_graph.MetricFitFactorization
+   einsums.compute_graph.MPIExecutor
+   einsums.compute_graph.named_keys_contain
+   einsums.compute_graph.named_keys_overlap
+   einsums.compute_graph.named_reads
+   einsums.compute_graph.named_writes
+   einsums.compute_graph.NamedAccesses
+   einsums.compute_graph.NaryEinsumFormatString
+   einsums.compute_graph.NaryEinsumStep
+   einsums.compute_graph.NaturalAuxiliaryFactorization
+   einsums.compute_graph.Node
+   einsums.compute_graph.node_index_lists
+   einsums.compute_graph.NodeDescriptor
+   einsums.compute_graph.NodeEffects
+   einsums.compute_graph.NodeFeatures
+   einsums.compute_graph.NodeIndexLists
+   einsums.compute_graph.NodeRun
+   einsums.compute_graph.NodeTiming
+   einsums.compute_graph.NodeTimingSample
+   einsums.compute_graph.norm
+   einsums.compute_graph.norm_python
+   einsums.compute_graph.OpData
+   einsums.compute_graph.open_backing
+   einsums.compute_graph.OpenMPExecutor
+   einsums.compute_graph.operand_inputs
+   einsums.compute_graph.OperandAccessor
+   einsums.compute_graph.OptimizerPass
+   einsums.compute_graph.outer_sum
+   einsums.compute_graph.OuterSumDescriptor
+   einsums.compute_graph.output_symmetry
+   einsums.compute_graph.parallel_for
+   einsums.compute_graph.parallel_reduce
+   einsums.compute_graph.param_reads
+   einsums.compute_graph.param_source_type
+   einsums.compute_graph.param_source_type_from_name
+   einsums.compute_graph.param_source_type_name
+   einsums.compute_graph.param_writes
+   einsums.compute_graph.ParamTable
+   einsums.compute_graph.parse_einsum_spec
+   einsums.compute_graph.parse_nary_einsum_spec
+   einsums.compute_graph.parse_permute_spec
+   einsums.compute_graph.ParsedEinsumSpec
+   einsums.compute_graph.ParsedNaryEinsumSpec
+   einsums.compute_graph.ParsedPermuteSpec
+   einsums.compute_graph.pass_phase_name
+   einsums.compute_graph.pass_tier_name
+   einsums.compute_graph.PassCounter
+   einsums.compute_graph.passes.AntisymmetrizerExpansion
+   einsums.compute_graph.passes.AntisymmetrizerFolding
+   einsums.compute_graph.passes.AntisymmetrizerLinearity
+   einsums.compute_graph.passes.AntisymmetryDetection
+   einsums.compute_graph.passes.AntisymmetryInference
+   einsums.compute_graph.passes.apply_fold
+   einsums.compute_graph.passes.AxisTiling
+   einsums.compute_graph.passes.axpby_beta
+   einsums.compute_graph.passes.BasisTruncation
+   einsums.compute_graph.passes.carries_permutation_operators
+   einsums.compute_graph.passes.CommunicationElimination
+   einsums.compute_graph.passes.CommunicationInsertion
+   einsums.compute_graph.passes.CommunicationScheduling
+   einsums.compute_graph.passes.ConstantFolding
+   einsums.compute_graph.passes.ContractionPlanning
+   einsums.compute_graph.passes.cross_space_severity_name
+   einsums.compute_graph.passes.CrossSpaceFinding
+   einsums.compute_graph.passes.CrossSpaceValidation
+   einsums.compute_graph.passes.CSE
+   einsums.compute_graph.passes.DeadNodeElimination
+   einsums.compute_graph.passes.DeltaElimination
+   einsums.compute_graph.passes.DistributionPlanning
+   einsums.compute_graph.passes.DistributiveFactoring
+   einsums.compute_graph.passes.duplicate_materializations
+   einsums.compute_graph.passes.einsum_is_uniform
+   einsums.compute_graph.passes.ElementWiseFusion
+   einsums.compute_graph.passes.FactorizationPass
+   einsums.compute_graph.passes.FactorizationPlan
+   einsums.compute_graph.passes.fold_site
+   einsums.compute_graph.passes.format_as
+   einsums.compute_graph.passes.FreeInsertion
+   einsums.compute_graph.passes.GEMMBatching
+   einsums.compute_graph.passes.GPUDiagnostics
+   einsums.compute_graph.passes.GPUPlacement
+   einsums.compute_graph.passes.hash_combine
+   einsums.compute_graph.passes.hash_range
+   einsums.compute_graph.passes.InplaceOptimization
+   einsums.compute_graph.passes.InputSlicing
+   einsums.compute_graph.passes.IntermediateSize
+   einsums.compute_graph.passes.IOPrefetch
+   einsums.compute_graph.passes.is_exact_power_of_two
+   einsums.compute_graph.passes.LaplaceTransform
+   einsums.compute_graph.passes.LayoutAssignment
+   einsums.compute_graph.passes.LinearCombinationContractionFolding
+   einsums.compute_graph.passes.LoopInvariantHoisting
+   einsums.compute_graph.passes.make_transfer_node
+   einsums.compute_graph.passes.Materialization
+   einsums.compute_graph.passes.MemoryPlanning
+   einsums.compute_graph.passes.multiply_prefactors
+   einsums.compute_graph.passes.MultiTermFactorization
+   einsums.compute_graph.passes.NodeCost
+   einsums.compute_graph.passes.permutation_of
+   einsums.compute_graph.passes.PermuteFusion
+   einsums.compute_graph.passes.ProvenancePropagation
+   einsums.compute_graph.passes.pure_overwrite
+   einsums.compute_graph.passes.RegionDump
+   einsums.compute_graph.passes.RegionIdentity
+   einsums.compute_graph.passes.RegionRewrite
+   einsums.compute_graph.passes.Reorder
+   einsums.compute_graph.passes.scale_prefactor
+   einsums.compute_graph.passes.ScaleAbsorption
+   einsums.compute_graph.passes.ScalingAnalysis
+   einsums.compute_graph.passes.ScratchPrivatization
+   einsums.compute_graph.passes.SlabStreaming
+   einsums.compute_graph.passes.SpacePropagation
+   einsums.compute_graph.passes.span_interferes
+   einsums.compute_graph.passes.stranded_materializations
+   einsums.compute_graph.passes.StreamAssignment
+   einsums.compute_graph.passes.StreamContractionFusion
+   einsums.compute_graph.passes.SUMMAExpansion
+   einsums.compute_graph.passes.SymmetrizedAccumulation
+   einsums.compute_graph.passes.SymmetryPropagation
+   einsums.compute_graph.passes.ThreadPlanning
+   einsums.compute_graph.passes.TiledExpansion
+   einsums.compute_graph.passes.TransferElimination
+   einsums.compute_graph.passes.TransferInsertion
+   einsums.compute_graph.passes.value_writes_by_buffer
+   einsums.compute_graph.PassManager
+   einsums.compute_graph.PermutationOperator
+   einsums.compute_graph.PermutationTerm
+   einsums.compute_graph.permute
+   einsums.compute_graph.permute_view
+   einsums.compute_graph.permute_view_python
+   einsums.compute_graph.PermuteDescriptor
+   einsums.compute_graph.PermuteEfficiencyPoint
+   einsums.compute_graph.PermuteFormatString
+   einsums.compute_graph.PermuteOperands
+   einsums.compute_graph.Pipeline
+   einsums.compute_graph.plan_nary_einsum
+   einsums.compute_graph.plan_nary_einsum_with_spaces
+   einsums.compute_graph.PolyComparison
+   einsums.compute_graph.pow
+   einsums.compute_graph.PredExpr
+   einsums.compute_graph.ProvenanceTag
+   einsums.compute_graph.PureTag
+   einsums.compute_graph.qr
+   einsums.compute_graph.ragged_symbol_space
+   einsums.compute_graph.RaggedExtentTable
+   einsums.compute_graph.RaggedFamily
+   einsums.compute_graph.raise_region
+   einsums.compute_graph.RaiseFailure
+   einsums.compute_graph.read
+   einsums.compute_graph.read_async
+   einsums.compute_graph.reads_destination
+   einsums.compute_graph.real
+   einsums.compute_graph.Reason
+   einsums.compute_graph.reconstruction_blocker
+   einsums.compute_graph.refresh_gemm_hint
+   einsums.compute_graph.Region
+   einsums.compute_graph.RegionOptions
+   einsums.compute_graph.register_backing_kind
+   einsums.compute_graph.register_default_pass
+   einsums.compute_graph.register_descriptor
+   einsums.compute_graph.register_graph
+   einsums.compute_graph.registered_default_passes
+   einsums.compute_graph.registered_graphs_json
+   einsums.compute_graph.reset_stale_thread_plan_fallbacks
+   einsums.compute_graph.reshape
+   einsums.compute_graph.resolve_operand
+   einsums.compute_graph.resolve_scalar_operand
+   einsums.compute_graph.run
+   einsums.compute_graph.run_pass_tree
+   einsums.compute_graph.RunCostPoint
+   einsums.compute_graph.RunMetrics
+   einsums.compute_graph.RuntimeRankTensorConcept
+   einsums.compute_graph.save_graph
+   einsums.compute_graph.save_graph_file
+   einsums.compute_graph.save_graph_string
+   einsums.compute_graph.SaveOptions
+   einsums.compute_graph.scalar_type_from_name
+   einsums.compute_graph.scalar_type_name
+   einsums.compute_graph.ScalarAccessor
+   einsums.compute_graph.scale
+   einsums.compute_graph.ScaleDescriptor
+   einsums.compute_graph.scatter
+   einsums.compute_graph.scatter_add
+   einsums.compute_graph.SearchBudget
+   einsums.compute_graph.self_product_symmetry
+   einsums.compute_graph.SequentialExecutor
+   einsums.compute_graph.SerializabilityBlocker
+   einsums.compute_graph.set_operand_indices
+   einsums.compute_graph.SetupDescriptor
+   einsums.compute_graph.SetupState
+   einsums.compute_graph.shift
+   einsums.compute_graph.size_class_from_string
+   einsums.compute_graph.SliceRequest
+   einsums.compute_graph.slot_impl_accessor
+   einsums.compute_graph.slot_resync_accessor
+   einsums.compute_graph.SpaceDim
+   einsums.compute_graph.SpaceTiling
+   einsums.compute_graph.sqrt
+   einsums.compute_graph.stale_thread_plan_fallbacks
+   einsums.compute_graph.string_permute
+   einsums.compute_graph.sum_axes
+   einsums.compute_graph.sum_python
+   einsums.compute_graph.svd
+   einsums.compute_graph.svd_dd
+   einsums.compute_graph.syev
+   einsums.compute_graph.syev_eig
+   einsums.compute_graph.syev_python
+   einsums.compute_graph.SyevDescriptor
+   einsums.compute_graph.symbolic_cost_for
+   einsums.compute_graph.symbolic_size_for
+   einsums.compute_graph.SymbolicCost
+   einsums.compute_graph.SymbolicFactor
+   einsums.compute_graph.SymbolicPoly
+   einsums.compute_graph.SymbolicTerm
+   einsums.compute_graph.SymbolicVar
+   einsums.compute_graph.symm_gemm
+   einsums.compute_graph.symmetry_at
+   einsums.compute_graph.sync_destination_input
+   einsums.compute_graph.tensor_ownership_from_name
+   einsums.compute_graph.tensor_ownership_name
+   einsums.compute_graph.TensorBacking
+   einsums.compute_graph.TensorExpr
+   einsums.compute_graph.TensorHandle
+   einsums.compute_graph.TensorSlot
+   einsums.compute_graph.TensorUsage
+   einsums.compute_graph.TensorUse
+   einsums.compute_graph.term_kind_name
+   einsums.compute_graph.ThcFactorization
+   einsums.compute_graph.ThreadSweepOptions
+   einsums.compute_graph.tier_bound
+   einsums.compute_graph.tile_view_python
+   einsums.compute_graph.TiledDotDescriptor
+   einsums.compute_graph.TiledEinsumDescriptor
+   einsums.compute_graph.TiledElementwiseDescriptor
+   einsums.compute_graph.TiledPermuteDescriptor
+   einsums.compute_graph.TileQuery
+   einsums.compute_graph.tiles
+   einsums.compute_graph.to_string
+   einsums.compute_graph.trace
+   einsums.compute_graph.trace_python
+   einsums.compute_graph.TraceDescriptor
+   einsums.compute_graph.transfer_graph_registration
+   einsums.compute_graph.transpose
+   einsums.compute_graph.truncated_svd
+   einsums.compute_graph.truncated_syev
+   einsums.compute_graph.try_resolve_operand
+   einsums.compute_graph.tune
+   einsums.compute_graph.unregister_graph
+   einsums.compute_graph.UsageAnalysis
+   einsums.compute_graph.validate_einsum_spec
+   einsums.compute_graph.validate_graph_ir
+   einsums.compute_graph.validate_graph_ir_file
+   einsums.compute_graph.validate_graph_ir_string
+   einsums.compute_graph.validate_permute_spec
+   einsums.compute_graph.value_key
+   einsums.compute_graph.VectorOperand
+   einsums.compute_graph.verify_after_pass
+   einsums.compute_graph.view
+   einsums.compute_graph.view_indexed_python
+   einsums.compute_graph.view_python
+   einsums.compute_graph.view_runtime
+   einsums.compute_graph.ViewAxis
+   einsums.compute_graph.ViewDescriptor
+   einsums.compute_graph.views_python
+   einsums.compute_graph.WaggleBridge
+   einsums.compute_graph.width_rungs_for
+   einsums.compute_graph.Workspace
+   einsums.compute_graph.write
+   einsums.compute_graph.write_async
+   einsums.compute_graph.write_param
+   einsums.compute_graph.WriteParamDescriptor
+   einsums.packed_gemm.format_as
+   einsums.register_Einsums_ComputeGraph_options
+   einsums.sealed.layout_fingerprint
+   operators
+   enums
+   types
+   variables
+   macros

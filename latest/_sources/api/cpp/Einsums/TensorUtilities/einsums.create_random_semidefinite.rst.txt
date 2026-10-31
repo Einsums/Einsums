@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_random_semidefinite:
+
+===================================
+einsums::create_random_semidefinite
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/CreateRandomSemidefinite.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T = double, bool Normalize = false> Tensor<T, 2> create_random_semidefinite(const std::string &name, int rows, int cols, RemoveComplexT<T> mean, int force_zeros)
+
+   Create a random positive or negative semi-definite matrix.
+   A positive semi-definite matrix is a symmetric matrix whose eigenvalues are all non-negative.
+   Similarly for negative semi-definite matrices.
+
+   Random orthonormal eigenvectors P and Maxwell-Boltzmann eigenvalues D, some forced to zero, give
+   :math:`P^TDP`.
+
+   .. versionadded:: 1.0.0
+
+   :param name: The name for the matrix.
+   :param rows: The number of rows.
+   :param cols: The number of columns. Should equal the number of rows.
+   :param mean: The mean for the eigenvalues. Defaults to 1. If negative, the result is a negative semi-definite matrix.
+   :param force_zeros: The number of elements to force to be zero. Defaults to 1.
+   :returns: A new positive or negative semi-definite matrix.
+
+
+.. cpp:function:: template <typename T = double> RuntimeTensor<T> create_random_semidefinite(const std::string &name, int n)
+
+   Python-bindable runtime-rank create_random_semidefinite.
+
+   Builds a square positive (or negative) semi-definite matrix and returns it
+   as a RuntimeTensor. Adapter over the typed Tensor<T, 2> entry point.

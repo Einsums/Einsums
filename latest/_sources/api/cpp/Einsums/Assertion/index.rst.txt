@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Assertion_api:
+
+=================
+Assertion C++ API
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Assertion>` of this module for background and usage guidance.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_ASSERT` - This macro asserts that ``expr`` evaluates to true, but does not have a custom message.
+- :c:macro:`EINSUMS_ASSERT_MSG` - This macro asserts that ``expr`` evaluates to true.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   macros

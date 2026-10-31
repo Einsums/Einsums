@@ -1,0 +1,144 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.einsum:
+
+==============================
+einsums::compute_graph::einsum
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/NaryEinsum.hpp``, ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <BasicTensorConcept CType, BasicTensorConcept... Operands> requires (sizeof...(Operands) >= 3) && (std::is_same_v<typename CType::ValueType, typename Operands::ValueType> && ...) && (!(TiledTensorConcept<CType> || (TiledTensorConcept<Operands> || ...))) void einsum(NaryEinsumFormatString spec, typename CType::ValueType c_pf, CType *C, typename CType::ValueType ab_pf, const Operands &... operands)
+
+   Graph-aware einsum over three or more operands: ``C = c_pf * C + ab_pf * (A B D ...)``.
+
+   Contracted two at a time, in the order ``plan_nary_einsum`` finds cheapest, through the
+   two-operand einsum. Captured, each partial product is a graph intermediate that later passes
+   may slice or keep whole; eager, each is a temporary held to ``eager_einsum_intermediate_limit``.
+   The prefactors apply to the last contraction alone, so ``c_pf`` scales C once.
+
+   .. code-block:: text
+
+      // The DF particle ladder, written as the equation reads
+      cg::einsum("i,j,a,b <- Q,a,e ; Q,b,f ; i,j,e,f", &r2, Bvv, Bvv, tau);
+
+   Every operand and C must share one element type, and none may be tiled.
+
+   .. versionadded:: 2.0.0
+
+   :param spec: The spec, its operands in the order ``operands`` are given.
+   :param c_pf: The prefactor on C.
+   :param C: The output.
+   :param ab_pf: The prefactor on the product.
+   :param operands: Three or more tensors.
+
+
+.. cpp:function:: template <BasicTensorConcept CType, BasicTensorConcept... Operands> requires (sizeof...(Operands) >= 3) && (std::is_same_v<typename CType::ValueType, typename Operands::ValueType> && ...) && (!(TiledTensorConcept<CType> || (TiledTensorConcept<Operands> || ...))) void einsum(NaryEinsumFormatString spec, CType *C, const Operands &... operands)
+
+   Graph-aware einsum over three or more operands with the default prefactors: C is overwritten.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType> && (!detail::any_tiled_v<AType, BType, CType>) void einsum(EinsumFormatString spec, typename AType::ValueType c_pf, CType *C, typename AType::ValueType ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b)
+
+   String-based einsum with explicit prefactors.
+
+   The spec names each operand's indices in a string:
+
+   .. code-block:: text
+
+      cg::einsum("ij <- ik ; kj", 0.0, &C, 1.0, A, B);     // GEMM
+      cg::einsum("ij <- ki ; kj", 0.0, &C, 1.0, A, B);     // GEMM with transposed A
+      cg::einsum("i <- ij ; j", 0.0, &y, 1.0, A, x);       // GEMV
+      cg::einsum(" <- i ; i", 0.0, &dot, 1.0, x, y);        // DOT product
+      cg::einsum("ij <- i ; j", 0.0, &C, 1.0, x, y);       // GER (outer product)
+      cg::einsum("ij <- ij ; ij", 0.0, &C, 1.0, A, B);     // Element-wise (direct product)
+      cg::einsum("mu,nu <- mu,rho ; rho,nu", 0.0, &C, 1.0, A, B);  // Multi-char indices
+
+   During graph capture, records the operation as a node. Outside capture,
+   dispatches to the appropriate BLAS routine based on the contraction pattern.
+
+   :tparam AType: First input tensor type (must satisfy BasicTensorConcept).
+   :tparam BType: Second input tensor type.
+   :tparam CType: Output tensor type.
+   :param spec: Einsum specification string.
+   :param c_pf: Scalar prefactor for C accumulation: C = c_pf * C + ab_pf * contract(A, B).
+   :param C: Output tensor.
+   :param ab_pf: Scalar prefactor for the A*B contraction.
+   :param A: First input tensor.
+   :param B: Second input tensor.
+   :param conj_a: Conjugate A; a no-op on a real one. ORed with a ``conj(...)`` wrapper in the spec.
+   :param conj_b: Conjugate B; a no-op on a real one. ORed with a ``conj(...)`` wrapper in the spec.
+
+
+.. cpp:function:: template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType> void einsum(EinsumFormatString spec, typename AType::ValueType c_pf, CType *C, typename AType::ValueType ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b)
+
+   Tiled einsum (Tier B1): einsum over TiledRuntimeTensor operands.
+
+   Selected when any operand is tiled. Walks the tile grid and composes dense
+   per-tile contractions (see detail::tiled_runtime_einsum). All three operands
+   must be tiled; the contraction is recorded as a single opaque ``Custom`` node
+   so the einsum-rewriting passes don't try to synthesize dense intermediates
+   for it.
+
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType> void einsum(EinsumFormatString spec, CType *C, const AType &A, const BType &B)
+
+   String-based einsum with default prefactors (c_pf=0, ab_pf=1).
+
+   String literals are validated at compile time. For runtime strings,
+   use `EinsumFormatString(string_view)` explicitly.
+
+   .. code-block:: text
+
+      cg::einsum("ij <- ik ; kj", &C, A, B);  // Compile-time validated
+
+      std::string spec = build_spec();
+      cg::einsum(EinsumFormatString(spec), &C, A, B);  // Runtime string
+
+
+.. cpp:function:: template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType> void einsum(EinsumFormatString spec, CType *C, const AType &A, const BType &B)
+
+   Default-prefactor tiled einsum (delegates to the tiled prefactor overload).
+
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires detail::EinsumElement<typename AType::ValueType> && detail::EinsumElement<typename BType::ValueType> && detail::EinsumElement<typename CType::ValueType> && (!(std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>)) && (!detail::any_tiled_v<AType, BType, CType>) void einsum(EinsumFormatString spec, typename CType::ValueType c_pf, CType *C, detail::PromoteT<typename AType::ValueType, typename BType::ValueType> ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b)
+
+   Graph-aware einsum whose operands do not all share one element type.
+
+   .. code-block:: text
+
+      cg::einsum("ij <- ik ; kj", 0.0, &C, 1.0, A, B);  // C double, A float, B complex<double>...
+
+   The products and the sum are formed in the type promoted from A and B, complex if either is and
+   at the wider of their precisions, and the result is rounded to C's type. Precision may narrow; a
+   complex result cannot be stored in a real C, and that does not compile. No BLAS or PackedGemm
+   routine takes mixed types, so these contractions always run the generic loop. Permutation
+   operators in the spec are not supported for them.
+
+   .. versionadded:: 2.0.0
+
+   :param spec: The contraction, as for the single-type einsum.
+   :param c_pf: Scale applied to C, in C's type.
+   :param C: The output.
+   :param ab_pf: Scale applied to the contraction, in the promoted type.
+   :param A,B: The inputs.
+   :param conj_a,conj_b: Conjugate an input; a no-op on a real one.
+
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires detail::EinsumElement<typename AType::ValueType> && detail::EinsumElement<typename BType::ValueType> && detail::EinsumElement<typename CType::ValueType> && (!(std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>)) && (!detail::any_tiled_v<AType, BType, CType>) void einsum(EinsumFormatString spec, CType *C, const AType &A, const BType &B)
+
+   Mixed-precision einsum with the default prefactors: C is overwritten with the contraction.
+
+   .. versionadded:: 2.0.0

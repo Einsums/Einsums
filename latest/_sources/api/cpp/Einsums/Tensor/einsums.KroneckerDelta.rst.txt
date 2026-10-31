@@ -1,0 +1,110 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.KroneckerDelta:
+
+=======================
+einsums::KroneckerDelta
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/FunctionTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> KroneckerDelta
+
+   This function tensor represents the Kronecker delta, and can be used in einsum calls.
+
+   This function tensor can act as an example of what can be done with the more general function tensors.
+
+
+   .. cpp:function:: constexpr KroneckerDelta()
+
+      Default constructs the tensor to have dimensions of zero.
+
+
+   .. cpp:function:: constexpr KroneckerDelta(size_t dim)
+
+      Construct a new Kronecker delta tensor with the specified dimension.
+
+      :param dim: The length of one side of the tensor. The Kronecker delta tensor is square, so this will be the same for both dimensions.
+
+
+   .. cpp:function:: constexpr ~KroneckerDelta() = default
+
+   .. cpp:function:: template <typename T1, typename T2> requires (std::is_integral_v<T1> && std::is_integral_v<T2>) constexpr T operator()(T1 i, T2 j) const
+
+      Compute the Kronecker delta.
+
+      This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+
+      :param i: The first index.
+      :param j: The second index.
+
+
+   .. cpp:function:: template <typename int_type> requires (std::is_integral_v<int_type>) constexpr T operator()(const std::array<int_type, 2> &index) const
+
+      Compute the Kronecker delta.
+
+      This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+
+      :param index: The indices for the tensor.
+
+
+   .. cpp:function:: template <typename T1, typename T2> requires (std::is_integral_v<T1> && std::is_integral_v<T2>) constexpr T subscript(T1 i, T2 j) const
+
+      Compute the Kronecker delta.
+
+      This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+
+      :param i: The first index.
+      :param j: The second index.
+
+
+   .. cpp:function:: template <typename int_type> requires (std::is_integral_v<int_type>) constexpr T subscript(const std::array<int_type, 2> &index) const
+
+      Compute the Kronecker delta.
+
+      This just compares the indices. If the indices are the same, then it returns 1. Otherwise, it returns zero.
+
+      :param index: The indices for the tensor.
+
+
+   .. cpp:function:: constexpr size_t dim(int i) const
+
+      Returns the length of one side of the tensor.
+
+      Because the tensor is square, the argument is ignored.
+
+      :param i: The axis to query. Ignored because the tensor is square.
+
+
+   .. cpp:function:: constexpr Dim<2> dims() const
+
+      Get the dimensions of the tensor.
+
+
+   .. cpp:function:: constexpr std::string name() const
+
+      Get the name of the tensor.
+
+      The name of the tensor is always ``"Kronecker delta"``.
+
+
+   .. cpp:function:: constexpr bool full_view_of_underlying() const
+
+      Checks to see if the tensor sees all of its data.
+
+      Because this is the full tensor, this will always return true.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor.

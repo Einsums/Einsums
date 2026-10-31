@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.profile_path:
+
+===============================
+einsums::hardware::profile_path
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::string profile_path()
+
+   The file the profile in effect came from, or empty when none was found.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The path.

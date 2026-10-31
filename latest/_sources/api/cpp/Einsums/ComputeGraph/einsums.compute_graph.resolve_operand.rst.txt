@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.resolve_operand:
+
+=======================================
+einsums::compute_graph::resolve_operand
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: OperandAccessor resolve_operand(Graph &graph, TensorId id, std::string_view context, const char *role)
+
+   Bind an ``OperandAccessor`` to ``id``, or explain why it cannot be bound.
+
+   :param graph: Graph the id belongs to.
+   :param id: The operand.
+   :param context: Caller name for the diagnostic, e.g. ``"build_executor(Einsum)"``.
+   :param role: The operand's role in that caller, e.g. ``"A"``.
+   :throws std::invalid_argument: When ``id`` exposes no rank-erased geometry.
+   :returns: A bound accessor.

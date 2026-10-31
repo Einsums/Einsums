@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.scale_prefactor:
+
+===============================================
+einsums::compute_graph::passes::scale_prefactor
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: PrefactorScalar scale_prefactor(const PrefactorScalar &pf, double a)
+
+   ``pf * a``, preserving the PrefactorScalar's element type.
+
+   Shared by the passes that push a real scalar into an existing prefactor
+   (ScaleAbsorption's operand fold, CSE's proportional-duplicate merge).

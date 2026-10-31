@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BackingCounters:
+
+=======================================
+einsums::compute_graph::BackingCounters
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorBacking.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BackingCounters
+
+   What a backing's storage has moved, counted as it happens.
+
+   Relaxed atomics: slabs are read and written on whichever thread runs the node, and the counts
+   are read only between replays. ``Graph::annotate_backing`` attaches a fresh set to each backing
+   it accepts, and ``RunMetrics`` reports one replay's share as the difference of two readings.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::shared_ptr<detail::RunContext> context
+
+      The run context of the graph that accepted the backing, which tells an attached observer
+      (``ExecutionObserver``) what the storage moves.
+
+
+   .. cpp:member:: std::string tensor
+
+      The backed tensor's name, for those events.
+
+
+   .. cpp:member:: std::atomic<std::uint64_t> bytes_read
+
+      Bytes read from the storage.
+
+
+   .. cpp:member:: std::atomic<std::uint64_t> bytes_written
+
+      Bytes written to it.
+
+
+   .. cpp:member:: std::atomic<std::uint64_t> reads
+
+      Slab reads, a whole load counting as one.
+
+
+   .. cpp:member:: std::atomic<std::uint64_t> writes
+
+      Slab writes, a whole store counting as one.
+
+
+   .. cpp:member:: std::atomic<std::uint64_t> publishes
+
+      Publishes of an update backing.

@@ -1,0 +1,370 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/CostModel.hpp``, ``Einsums/ComputeGraph/GraphIR.hpp``, ``Einsums/ComputeGraph/InterfaceManifest.hpp``, ``Einsums/ComputeGraph/Node.hpp``, ``Einsums/ComputeGraph/Operations.hpp``, ``Einsums/ComputeGraph/Options.hpp``, ``Einsums/ComputeGraph/TensorExpr.hpp``, ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:var:: inline constexpr std::string_view any_named_key
+
+   The named key that stands for every named resource: an access to it conflicts with an access to any key. Compare keys with ``named_keys_overlap``, not with ``==``.
+
+
+.. cpp:var:: inline constexpr NodeFeatures default_region_features
+
+   The node features a region admits unless its client says otherwise: every one but a grouped family and a permutation operator, which a client must be taught to read and so opts into.
+
+
+.. cpp:var:: inline constexpr std::string_view graph_ir_schema_version
+
+   The schema version this build writes.
+
+   Semver, and the compatibility policy is: a newer build loads an
+   older IR, the reverse is refused with both versions named. A descriptor field
+   may be ADDED (an absent field takes its documented default) but never
+   repurposed; a semantic change is a new field name and a minor bump.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:var:: inline constexpr FamilyId invalid_family
+
+   The family id a term that carries no member letter has.
+
+
+.. cpp:var:: inline constexpr TermId invalid_term
+
+   The term id no term has, for an empty slot.
+
+
+.. cpp:var:: inline constexpr std::size_t kGemmEngineCount
+
+   Number of entries in ``GemmEngine``.
+
+
+.. cpp:var:: inline constexpr EnumNames<GemmEngine, 2UL> kGemmEngineNames
+
+   The one ``GemmEngine`` name table; both directions read it.
+
+
+.. cpp:var:: inline constexpr std::size_t kKernelFamilyCount
+
+   Number of entries in ``KernelFamily``.
+
+
+.. cpp:var:: inline constexpr EnumNames<KernelFamily, 5UL> kKernelFamilyNames
+
+   The one ``KernelFamily`` name table; both directions read it.
+
+
+.. cpp:var:: inline constexpr std::size_t kSizeClassCount
+
+   Number of entries in ``SizeClass``.
+
+
+.. cpp:var:: inline constexpr EnumNames<SizeClass, 4UL> kSizeClassNames
+
+   The one ``SizeClass`` name table; both directions read it.
+
+
+.. cpp:var:: inline constexpr NodeEffects opaque_effects
+
+   Nothing is known about the node beyond its tensor lists: neither hoisted, merged nor removed, and ordered against every access to a named resource (it reads and writes ``any_named_key``).
+
+
+.. cpp:var:: inline constexpr std::string_view provenance_identity
+
+   The tag name for a Kronecker delta, the identity over one index space.
+
+   Spelled once here rather than as a string literal at each site, because a pass matching a
+   misspelled name silently does nothing and the tag vocabulary is deliberately unvalidated.
+
+
+.. cpp:var:: inline constexpr PureTag pure
+
+   The ``PureTag`` value: ``cg::custom(cg::pure, ...)`` records a pure custom node.
+
+
+.. cpp:var:: inline constexpr std::string_view ragged_symbol_prefix
+
+   The prefix that marks a dim symbol as ragged over an index space.
+
+   A ragged axis has no single extent, so it cannot be a plain symbol; it is spelled
+   ``"ragged:<space>"`` inside the same per-axis string vector a plain symbol lives in.
+   One vector rather than a vector plus a parallel flag array, because the pair would be
+   two things a serializer has to keep in step and a loader has to validate against each
+   other, and the bug history of this module is two derivations of one fact disagreeing.
+
+   .. seealso::
+
+      TensorHandle::dim_symbols
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> GpuDisable
+
+   Keep every node on the host, making GPUPlacement a no-op.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> GraphDumpRegions
+
+   Dump the algebra a region rewrite raised, before and after it rewrote.
+
+   An optimizer that rewrites mathematics will eventually produce a wrong
+   number, and the bug history in this module is the evidence rather than a
+   worry: the baked-lambda redirect, the full-cover alias miss, the Kahn FIFO
+   hoist. Each produced a plausible graph and a wrong result. A diffable
+   before-and-after of the ALGEBRA is what turns such a case into a readable bug
+   report; a diff of two node-list dumps is not the same thing, because the
+   node list is the encoding and the algebra is the claim.
+
+   Goes to stderr at pass verbosity 2 and up, and is also kept on the pass, so a
+   test asserts on it rather than scraping a stream.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> GraphFactorizationCache
+
+   Keep a search pass's result and replay it for a structurally identical graph.
+
+   On by default, because the cost is a content hash of a graph a search was about to be run over
+   and the saving is the search. It is an option rather than a constant for the reason every
+   rewrite knob is one: a wrong number under an optimizer is bisected by turning things off, and a
+   cache is the first thing to suspect when two supposedly identical graphs get different plans.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> GraphFactorizationMaxFactors
+
+   The largest number of factors a term may have before a search pass declines it.
+
+   A property of the PROGRAM a caller brings rather than of the pass, which is why it is an
+   option and not a constant: the density-fitted opposite-spin energy is nine leaves, the grid
+   fitted one is fourteen, and an amplitude residual term is more. A cap that fitted the first
+   of those declines the other two silently, and a caller has no way to lift it without editing
+   the pass.
+
+   The cost is stated rather than hidden. The per-term program is `3^N` in the factor count, so
+   fourteen leaves is a few million subset splits and runs in seconds, and twenty is over three
+   billion and does not finish unaided. A cap above the mid-teens is therefore a request to run
+   under `einsums:graph:optimizer-budget` and take the best tree found when it expires, which is
+   what that budget was built to do. Nothing here changes the search's complexity.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> GraphFactorizationMaxReaders
+
+   How many consumers a definition may be inlined into before it is left whole.
+
+   The bound on the OTHER direction the search can grow in. A definition several statements read
+   is inlined into each of them that profits, and every copy is a term of its own, so the search
+   sees as many terms as the copies it made and each of them is capped by
+   `einsums:graph:factorization-max-factors` separately. Four is the default because the shapes
+   that ask for this have two or three consumers, an energy split into its spin halves and an
+   integral a residual reads from two routes, and because a value more consumers than that read is
+   far more likely to be a quantity the program genuinely shares than an artifact of how the
+   author bracketed it.
+
+   Raising it costs search time linearly and memory not at all, since a copy that does not pay is
+   refused where it lands rather than emitted and regretted.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphFnoOccupation
+
+   The occupation below which a natural orbital is dropped from the correlated space.
+
+   A TOLERANCE in the sense Part 8.3 asks every per-lossy-pass knob to be one, and an ABSOLUTE one
+   where the auxiliary truncation's is relative, because an occupation number already is a
+   fraction: it says how much of an electron a virtual orbital carries, and the conventional
+   cutoffs are quoted as such rather than against whichever orbital happens to be the most
+   occupied.
+
+   It reaches the pass rather than a provider, since a basis truncation factors nothing. What the
+   record carries is not this number but the MP2 correlation energy the truncation removed, which
+   is measured rather than claimed.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphLaplaceEpsilon
+
+   The relative accuracy a Laplace-transform quadrature is built to.
+
+   A TOLERANCE and not a point count, because a tolerance is what composes with the accuracy
+   budget and what an approximation record can state, while a count is a means: the same count
+   over a wider spectral range is a different approximation and says nothing about what the
+   result is worth. The count is derived from this and from the range the bound energies have,
+   and it reaches the setup node's descriptor so a saved graph means the same thing wherever
+   it is loaded.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphNafThreshold
+
+   The fraction of the largest singular value below which an auxiliary direction is dropped.
+
+   A TOLERANCE in the sense Part 8.3 asks every per-lossy-pass knob to be one, and RELATIVE where
+   the metric fit's drop threshold is absolute. The two guards run in different places: a metric
+   fit's is a captured element operation whose policy number is bound when its executor is built,
+   so a relative cutoff there needs a reduction feeding a value into a guard, while this one runs
+   in ordinary code at optimize time over eigenvalues held in a local buffer, where comparing
+   against the largest of them costs nothing.
+
+   It reaches the PROVIDER rather than living in a pass, so a graph saved after a truncation means
+   one thing wherever it is loaded. What the record carries is not this number but the norm of the
+   singular values it dropped, which is measured rather than claimed.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> GraphOptimizerBudget
+
+   How long a search pass may run, in milliseconds. Zero means unlimited.
+
+   The number is a starting point rather than a measurement, which is what an option is for. What
+   is NOT arbitrary is that a search pass which exhausts it keeps the best candidate it had found
+   and reports being cut off, so exhausting the budget costs optimization rather than
+   correctness.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> GraphProfileGroups
+
+   Break a grouped batched GEMM into one profiler zone per shape class.
+   Deliberately CHANGES how the GEMM runs, because a per-group breakdown of one
+   parallel loop is not obtainable any other way. See Detail/GroupedBatchedGemm.hpp.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphStorageByteWeight
+
+   How many bytes of memory traffic one byte read from or written to storage costs, in AxisTiling's
+   choice of loop.
+
+   Measured on an M4 laptop (2026-10-17): memory reads 66.6 GB/s; an .etn read from the drive with
+   the page cache emptied, 3.26 GB/s, a weight of 20; the same read from the page cache, 16.6 GB/s,
+   a weight of 4. The default is the drive's, since a tensor is streamed because it does not fit,
+   and a tensor that does not fit is not in the page cache.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> GraphStorageRunBytes
+
+   What one contiguous run of storage costs beyond its bytes, in bytes of memory traffic.
+
+   Measured with the byte weight above: a short run from the drive with the page cache emptied takes
+   8.1 microseconds, about 512 KiB of memory traffic at 66.6 GB/s; from the page cache, 0.3, about
+   22 KiB. The default is the drive's, for the reason the byte weight's is.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> GraphStructuralSearch
+
+   Let the structural-algebraic phase run its SEARCH passes.
+
+   Off by default, and the default is the point rather than caution. Every other pass in that
+   phase is a recognizer: it walks the graph once, and its runtime is a function of the node
+   count. A search pass's runtime is a function of how many candidates the graph offers, which
+   nobody can predict from the outside, and the whole reason the saved IR exists is so that
+   search happens ONCE, offline or at capture, rather than every time a script is re-run.
+
+   So the interactive default is off and the saved-graph workflow turns it on deliberately. A
+   caller who wants it for one pipeline sets it there rather than here; the option is the
+   process-wide statement.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphThcEpsilon
+
+   The relative accuracy a tensor-hypercontraction fit is asserted to have.
+
+   A TOLERANCE, spelled the way Part 8.3 asks every per-lossy-pass knob to be spelled, and it
+   reaches the provider rather than living in a pass, so a graph saved after a grid fit means
+   one thing wherever it is loaded. What it is NOT is a measurement: the error of a grid fit
+   against the exact four-index tensor cannot be computed without the tensor the fit exists to
+   avoid forming. What is measured instead, per bind, is the least-squares residual against the
+   three-index tensor the fit was fitted from; see ThcFactorization::residual_param_name.
+
+
+.. cpp:var:: inline cl::ConfigOption<double> GraphTilingBudgetShare
+
+   The largest fraction of ``--einsums:max-memory`` one intermediate may hold before ``AxisTiling``
+   streams it, in a program that fits the budget as well as in one that does not.
+
+   Fitting is not the only reason to stream. An intermediate that takes a large part of the
+   machine is written and read back at memory bandwidth, and the kernels around it run on panels
+   far larger than they need, so a program that holds it whole can be slower than the same program
+   streaming it in blocks. The share bounds both the trigger and the result: a tiled region's
+   buffers are held to the same share together, beside whatever the budget already requires.
+
+   Read only when the tiling cap is derived; a positive cap is the caller's own bound and is
+   taken as given. Zero or one turns the rule off, leaving the budget as the only bound.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> GraphTilingMemoryCap
+
+   The largest a single live intermediate may be, in bytes, before ``AxisTiling`` slices the
+   program so that intermediate is produced and consumed a slice at a time.
+
+   A RESOURCE knob rather than a tolerance: nothing here trades accuracy, and the number is a
+   property of the machine the replay runs on rather than of the program. It is what the axis
+   choice and the chunk depth are both read off. A program whose largest intermediate already
+   fits is declined, which is what makes the pass a no-op on the forms that never needed it.
+
+   Zero disables the pass, which is the spelling a caller who wants the captured schedule uses.
+
+   The default, any negative value, derives the cap from the machine: an intermediate may be as
+   large as ``--einsums:max-memory`` less every other tensor alive beside it, an intermediate
+   being alive from its first writer to its last reader, and in a program whose peak fits the
+   budget no larger than ``--einsums:graph:tiling-budget-share`` of the budget. A
+   positive value is a cap on each intermediate alone, for a caller who wants a footprint smaller
+   than the machine allows.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> GraphVerifyLevels
+
+   Check, before each level-scheduled replay, that no level holds two nodes
+   touching overlapping storage. On in debug builds; this is how a release
+   build turns it on, which is what a nondeterministic result wants.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> PassAnalyze
+
+   Report what every pass would do without letting it do anything.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> PassDisable
+
+   Optimization passes to skip, by name, comma separated.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> PassVerbose
+
+   Log node count and timing on either side of each pass.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PassVerbosity
+
+   How much the optimization passes narrate about what they did and declined.
+
+   0 silent, 1 a summary line per pass, 2 each modification and each declined
+   candidate, 3 the per-candidate detail behind a decline. Only a level nobody
+   set through `PassManager::set_verbosity` takes this value, so a program that
+   chooses its own level is unaffected.
+
+   This is the only way to see a thread plan. `Graph::plan_threads()` builds
+   its planner directly rather than through a pass manager, so without a level
+   from here every report the planner makes is unreachable, and whether it
+   widened anything, or declined and why, cannot be observed from a run.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> PassVerify
+
+   Check the graph's structural invariants after every optimization pass.
+
+   A pass that leaves a graph malformed usually still produces a graph that runs, and the damage
+   surfaces later, far from the pass, as a wrong number or a lookup that finds the wrong node. This
+   runs ``Graph::verify`` after each pass and fails naming the pass. The test suite turns it on.

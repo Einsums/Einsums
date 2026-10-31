@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.k_split_width:
+
+===================================
+einsums::packed_gemm::k_split_width
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: int k_split_width()
+
+   The thread count a packed contraction decides whether to cut its contracted extent for: the machine's physical cores, detected once.
+
+   A constant of the machine rather than of the call, so a contraction is cut the same way, and
+   gives the same bits, at every thread count it runs at (see ``choose_k_split``).
+
+   .. versionadded:: 2.0.0
+
+   :returns: The width, at least 1.

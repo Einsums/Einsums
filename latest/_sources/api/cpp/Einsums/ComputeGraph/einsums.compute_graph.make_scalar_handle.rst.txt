@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_scalar_handle:
+
+==========================================
+einsums::compute_graph::make_scalar_handle
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T> requires (std::is_arithmetic_v<T> || IsComplexV<T>) TensorHandle make_scalar_handle(T *scalar, TensorId id, std::string name)
+
+   Construct a TensorHandle for a scalar value (rank-0 tensor).
+
+   Scalars don't have dimensions or strides, but can participate in the graph
+   as inputs/outputs for operations like dot() or det() that return scalars.
+
+   :tparam T: An arithmetic type (double, float, int, etc.).
+   :param scalar: Pointer to the scalar value.
+   :param id: Initial ID (will be reassigned by Graph::register_tensor()).
+   :param name: Human-readable name for the scalar.
+   :returns: A TensorHandle with rank=0 and no dims/strides.

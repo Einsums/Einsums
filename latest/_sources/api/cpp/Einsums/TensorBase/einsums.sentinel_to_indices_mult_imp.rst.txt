@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sentinel_to_indices_mult_imp:
+
+=====================================
+einsums::sentinel_to_indices_mult_imp
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename Stride, typename Indices, typename... Rest> void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, const Stride &strides, Indices &indices, Rest &&... rest)
+
+   Implementation details for the sentinel_to_indices function with multiple output lists.

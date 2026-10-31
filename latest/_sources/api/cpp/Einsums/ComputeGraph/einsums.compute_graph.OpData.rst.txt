@@ -1,0 +1,100 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.OpData:
+
+==============================
+einsums::compute_graph::OpData
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: OpData
+
+   A node's operation-specific descriptor, or none.
+
+   Each Node stores an OpData that may hold the metadata an optimization pass or
+   ``build_executor`` reads: an ``EinsumDescriptor``, a ``ScaleDescriptor`` and
+   so on. A node with no special metadata holds nothing (``empty``).
+
+   The set of descriptors is open: any ``NodeDescriptor`` can be held, however
+   it was declared, which is what lets a tensor backend outside this library
+   describe operations of its own. The descriptor is owned by value - copying an
+   OpData copies it, and a pass that edits it through ``get_if`` edits this
+   node's copy - and identified by its ``descriptor_name``, which is also how a
+   saved graph names it. Comparing names rather than types is what keeps
+   identity correct across shared libraries.
+
+
+   .. cpp:function:: OpData() noexcept = default
+
+      No descriptor.
+
+
+   .. cpp:function:: template <typename D> requires (!std::is_same_v<std::remove_cvref_t<D>, OpData>) && NodeDescriptor<std::remove_cvref_t<D>> OpData(D &&descriptor)
+
+      Hold a copy of ``descriptor``. Implicit, so a descriptor converts wherever an OpData is expected.
+
+
+   .. cpp:function:: OpData(const OpData &other)
+
+   .. cpp:function:: OpData(OpData &&) noexcept = default
+
+   .. cpp:function:: OpData & operator=(const OpData &other)
+
+   .. cpp:function:: OpData & operator=(OpData &&) noexcept = default
+
+   .. cpp:function:: ~OpData() = default
+
+   .. cpp:function:: template <NodeDescriptor D> D * get_if() noexcept
+
+      The held descriptor if it is a ``D``, else null.
+
+
+   .. cpp:function:: template <NodeDescriptor D> const D * get_if() const noexcept
+
+      The held descriptor if it is a ``D``, else null.
+
+
+   .. cpp:function:: template <NodeDescriptor D> bool holds() const noexcept
+
+      Whether the held descriptor is a ``D``. Ask ``empty`` whether none is held.
+
+
+   .. cpp:function:: template <NodeDescriptor D> D & get()
+
+      The held descriptor, which must be a ``D``.
+
+      :throws std::logic_error: naming both descriptors when it is not.
+
+
+   .. cpp:function:: template <NodeDescriptor D> const D & get() const
+
+      The held descriptor, which must be a ``D``.
+
+      :throws std::logic_error: naming both descriptors when it is not.
+
+
+   .. cpp:function:: bool same_type_as(const OpData &other) const noexcept
+
+      Whether ``other`` holds a descriptor of the same type as this one (both empty included).
+
+
+   .. cpp:function:: bool empty() const noexcept
+
+      Whether no descriptor is held.
+
+
+   .. cpp:function:: std::string_view name() const noexcept
+
+      The held descriptor's ``descriptor_name``, for diagnostics and serialization:
+      ``"EinsumDescriptor"``, or ``"no descriptor"`` when ``empty``.

@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_approximation_record:
+
+=================================================
+einsums::compute_graph::make_approximation_record
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Approximation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: ApproximationRecord make_approximation_record(std::string pass_name, ApproximationEffect effect, double tolerance, double bound, std::vector<std::string> outputs, std::vector<std::string> spaces, std::string setup, ApproximationOrigin origin, std::string measurement)
+
+   Build an ``ApproximationRecord`` in one call.
+
+   A free function rather than a constructor, so ``ApproximationRecord`` stays an AGGREGATE
+   and C++ callers keep designated initializers, which is how a struct of seven fields stays
+   readable at a call site. Declaring even a defaulted constructor would take that away.
+   Python has no aggregate initialization and needs some entry point, and this is a better
+   one than a default-constructed record with seven assignments after it.
+
+   .. versionadded:: 2.0.0
+
+   :param pass_name: The pass applying the rewrite.
+   :param effect: What ``bound`` is a bound on.
+   :param tolerance: The knob the pass was asked for.
+   :param bound: The effect the pass states it had.
+   :param outputs: Manifest names the bound applies to; empty means all of them.
+   :param spaces: Index-space names the rewrite involved.
+   :param setup: Label of the setup node it created, or empty.
+   :param origin: Whether ``bound`` was computed or claimed.
+   :param measurement: Name of the tensor carrying the measured error per bind, or empty.
+   :returns: The record.

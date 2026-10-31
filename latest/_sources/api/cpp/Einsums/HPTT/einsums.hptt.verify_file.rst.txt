@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.verify_file:
+
+==========================
+einsums::hptt::verify_file
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Files.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: int verify_file(std::FILE *fp)
+
+   Check a transpose file's header and checksum.
+
+   :returns: 0 when the file is intact; 1 or 2 when it cannot be read; 3 for a missing magic; 4 for a different endianness; 5 for a checksum mismatch; 6 for a format version this build does not read.

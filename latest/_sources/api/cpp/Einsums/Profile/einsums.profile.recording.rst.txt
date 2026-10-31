@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.profile.recording:
+
+===========================
+einsums::profile::recording
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Profile/Recording.hpp``.
+
+.. cpp:namespace:: einsums::profile
+
+.. cpp:function:: bool recording() noexcept
+
+   Whether Einsums records profiling data right now.
+
+   Constant false in a build configured with EINSUMS_WITH_PROFILER=OFF, so code gated on it compiles
+   to nothing there; otherwise the profiler's recording switch. Code that calls the profiler directly,
+   rather than through the zone macros, reads this once and does nothing when it is false.

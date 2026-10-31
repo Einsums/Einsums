@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Json_api:
+
+============
+Json C++ API
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Json>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::json::EmitOptions` - Knobs for ``emit``.
+- :cpp:any:`~einsums::json::Object` - An ordered, consumption-tracking JSON object.
+- :cpp:any:`~einsums::json::ParseError` - What went wrong while parsing, and where.
+- :cpp:any:`~einsums::json::ParseOptions` - Knobs for ``parse``.
+- :cpp:any:`~einsums::json::Position` - A 1-based source position, for a diagnostic that points at the text.
+- :cpp:any:`~einsums::json::Value` - One JSON value: null, bool, int64, double, string, array or object.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::json::collect_unconsumed` - Collect the paths of every key no reader consumed.
+- :cpp:any:`~einsums::json::emit` - Render ``value`` as JSON text.
+- :cpp:any:`~einsums::json::parse` - Parse ``text`` as a strict JSON document.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::json::EmitStyle` - How ``emit`` lays a document out.
+
+Types
+-----
+
+- :cpp:any:`~einsums::json::Array` - An ordered list of values, which is what a JSON array holds.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.json.collect_unconsumed
+   einsums.json.emit
+   einsums.json.EmitOptions
+   einsums.json.Object
+   einsums.json.parse
+   einsums.json.ParseError
+   einsums.json.ParseOptions
+   einsums.json.Position
+   einsums.json.Value
+   enums
+   types

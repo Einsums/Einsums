@@ -1,0 +1,202 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NaturalAuxiliaryFactorization:
+
+=====================================================
+einsums::compute_graph::NaturalAuxiliaryFactorization
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NaturalAuxiliaryFactorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NaturalAuxiliaryFactorization : public FactorizationProvider
+
+   Offer a three-index tensor over a truncated auxiliary index.
+
+   .. seealso::
+
+      NaturalAuxiliaryFactorization.hpp for the mathematics and for what chemistry calls it
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: NaturalAuxiliaryFactorization(std::string tag, const RuntimeTensor<double> &three_index, double threshold, std::string name)
+
+      Construct the provider.
+
+      **Why the threshold is relative where the metric fit's is absolute**
+
+      The two guards are applied in different places. A metric fit's runs inside a captured
+      element operation, whose policy number is bound when its executor is built, so a relative
+      cutoff there would need a reduction feeding a value into a guard; that is the mechanism
+      ``MetricFitFactorization`` records as one to add. This one runs in ordinary code, at
+      propose time, over eigenvalues held in a local buffer, so comparing against the largest of
+      them costs nothing and the conventional relative cutoff is simply available.
+
+      :param tag: The provenance tag this claims, e.g. ``"eri"``.
+      :param three_index: ``B[Q,m,n]``, which is also the tensor the caller tags. Checked against the tagged handle's buffer in ``propose``, so a caller who hands over a different tensor gets a decline rather than a truncation of something else.
+      :param threshold: Auxiliary directions whose singular value is at or below this fraction of the largest are dropped, or zero to take ``einsums:graph:naf-threshold``.
+      :param name: The provider's name, which the approximation record and the report carry.
+      :throws std::invalid_argument: When ``threshold`` is not finite, is negative, or is at least one. One would drop every direction but the first, which is a decomposition of nothing, and there is nothing a negative threshold could mean.
+
+
+   .. cpp:function:: NaturalAuxiliaryFactorization(std::string tag, RuntimeTensorView<double> three_index, double threshold, std::string name)
+
+      The same, taking a runtime-rank view.
+
+      :param tag: The provenance tag this claims.
+      :param three_index: The very tensor the caller tags.
+      :param threshold: The relative singular-value cutoff, or zero to take the option.
+      :param name: The provider's name.
+
+
+   .. cpp:function:: NaturalAuxiliaryFactorization(std::string tag, const Tensor<double, 3> &three_index, double threshold, std::string name)
+
+      The same, taking a compile-time-rank tensor.
+
+      Its own overload rather than left to the implicit conversion, for the reason every other
+      provider's is: a view built from a ``Tensor`` is anonymous, the fitting captures it as an
+      interface tensor, and a manifest binds by NAME.
+
+      :param tag: The provenance tag this claims.
+      :param three_index: The very tensor the caller tags.
+      :param threshold: The relative singular-value cutoff, or zero to take the option.
+      :param name: The provider's name.
+
+
+   .. cpp:function:: void report_dropped_into(const RuntimeTensor<double> &dropped)
+
+      Where the truncation writes what it threw away on this bind.
+
+      The caller's own tensor, for the reason a grid fit's residual destination is one: a
+      measurement a caller cannot read is a measurement nobody makes. The record points at it by
+      name, so a caller holding a record knows which of their tensors to look in.
+
+      Without it the fitting emits no measurement nodes and the record carries the number
+      measured at optimize time alone, which is what the structure claims rather than what this
+      bind found.
+
+      :param dropped: A rank-1 tensor the fitting writes the norm of the dropped singular values, relative to the norm of all of them, into.
+
+
+   .. cpp:function:: void report_dropped_into(const Tensor<double, 1> &dropped)
+
+      The same, taking a compile-time-rank tensor.
+
+      :param dropped: A rank-1 tensor for the relative dropped norm.
+
+
+   .. cpp:function:: std::string name() const override
+
+      See ``FactorizationProvider::name``.
+
+
+   .. cpp:function:: std::string tag() const override
+
+      See ``FactorizationProvider::tag``.
+
+
+   .. cpp:function:: expected<FactorizationPlan, std::string> propose(const Graph &graph, TensorId tensor) const override
+
+      Offer the truncated auxiliary index, or say why this tensor has none to give.
+
+      :param graph: The graph holding ``tensor``.
+      :param tensor: The tagged tensor.
+      :returns: The plan, or the reason there is not one: a rank other than three, a tensor other than the one this provider was handed, an empty auxiliary axis, or a spectrum this threshold drops nothing from, which is a rename rather than a factorization.
+
+
+   .. cpp:function:: double threshold() const
+
+      The relative singular-value cutoff, taking the constructor over the option.
+
+      :returns: The threshold.
+
+
+   .. cpp:function:: std::size_t kept() const noexcept
+
+      How many auxiliary directions the last ``propose`` kept, or zero before one ran.
+
+      A property of the tensor the provider was handed rather than of the graph, which is what
+      lets a caller read it without going through the pass's report.
+
+      :returns: The count.
+
+
+   .. cpp:function:: double dropped_norm() const noexcept
+
+      The relative dropped norm the last ``propose`` measured.
+
+      :returns: The number, or zero before one ran. This is what the record carries.
+
+
+   .. cpp:function:: static std::string space_name()
+
+      The index space the truncated auxiliary axis carries.
+
+      :returns: ``"naf"``.
+
+
+   .. cpp:function:: static std::string dim_symbol()
+
+      The symbolic extent a truncated auxiliary axis goes by.
+
+      :returns: ``"nnaf"``.
+
+
+   .. cpp:function:: static SpaceId register_naf_space(Graph &graph, const std::string &outer, double fraction)
+
+      Register the truncated auxiliary space in ``graph's`` own registry.
+
+      A space is a statement about a graph rather than about a provider, and ``propose`` is
+      handed a const graph precisely so a provider cannot make one. So a caller registers it, and
+      this is the one call that does: idempotent for a repeated identical declaration, as
+      ``SpaceRegistry::register_space`` is.
+
+      It also DECLARES the two relations that make the truncation reasonable to a pass, when the
+      registry already holds the space they relate to: the truncated space is contained in
+      ``outer`` and its scale is smaller. Containment is what says a contraction over the
+      truncated axis is a restriction of the one over the full axis rather than an unrelated
+      quantity, and the scale order is what lets the cost comparison rank the two forms without
+      falling through to its arbitrary tie-break. Declared rather than inferred, which is the
+      registry's own rule; when ``outer`` is not registered, neither relation is stated and the
+      comparison is weaker rather than wrong.
+
+      The typical extent is DERIVED from ``outer's``, at ``fraction`` of it, rather than left
+      unstated the way a grid's is. A grid has no relation to the basis and a truncated auxiliary
+      index is a fixed fraction of the auxiliary set by construction, so the fraction is the
+      method's own claim about itself. It is also what the cost comparison requires: its second
+      rung ranks a polynomial it cannot substitute below one it can, so a truncated form carrying
+      a space with no typical extent is declined for being unmeasurable rather than for being
+      expensive, which is the shape of a decline this call exists to prevent.
+
+      Register ``outer`` BEFORE calling this, since the extent is read from it here and
+      ``SpaceRegistry::register_space`` is idempotent only for an identical redeclaration.
+
+      :param graph: The graph whose registry gains the space.
+      :param outer: The name of the space the auxiliary axis of the untruncated tensor carries, or empty to declare no relation and no extent.
+      :param fraction: What fraction of ``outer's`` typical extent the truncated space is expected to be. The published measurements for natural auxiliary functions put it at about a half, which is the default.
+      :throws std::invalid_argument: When ``fraction`` does not lie strictly between zero and one.
+      :returns: The space's id in that registry.
+
+
+   .. cpp:function:: static std::string keep_matrix_name(const std::string &provider, const std::string &tensor)
+
+      The name the rectangular truncation matrix is bound under.
+
+      A constant of the structure rather than of the problem: it is the leading columns of an
+      identity matrix, and the fitting contracts the eigenvectors against it because the node set
+      has no reconstructible slice. A caller rebinding a saved graph supplies it under this name,
+      the way they supply a collocation matrix.
+
+      :param provider: The provider's ``name``.
+      :param tensor: The tagged tensor's name.
+      :returns: The interface name.

@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.norm:
+
+=============================
+einsums::linear_algebra::norm
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> requires (CoreTensorConcept<AType>) RemoveComplexT<typename AType::ValueType> norm(Norm norm_type, const AType &a)
+
+   Computes the norm of a matrix.
+
+   Returns the value of the one norm, or the Frobenius norm, or
+   the infinity norm, or the element of largest absolute value of a
+   real matrix A.
+
+   .. code-block:: text
+
+      using namespace einsums;
+
+      auto A = einsums::create_random_tensor("A", 3, 3);
+      auto norm = einsums::linear_algebra::norm(einsums::linear_algebra::Norm::One, A);
+
+   .. note::
+
+      Note that :math:`max(abs(A(i,j)))` is not a consistent matrix norm.
+
+   .. versionadded:: 1.0.0
+
+      There is a bug in this version where, due to a difference in memory layout,
+      the 1-norm and infinity-norm are switched.
+
+   .. versionchanged:: 2.0.0
+
+      Renamed the members to be all caps to follow the recommended style.
+      Fixed the bug in previous versions, and added the 2-norm. The function is also able to handle vectors,
+      in which case the vector norms will be used. The norms for the vectors are the same ones that induce the
+      matrix norms. This means that the MAXABS norm and the infinity-norm are the same, and the
+      2-norm and the Frobenius norm are the same for vectors, since the MAXABS and Frobenius norms are not induced.
+      Can handle non-unit strides and row- and column-major layouts.
+
+   :tparam AType: The type of the matrix
+   :param norm_type: where Norm::ONE denotes the one norm of a matrix (maximum column sum), Norm::INFTY denotes the infinity norm of a matrix  (maximum row sum), Norm::FROBENIUS denotes the Frobenius norm of a matrix (square root of sum of squares), and Norm::TWO denotes the induced 2-norm (square root of the maximum eigenvalue of A^H A).
+   :param a: The matrix to compute the norm of.
+   :throws RankError: If the input is neither a matrix or vector.
+   :throws EnumError: If an invalid enum value is passed.
+   :returns: The requested norm of the matrix.

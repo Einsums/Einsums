@@ -1,0 +1,103 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorIO_api:
+
+================
+TensorIO C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorIO>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::tensor_io::EtnFile` - A ``.etn`` file named once, for the backings of its entries.
+- :cpp:any:`~einsums::tensor_io::FileHeader` - File header (64 bytes, at offset 0).
+- :cpp:any:`~einsums::tensor_io::Slab` - A slab descriptor: per-dimension half-open ranges into a stored tensor.
+- :cpp:any:`~einsums::tensor_io::TensorEntry` - Per-tensor metadata entry (160 bytes).
+- :cpp:any:`~einsums::tensor_io::TensorFile` - A handle on an ``.etn`` file.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::register_Einsums_TensorIO_options` - Give TensorIO's option its command-line presence. Idempotent.
+- :cpp:any:`~einsums::tensor_io::align_up` - Round up to alignment boundary.
+- :cpp:any:`~einsums::tensor_io::checkpoint::restore` - Restore tensor data into a Graph.
+- :cpp:any:`~einsums::tensor_io::checkpoint::restore_distributed` - Restore distributed Graph tensors.
+- :cpp:any:`~einsums::tensor_io::checkpoint::save` - Save all materialized tensors from a Graph.
+- :cpp:any:`~einsums::tensor_io::checkpoint::save_distributed` - Save distributed Graph tensors: replicated ones written once, distributed ones per-rank.
+- :cpp:any:`~einsums::tensor_io::checkpoint_etn` - Checkpoint all graph tensors to a .etn file, graph-aware.
+- :cpp:any:`~einsums::tensor_io::compact_file` - Rewrite ``path`` without the space no entry uses.
+- :cpp:any:`~einsums::tensor_io::copy_entry` - Copy the entry ``src_entry`` of ``src_path`` into the entry ``dst_entry`` of ``dst_path``.
+- :cpp:any:`~einsums::tensor_io::dtype_for` - Map C++ type to DType.
+- :cpp:any:`~einsums::tensor_io::dtype_name` - Get the name of a DType, spelled as numpy spells it ("float32", "complex128", ...). A value outside the enum, which only a damaged file can hold, is named "unknown".
+- :cpp:any:`~einsums::tensor_io::dtype_size` - Get the element size for a DType.
+- :cpp:any:`~einsums::tensor_io::etn_backing` - The backing for one entry of a ``.etn`` file.
+- :cpp:any:`~einsums::tensor_io::read_etn` - Read a tensor from a .etn file, graph-aware.
+- :cpp:any:`~einsums::tensor_io::read_slice_etn` - Read a slab of a tensor from a .etn file, graph-aware.
+- :cpp:any:`~einsums::tensor_io::remove_entry` - Remove the entry ``name`` of ``path``.
+- :cpp:any:`~einsums::tensor_io::rename_entry` - Give the entry ``old_name`` of ``path`` the name ``new_name``.
+- :cpp:any:`~einsums::tensor_io::restage_entry` - Store the entry ``name`` of ``path`` with its axes in ``order``, moving its elements.
+- :cpp:any:`~einsums::tensor_io::swap_entries` - Exchange the names of the entries ``first`` and ``second`` of ``path``.
+- :cpp:any:`~einsums::tensor_io::write_etn` - Write a tensor to a .etn file, graph-aware.
+- :cpp:any:`~einsums::tensor_io::write_slice_etn` - Write a slab of a tensor to a .etn file, graph-aware.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::tensor_io::DType` - Element type identifiers.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::IoSync` - Sync an .etn file to disk before and after each commit rewrites its header, so that a power loss, and not only a killed process, leaves the file as its last commit left it.
+- :cpp:any:`~einsums::tensor_io::ETN_ALL_RANKS` - Sentinel value for owning_rank meaning "all ranks / serial".
+- :cpp:any:`~einsums::tensor_io::ETN_DATA_ALIGNMENT` - Alignment for data regions (64 bytes for SIMD/cache-line compatibility).
+- :cpp:any:`~einsums::tensor_io::ETN_MAGIC` - Magic bytes identifying an .etn file.
+- :cpp:any:`~einsums::tensor_io::ETN_MAX_NAME` - Maximum tensor name length (including null terminator).
+- :cpp:any:`~einsums::tensor_io::ETN_MAX_RANK` - Maximum supported tensor rank.
+- :cpp:any:`~einsums::tensor_io::ETN_VERSION` - The format version every commit writes, and the newest this library reads. Version 2 added an entry stored in an axis order other than its declared one (``TensorEntry::stored_order``); version 3 adds the header's generation and checksums (``FileHeader::generation``), which let a reader tell a file whose last commit finished from one torn by a crash.
+- :cpp:any:`~einsums::tensor_io::ETN_VERSION_CHECKSUMS` - The first version whose header carries ``FileHeader::table_crc`` and ``FileHeader::header_crc``. A file of an earlier version has those bytes zero and is checked by its structure alone.
+- :cpp:any:`~einsums::tensor_io::ETN_VERSION_DECLARED_ORDER` - The oldest version this library reads: every entry stored in its declared axis order and no checksums. DistributedTensorFile still writes it.
+- :cpp:any:`~einsums::tensor_io::etn_backing_kind` - The kind name an ``.etn`` backing carries and a saved graph records.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.register_Einsums_TensorIO_options
+   einsums.tensor_io.align_up
+   einsums.tensor_io.checkpoint.restore
+   einsums.tensor_io.checkpoint.restore_distributed
+   einsums.tensor_io.checkpoint.save
+   einsums.tensor_io.checkpoint.save_distributed
+   einsums.tensor_io.checkpoint_etn
+   einsums.tensor_io.compact_file
+   einsums.tensor_io.copy_entry
+   einsums.tensor_io.dtype_for
+   einsums.tensor_io.dtype_name
+   einsums.tensor_io.dtype_size
+   einsums.tensor_io.etn_backing
+   einsums.tensor_io.EtnFile
+   einsums.tensor_io.FileHeader
+   einsums.tensor_io.read_etn
+   einsums.tensor_io.read_slice_etn
+   einsums.tensor_io.remove_entry
+   einsums.tensor_io.rename_entry
+   einsums.tensor_io.restage_entry
+   einsums.tensor_io.Slab
+   einsums.tensor_io.swap_entries
+   einsums.tensor_io.TensorEntry
+   einsums.tensor_io.TensorFile
+   einsums.tensor_io.write_etn
+   einsums.tensor_io.write_slice_etn
+   enums
+   variables

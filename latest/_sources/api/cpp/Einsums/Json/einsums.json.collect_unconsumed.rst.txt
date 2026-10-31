@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.collect_unconsumed:
+
+=================================
+einsums::json::collect_unconsumed
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:function:: void collect_unconsumed(const Value &value, const std::string &path, std::vector<std::string> &out)
+
+   Collect the paths of every key no reader consumed.
+
+   Recurses into arrays and objects, so one call over the root reports the whole
+   document. A path looks like ``$.nodes[3].descriptor.alpha``.
+
+   .. versionadded:: 2.0.0
+
+   :param value: The document, after a reader has walked it.
+   :param path: Prefix for the reported paths, e.g. ``"$"``.
+   :param out: Destination; paths are appended in document order.

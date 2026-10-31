@@ -1,0 +1,76 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorIO_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/TensorIO/Backing.hpp``, ``Einsums/TensorIO/Format.hpp``, ``Einsums/TensorIO/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> IoSync
+
+   Sync an .etn file to disk before and after each commit rewrites its header, so that a power
+   loss, and not only a killed process, leaves the file as its last commit left it.
+
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:var:: inline constexpr uint32_t ETN_ALL_RANKS
+
+   Sentinel value for owning_rank meaning "all ranks / serial".
+
+
+.. cpp:var:: inline constexpr size_t ETN_DATA_ALIGNMENT
+
+   Alignment for data regions (64 bytes for SIMD/cache-line compatibility).
+
+
+.. cpp:var:: inline constexpr char ETN_MAGIC[8]
+
+   Magic bytes identifying an .etn file.
+
+
+.. cpp:var:: inline constexpr size_t ETN_MAX_NAME
+
+   Maximum tensor name length (including null terminator).
+
+
+.. cpp:var:: inline constexpr size_t ETN_MAX_RANK
+
+   Maximum supported tensor rank.
+
+
+.. cpp:var:: inline constexpr uint32_t ETN_VERSION
+
+   The format version every commit writes, and the newest this library reads. Version 2 added an
+   entry stored in an axis order other than its declared one (``TensorEntry::stored_order``);
+   version 3 adds the header's generation and checksums (``FileHeader::generation``), which let a
+   reader tell a file whose last commit finished from one torn by a crash.
+
+
+.. cpp:var:: inline constexpr uint32_t ETN_VERSION_CHECKSUMS
+
+   The first version whose header carries ``FileHeader::table_crc`` and ``FileHeader::header_crc``.
+   A file of an earlier version has those bytes zero and is checked by its structure alone.
+
+
+.. cpp:var:: inline constexpr uint32_t ETN_VERSION_DECLARED_ORDER
+
+   The oldest version this library reads: every entry stored in its declared axis order and no
+   checksums. DistributedTensorFile still writes it.
+
+
+.. cpp:var:: inline constexpr std::string_view etn_backing_kind
+
+   The kind name an ``.etn`` backing carries and a saved graph records.

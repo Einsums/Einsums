@@ -1,0 +1,432 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BLASVendor_api:
+
+==================
+BLASVendor C++ API
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_BLASVendor>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::blas::vendor::caxpby` - See ``saxpby``.
+- :cpp:any:`~einsums::blas::vendor::caxpy` - See ``saxpy``.
+- :cpp:any:`~einsums::blas::vendor::ccopy` - See ``scopy``.
+- :cpp:any:`~einsums::blas::vendor::cdirprod` - See ``sdirprod``.
+- :cpp:any:`~einsums::blas::vendor::cdot` - Compute the unconjugated dot product between two vectors.
+- :cpp:any:`~einsums::blas::vendor::cdotc` - Compute the dot product between two vectors.
+- :cpp:any:`~einsums::blas::vendor::cgees` - Perform Schur decomposition on a matrix.
+- :cpp:any:`~einsums::blas::vendor::cgeev` - See ``sgeev``.
+- :cpp:any:`~einsums::blas::vendor::cgelqf` - See ``sgelqf``.
+- :cpp:any:`~einsums::blas::vendor::cgels` - See ``sgels``.
+- :cpp:any:`~einsums::blas::vendor::cgemm` - See ``sgemm``.
+- :cpp:any:`~einsums::blas::vendor::cgemm_batch` - See ``sgemm_batch``.
+- :cpp:any:`~einsums::blas::vendor::cgemm_batch_grouped` - See ``sgemm_batch_grouped``.
+- :cpp:any:`~einsums::blas::vendor::cgemv` - See ``sgemv``.
+- :cpp:any:`~einsums::blas::vendor::cgeqrf` - See ``sgeqrf``.
+- :cpp:any:`~einsums::blas::vendor::cger` - See ``sger``.
+- :cpp:any:`~einsums::blas::vendor::cgerc` - Performs a rank-1 update of a general matrix.
+- :cpp:any:`~einsums::blas::vendor::cgesdd` - See ``sgesdd``.
+- :cpp:any:`~einsums::blas::vendor::cgesv` - See ``sgesv``.
+- :cpp:any:`~einsums::blas::vendor::cgesvd` - See ``sgesvd``.
+- :cpp:any:`~einsums::blas::vendor::cgetrf` - See ``sgetrf``.
+- :cpp:any:`~einsums::blas::vendor::cgetri` - See ``sgetri``.
+- :cpp:any:`~einsums::blas::vendor::cgetrs` - See ``sgetrs``.
+- :cpp:any:`~einsums::blas::vendor::cheev` - Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
+- :cpp:any:`~einsums::blas::vendor::cheevd` - Hermitian eigenvalue decomposition using divide-and-conquer.
+- :cpp:any:`~einsums::blas::vendor::chegv` - Generalized Hermitian eigenvalue problem: A*x = lambda*B*x.
+- :cpp:any:`~einsums::blas::vendor::chemm` - Hermitian matrix multiply: C := alpha*A*B + beta*C or alpha*B*A + beta*C, where A is Hermitian.
+- :cpp:any:`~einsums::blas::vendor::cher2k` - Hermitian rank-2k update: C := alpha*A*B^H + conj(alpha)*B*A^H + beta*C. beta is real.
+- :cpp:any:`~einsums::blas::vendor::cherk` - Hermitian rank-k update: C := alpha*A*A^H + beta*C or alpha*A^H*A + beta*C. alpha and beta are real.
+- :cpp:any:`~einsums::blas::vendor::clacgv` - Conjugate a vector.
+- :cpp:any:`~einsums::blas::vendor::clange` - See ``slange``.
+- :cpp:any:`~einsums::blas::vendor::classq` - See ``slassq``.
+- :cpp:any:`~einsums::blas::vendor::cpotrf` - See ``spotrf``.
+- :cpp:any:`~einsums::blas::vendor::cpotri` - See ``spotri``.
+- :cpp:any:`~einsums::blas::vendor::cpotrs` - See ``spotrs``.
+- :cpp:any:`~einsums::blas::vendor::cscal` - See ``sscal``.
+- :cpp:any:`~einsums::blas::vendor::csscal` - See ``sscal``.
+- :cpp:any:`~einsums::blas::vendor::cswap` - See ``sswap``.
+- :cpp:any:`~einsums::blas::vendor::csymm` - See ``ssymm``.
+- :cpp:any:`~einsums::blas::vendor::csyr2k` - See ``ssyr2k``.
+- :cpp:any:`~einsums::blas::vendor::csyrk` - See ``ssyrk``.
+- :cpp:any:`~einsums::blas::vendor::ctrsm` - See ``strsm``.
+- :cpp:any:`~einsums::blas::vendor::ctrsv` - See ``strsv``.
+- :cpp:any:`~einsums::blas::vendor::ctrsyl` - Solve a Sylvester equation of the form :math:`\mathbf{AX} \pm \mathbf{XB} = \alpha\mathbf{C}`.
+- :cpp:any:`~einsums::blas::vendor::ctrtri` - See ``strtri``.
+- :cpp:any:`~einsums::blas::vendor::ctrtrs` - See ``strtrs``.
+- :cpp:any:`~einsums::blas::vendor::cunglq` - See ``sorglq``.
+- :cpp:any:`~einsums::blas::vendor::cungqr` - See ``sorgqr``.
+- :cpp:any:`~einsums::blas::vendor::cunmqr` - See ``sormqr``.
+- :cpp:any:`~einsums::blas::vendor::dasum` - See ``sasum``.
+- :cpp:any:`~einsums::blas::vendor::daxpby` - See ``saxpby``.
+- :cpp:any:`~einsums::blas::vendor::daxpy` - See ``saxpy``.
+- :cpp:any:`~einsums::blas::vendor::dcopy` - See ``scopy``.
+- :cpp:any:`~einsums::blas::vendor::ddirprod` - See ``sdirprod``.
+- :cpp:any:`~einsums::blas::vendor::ddot` - See ``sdot``.
+- :cpp:any:`~einsums::blas::vendor::dgees` - See ``sgees``.
+- :cpp:any:`~einsums::blas::vendor::dgeev` - See ``sgeev``.
+- :cpp:any:`~einsums::blas::vendor::dgelqf` - See ``sgelqf``.
+- :cpp:any:`~einsums::blas::vendor::dgels` - See ``sgels``.
+- :cpp:any:`~einsums::blas::vendor::dgemm` - See ``sgemm``.
+- :cpp:any:`~einsums::blas::vendor::dgemm_batch` - See ``sgemm_batch``.
+- :cpp:any:`~einsums::blas::vendor::dgemm_batch_grouped` - See ``sgemm_batch_grouped``.
+- :cpp:any:`~einsums::blas::vendor::dgemv` - See ``sgemv``.
+- :cpp:any:`~einsums::blas::vendor::dgeqrf` - See ``sgeqrf``.
+- :cpp:any:`~einsums::blas::vendor::dger` - See ``sger``.
+- :cpp:any:`~einsums::blas::vendor::dgesdd` - See ``sgesdd``.
+- :cpp:any:`~einsums::blas::vendor::dgesv` - See ``sgesv``.
+- :cpp:any:`~einsums::blas::vendor::dgesvd` - See ``sgesvd``.
+- :cpp:any:`~einsums::blas::vendor::dgetrf` - See ``sgetrf``.
+- :cpp:any:`~einsums::blas::vendor::dgetri` - See ``sgetri``.
+- :cpp:any:`~einsums::blas::vendor::dgetrs` - See ``sgetrs``.
+- :cpp:any:`~einsums::blas::vendor::dlange` - See ``slange``.
+- :cpp:any:`~einsums::blas::vendor::dlascl` - See ``slascl``.
+- :cpp:any:`~einsums::blas::vendor::dlassq` - See ``slassq``.
+- :cpp:any:`~einsums::blas::vendor::dnrm2` - See ``snrm2``.
+- :cpp:any:`~einsums::blas::vendor::dorglq` - See ``sorglq``.
+- :cpp:any:`~einsums::blas::vendor::dorgqr` - See ``sorgqr``.
+- :cpp:any:`~einsums::blas::vendor::dormqr` - See ``sormqr``.
+- :cpp:any:`~einsums::blas::vendor::dpotrf` - See ``spotrf``.
+- :cpp:any:`~einsums::blas::vendor::dpotri` - See ``spotri``.
+- :cpp:any:`~einsums::blas::vendor::dpotrs` - See ``spotrs``.
+- :cpp:any:`~einsums::blas::vendor::dscal` - See ``sscal``.
+- :cpp:any:`~einsums::blas::vendor::dsterf` - See ``ssterf``.
+- :cpp:any:`~einsums::blas::vendor::dswap` - See ``sswap``.
+- :cpp:any:`~einsums::blas::vendor::dsyev` - See ``ssyev``.
+- :cpp:any:`~einsums::blas::vendor::dsyevd` - See ``ssyevd``.
+- :cpp:any:`~einsums::blas::vendor::dsygv` - See ``ssygv``.
+- :cpp:any:`~einsums::blas::vendor::dsymm` - See ``ssymm``.
+- :cpp:any:`~einsums::blas::vendor::dsyr2k` - See ``ssyr2k``.
+- :cpp:any:`~einsums::blas::vendor::dsyrk` - See ``ssyrk``.
+- :cpp:any:`~einsums::blas::vendor::dtrsm` - See ``strsm``.
+- :cpp:any:`~einsums::blas::vendor::dtrsv` - See ``strsv``.
+- :cpp:any:`~einsums::blas::vendor::dtrsyl` - See ``strsyl``.
+- :cpp:any:`~einsums::blas::vendor::dtrtri` - See ``strtri``.
+- :cpp:any:`~einsums::blas::vendor::dtrtrs` - See ``strtrs``.
+- :cpp:any:`~einsums::blas::vendor::dzasum` - See ``sasum``.
+- :cpp:any:`~einsums::blas::vendor::dznrm2` - See ``snrm2``.
+- :cpp:any:`~einsums::blas::vendor::dzsum1` - See ``scsum1``.
+- :cpp:any:`~einsums::blas::vendor::finalize` - Tears down the BLAS library.
+- :cpp:any:`~einsums::blas::vendor::icamax` - See ``isamax``.
+- :cpp:any:`~einsums::blas::vendor::idamax` - See ``isamax``.
+- :cpp:any:`~einsums::blas::vendor::initialize` - Initializes the BLAS library.
+- :cpp:any:`~einsums::blas::vendor::isamax` - Index of the element with maximum absolute value (0-based).
+- :cpp:any:`~einsums::blas::vendor::izamax` - See ``isamax``.
+- :cpp:any:`~einsums::blas::vendor::openblas_config` - The build configuration of the OpenBLAS that provides this process's dgemm.
+- :cpp:any:`~einsums::blas::vendor::sasum` - Computes the sum of the absolute values of the input vector. If the vector is complex, then it is the sum of the absolute values of the components, not the magnitudes.
+- :cpp:any:`~einsums::blas::vendor::saxpby` - Scales and adds two vectors.
+- :cpp:any:`~einsums::blas::vendor::saxpy` - Scale and add a vector to another. Performs :math:`\mathbf{y} := \alpha\mathbf{x} + \mathbf{y}`.
+- :cpp:any:`~einsums::blas::vendor::scasum` - See ``sasum``.
+- :cpp:any:`~einsums::blas::vendor::scnrm2` - See ``snrm2``.
+- :cpp:any:`~einsums::blas::vendor::scopy` - Copy one vector to another.
+- :cpp:any:`~einsums::blas::vendor::scsum1` - Computes the sum of the absolute values of the input vector.
+- :cpp:any:`~einsums::blas::vendor::sdirprod` - Perform the direct product between two vectors, scaling the vector it is added to: :math:`z_i := \alpha x_i y_i + \beta z_i`.
+- :cpp:any:`~einsums::blas::vendor::sdot` - Compute the dot product between two vectors.
+- :cpp:any:`~einsums::blas::vendor::sgees` - Perform Schur decomposition on a matrix.
+- :cpp:any:`~einsums::blas::vendor::sgeev` - Compute the eigendecomposition of a general matrix.
+- :cpp:any:`~einsums::blas::vendor::sgelqf` - Perform LQ decomposition.
+- :cpp:any:`~einsums::blas::vendor::sgels` - Solve a least-squares problem using QR or LQ factorization.
+- :cpp:any:`~einsums::blas::vendor::sgemm` - Performs matrix multiplication for general square matrices.
+- :cpp:any:`~einsums::blas::vendor::sgemm_batch` - Performs a batch of independent general matrix-matrix multiplications.
+- :cpp:any:`~einsums::blas::vendor::sgemm_batch_grouped` - Performs a batch of independent general matrix-matrix multiplications whose shapes need not agree.
+- :cpp:any:`~einsums::blas::vendor::sgemv` - Performs matrix vector multiplication.
+- :cpp:any:`~einsums::blas::vendor::sgeqrf` - Perform QR decomposition.
+- :cpp:any:`~einsums::blas::vendor::sger` - Performs a rank-1 update of a general matrix.
+- :cpp:any:`~einsums::blas::vendor::sgesdd` - Compute the singular value decomposition using the divide-and-conquer algorithm.
+- :cpp:any:`~einsums::blas::vendor::sgesv` - Computes the solution to system of linear equations :math:`\mathbf{Ax} = \mathbf{B}` for general matrices.
+- :cpp:any:`~einsums::blas::vendor::sgesvd` - Compute the singular value decomposition using the QR algorithm.
+- :cpp:any:`~einsums::blas::vendor::sgetrf` - Computes the LU factorization of a general M-by-N matrix A using partial pivoting with row int_terchanges.
+- :cpp:any:`~einsums::blas::vendor::sgetri` - Computes the inverse of a matrix using the LU factorization computed by getrf
+- :cpp:any:`~einsums::blas::vendor::sgetrs` - Solve a general system using an existing LU factorization.
+- :cpp:any:`~einsums::blas::vendor::slange` - Computes matrix norms.
+- :cpp:any:`~einsums::blas::vendor::slascl` - Advanced matrix scaling operation that scales a matrix by ``cto/cfrom`` without overflow/underflow.
+- :cpp:any:`~einsums::blas::vendor::slassq` - Compute the sum of squares of a vector without overflow. The sum of squares will be ``scale * scale * sumsq``.
+- :cpp:any:`~einsums::blas::vendor::snrm2` - Compute the Euclidean norm of a vector.
+- :cpp:any:`~einsums::blas::vendor::sorglq` - Extract the Q matrix from a LQ decomposition.
+- :cpp:any:`~einsums::blas::vendor::sorgqr` - Extract the Q matrix from a QR decomposition.
+- :cpp:any:`~einsums::blas::vendor::sormqr` - Multiply a general matrix by the orthogonal matrix Q from geqrf.
+- :cpp:any:`~einsums::blas::vendor::spotrf` - Cholesky factorization of a symmetric/Hermitian positive-definite matrix.
+- :cpp:any:`~einsums::blas::vendor::spotri` - Invert a symmetric/Hermitian positive-definite matrix from its Cholesky factorization.
+- :cpp:any:`~einsums::blas::vendor::spotrs` - Solve a symmetric/Hermitian positive-definite system using Cholesky factorization.
+- :cpp:any:`~einsums::blas::vendor::srscl` - Scales a vector by the reciprocal of a real value.
+- :cpp:any:`~einsums::blas::vendor::sscal` - Scales a vector by a scalar. Supports real scalars by real vectors, complex scalars by complex vectors, and real scalars by complex vectors.
+- :cpp:any:`~einsums::blas::vendor::ssterf` - Performs symmetric tridiagonal matrix diagonalization.
+- :cpp:any:`~einsums::blas::vendor::sswap` - Swap two vectors.
+- :cpp:any:`~einsums::blas::vendor::ssyev` - Performs symmetric matrix diagonalization.
+- :cpp:any:`~einsums::blas::vendor::ssyevd` - Symmetric eigenvalue decomposition using divide-and-conquer.
+- :cpp:any:`~einsums::blas::vendor::ssygv` - Generalized symmetric eigenvalue problem: A*x = lambda*B*x.
+- :cpp:any:`~einsums::blas::vendor::ssymm` - Symmetric matrix multiply: C := alpha*A*B + beta*C or alpha*B*A + beta*C, where A is symmetric.
+- :cpp:any:`~einsums::blas::vendor::ssyr2k` - Symmetric rank-2k update: C := alpha*A*B^T + alpha*B*A^T + beta*C.
+- :cpp:any:`~einsums::blas::vendor::ssyrk` - Symmetric rank-k update: C := alpha*A*A^T + beta*C or alpha*A^T*A + beta*C.
+- :cpp:any:`~einsums::blas::vendor::strsm` - Solve a triangular system with a matrix RHS: op(A)*X = alpha*B or X*op(A) = alpha*B.
+- :cpp:any:`~einsums::blas::vendor::strsv` - Solve a triangular system with a single vector RHS: op(A)*x = b.
+- :cpp:any:`~einsums::blas::vendor::strsyl` - Solve a Sylvester equation of the form :math:`\mathbf{AX} \pm \mathbf{XB} = \alpha\mathbf{C}`.
+- :cpp:any:`~einsums::blas::vendor::strtri` - Invert a triangular matrix.
+- :cpp:any:`~einsums::blas::vendor::strtrs` - Solve a triangular system with multiple RHS.
+- :cpp:any:`~einsums::blas::vendor::zaxpby` - See ``saxpby``.
+- :cpp:any:`~einsums::blas::vendor::zaxpy` - See ``saxpy``.
+- :cpp:any:`~einsums::blas::vendor::zcopy` - See ``scopy``.
+- :cpp:any:`~einsums::blas::vendor::zdirprod` - See ``sdirprod``.
+- :cpp:any:`~einsums::blas::vendor::zdot` - See ``cdot``.
+- :cpp:any:`~einsums::blas::vendor::zdotc` - See ``cdotc``.
+- :cpp:any:`~einsums::blas::vendor::zdscal` - See ``sscal``.
+- :cpp:any:`~einsums::blas::vendor::zgees` - See ``cgees``.
+- :cpp:any:`~einsums::blas::vendor::zgeev` - See ``sgeev``.
+- :cpp:any:`~einsums::blas::vendor::zgelqf` - See ``sgelqf``.
+- :cpp:any:`~einsums::blas::vendor::zgels` - See ``sgels``.
+- :cpp:any:`~einsums::blas::vendor::zgemm` - See ``sgemm``.
+- :cpp:any:`~einsums::blas::vendor::zgemm_batch` - See ``sgemm_batch``.
+- :cpp:any:`~einsums::blas::vendor::zgemm_batch_grouped` - See ``sgemm_batch_grouped``.
+- :cpp:any:`~einsums::blas::vendor::zgemv` - See ``sgemv``.
+- :cpp:any:`~einsums::blas::vendor::zgeqrf` - See ``sgeqrf``.
+- :cpp:any:`~einsums::blas::vendor::zger` - See ``sger``.
+- :cpp:any:`~einsums::blas::vendor::zgerc` - See ``cgerc``.
+- :cpp:any:`~einsums::blas::vendor::zgesdd` - See ``sgesdd``.
+- :cpp:any:`~einsums::blas::vendor::zgesv` - See ``sgesv``.
+- :cpp:any:`~einsums::blas::vendor::zgesvd` - See ``sgesvd``.
+- :cpp:any:`~einsums::blas::vendor::zgetrf` - See ``sgetrf``.
+- :cpp:any:`~einsums::blas::vendor::zgetri` - See ``sgetri``.
+- :cpp:any:`~einsums::blas::vendor::zgetrs` - See ``sgetrs``.
+- :cpp:any:`~einsums::blas::vendor::zheevd` - See ``cheevd``.
+- :cpp:any:`~einsums::blas::vendor::zhegv` - See ``chegv``.
+- :cpp:any:`~einsums::blas::vendor::zhemm` - See ``chemm``.
+- :cpp:any:`~einsums::blas::vendor::zher2k` - See ``cher2k``.
+- :cpp:any:`~einsums::blas::vendor::zherk` - See ``cherk``.
+- :cpp:any:`~einsums::blas::vendor::zlacgv` - See ``clacgv``.
+- :cpp:any:`~einsums::blas::vendor::zlange` - See ``slange``.
+- :cpp:any:`~einsums::blas::vendor::zlassq` - See ``slassq``.
+- :cpp:any:`~einsums::blas::vendor::zpotrf` - See ``spotrf``.
+- :cpp:any:`~einsums::blas::vendor::zpotri` - See ``spotri``.
+- :cpp:any:`~einsums::blas::vendor::zpotrs` - See ``spotrs``.
+- :cpp:any:`~einsums::blas::vendor::zscal` - See ``sscal``.
+- :cpp:any:`~einsums::blas::vendor::zswap` - See ``sswap``.
+- :cpp:any:`~einsums::blas::vendor::zsymm` - See ``ssymm``.
+- :cpp:any:`~einsums::blas::vendor::zsyr2k` - See ``ssyr2k``.
+- :cpp:any:`~einsums::blas::vendor::zsyrk` - See ``ssyrk``.
+- :cpp:any:`~einsums::blas::vendor::ztrsm` - See ``strsm``.
+- :cpp:any:`~einsums::blas::vendor::ztrsv` - See ``strsv``.
+- :cpp:any:`~einsums::blas::vendor::ztrsyl` - See ``ctrsyl``.
+- :cpp:any:`~einsums::blas::vendor::ztrtri` - See ``strtri``.
+- :cpp:any:`~einsums::blas::vendor::ztrtrs` - See ``strtrs``.
+- :cpp:any:`~einsums::blas::vendor::zunglq` - See ``sorglq``.
+- :cpp:any:`~einsums::blas::vendor::zungqr` - See ``sorgqr``.
+- :cpp:any:`~einsums::blas::vendor::zunmqr` - See ``sormqr``.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.blas.vendor.caxpby
+   einsums.blas.vendor.caxpy
+   einsums.blas.vendor.ccopy
+   einsums.blas.vendor.cdirprod
+   einsums.blas.vendor.cdot
+   einsums.blas.vendor.cdotc
+   einsums.blas.vendor.cgees
+   einsums.blas.vendor.cgeev
+   einsums.blas.vendor.cgelqf
+   einsums.blas.vendor.cgels
+   einsums.blas.vendor.cgemm
+   einsums.blas.vendor.cgemm_batch
+   einsums.blas.vendor.cgemm_batch_grouped
+   einsums.blas.vendor.cgemv
+   einsums.blas.vendor.cgeqrf
+   einsums.blas.vendor.cger
+   einsums.blas.vendor.cgerc
+   einsums.blas.vendor.cgesdd
+   einsums.blas.vendor.cgesv
+   einsums.blas.vendor.cgesvd
+   einsums.blas.vendor.cgetrf
+   einsums.blas.vendor.cgetri
+   einsums.blas.vendor.cgetrs
+   einsums.blas.vendor.cheev
+   einsums.blas.vendor.cheevd
+   einsums.blas.vendor.chegv
+   einsums.blas.vendor.chemm
+   einsums.blas.vendor.cher2k
+   einsums.blas.vendor.cherk
+   einsums.blas.vendor.clacgv
+   einsums.blas.vendor.clange
+   einsums.blas.vendor.classq
+   einsums.blas.vendor.cpotrf
+   einsums.blas.vendor.cpotri
+   einsums.blas.vendor.cpotrs
+   einsums.blas.vendor.cscal
+   einsums.blas.vendor.csscal
+   einsums.blas.vendor.cswap
+   einsums.blas.vendor.csymm
+   einsums.blas.vendor.csyr2k
+   einsums.blas.vendor.csyrk
+   einsums.blas.vendor.ctrsm
+   einsums.blas.vendor.ctrsv
+   einsums.blas.vendor.ctrsyl
+   einsums.blas.vendor.ctrtri
+   einsums.blas.vendor.ctrtrs
+   einsums.blas.vendor.cunglq
+   einsums.blas.vendor.cungqr
+   einsums.blas.vendor.cunmqr
+   einsums.blas.vendor.dasum
+   einsums.blas.vendor.daxpby
+   einsums.blas.vendor.daxpy
+   einsums.blas.vendor.dcopy
+   einsums.blas.vendor.ddirprod
+   einsums.blas.vendor.ddot
+   einsums.blas.vendor.dgees
+   einsums.blas.vendor.dgeev
+   einsums.blas.vendor.dgelqf
+   einsums.blas.vendor.dgels
+   einsums.blas.vendor.dgemm
+   einsums.blas.vendor.dgemm_batch
+   einsums.blas.vendor.dgemm_batch_grouped
+   einsums.blas.vendor.dgemv
+   einsums.blas.vendor.dgeqrf
+   einsums.blas.vendor.dger
+   einsums.blas.vendor.dgesdd
+   einsums.blas.vendor.dgesv
+   einsums.blas.vendor.dgesvd
+   einsums.blas.vendor.dgetrf
+   einsums.blas.vendor.dgetri
+   einsums.blas.vendor.dgetrs
+   einsums.blas.vendor.dlange
+   einsums.blas.vendor.dlascl
+   einsums.blas.vendor.dlassq
+   einsums.blas.vendor.dnrm2
+   einsums.blas.vendor.dorglq
+   einsums.blas.vendor.dorgqr
+   einsums.blas.vendor.dormqr
+   einsums.blas.vendor.dpotrf
+   einsums.blas.vendor.dpotri
+   einsums.blas.vendor.dpotrs
+   einsums.blas.vendor.dscal
+   einsums.blas.vendor.dsterf
+   einsums.blas.vendor.dswap
+   einsums.blas.vendor.dsyev
+   einsums.blas.vendor.dsyevd
+   einsums.blas.vendor.dsygv
+   einsums.blas.vendor.dsymm
+   einsums.blas.vendor.dsyr2k
+   einsums.blas.vendor.dsyrk
+   einsums.blas.vendor.dtrsm
+   einsums.blas.vendor.dtrsv
+   einsums.blas.vendor.dtrsyl
+   einsums.blas.vendor.dtrtri
+   einsums.blas.vendor.dtrtrs
+   einsums.blas.vendor.dzasum
+   einsums.blas.vendor.dznrm2
+   einsums.blas.vendor.dzsum1
+   einsums.blas.vendor.finalize
+   einsums.blas.vendor.icamax
+   einsums.blas.vendor.idamax
+   einsums.blas.vendor.initialize
+   einsums.blas.vendor.isamax
+   einsums.blas.vendor.izamax
+   einsums.blas.vendor.openblas_config
+   einsums.blas.vendor.sasum
+   einsums.blas.vendor.saxpby
+   einsums.blas.vendor.saxpy
+   einsums.blas.vendor.scasum
+   einsums.blas.vendor.scnrm2
+   einsums.blas.vendor.scopy
+   einsums.blas.vendor.scsum1
+   einsums.blas.vendor.sdirprod
+   einsums.blas.vendor.sdot
+   einsums.blas.vendor.sgees
+   einsums.blas.vendor.sgeev
+   einsums.blas.vendor.sgelqf
+   einsums.blas.vendor.sgels
+   einsums.blas.vendor.sgemm
+   einsums.blas.vendor.sgemm_batch
+   einsums.blas.vendor.sgemm_batch_grouped
+   einsums.blas.vendor.sgemv
+   einsums.blas.vendor.sgeqrf
+   einsums.blas.vendor.sger
+   einsums.blas.vendor.sgesdd
+   einsums.blas.vendor.sgesv
+   einsums.blas.vendor.sgesvd
+   einsums.blas.vendor.sgetrf
+   einsums.blas.vendor.sgetri
+   einsums.blas.vendor.sgetrs
+   einsums.blas.vendor.slange
+   einsums.blas.vendor.slascl
+   einsums.blas.vendor.slassq
+   einsums.blas.vendor.snrm2
+   einsums.blas.vendor.sorglq
+   einsums.blas.vendor.sorgqr
+   einsums.blas.vendor.sormqr
+   einsums.blas.vendor.spotrf
+   einsums.blas.vendor.spotri
+   einsums.blas.vendor.spotrs
+   einsums.blas.vendor.srscl
+   einsums.blas.vendor.sscal
+   einsums.blas.vendor.ssterf
+   einsums.blas.vendor.sswap
+   einsums.blas.vendor.ssyev
+   einsums.blas.vendor.ssyevd
+   einsums.blas.vendor.ssygv
+   einsums.blas.vendor.ssymm
+   einsums.blas.vendor.ssyr2k
+   einsums.blas.vendor.ssyrk
+   einsums.blas.vendor.strsm
+   einsums.blas.vendor.strsv
+   einsums.blas.vendor.strsyl
+   einsums.blas.vendor.strtri
+   einsums.blas.vendor.strtrs
+   einsums.blas.vendor.zaxpby
+   einsums.blas.vendor.zaxpy
+   einsums.blas.vendor.zcopy
+   einsums.blas.vendor.zdirprod
+   einsums.blas.vendor.zdot
+   einsums.blas.vendor.zdotc
+   einsums.blas.vendor.zdscal
+   einsums.blas.vendor.zgees
+   einsums.blas.vendor.zgeev
+   einsums.blas.vendor.zgelqf
+   einsums.blas.vendor.zgels
+   einsums.blas.vendor.zgemm
+   einsums.blas.vendor.zgemm_batch
+   einsums.blas.vendor.zgemm_batch_grouped
+   einsums.blas.vendor.zgemv
+   einsums.blas.vendor.zgeqrf
+   einsums.blas.vendor.zger
+   einsums.blas.vendor.zgerc
+   einsums.blas.vendor.zgesdd
+   einsums.blas.vendor.zgesv
+   einsums.blas.vendor.zgesvd
+   einsums.blas.vendor.zgetrf
+   einsums.blas.vendor.zgetri
+   einsums.blas.vendor.zgetrs
+   einsums.blas.vendor.zheevd
+   einsums.blas.vendor.zhegv
+   einsums.blas.vendor.zhemm
+   einsums.blas.vendor.zher2k
+   einsums.blas.vendor.zherk
+   einsums.blas.vendor.zlacgv
+   einsums.blas.vendor.zlange
+   einsums.blas.vendor.zlassq
+   einsums.blas.vendor.zpotrf
+   einsums.blas.vendor.zpotri
+   einsums.blas.vendor.zpotrs
+   einsums.blas.vendor.zscal
+   einsums.blas.vendor.zswap
+   einsums.blas.vendor.zsymm
+   einsums.blas.vendor.zsyr2k
+   einsums.blas.vendor.zsyrk
+   einsums.blas.vendor.ztrsm
+   einsums.blas.vendor.ztrsv
+   einsums.blas.vendor.ztrsyl
+   einsums.blas.vendor.ztrtri
+   einsums.blas.vendor.ztrtrs
+   einsums.blas.vendor.zunglq
+   einsums.blas.vendor.zungqr
+   einsums.blas.vendor.zunmqr

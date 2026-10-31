@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gels:
+
+===================
+einsums::blas::gels
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t gels(char trans, int_t m, int_t n, int_t nrhs, T *a, int_t lda, T *b, int_t ldb)
+
+   Least-squares or minimum-norm solve via QR or LQ factorization.
+
+   Solves the overdetermined system :math:`\min_x \|\mathbf{A}\mathbf{x} - \mathbf{b}\|`
+   (m >= n, QR factorization) or the underdetermined minimum-norm problem
+   (m < n, LQ factorization), assuming :math:`\mathbf{A}` has full rank.
+
+   :param trans: 'N': solve with A; 'T'/'C': with its (conjugate) transpose.
+   :param m: Rows of A.
+   :param n: Columns of A.
+   :param nrhs: Number of right-hand sides.
+   :param a: On entry the matrix A; on exit overwritten by its QR or LQ factorization.
+   :param lda: Leading dimension of a.
+   :param b: On entry the right-hand sides; on exit the solution vectors.
+   :param ldb: Leading dimension of b (>= max(m, n)).
+   :returns: 0 on success; i > 0 if the i-th diagonal element of the triangular factor is zero (A is rank deficient, no full-rank solution).

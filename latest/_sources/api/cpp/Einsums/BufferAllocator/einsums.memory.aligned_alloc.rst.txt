@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.memory.aligned_alloc:
+
+==============================
+einsums::memory::aligned_alloc
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/MemoryPool.hpp``.
+
+.. cpp:namespace:: einsums::memory
+
+.. cpp:function:: void * aligned_alloc(size_t bytes)
+
+   The library's one aligned-allocation primitive: 64-byte aligned, mimalloc-managed.
+
+   Unmetered, unlike ``einsums::BufferAllocator``, which meters against
+   ``--einsums:buffer-size`` before landing here. Returns null on failure.
+
+   .. versionadded:: 2.0.0

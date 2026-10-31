@@ -1,0 +1,61 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SerializabilityBlocker:
+
+==============================================
+einsums::compute_graph::SerializabilityBlocker
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SerializabilityBlocker
+
+   One node that blocks a graph from being saved, and what blocks it.
+
+   .. seealso::
+
+      Graph::serializability_report
+
+
+   .. cpp:member:: NodeId node_id
+
+      The offending node's id.
+
+
+   .. cpp:member:: std::string label
+
+      Its human-readable label, so the report names something a user recognises.
+
+
+   .. cpp:member:: std::string kind_name
+
+      ``op_kind_name`` of its kind.
+
+
+   .. cpp:member:: std::string reason
+
+      What blocks it, e.g. "kind not yet reconstructible".
+
+
+   .. cpp:member:: std::string subgraph_path
+
+      Where the node lives relative to the graph the report was asked of.
+
+      Empty for a node of that graph itself. Otherwise a ``/``-separated path of the
+      control-flow nodes descended through, each named by its label and, for a
+      ``Conditional``, by which branch was taken: ``loop(scf_iter)/then(converged)``.
+
+      A NodeId is graph-local, so ``node_id`` alone does not locate a node inside a body.
+      This is what makes the pair addressable.
+
+      .. versionadded:: 2.0.0

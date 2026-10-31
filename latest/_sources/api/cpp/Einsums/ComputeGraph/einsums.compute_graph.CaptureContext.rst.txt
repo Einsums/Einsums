@@ -1,0 +1,237 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CaptureContext:
+
+======================================
+einsums::compute_graph::CaptureContext
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CaptureContext.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CaptureContext
+
+   Thread-local capture context for recording operations into a graph.
+
+   The CaptureContext manages the state machine for graph capture. When capturing
+   is active, the graph-aware operation wrappers (einsums::compute_graph::einsum,
+   etc.) call record() to add nodes to the graph instead of executing operations
+   directly.
+
+   Each thread has its own CaptureContext (thread-local singleton), so capture
+   is thread-safe. Nested captures are not supported.
+
+   Users typically don't interact with CaptureContext directly, use CaptureGuard
+   instead for RAII-based capture.
+
+   .. seealso::
+
+      CaptureGuard for the RAII wrapper
+
+   .. seealso::
+
+      Graph for the container that receives captured nodes
+
+
+   .. cpp:function:: static CaptureContext & current()
+
+      Access the thread-local CaptureContext singleton.
+
+      :returns: Reference to this thread's CaptureContext.
+
+
+   .. cpp:function:: void begin_capture(Graph &graph)
+
+      Start capturing operations into the given graph.
+
+      All subsequent calls to graph-aware operation wrappers on this thread
+      will record nodes into the graph instead of executing.
+
+      :param graph: The graph to capture into.
+      :throws std::logic_error: If already capturing (nested captures not supported).
+
+
+   .. cpp:function:: void end_capture()
+
+      Stop capturing and finalize the graph.
+
+      Triggers topological sorting of the captured nodes and clears the
+      internal pointer-to-TensorId mapping.
+
+      :throws std::logic_error: If not currently capturing.
+
+
+   .. cpp:function:: bool is_capturing() const
+
+      Check if this thread is currently in capture mode.
+
+      :returns: True if between begin_capture() and end_capture().
+
+
+   .. cpp:function:: Graph * graph() const
+
+      Access the graph being captured into.
+
+
+   .. cpp:function:: void record(OpKind kind, std::string label, std::vector<TensorId> inputs, std::vector<TensorId> outputs, std::function<void ()> executor, OpData op_data, NodeEffects effects)
+
+      Record an operation node during capture.
+
+      Creates a Node with the given parameters and adds it to the current graph.
+      Called internally by the graph-aware operation wrappers.
+
+      Compiled once, in the library. A descriptor passed as ``op_data`` converts to
+      an ``OpData`` at the call.
+
+      :param kind: The operation kind (for optimization pass pattern matching).
+      :param label: Human-readable label for profiling output.
+      :param inputs: TensorIds of tensors read by this operation.
+      :param outputs: TensorIds of tensors written by this operation.
+      :param executor: Type-erased callable that performs the operation.
+      :param op_data: Optional operation-specific metadata (EinsumDescriptor, etc.).
+      :param effects: What the operation does beyond its tensor lists. The default describes a library operation; ``cg::custom`` passes ``opaque_effects`` for a caller's closure.
+      :throws std::logic_error: If called outside of a capture context.
+
+
+   .. cpp:function:: void record_built(OpKind kind, std::string label, packed_gemm::ScalarType dtype, std::size_t rank, OpData op_data, std::span<const TensorId> build_inputs, std::span<const TensorId> build_outputs, std::vector<TensorId> inputs, std::vector<TensorId> outputs)
+
+      Record a node whose executor ``build_executor`` derives from its descriptor.
+
+      Builds the descriptor into an ``OpData``, asks ``build_executor`` for the
+      executor, and records the node, all in the library. What ``build_executor``
+      resolves and what the node lists can differ: an accumulating operation reads
+      its destination, so the node lists it as an input while the builder does not.
+
+      ``op_data`` may be empty, for an operation whose kind, dtype, rank and
+      operands are its whole content.
+
+      :param kind: The operation kind.
+      :param label: Human-readable label for profiling output.
+      :param dtype: Element type the executor is built for.
+      :param rank: Rank the executor is keyed on.
+      :param op_data: The operation's descriptor.
+      :param build_inputs: Input ids handed to ``build_executor``, in capture order.
+      :param build_outputs: Output ids handed to ``build_executor``, in capture order.
+      :param inputs: TensorIds the node reads.
+      :param outputs: TensorIds the node writes.
+      :throws std::logic_error: If called outside of a capture context.
+
+
+   .. cpp:function:: void record_async(OpKind kind, std::string label, std::vector<TensorId> inputs, std::vector<TensorId> outputs, std::function<void ()> executor, std::function<void ()> async_start, std::function<void ()> async_finish, DiskIODescriptor op_data)
+
+      Record a node with asynchronous start/finish phases.
+
+      Used by read_async() / write_async() to enable I/O-compute overlap
+      in the DataflowExecutor.
+
+      :param kind: The operation kind (e.g., DiskRead, DiskWrite).
+      :param label: Human-readable label.
+      :param inputs: TensorIds read by this operation.
+      :param outputs: TensorIds written by this operation.
+      :param executor: Synchronous fallback (for Sequential/OpenMP executors).
+      :param async_start: Lambda that begins the async operation (non-blocking).
+      :param async_finish: Lambda that waits for the async operation to complete.
+      :param op_data: Operation-specific metadata.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> TensorId get_or_register(const TensorType &tensor)
+
+      Look up or create a TensorId for a given tensor.
+
+      If the tensor was already registered (same memory address), returns its
+      existing TensorId. Otherwise, creates a new TensorHandle via make_handle()
+      and registers it with the graph.
+
+      **Metadata does not cross the parent/body handle boundary (by design)**
+
+      Both lookups above are scoped to ``_graph``, the graph currently being
+      captured. A loop body (and each conditional branch) is a *separate*
+      ``Graph`` with its own ``tensors_map()``, so when a tensor already
+      registered in the parent is first touched inside a body, neither lookup
+      hits and control reaches the fallthrough below: the body gets a
+      **fresh, default-constructed handle**. Everything the parent knew about
+      that tensor is dropped on the body side - ``is_intermediate``, symmetry
+      hints, stream assignment, residency, and distribution info. The reverse
+      direction never propagates either: nothing copies body-side metadata
+      back up to the parent handle.
+
+      This loss is the **contract, not a bug**, and passes depend on it:
+
+      - ``FreeInsertion`` Part B, ``InplaceOptimization``, ``MemoryPlanning``, and ``DeadNodeElimination`` all gate on the body-map ``is_intermediate``. Because a parent-declared tensor arrives in the body with ``is_intermediate == false`` (and no ``release_fn``), those passes skip it - they are *conservative by loss*. A body-local pass cannot see the parent's readers, so treating a parent tensor as a body-owned intermediate would let it be freed, aliased, or arena-overlapped while the parent still needs it.
+      - ``DeadNodeElimination``'s subtree walk is downward-only (``DeadNodeElimination.cpp:44-45,82-97``). A body-created tensor read by the parent or by a sibling loop is currently protected *only* because parent-declared handles fail the ``is_intermediate`` gate.
+
+      Consequently, **propagating metadata across this boundary is not a safe
+      local fix**. Doing so unmasks the DNE cross-scope deletion above and
+      removes the conservatism the other three passes lean on; each would need
+      its own scope-aware liveness (the pattern ``FreeInsertion`` Part A
+      already uses: subtree usage views via ``TensorUsage::last_use(...,
+      include_subtree=true)``, which resolves a parent tensor's last use to the
+      enclosing ``Loop`` node rather than to a body-internal position).
+
+      Pinned by ``Tests.Unit.Modules.ComputeGraph.MetadataBoundary``. If you
+      intend to change this, change that test deliberately and audit the four
+      passes named above first.
+
+      :tparam TensorType: Any type satisfying CoreBasicTensorConcept.
+      :param tensor: The tensor to look up or register.
+      :returns: The tensor's TensorId in the current graph.
+
+
+   .. cpp:function:: template <typename T> requires (std::is_arithmetic_v<T> || IsComplexV<T>) TensorId get_or_register_scalar(T *scalar, std::string name)
+
+      Look up or create a TensorId for a scalar value.
+
+      :tparam T: An arithmetic or complex-arithmetic type.
+      :param scalar: Pointer to the scalar.
+      :param name: Human-readable name.
+      :returns: The scalar's TensorId in the current graph.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> std::pair<TensorId, TensorSlot *> get_slot(const TensorType &tensor)
+
+      Get or create a TensorSlot for a tensor (for rebindable capture).
+
+      Registers the tensor if needed, creates a TensorSlot in the graph,
+      and returns both the TensorId and a stable TensorSlot pointer.
+      The slot pointer is captured by executor lambdas for rebind support.
+
+      :tparam TensorType: Tensor type.
+      :param tensor: The tensor.
+      :returns: Pair of (TensorId, TensorSlot pointer).
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> TensorSlot * create_slot_for(const TensorType &tensor, TensorId id)
+
+      Get-or-create a TensorSlot for an already-registered tensor.
+
+      Used by capture-time helpers (e.g. ``cg::view``) that need to
+      create a slot for a tensor object they constructed themselves.
+      The ``get_slot`` path requires the object's address to match
+      a re-registration cycle, but explicit-registration callers can
+      bypass that.
+
+
+   .. cpp:function:: const std::shared_ptr<ParamTable> & params_ptr() const
+
+      Active ``ParamTable`` shared_ptr (from the active graph). Used by
+      helpers that bake parameter access into executor lambdas.
+
+
+   .. cpp:class:: CachedId
+
+      A cached address→id mapping, plus the liveness token that says whether
+      the tensor at that address is still the one the id was minted for.
+
+
+      .. cpp:member:: TensorId id
+
+      .. cpp:member:: std::weak_ptr<void> token

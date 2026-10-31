@@ -1,0 +1,155 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EinsumDescriptor:
+
+========================================
+einsums::compute_graph::EinsumDescriptor
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EinsumDescriptor
+
+   Metadata for Einsum nodes, enabling optimization passes.
+
+   Stores the contraction pattern (which indices belong to A, B, C, which are
+   link/target indices) and the scalar prefactors. This metadata is used by:
+
+   - ScaleAbsorption to spot dead scales (einsum with c_prefactor == 0 overwrites them)
+   - CSE to detect duplicate computations
+   - ContractionPlanning to detect and restructure GEMM chains
+
+   .. seealso::
+
+      packed_gemm::ContractionSpec for the contraction topology format
+
+
+   .. cpp:function:: std::optional<SpaceId> space_for_letter(std::string_view letter) const
+
+      The space bound to one index letter of this contraction.
+
+      :param letter: The index letter to look up.
+      :returns: The bound space, or an empty optional when the letter carries no annotation.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: packed_gemm::ContractionSpec spec
+
+      Contraction topology: index lists, link/target classification
+
+
+   .. cpp:member:: PrefactorScalar c_prefactor
+
+      C prefactor (snapshot of EinsumParams::c_pf at capture time)
+
+
+   .. cpp:member:: PrefactorScalar ab_prefactor
+
+      AB prefactor (snapshot of EinsumParams::ab_pf at capture time)
+
+
+   .. cpp:member:: bool conj_a
+
+      Whether to conjugate A (for complex types)
+
+
+   .. cpp:member:: bool conj_b
+
+      Whether to conjugate B (for complex types)
+
+
+   .. cpp:member:: std::vector<PermutationOperator> operators
+
+      Permutation (antisymmetrizer) operators this contraction is wrapped in,
+      as the spec wrote them. Empty for every contraction that names none.
+
+      The GROUPS are stored rather than the expanded terms, because what a pass
+      wants to ask is "is this the full antisymmetrizer over {i,j,k}", which is
+      a one-line check against a partition and a tedious reconstruction from
+      six permutation vectors. ``expand_permutation_operators`` turns them
+      into terms, deterministically, wherever terms are what is needed.
+
+      Stored on the SNAPSHOT side, beside ``spec``, and deliberately not in
+      the live ``indices`` block: no pass rewrites an operator under a running
+      executor, and one that wants to should rebuild the node, the same
+      argument ``PermuteDescriptor`` already makes for its index lists.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::shared_ptr<EinsumIndices> indices
+
+      Live-mutable index state shared with the executor lambda.
+
+      Optimization passes (PermuteFusion, future index rewriters) mutate
+      this in place; the executor dereferences it on every call, so
+      rewrites take effect on the next `graph.execute()`. The
+      `spec` field above is the at-capture snapshot. Analysis passes
+      can read either, but rewriters must update both to keep
+      downstream analysis consistent.
+
+
+   .. cpp:member:: std::shared_ptr<EinsumParams> params
+
+      Live-mutable scalar state shared with the executor lambda, same
+      pattern as `indices`.
+
+      Executors read prefactors from here on
+      every call; `c_prefactor`/`ab_prefactor` above are the at-capture
+      snapshots. Graph::update_prefactors
+      writes both through this handle so the node stays self-contained
+      under passes that reorder or remove nodes.
+
+
+   .. cpp:member:: std::shared_ptr<GemmHint> gemm_hint
+
+      BLAS-level batching hint; non-null only for 2D×2D→2D contractions
+      with one link index. Read by the GEMMBatching pass.
+
+
+   .. cpp:member:: std::shared_ptr<packed_gemm::ContractionSite> site
+
+      This node's packed-GEMM memo, the same object the executor lambda holds -
+      the `indices`/`params` pattern again, and shared for the same reason.
+
+      A plan-time pass needs somewhere to write the node's kernel route (@ref
+      packed_gemm::KernelRoute), and the site is where the dispatch already
+      looks. One site per node, so writing a route through this handle settles
+      it for this node and no other.
+
+
+   .. cpp:member:: std::vector<std::pair<std::string, SpaceId>> letter_spaces
+
+      Index space bound to each index letter of THIS contraction, sorted by letter.
+
+      Derived at capture (and rebuilt whenever a pass reconstructs the node) by walking every
+      operand's index letters against that operand's ``TensorHandle::spaces``. A space is a
+      property of a tensor SLOT, not of a letter globally, so the same letter may legitimately
+      range over different spaces in different contractions of one program; this field is the
+      per-node resolution of that, which is why it sits beside the index lists rather than in
+      ``spec``.
+
+      Empty when no operand of the node carries an annotation, which is every node of an
+      unannotated program. A letter that only ever met unannotated slots gets no entry, so a
+      partially annotated program yields a partial map rather than a wrong one.
+
+      Deliberately NOT part of ``packed_gemm::ContractionSpec``: that type's ``operator==`` is
+      a plan-cache key, and a semantic annotation must never split a cache entry.
+
+      .. seealso::
+
+         space_for_letter

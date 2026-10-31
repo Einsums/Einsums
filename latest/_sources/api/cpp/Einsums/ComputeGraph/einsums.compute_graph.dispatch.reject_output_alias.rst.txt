@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.reject_output_alias:
+
+=====================================================
+einsums::compute_graph::dispatch::reject_output_alias
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename CType, typename AType, typename BType> void reject_output_alias(const ParsedEinsumSpec &parsed, const CType &C, const AType &A, const BType &B)
+
+   Output aliasing an input is rejected: contractions read operands while writing C, so overlap
+   silently corrupts results. The one provably safe shape is carved out: when C's index list is IDENTICAL to the aliased operand's,
+   every element is read exactly once immediately before its own overwrite (pure elementwise update,
+   e.g. "ij <- ij ; ij" with C aliasing A). A and B sharing a buffer is always fine - inputs are
+   read-only. Must run after the zero-size check so the span arithmetic never sees a zero dimension.
+
+   Interval overlap alone is NOT proof of element overlap: disjoint column-major slices of one parent
+   interleave in memory. Only provable overlap rejects: both regions contiguous, or identical base
+   pointers (see the eager guard in TensorAlgebra's Backends/Dispatch.hpp for the full rationale).
+   Regions are compared in bytes, so operands of different element types are handled alike.

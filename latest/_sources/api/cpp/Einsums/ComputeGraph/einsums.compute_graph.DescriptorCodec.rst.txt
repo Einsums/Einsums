@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DescriptorCodec:
+
+=======================================
+einsums::compute_graph::DescriptorCodec
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorRegistry.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DescriptorCodec
+
+   How to save, load and rebuild one descriptor type.
+
+   ``name`` is the descriptor's ``descriptor_name``. It must be QUALIFIED - contain a ``.``, as in
+   ``"tiledarray.Contraction"`` - so a registered name can never collide with one of this library's
+   own descriptors, none of which has one.
+
+
+   .. cpp:member:: std::string name
+
+      The descriptor's ``descriptor_name``.
+
+
+   .. cpp:member:: std::function<json::Value (const OpData &)> write
+
+      The descriptor's fields as a JSON object. Called only with an ``OpData`` holding this
+      descriptor.
+
+
+   .. cpp:member:: std::function<OpData (const json::Object &)> read
+
+      The descriptor rebuilt from what ``write`` produced. Read each key with
+      ``json::Object::take``: the loader reports any key left unread, as it does for this
+      library's own descriptors. Throw ``std::invalid_argument`` on a malformed object; the loader
+      reports the message against the node.
+
+
+   .. cpp:member:: std::function<std::function<void ()> (const OpData &, Graph &, packed_gemm::ScalarType, std::size_t, std::span<const TensorId>, std::span<const TensorId>)> build
+
+      The node's executor, built from data alone: the descriptor, the node's destination dtype and
+      rank, and its operand ids in ``graph``. Resolve each operand once with ``resolve_operand``
+      and read it through the returned accessor on every run, so the node follows rebind() and
+      the memory planner.
+
+
+   .. cpp:member:: DescriptorHooks hooks
+
+      Optional answers to the passes' questions about the node; see ``DescriptorHooks``.

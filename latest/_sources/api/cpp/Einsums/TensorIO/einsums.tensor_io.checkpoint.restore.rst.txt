@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.checkpoint.restore:
+
+=======================================
+einsums::tensor_io::checkpoint::restore
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Checkpoint.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io::checkpoint
+
+.. cpp:function:: void restore(const std::string &path, compute_graph::Graph &graph)
+
+   Restore tensor data into a Graph.
+
+
+.. cpp:function:: void restore(const std::string &path, compute_graph::Workspace &workspace)
+
+   Restore tensor data into a Workspace.

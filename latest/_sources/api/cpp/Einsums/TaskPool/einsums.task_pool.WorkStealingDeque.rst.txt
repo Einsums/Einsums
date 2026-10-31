@@ -1,0 +1,71 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.WorkStealingDeque:
+
+=====================================
+einsums::task_pool::WorkStealingDeque
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/WorkStealingDeque.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: template <typename T> WorkStealingDeque
+
+   Lock-free Chase-Lev work-stealing deque on a growable circular buffer. The owner calls push() and pop(); any thread may steal().
+
+
+   .. cpp:function:: explicit WorkStealingDeque(size_t initial_capacity)
+
+   .. cpp:function:: WorkStealingDeque(const WorkStealingDeque<T> &) = delete
+
+   .. cpp:function:: explicit CircularBuffer(size_t cap)
+
+   .. cpp:function:: WorkStealingDeque<T> & operator=(const WorkStealingDeque<T> &) = delete
+
+   .. cpp:function:: void push(T item)
+
+      Push an item onto the bottom (owner thread only).
+
+
+   .. cpp:function:: std::optional<T> pop()
+
+      Pop an item from the bottom (owner thread only, LIFO).
+
+      :returns: The item, or nullopt if empty.
+
+
+   .. cpp:function:: std::optional<T> steal()
+
+      Steal an item from the top (any thread, FIFO).
+
+      :returns: The item, or nullopt if empty or contended.
+
+
+   .. cpp:function:: size_t size_approx() const
+
+      Approximate size (may be stale).
+
+
+   .. cpp:function:: bool empty_approx() const
+
+      Check if approximately empty.
+
+
+   .. cpp:function:: size_t capacity() const
+
+   .. cpp:function:: void store(int64_t idx, T item)
+
+   .. cpp:function:: T load(int64_t idx) const
+
+   .. cpp:member:: std::vector<T> data_
+
+   .. cpp:member:: size_t mask_

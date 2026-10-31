@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.lascl:
+
+====================
+einsums::blas::lascl
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t lascl(char type, int_t kl, int_t ku, T cfrom, T cto, int_t m, int_t n, T *A, int_t lda)
+
+   Scales a general matrix. The scale factor is ``cto / cfrom``, but the scale is performed without overflow/underflow.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param type: The type of matrix. Case insensitive. 'g' is for general matrices, 'l' is for lower triangular matrices, 'u' if for upper triangular matrices, 'h' is for hessenberg matrices, 'b' is for symmetric band matrices with lower bandwidth ``kl`` and upper bandwidth of ``ku`` and with only the lower half stored, 'q' is the same as 'b' but with the upper half stored instead, and 'z' is the same as 'b' but with a more complicated storage scheme.
+   :param kl: The lower bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
+   :param ku: The upper bandwidth of the matrix. Only used if the type is 'b', 'q', or 'z'.
+   :param cfrom: The denominator for the scale.
+   :param cto: The numerator for the scale.
+   :param m: The number of rows in the matrix.
+   :param n: The number of columns in the matrix.
+   :param A: The matrix being scaled.
+   :param lda: The leading dimension of the matrix.
+   :returns: 0 on success. If negative, then one of the parameters had an invalid value. The absolute value of the return indicates which parameter it was.

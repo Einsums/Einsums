@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.measure_quadrature_error:
+
+=========================================================
+einsums::compute_graph::laplace::measure_quadrature_error
+=========================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:function:: double measure_quadrature_error(const QuadratureGrid &grid, std::size_t samples)
+
+   The worst relative deviation of ``grid`` from :math:`1/x` over the interval it covers.
+
+   A measurement rather than the analytic bound, and affordable precisely because the object
+   being approximated is a scalar function: the four-index tensor a factorization would have to
+   form to measure itself does not appear anywhere in this.
+
+   .. versionadded:: 2.0.0
+
+   :param grid: The rule to measure.
+   :param samples: How many points to sample, logarithmically spaced. At least two.
+   :returns: The largest :math:`|q(x) - 1/x| \cdot |x|` found.

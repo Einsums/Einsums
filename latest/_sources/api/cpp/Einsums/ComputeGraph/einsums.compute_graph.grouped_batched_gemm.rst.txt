@@ -1,0 +1,53 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_batched_gemm:
+
+============================================
+einsums::compute_graph::grouped_batched_gemm
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType> requires (std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>) void grouped_batched_gemm(double alpha, std::vector<const AType *> a_list, std::vector<const BType *> b_list, double beta, std::vector<CType *> c_list, bool trans_a, bool trans_b)
+
+   Emit one `blas::gemm_batch_grouped` over independent GEMMs whose shapes need NOT agree: ``C_i = alpha * op(A_i) op(B_i) + beta * C_i``.
+
+   The same signature as ``batched_gemm``, minus its central restriction.
+   Members are sorted into shape groups here, at capture, and the whole set
+   then runs under ONE OpenMP region instead of one per shape.
+
+   That is the entire point, and it is not a small one. Entering a region costs
+   tens of microseconds on a wide team, which is comparable to a GEMM of the
+   size local-correlation methods produce. Measured on a DLPNO-MP2 iteration
+   whose batched GEMMs want 16 ms of arithmetic, issuing them as 754 uniform
+   calls took 45 ms and issuing them as one grouped call took 16.7. The same
+   batch also stopped caring how finely it was split: the effective rate held
+   flat at ~230 GFLOPS across 120, 448 and 754 shape classes, where the looped
+   form fell 146 to 80.
+
+   Grouping is by (m, n, k, lda, ldb, ldc); the prefactors and transpose flags
+   are shared by the whole call, as they are for ``batched_gemm``. Groups are
+   numbered in order of first appearance and members keep their relative order
+   inside a group, but members of DIFFERENT shapes are reordered against each
+   other. That is within contract for the same reason the uniform form gives no
+   ordering between members: they must be independent.
+
+   Outside capture this executes immediately, so the same call works eagerly.
+
+   :param alpha: Prefactor on op(A_i) op(B_i), shared by the whole call.
+   :param a_list: Left operands, all rank 2. Shapes may differ between members.
+   :param b_list: Right operands, same length as ``a_list``.
+   :param beta: Prefactor on C_i. Non-zero means every C_i is read as well as written, which the node records as a dependency.
+   :param c_list: Destinations, same length as ``a_list``. Must be distinct tensors: the call gives no ordering between members, so two members sharing a destination race.
+   :param trans_a: Transpose each A_i.
+   :param trans_b: Transpose each B_i.

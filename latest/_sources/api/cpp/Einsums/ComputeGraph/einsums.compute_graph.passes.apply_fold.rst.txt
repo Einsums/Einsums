@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.apply_fold:
+
+==========================================
+einsums::compute_graph::passes::apply_fold
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: void apply_fold(Node &node, FoldSite site, double factor)
+
+   Multiply ``node's`` prefactor at ``site`` by ``factor``. Caller guarantees
+   ``fold_site`` returned that site. Writes the live params the executor reads
+   AND the snapshot beside them, so later analysis sees the same value.

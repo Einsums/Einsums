@@ -1,0 +1,257 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.initialize:
+
+===================
+einsums::initialize
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/InitRuntime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void initialize(std::function<int (int, char **)> f, std::vector<std::string> &argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is stopped
+
+   .. admonition:: Postcondition
+
+      the runtime is running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime. f will be passed all non-einsums command line arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::function<int (int, const char *const *)> f, const std::vector<std::string> &argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::function<int ()> f, const std::vector<std::string> &argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   The runtime must be initialized early on, before other Einsums facilities are
+   used. The entry point ``f`` is executed as if it were `main`, and the
+   initialization parameters are passed on to the initialization routine.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::nullptr_t, const std::vector<std::string> &argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(const std::vector<std::string> &argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   No task is created on the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not initialized
+
+   .. admonition:: Postcondition
+
+      the runtime is running
+
+   .. versionadded:: 1.0.0
+
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::function<int (int, char **)> f, int argc, char **argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   The runtime must be initialized early on, before other Einsums facilities are
+   used. The entry point ``f`` is executed as if it were `main`, receiving the
+   command-line arguments not consumed by Einsums, and the initialization
+   parameters are passed on to the initialization routine.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argc: The number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::function<int (int, const char *const *)> f, int argc, const char *const *argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   The runtime must be initialized early on, before other Einsums facilities are
+   used. The entry point ``f`` is executed as if it were `main`, receiving the
+   command-line arguments not consumed by Einsums, and the initialization
+   parameters are passed on to the initialization routine.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argc: The number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: void initialize(std::nullptr_t, int argc, const char *const *argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   The runtime must be initialized early on, before other Einsums facilities are
+   used. Since the entry point is the null pointer, no function is called and the
+   initialization routine exits once it is finished.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param argc: The number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: template <typename Function> requires (!std::is_same_v<Function, std::nullptr_t>) void initialize(Function &&f, int argc, char **argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argc: The number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.
+
+
+.. cpp:function:: template <typename Function> requires (!std::is_same_v<Function, std::nullptr_t>) void initialize(Function &&f, int argc, const char *const *argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param f: entry point of the first task on the einsums runtime
+   :param argc: The number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters
+
+
+.. cpp:function:: void initialize(int argc, const char *const *argv, const InitParams &params)
+
+   Initialize the runtime.
+
+   .. admonition:: Precondition
+
+      `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+
+   .. admonition:: Precondition
+
+      the runtime is not running
+
+   .. versionadded:: 1.0.0
+
+   :param argc: Then number of arguments.
+   :param argv: array of arguments. The first element is ignored.
+   :param params: The initialization parameters.

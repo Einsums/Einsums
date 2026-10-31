@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ComputeGraphData:
+
+========================================
+einsums::compute_graph::ComputeGraphData
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/GraphData.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ComputeGraphData
+
+   Complete serialized compute graph, as used for profiling and visualization.
+
+   Captures a named graph with its stage context (pipeline, workspace, stage)
+   and all nodes, tensors, and edges.
+
+
+   .. cpp:member:: std::string name
+
+   .. cpp:member:: std::string pipeline_name
+
+      Parent pipeline (empty if standalone)
+
+
+   .. cpp:member:: std::string workspace_name
+
+      Parent workspace (empty if none)
+
+
+   .. cpp:member:: std::string stage_name
+
+      Stage within pipeline
+
+
+   .. cpp:member:: std::string stage_type
+
+      "graph" or "loop"
+
+
+   .. cpp:member:: int stage_index
+
+      Order within pipeline
+
+
+   .. cpp:member:: int max_iterations
+
+      For loop stages: max iteration count
+
+
+   .. cpp:member:: std::string convergence_variable
+
+      For loop stages: variable name for convergence threshold
+
+
+   .. cpp:member:: std::vector<GraphTensorData> tensors
+
+   .. cpp:member:: std::vector<GraphNodeData> nodes
+
+   .. cpp:member:: std::vector<GraphEdgeData> edges

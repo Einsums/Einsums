@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.gesv:
+
+============================
+einsums::compute_graph::gesv
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <MatrixOperand AType, MatrixOrVectorOperand BType> requires SameUnderlying<AType, BType> int gesv(AType *A, BType *B)
+
+   Solve the linear system ``A * X = B`` in place.
+
+   On return ``B`` holds ``X`` and ``A`` holds its LU factorization.
+   ``B`` may be rank 1 (single right-hand side) or rank 2 (multiple
+   right-hand-side columns). Returns the LAPACK info code: 0 on
+   success, positive ``i`` if ``A`` is singular at row ``i``.

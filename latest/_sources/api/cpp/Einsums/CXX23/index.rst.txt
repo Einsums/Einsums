@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_CXX23_api:
+
+=============
+CXX23 C++ API
+=============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_CXX23>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::expected` - A value-or-error type (C++23 std::expected backport).
+- :cpp:any:`~einsums::unexpected` - Tag type wrapping an error value for expected.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.expected
+   einsums.unexpected

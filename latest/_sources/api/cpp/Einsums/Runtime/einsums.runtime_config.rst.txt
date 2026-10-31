@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.runtime_config:
+
+=======================
+einsums::runtime_config
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Runtime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: RuntimeConfiguration & runtime_config()
+
+   Gets a reference to the current runtime configuration structure.
+
+   .. versionadded:: 1.0.0

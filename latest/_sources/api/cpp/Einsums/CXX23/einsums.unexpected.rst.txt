@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.unexpected:
+
+===================
+einsums::unexpected
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/CXX23/Expected.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename E> unexpected
+
+   Tag type wrapping an error value for expected.
+
+   .. code-block:: text
+
+      return einsums::unexpected(std::string("file not found"));
+
+   :tparam E: Error type.
+
+
+   .. cpp:function:: constexpr unexpected(const unexpected<E> &) = default
+
+   .. cpp:function:: constexpr unexpected(unexpected<E> &&) = default
+
+   .. cpp:function:: template <typename Err = E> requires (!std::same_as<std::remove_cvref_t<Err>, unexpected<E>> && std::constructible_from<E, Err>) constexpr explicit unexpected(Err &&err)
+
+   .. cpp:function:: constexpr unexpected<E> & operator=(const unexpected<E> &) = default
+
+   .. cpp:function:: constexpr unexpected<E> & operator=(unexpected<E> &&) = default
+
+   .. cpp:function:: constexpr const E & error() const &
+
+   .. cpp:function:: constexpr E & error() &
+
+   .. cpp:function:: constexpr const E && error() const &&
+
+   .. cpp:function:: constexpr E && error() &&

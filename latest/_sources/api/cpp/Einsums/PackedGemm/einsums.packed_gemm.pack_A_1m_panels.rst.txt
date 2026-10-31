@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.pack_A_1m_panels:
+
+======================================
+einsums::packed_gemm::pack_A_1m_panels
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename RealT> void pack_A_1m_panels(RealT *Ap, const std::complex<RealT> *A_data, const PackingPlan &plan, int64_t mh_start, int64_t mh_len, int64_t kh_start, int64_t kh_len, int MR, bool conj)
+
+   Pack the 1e-expanded A block into column-major MR x kh_len real micro-panels (the layout the real tile kernels consume).
+
+   mh/kh index the doubled ("hat") real space: real row ih = 2p + r maps to
+   complex row p, and real col khi = 2q + s maps to complex link index q.
+   Panels are zero-padded to full MR like the real packers.

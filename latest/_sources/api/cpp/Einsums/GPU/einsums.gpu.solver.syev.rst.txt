@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.solver.syev:
+
+==========================
+einsums::gpu::solver::syev
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Solver.hpp``.
+
+.. cpp:namespace:: einsums::gpu::solver
+
+.. cpp:function:: template <typename T> int syev(char jobz, char uplo, int64_t n, T *A, int64_t lda, T *W)
+
+   Symmetric eigensolve: A becomes the eigenvectors (jobz 'V') and W the eigenvalues.

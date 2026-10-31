@@ -1,0 +1,78 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.format_as:
+
+=================================
+einsums::compute_graph::format_as
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/Approximation.hpp``, ``Einsums/ComputeGraph/BisectDriver.hpp``, ``Einsums/ComputeGraph/InterfaceManifest.hpp``, ``Einsums/ComputeGraph/Node.hpp``, ``Einsums/ComputeGraph/Optimizer.hpp``, ``Einsums/ComputeGraph/PredExpr.hpp``, ``Einsums/ComputeGraph/SymbolicCost.hpp``, ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view format_as(ApproximationOrigin value) noexcept
+
+   ``fmt`` formats an ``ApproximationOrigin`` as its name, so ``fmt::format("{}", value)`` needs no call to ``approximation_origin_name``.
+
+
+.. cpp:function:: std::string_view format_as(ApproximationEffect value) noexcept
+
+   ``fmt`` formats an ``ApproximationEffect`` as its name, so ``fmt::format("{}", value)`` needs no call to ``approximation_effect_name``.
+
+
+.. cpp:function:: std::string_view format_as(BisectMode value)
+
+   ``fmt`` formats a ``BisectMode`` as its name, so ``fmt::format("{}", value)`` needs no call to ``bisect_mode_name``.
+
+
+.. cpp:function:: std::string_view format_as(ManifestDirection value) noexcept
+
+   ``fmt`` formats a ``ManifestDirection`` as its name, so ``fmt::format("{}", value)`` needs no call to ``manifest_direction_name``.
+
+
+.. cpp:function:: std::string_view format_as(TensorOwnership value) noexcept
+
+   ``fmt`` formats a ``TensorOwnership`` as its name, so ``fmt::format("{}", value)`` needs no call to ``tensor_ownership_name``.
+
+
+.. cpp:function:: std::string_view format_as(ParamSourceType value) noexcept
+
+   ``fmt`` formats a ``ParamSourceType`` as its name, so ``fmt::format("{}", value)`` needs no call to ``param_source_type_name``.
+
+
+.. cpp:function:: std::string_view format_as(PassPhase value)
+
+   ``fmt`` formats a ``PassPhase`` as its name, so ``fmt::format("{}", value)`` needs no call to ``pass_phase_name``.
+
+
+.. cpp:function:: std::string_view format_as(PassTier value)
+
+   ``fmt`` formats a ``PassTier`` as its name, so ``fmt::format("{}", value)`` needs no call to ``pass_tier_name``.
+
+
+.. cpp:function:: std::string_view format_as(CmpOp value) noexcept
+
+   ``fmt`` formats a ``CmpOp`` as its name, so ``fmt::format("{}", value)`` needs no call to ``cmp_op_name``.
+
+
+.. cpp:function:: std::string_view format_as(CompareRung value) noexcept
+
+   ``fmt`` formats a ``CompareRung`` as its name, so ``fmt::format("{}", value)`` needs no call to ``compare_rung_name``.
+
+
+.. cpp:function:: std::string_view format_as(CostComponent value) noexcept
+
+   ``fmt`` formats a ``CostComponent`` as its name, so ``fmt::format("{}", value)`` needs no call to ``cost_component_name``.
+
+
+.. cpp:function:: std::string_view format_as(TermKind value)
+
+   ``fmt`` formats a ``TermKind`` as its name, so ``fmt::format("{}", value)`` needs no call to ``term_kind_name``.

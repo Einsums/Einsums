@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.max_python:
+
+==================================
+einsums::compute_graph::max_python
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType> requires (std::is_same_v<typename ResultType::ValueType, typename AType::ValueType>) void max_python(ResultType *result, const AType &A)
+
+   Graph-aware maximum element (real dtypes), written into ``result->data()[0]``.
+   Backs the numpy-style ``A.max()``. Real dtypes only, since complex ordering
+   is not meaningful; use ``norm(MAXABS)`` for the largest magnitude.

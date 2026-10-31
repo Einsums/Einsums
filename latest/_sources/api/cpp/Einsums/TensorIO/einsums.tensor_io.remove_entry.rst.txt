@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.remove_entry:
+
+================================
+einsums::tensor_io::remove_entry
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void remove_entry(std::string path, std::string name)
+
+   Remove the entry ``name`` of ``path``.
+
+   Its bytes become space later entries reuse; ``compact_file`` gives them back to the disk. See
+   ``TensorFile::remove``.
+
+   .. versionadded:: 2.0.0
+
+   :throws std::runtime_error: when the file or the entry is missing.

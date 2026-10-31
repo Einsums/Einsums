@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.get_log_level:
+
+======================
+einsums::get_log_level
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Logging.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: int get_log_level()
+
+   Return the current runtime log level on the einsums logger.

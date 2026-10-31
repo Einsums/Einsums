@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.try_packed_gemm:
+
+=====================================
+einsums::packed_gemm::try_packed_gemm
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> bool try_packed_gemm(const ContractionSpec &spec_in, ValueTypeT<CType> C_prefactor, CType *C, BiggestTypeT<typename AType::ValueType, typename BType::ValueType> AB_prefactor, const AType &A, const BType &B, bool allow_scatter, ContractionSite *site)
+
+   Attempt to execute an einsum contraction via the packed GEMM backend from a runtime-built ContractionSpec.
+
+   Works for any BasicTensorConcept operand, compile-time or runtime rank; every decision (rank
+   classification, batching, kernel selection) is made at run time against the spec. Returns true
+   if the contraction was handled, false if the caller should fall back.
+
+   :param spec_in: The contraction's index lists and conjugation flags.
+   :param C_prefactor: Scale applied to C before the product is accumulated.
+   :param C: The output tensor.
+   :param AB_prefactor: Scale applied to the contraction of A and B.
+   :param A: The first input tensor.
+   :param B: The second input tensor.
+   :param allow_scatter: When false, decline contractions that remain multi-M/N after coalescing, for callers with a faster fallback (the compile-time dispatch's Sort+GEMM). Leave true for callers whose only alternative is a generic loop (ComputeGraph's string dispatch).
+   :param site: Optional memo owned by a caller that repeats this exact contraction (a graph node); see ``ContractionSite``. A hit skips building and hashing the key and the plan-cache lookup. Its ``KernelRoute`` pin, when set, decides vendor versus packed.

@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Options &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Options/docs/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/Options/docs/index.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="PackedGemm" href="../../PackedGemm/docs/index.html" />
+    <link rel="prev" title="Logging" href="../../Logging/docs/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Options</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="options">
+<span id="modules-einsums-options"></span><h1>Options<a class="headerlink" href="#options" title="Link to this heading">#</a></h1>
+<p>Einsums’ option system: one declaration per setting, feeding one typed value that the rest of the
+library reads. It is also a general C++20 command-line parser in the spirit of LLVM’s <code class="docutils literal notranslate"><span class="pre">cl::</span></code>
+utilities, simplified and dependency-free aside from <code class="docutils literal notranslate"><span class="pre">fmt</span></code> for help text.</p>
+<ul class="simple">
+<li><p><strong>Descriptors</strong>: <code class="docutils literal notranslate"><span class="pre">ConfigOption&lt;T&gt;</span></code> declared with <code class="docutils literal notranslate"><span class="pre">config_flag</span></code> / <code class="docutils literal notranslate"><span class="pre">config_opt</span></code>, read with <code class="docutils literal notranslate"><span class="pre">config::get</span></code></p></li>
+<li><p><strong>Options</strong>: <code class="docutils literal notranslate"><span class="pre">Flag</span></code>, <code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">OptEnum&lt;Enum&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Alias</span></code></p></li>
+<li><p><strong>Named parameter tags</strong>: <code class="docutils literal notranslate"><span class="pre">Default(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueName(&quot;...&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">Env(&quot;...&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">NoEnv</span></code></p></li>
+<li><p><strong>Bindings</strong>: <code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;</span></code> (write to external storage), <code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;</span></code> (callback)</p></li>
+<li><p><strong>Precedence</strong>: <em>defaults</em> &lt; <em>config file</em> &lt; <em>environment</em> &lt; <em>command line</em></p></li>
+<li><p><strong>Unknown args</strong>: unrecognized options and everything after <code class="docutils literal notranslate"><span class="pre">--</span></code> are collected</p></li>
+<li><p><strong>Built-ins</strong>: <code class="docutils literal notranslate"><span class="pre">--help</span></code> and <code class="docutils literal notranslate"><span class="pre">--version</span></code> (always available)</p></li>
+</ul>
+<section id="two-layers-and-which-one-you-want">
+<h2>Two layers, and which one you want<a class="headerlink" href="#two-layers-and-which-one-you-want" title="Link to this heading">#</a></h2>
+<p>Nearly all Einsums code wants the <strong>descriptor layer</strong>: a setting is declared once, in the module that
+reads it, and every consumer reads it back by naming that declaration. Start at <a class="reference internal" href="#declaring-an-option">Declaring an option</a>.</p>
+<p>The <strong>parser layer</strong> below it (<code class="docutils literal notranslate"><span class="pre">Flag</span></code>, <code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Location</span></code>, <code class="docutils literal notranslate"><span class="pre">parse</span></code>) is what turns argv, the
+environment, and a config file into those values. Reach for it directly only when writing a program with
+its own command line, or when adding a kind of option the descriptor layer does not cover yet.</p>
+</section>
+<section id="declaring-an-option">
+<h2>Declaring an option<a class="headerlink" href="#declaring-an-option" title="Link to this heading">#</a></h2>
+<p>An option is declared in the module whose code reads it, in that module’s <code class="docutils literal notranslate"><span class="pre">Options.hpp</span></code>, under the
+<code class="docutils literal notranslate"><span class="pre">einsums::option</span></code> namespace:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Options/Get.hpp&gt;</span>
+
+<span class="n">EINSUMS_NAMESPACE_BEGIN</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
+<span class="c1">/// Write the text report at shutdown.</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">constinit</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">ConfigOption</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ProfileReport</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">config_flag</span><span class="p">(</span><span class="s">"einsums:profile:report"</span><span class="p">,</span><span class="w"> </span><span class="s">"Generate a profile report on exit"</span><span class="p">,</span><span class="w"> </span><span class="s">"Profile"</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="c1">/// Where that report goes.</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">constinit</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">ConfigOption</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ProfileFilename</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">config_opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"einsums:profile:filename"</span><span class="p">,</span><span class="w"> </span><span class="s">"Profile report file name"</span><span class="p">,</span>
+<span class="w">                                </span><span class="s">"Profile"</span><span class="p">,</span><span class="w"> </span><span class="s">"profile.txt"</span><span class="p">,</span><span class="w"> </span><span class="s">"filename"</span><span class="p">);</span>
+
+<span class="n">EINSUMS_NAMESPACE_END</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The long name is the only spelling written down. The registry key (<code class="docutils literal notranslate"><span class="pre">profile-filename</span></code>, the form
+<code class="docutils literal notranslate"><span class="pre">config::get_dynamic</span></code> takes), the environment variable, the <code class="docutils literal notranslate"><span class="pre">--help</span></code> entry, and a flag’s <code class="docutils literal notranslate"><span class="pre">no-</span></code> twin
+are all derived from it, which is what keeps them from drifting apart. A config file is the exception: it
+names an option by its long name (<code class="docutils literal notranslate"><span class="pre">einsums:profile:filename</span></code>), not by the derived key.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config_flag(name,</span> <span class="pre">help,</span> <span class="pre">category,</span> <span class="pre">default)</span></code> declares a boolean. Registration also generates the
+<code class="docutils literal notranslate"><span class="pre">no-</span></code> spelling, so a flag that defaults to on needs no hand-written negation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_opt&lt;T&gt;(name,</span> <span class="pre">help,</span> <span class="pre">category,</span> <span class="pre">default,</span> <span class="pre">value_name,</span> <span class="pre">range)</span></code> declares a value option. <code class="docutils literal notranslate"><span class="pre">T</span></code> is
+<code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">std::int64_t</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>, or <code class="docutils literal notranslate"><span class="pre">std::string</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_opt_computed&lt;T&gt;(name,</span> <span class="pre">help,</span> <span class="pre">category,</span> <span class="pre">provider,</span> <span class="pre">value_name)</span></code> is for a default that cannot be
+written down at compile time, such as the system temporary directory or a name carrying the process id.
+The provider runs when the option is registered.</p></li>
+</ul>
+<p>Descriptors are <code class="docutils literal notranslate"><span class="pre">constinit</span></code> aggregates, so a namespace-scope descriptor is constant-initialized and
+there is no static initialization order to reason about. That is what makes it safe to read one from a
+constructor as hot and as early as <code class="docutils literal notranslate"><span class="pre">Tensor</span></code>’s.</p>
+<section id="registering">
+<h3>Registering<a class="headerlink" href="#registering" title="Link to this heading">#</a></h3>
+<p>A descriptor has to be handed to the registry before parsing. Every module exports a
+<code class="docutils literal notranslate"><span class="pre">register_&lt;Module&gt;_options()</span></code> and invokes it from a namespace-scope initializer in its own
+<code class="docutils literal notranslate"><span class="pre">Options.hpp</span></code>, so registration happens when the library loads. Modules below Runtime in the dependency
+graph could not call <code class="docutils literal notranslate"><span class="pre">register_arguments</span></code> without a cycle anyway; the ones that could still do not,
+because that hook fires part-way through <code class="docutils literal notranslate"><span class="pre">initialize()</span></code> and anything that enumerates the registry
+earlier - the Python binding layer building its argv - would not see those options at all.</p>
+</section>
+</section>
+<section id="reading-an-option">
+<h2>Reading an option<a class="headerlink" href="#reading-an-option" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Options/Get.hpp&gt;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">config</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="o">::</span><span class="n">ProfileReport</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="w"> </span><span class="nf">out</span><span class="p">(</span><span class="n">config</span><span class="o">::</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="o">::</span><span class="n">ProfileFilename</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">config::get</span></code> is the whole reading API. There is no key to spell and no fallback to pass: a typo is a
+compile error, the type comes from the descriptor, and an option read before it is registered yields the
+declared default rather than a zero.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config::try_get(opt)</span></code> returns <code class="docutils literal notranslate"><span class="pre">std::optional&lt;T&gt;</span></code>, empty when no parse source (command line or
+environment) supplied a value. Use it to tell <em>unset</em> from <em>set to the default</em>. A value written with
+<code class="docutils literal notranslate"><span class="pre">config::set</span></code> does not count: <code class="docutils literal notranslate"><span class="pre">try_get</span></code> stays empty afterwards even though <code class="docutils literal notranslate"><span class="pre">get</span></code> returns it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config::set(opt,</span> <span class="pre">value)</span></code> writes one, which is mostly what tests want.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Get.hpp</span></code> is deliberately light: no parser, no help machinery, no <code class="docutils literal notranslate"><span class="pre">fmt</span></code>. Including it from a header on
+a hot path costs little.</p>
+<section id="dynamic-keys">
+<h3>Dynamic keys<a class="headerlink" href="#dynamic-keys" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">config::get_dynamic&lt;T&gt;(key,</span> <span class="pre">default)</span></code> and <code class="docutils literal notranslate"><span class="pre">config::set_dynamic</span></code> take a runtime string. They exist for
+keys that are genuinely constructed at run time; nothing in the library uses them today (the optimizer
+reads <code class="docutils literal notranslate"><span class="pre">--einsums:pass:disable</span></code> through its descriptor). Anything whose name is known at compile time should be a descriptor instead; the dynamic path
+gives back the silent-typo behavior the descriptors were introduced to remove.</p>
+</section>
+<section id="enumerating-the-options">
+<h3>Enumerating the options<a class="headerlink" href="#enumerating-the-options" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cl::registered_options()</span></code> returns every registered option as data - long name, derived key, flag or
+value, value type, declared default, help text, category, and a flag’s generated <code class="docutils literal notranslate"><span class="pre">no-</span></code> spelling. It is
+for code that never names an option in source: a binding layer, a generator, a settings dump.</p>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">no-</span></code> twin of a flag is not listed; it is a second spelling of the option already there,
+named by that option’s <code class="docutils literal notranslate"><span class="pre">negated_name</span></code>. Keys reached only through the dynamic API are not listed either,
+because no descriptor claims them.</p>
+<p>This is how the Python surface stays honest. <code class="docutils literal notranslate"><span class="pre">einsums.rc</span></code>’s fields are generated from the descriptors
+by a static parse of the <code class="docutils literal notranslate"><span class="pre">Options.hpp</span></code> headers, and <code class="docutils literal notranslate"><span class="pre">PyEinsumsMain.cpp</span></code> builds the argv that starts
+the runtime by walking this enumeration - so a new descriptor reaches Python without anyone editing a
+table, and there is no second spelling of a flag to drift.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Options/Parse.hpp&gt;</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">opt</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">registered_options</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"--{} [{}]</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">opt</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">opt</span><span class="p">.</span><span class="n">key</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Options.hpp&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">cl</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">argc</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 1) Group options into categories (affects help layout)</span>
+<span class="w">  </span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">General</span><span class="p">{</span><span class="s">"General"</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 2) Declare options</span>
+<span class="w">  </span><span class="n">Flag</span><span class="w"> </span><span class="n">Verbose</span><span class="p">{</span>
+<span class="w">    </span><span class="s">"verbose"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'v'</span><span class="p">},</span><span class="w"> </span><span class="s">"Enable verbose logging"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">    </span><span class="s">"threads"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'t'</span><span class="p">},</span><span class="w"> </span><span class="s">"Number of threads"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">RangeBetween</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">),</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">"N"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">Opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Output</span><span class="p">{</span>
+<span class="w">    </span><span class="s">"output"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'o'</span><span class="p">},</span><span class="w"> </span><span class="s">"Output file"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span><span class="s">"a.out"</span><span class="p">}),</span>
+<span class="w">    </span><span class="n">General</span><span class="p">,</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">"PATH"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// Positional "gather the rest"</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">"inputs"</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">"Input file(s)"</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// 3) Let every option read an environment variable derived from its name</span>
+<span class="w">  </span><span class="n">Registry</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">set_env_prefix</span><span class="p">(</span><span class="s">"EINSUMS"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 4) Parse with optional config file and unknown-args collection</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unknown</span><span class="p">;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">pr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parse_with_config</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="s">"einsums"</span><span class="p">,</span><span class="w"> </span><span class="s">"2.0.0"</span><span class="p">,</span>
+<span class="w">                              </span><span class="s">"settings.json"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">unknown</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">pr</span><span class="p">.</span><span class="n">ok</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">pr</span><span class="p">.</span><span class="n">exit_code</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 5) Use the values</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"threads = {}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">Threads</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"output  = {}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">Output</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"verbose = {}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">Verbose</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Inputs</span><span class="p">.</span><span class="n">values</span><span class="p">())</span><span class="w"> </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"input   = {}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">unknown</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"unknown: "</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unknown</span><span class="p">)</span><span class="w"> </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"{} "</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">);</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./einsums<span class="w"> </span>-v<span class="w"> </span>-t<span class="w"> </span><span class="m">8</span><span class="w"> </span>-o<span class="w"> </span>result.bin<span class="w"> </span>a.txt<span class="w"> </span>b.txt
+<span class="go">threads = 8</span>
+<span class="go">output  = result.bin</span>
+<span class="go">verbose = true</span>
+<span class="go">input   = a.txt</span>
+<span class="go">input   = b.txt</span>
+
+<span class="gp">$ </span><span class="nv">EINSUMS_THREADS</span><span class="o">=</span><span class="m">8</span><span class="w"> </span>./einsums<span class="w"> </span>a.txt
+<span class="go">threads = 8</span>
+</pre></div>
+</div>
+<p>Built-ins:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./einsums<span class="w"> </span>--help
+<span class="go">Usage: einsums [options] &lt;inputs&gt;</span>
+<span class="go">...</span>
+
+<span class="gp">$ </span>./einsums<span class="w"> </span>--version
+<span class="go">einsums 2.0.0</span>
+</pre></div>
+</div>
+</section>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">#</a></h2>
+<section id="categories">
+<h3>Categories<a class="headerlink" href="#categories" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">OptionCategory</span></code> groups options under a heading in <code class="docutils literal notranslate"><span class="pre">--help</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">IO</span><span class="p">{</span><span class="s">"I/O"</span><span class="p">};</span>
+<span class="n">OptionCategory</span><span class="w"> </span><span class="n">Perf</span><span class="p">{</span><span class="s">"Performance"</span><span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="types-of-options">
+<h3>Types of Options<a class="headerlink" href="#types-of-options" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Flag</span></code> - boolean option. Presence sets true (configurable via <code class="docutils literal notranslate"><span class="pre">ImplicitValue</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code> - single value option. <code class="docutils literal notranslate"><span class="pre">T</span></code> can be any integral or floating point type, <code class="docutils literal notranslate"><span class="pre">std::string</span></code>, or a type of your own (see <a class="reference internal" href="#custom-value-types">Custom value types</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code> - repeated or comma-separated values. As a positional, a <code class="docutils literal notranslate"><span class="pre">List&lt;std::string&gt;</span></code> <em>gathers remaining tokens</em>; other element types take one token.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OptEnum&lt;Enum&gt;</span></code> - map string choices to an enum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alias</span></code> - forwards to a target option, optionally supplying a preset value.</p></li>
+</ul>
+</section>
+<section id="named-parameter-tags">
+<h3>Named Parameter Tags<a class="headerlink" href="#named-parameter-tags" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Default(value)</span></code> - the value used when no other source supplies one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImplicitValue(value)</span></code> - used when the option appears without an explicit value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueName(&quot;NAME&quot;)</span></code> - placeholder in help, e.g., <code class="docutils literal notranslate"><span class="pre">--threads</span> <span class="pre">&lt;N&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Env(&quot;NAME&quot;)</span></code> - read this option from a named environment variable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NoEnv</span></code> - exempt this option from the registry’s automatic environment names.</p></li>
+</ul>
+</section>
+<section id="bindings-callbacks">
+<h3>Bindings &amp; Callbacks<a class="headerlink" href="#bindings-callbacks" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;(ref)</span></code> - write the parsed value directly into external storage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;{...}</span></code> - invoke on assignment. The callable takes either <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">const&amp;)</span></code> or <code class="docutils literal notranslate"><span class="pre">(T</span> <span class="pre">const&amp;,</span> <span class="pre">Source)</span></code>; the two-argument form additionally learns where the value came from.</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Batch</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"batch"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="s">"Batch size"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span><span class="w"> </span><span class="n">Tuning</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Setter</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{[](</span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="n">from</span><span class="p">){</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"batch={} (source: {})</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">to_string</span><span class="p">(</span><span class="n">from</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>A plain lambda works in the same position, without naming <code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">OnSet(...)</span></code> attaches one after construction.</p>
+</section>
+<section id="occurrences-visibility">
+<h3>Occurrences &amp; Visibility<a class="headerlink" href="#occurrences-visibility" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Occurrence</span></code>: <code class="docutils literal notranslate"><span class="pre">Optional</span></code> (default), <code class="docutils literal notranslate"><span class="pre">Required</span></code>, <code class="docutils literal notranslate"><span class="pre">ZeroOrMore</span></code>, <code class="docutils literal notranslate"><span class="pre">OneOrMore</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Visibility</span></code>: <code class="docutils literal notranslate"><span class="pre">Normal</span></code> (default), <code class="docutils literal notranslate"><span class="pre">Hidden</span></code> (omits from help).</p></li>
+</ul>
+</section>
+</section>
+<section id="value-precedence">
+<h2>Value Precedence<a class="headerlink" href="#value-precedence" title="Link to this heading">#</a></h2>
+<p>Every option resolves through four sources, each free to overwrite the one before it:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1. Default(...)    the value the programmer compiled in
+2. config file     the committed baseline, via parse_with_config
+3. environment     the per-shell or per-job override
+4. command line    the per-invocation override
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">OptionBase::value_source</span></code> records which of them supplied the value that is
+in effect, and <code class="docutils literal notranslate"><span class="pre">was_specified()</span></code> answers whether anything other than the
+default did.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Threads</span><span class="p">.</span><span class="n">value_source</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Source</span><span class="o">::</span><span class="n">Environment</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"threads came from {}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">Threads</span><span class="p">.</span><span class="n">effective_env_name</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h2>
+<p>An option becomes environment-sensitive in one of two ways.</p>
+<p>Naming one explicitly with <code class="docutils literal notranslate"><span class="pre">Env(&quot;NAME&quot;)</span></code> always works, prefix policy or not:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Arch</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"einsums:simd:arch"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="s">"Highest SIMD rung to use"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">SimdCat</span><span class="p">,</span><span class="w"> </span><span class="n">Env</span><span class="p">(</span><span class="s">"EINSUMS_SIMD_ARCH"</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Installing a prefix on the registry gives <em>every</em> option a derived name at once:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Registry</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">set_env_prefix</span><span class="p">(</span><span class="s">"EINSUMS"</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Derivation upper-cases the long name, turns each run of separators into a
+single underscore, and prepends the prefix unless the name already carries it:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>einsums:log:level              -&gt;  EINSUMS_LOG_LEVEL
+einsums:profile:wait-for-viewer -&gt; EINSUMS_PROFILE_WAIT_FOR_VIEWER
+buffer-size                    -&gt;  EINSUMS_BUFFER_SIZE
+</pre></div>
+</div>
+<p>An explicit <code class="docutils literal notranslate"><span class="pre">Env(...)</span></code> overrides the derived name, and <code class="docutils literal notranslate"><span class="pre">NoEnv</span></code> opts an
+option out of derivation entirely. With no prefix set, only options that name
+a variable read the environment.</p>
+<p>Rules worth knowing:</p>
+<ul class="simple">
+<li><p>An unset <strong>or empty</strong> variable counts as not specified, so <code class="docutils literal notranslate"><span class="pre">FOO=</span></code> leaves the default in place.</p></li>
+<li><p>A value that will not parse is an error naming the variable, not a silent fallback: <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">environment</span> <span class="pre">variable</span> <span class="pre">EINSUMS_LOG_LEVEL:</span> <span class="pre">invalid</span> <span class="pre">integer</span> <span class="pre">'abc'</span></code>.</p></li>
+<li><p>Environment names appear in <code class="docutils literal notranslate"><span class="pre">--help</span></code> as <code class="docutils literal notranslate"><span class="pre">[env:</span> <span class="pre">NAME]</span></code>.</p></li>
+</ul>
+<section id="flags-read-presence-not-a-value">
+<h3>Flags read presence, not a value<a class="headerlink" href="#flags-read-presence-not-a-value" title="Link to this heading">#</a></h3>
+<p>On the command line a <code class="docutils literal notranslate"><span class="pre">Flag</span></code> carries its meaning in its presence. A config
+file or environment variable has no presence to observe, so its value answers
+that question instead: a truthy value applies the flag exactly as if it had
+been named on the command line, and a falsey value leaves the default alone.</p>
+<p>This is what makes generated negations behave. A flag declared in the positive</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kr">inline</span><span class="w"> </span><span class="k">constinit</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">ConfigOption</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">DiagnosticsOnTerminate</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">config_flag</span><span class="p">(</span><span class="s">"einsums:debug:diagnostics-on-terminate"</span><span class="p">,</span>
+<span class="w">                    </span><span class="s">"Print extra diagnostics on the way down"</span><span class="p">,</span><span class="w"> </span><span class="s">"Debug"</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>registers <code class="docutils literal notranslate"><span class="pre">einsums:debug:no-diagnostics-on-terminate</span></code> alongside it.
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_DEBUG_NO_DIAGNOSTICS_ON_TERMINATE=1</span></code> means <em>yes, do not print them</em>, applying the negation
+exactly as if it had been named on the command line, so
+<code class="docutils literal notranslate"><span class="pre">config::get(option::DiagnosticsOnTerminate)</span></code> reads false. <code class="docutils literal notranslate"><span class="pre">=0</span></code> means the negation was not
+requested, leaving the option at its default. Setting <code class="docutils literal notranslate"><span class="pre">EINSUMS_DEBUG_DIAGNOSTICS_ON_TERMINATE</span></code> works
+the same way on the positive spelling. An <code class="docutils literal notranslate"><span class="pre">Opt&lt;bool&gt;</span></code> is unaffected by this rule: its variable supplies the value directly.</p>
+</section>
+<section id="mutual-exclusion-respects-precedence">
+<h3>Mutual exclusion respects precedence<a class="headerlink" href="#mutual-exclusion-respects-precedence" title="Link to this heading">#</a></h3>
+<p>Options in the same <code class="docutils literal notranslate"><span class="pre">ExclusiveCategory</span></code> conflict only when they are resolved
+at the <em>same</em> precedence level. Passing <code class="docutils literal notranslate"><span class="pre">--yes</span> <span class="pre">--no</span></code> on one command line is a
+contradiction and fails; setting one in the environment and the other on the
+command line is not, because the command line simply outranks the environment.</p>
+</section>
+</section>
+<section id="custom-value-types">
+<h2>Custom value types<a class="headerlink" href="#custom-value-types" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">parse_value</span></code> is an ADL customization point. Declaring one for your own type
+in its own namespace is enough to use it with <code class="docutils literal notranslate"><span class="pre">Opt&lt;T&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">List&lt;T&gt;</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">myapp</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Size</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">bytes</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">parse_value</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sv</span><span class="p">,</span><span class="w"> </span><span class="n">Size</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... fill out.bytes, or set err and return false</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Opt</span><span class="o">&lt;</span><span class="n">myapp</span><span class="o">::</span><span class="n">Size</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Buffer</span><span class="p">{</span><span class="s">"buffer"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="s">"Buffer size"</span><span class="p">,</span><span class="w"> </span><span class="n">Cat</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Parsable</span></code> concept expresses this requirement, so a type without a
+<code class="docutils literal notranslate"><span class="pre">parse_value</span></code> is rejected at the point of declaration with a readable
+message rather than at link time.</p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<section id="construction-variadic-named-style">
+<h3>Construction (variadic, named-style)<a class="headerlink" href="#construction-variadic-named-style" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Flag</span>
+<span class="n">Flag</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">     </span><span class="cm">/* extras: */</span><span class="w"> </span><span class="n">OptionCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">ExclusiveCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Visibility</span><span class="p">,</span><span class="w"> </span><span class="n">Occurrence</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">Location</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="kt">bool</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="kt">bool</span><span class="p">),</span>
+<span class="w">                  </span><span class="n">Env</span><span class="p">(</span><span class="s">"NAME"</span><span class="p">),</span><span class="w"> </span><span class="n">NoEnv</span><span class="p">);</span>
+
+<span class="c1">// Opt&lt;T&gt; (without positional default value)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Parsable</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">Opt</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/* extras: */</span><span class="w"> </span><span class="n">OptionCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">ExclusiveCategory</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="n">Visibility</span><span class="p">,</span><span class="w"> </span><span class="n">Occurrence</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">ValueExpected</span><span class="p">,</span><span class="w"> </span><span class="n">Range</span><span class="p">,</span><span class="w"> </span><span class="n">Location</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+<span class="w">                 </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">"NAME"</span><span class="p">),</span><span class="w"> </span><span class="n">Env</span><span class="p">(</span><span class="s">"NAME"</span><span class="p">),</span><span class="w"> </span><span class="n">NoEnv</span><span class="p">);</span>
+
+<span class="c1">// Opt&lt;T&gt; (with positional default value)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Parsable</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">Opt</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="n">defaultValue</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/* extras: ... as above ... */</span><span class="p">);</span>
+
+<span class="c1">// List&lt;T&gt; (named)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Parsable</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">List</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">     </span><span class="cm">/* extras: OptionCategory&amp;, ExclusiveCategory&amp;, Visibility, Occurrence,</span>
+<span class="cm">                Env("NAME"), NoEnv */</span><span class="p">);</span>
+
+<span class="c1">// List&lt;T&gt; (positional gather)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Parsable</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">List</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">positionalName</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">);</span>
+
+<span class="c1">// OptEnum&lt;Enum&gt;</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Enum</span><span class="o">&gt;</span>
+<span class="n">OptEnum</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Enum</span><span class="w"> </span><span class="n">defaultValue</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="p">,</span><span class="w"> </span><span class="n">Enum</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">choices</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">        </span><span class="cm">/* extras: OptionCategory&amp;, Location&lt;Enum&gt;, Setter&lt;Enum&gt;, ... */</span><span class="p">);</span>
+
+<span class="c1">// Alias</span>
+<span class="n">Alias</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">longName</span><span class="p">,</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shorts</span><span class="p">,</span>
+<span class="w">      </span><span class="n">OptionBase</span><span class="o">&amp;</span><span class="w"> </span><span class="n">target</span><span class="p">,</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">helpText</span><span class="p">,</span>
+<span class="w">      </span><span class="cm">/* extras: OptionCategory&amp;, Visibility, Occurrence, a preset value string */</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="parsing">
+<h3>Parsing<a class="headerlink" href="#parsing" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">ParseResult</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ok</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">exit_code</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+
+<span class="n">ParseResult</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">programName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">unknown_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">);</span>
+
+<span class="n">ParseResult</span><span class="w"> </span><span class="nf">parse_with_config</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">programName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">config_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">unknown_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::string&gt;</span></code> converts to the <code class="docutils literal notranslate"><span class="pre">args</span></code> span implicitly, so
+existing call sites need no change.</p>
+</section>
+</section>
+<section id="behavior-semantics">
+<h2>Behavior &amp; Semantics<a class="headerlink" href="#behavior-semantics" title="Link to this heading">#</a></h2>
+<section id="option-names">
+<h3>Option Names<a class="headerlink" href="#option-names" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Long: <code class="docutils literal notranslate"><span class="pre">--threads</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">--threads=8</span></code>.</p></li>
+<li><p>Short (bundles allowed): <code class="docutils literal notranslate"><span class="pre">-v</span></code>, <code class="docutils literal notranslate"><span class="pre">-abc</span></code>, <code class="docutils literal notranslate"><span class="pre">-o12</span></code> or <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">12</span></code>.</p></li>
+</ul>
+<p>Declaring the same long name twice is a programming error and is reported at
+parse time rather than letting one option silently shadow the other.</p>
+</section>
+<section id="implicit-values">
+<h3>Implicit Values<a class="headerlink" href="#implicit-values" title="Link to this heading">#</a></h3>
+<p>For options with <code class="docutils literal notranslate"><span class="pre">ValueExpected::ValueRequired</span></code>, the parser <strong>only consumes the next token
+as a value if it does not look like another option</strong>. Otherwise it passes <code class="docutils literal notranslate"><span class="pre">std::nullopt</span></code> to the
+option, allowing <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code> to apply. Examples:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--level</span></code>  =&gt; if <code class="docutils literal notranslate"><span class="pre">ImplicitValue(7)</span></code> set, then 7</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--level=9</span></code> =&gt; 9</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-l</span></code> (last in bundle) =&gt; apply implicit value if configured</p></li>
+</ul>
+<p>An option declared <code class="docutils literal notranslate"><span class="pre">ValueExpected::ValueDisallowed</span></code>, such as <code class="docutils literal notranslate"><span class="pre">--help</span></code>,
+rejects <code class="docutils literal notranslate"><span class="pre">--help=x</span></code> rather than trying to parse the value.</p>
+</section>
+<section id="numeric-look-ahead-rule">
+<h3>Numeric look-ahead rule<a class="headerlink" href="#numeric-look-ahead-rule" title="Link to this heading">#</a></h3>
+<p>Tokens like <code class="docutils literal notranslate"><span class="pre">-5</span></code> or <code class="docutils literal notranslate"><span class="pre">-3.14</span></code> are treated as <strong>values</strong> (not options) when they are expected
+to be consumed as the next value.</p>
+</section>
+<section id="positional-list-gathering">
+<h3>Positional List Gathering<a class="headerlink" href="#positional-list-gathering" title="Link to this heading">#</a></h3>
+<p>A positional <code class="docutils literal notranslate"><span class="pre">List&lt;std::string&gt;</span></code> stays “active” and gathers subsequent bare tokens. A positional
+list of any other element type takes a single token. For example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">"inputs"</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">"Input files"</span><span class="p">};</span>
+<span class="c1">// ./app a.txt b.txt c.txt  =&gt; Inputs.values() == {"a.txt","b.txt","c.txt"}</span>
+</pre></div>
+</div>
+</section>
+<section id="unknown-arguments">
+<h3>Unknown Arguments<a class="headerlink" href="#unknown-arguments" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Any unrecognized option (e.g., <code class="docutils literal notranslate"><span class="pre">--weird</span></code>) or short (e.g., <code class="docutils literal notranslate"><span class="pre">-z</span></code>) is appended to <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code>.</p></li>
+<li><p>Everything <strong>after</strong> a literal <code class="docutils literal notranslate"><span class="pre">--</span></code> is appended to <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code>.</p></li>
+</ul>
+</section>
+<section id="config-files">
+<h3>Config Files<a class="headerlink" href="#config-files" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">parse_with_config</span></code> accepts:</p>
+<ul class="simple">
+<li><p><strong>Key/Value</strong> (<code class="docutils literal notranslate"><span class="pre">.env</span></code>-ish): lines of <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">value</span></code>; <code class="docutils literal notranslate"><span class="pre">#</span></code> starts a comment.</p></li>
+<li><p><strong>Flat JSON object</strong>: <code class="docutils literal notranslate"><span class="pre">{&quot;threads&quot;:</span> <span class="pre">12,</span> <span class="pre">&quot;output&quot;:</span> <span class="pre">&quot;a.bin&quot;,</span> <span class="pre">&quot;verbose&quot;:</span> <span class="pre">true}</span></code>.</p></li>
+</ul>
+<p>Keys are matched to long option names (case-insensitive).</p>
+</section>
+<section id="built-in-options">
+<h3>Built-in Options<a class="headerlink" href="#built-in-options" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--help</span></code> (alias <code class="docutils literal notranslate"><span class="pre">-h</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--version</span></code></p></li>
+</ul>
+<p>These are always present. The parser <strong>short-circuits</strong>:</p>
+<ul class="simple">
+<li><p>On <code class="docutils literal notranslate"><span class="pre">--help</span></code>: prints help and returns <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=0}</span></code></p></li>
+<li><p>On <code class="docutils literal notranslate"><span class="pre">--version</span></code>: prints version and returns <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=0}</span></code></p></li>
+</ul>
+</section>
+<section id="help-layout">
+<h3>Help Layout<a class="headerlink" href="#help-layout" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">--help</span></code> prints usage, categories, normal-visibility options, and positional arguments.
+Each line reports the option’s environment variable and, where there is one to show, its default: a
+flag shows its default only when it is true, an <code class="docutils literal notranslate"><span class="pre">Opt</span></code> declared without a default shows none, and a
+generated <code class="docutils literal notranslate"><span class="pre">no-</span></code> twin is noted as <code class="docutils literal notranslate"><span class="pre">[negate:</span> <span class="pre">--no-...]</span></code>. Long help text wraps
+to the terminal width with a hanging indent. <code class="docutils literal notranslate"><span class="pre">COLUMNS</span></code> overrides the detected width, which is
+what a test should pin to get stable output.</p>
+<p><code class="docutils literal notranslate"><span class="pre">format_help(prog)</span></code> returns the same text as a string, for callers that want to
+paginate it or assert on it.</p>
+</section>
+<section id="validation-errors">
+<h3>Validation &amp; Errors<a class="headerlink" href="#validation-errors" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Missing required options or invalid values cause <code class="docutils literal notranslate"><span class="pre">{ok=false,</span> <span class="pre">exit_code=1}</span></code> and a message to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RangeBetween(min,</span> <span class="pre">max)</span></code> checks bounds. Integral and floating point bounds are kept separately, so <code class="docutils literal notranslate"><span class="pre">RangeBetween(0.0,</span> <span class="pre">1.0)</span></code> is a genuine fractional bound rather than a truncated one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OptEnum</span></code> reports invalid choices and lists allowed keys.</p></li>
+</ul>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
+<section id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Log</span><span class="p">{</span><span class="s">"Logging"</span><span class="p">};</span>
+<span class="n">Flag</span><span class="w"> </span><span class="n">Verbose</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"verbose"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'v'</span><span class="p">},</span><span class="w"> </span><span class="s">"Enable verbose logging"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">Log</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span><span class="w"> </span><span class="n">ImplicitValue</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="integers-with-range-and-implicit">
+<h3>Integers with Range and Implicit<a class="headerlink" href="#integers-with-range-and-implicit" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Perf</span><span class="p">{</span><span class="s">"Performance"</span><span class="p">};</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"threads"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'t'</span><span class="p">},</span><span class="w"> </span><span class="s">"Number of threads"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+<span class="w">  </span><span class="n">Perf</span><span class="p">,</span><span class="w"> </span><span class="n">RangeBetween</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">),</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">"N"</span><span class="p">)</span>
+<span class="p">};</span><span class="w"> </span><span class="c1">// --threads=8 =&gt; 8</span>
+</pre></div>
+</div>
+</section>
+<section id="strings-paths">
+<h3>Strings &amp; Paths<a class="headerlink" href="#strings-paths" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">IO</span><span class="p">{</span><span class="s">"I/O"</span><span class="p">};</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Output</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"output"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'o'</span><span class="p">},</span><span class="w"> </span><span class="s">"Output file"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span><span class="s">"a.out"</span><span class="p">}),</span>
+<span class="w">  </span><span class="n">IO</span><span class="p">,</span><span class="w"> </span><span class="n">ValueName</span><span class="p">(</span><span class="s">"PATH"</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="lists-named-and-positional">
+<h3>Lists (named and positional)<a class="headerlink" href="#lists-named-and-positional" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Include</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"include"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'I'</span><span class="p">},</span><span class="w"> </span><span class="s">"Include directories"</span><span class="p">,</span>
+<span class="w">  </span><span class="n">IO</span>
+<span class="p">};</span><span class="w"> </span><span class="c1">// --include=inc1,inc2 or --include inc1 --include inc2</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Inputs</span><span class="p">{</span><span class="s">"inputs"</span><span class="p">,</span><span class="w"> </span><span class="n">Positional</span><span class="p">{},</span><span class="w"> </span><span class="s">"Input files"</span><span class="p">};</span>
+<span class="c1">// gathers bare tokens at end: ./app a b c</span>
+</pre></div>
+</div>
+</section>
+<section id="enums">
+<h3>Enums<a class="headerlink" href="#enums" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Mode</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Fast</span><span class="p">,</span><span class="w"> </span><span class="n">Accurate</span><span class="p">,</span><span class="w"> </span><span class="n">Debug</span><span class="w"> </span><span class="p">};</span>
+<span class="n">OptionCategory</span><span class="w"> </span><span class="n">Modes</span><span class="p">{</span><span class="s">"Mode"</span><span class="p">};</span>
+
+<span class="n">OptEnum</span><span class="o">&lt;</span><span class="n">Mode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ModeOpt</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"mode"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Fast</span><span class="p">,</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="p">{</span><span class="s">"fast"</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Fast</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">"accurate"</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Accurate</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">"debug"</span><span class="p">,</span><span class="w"> </span><span class="n">Mode</span><span class="o">::</span><span class="n">Debug</span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="s">"Execution mode"</span><span class="p">,</span><span class="w"> </span><span class="n">Modes</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="aliases">
+<h3>Aliases<a class="headerlink" href="#aliases" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Make --fast an alias for --mode=fast</span>
+<span class="n">Alias</span><span class="w"> </span><span class="n">FastAlias</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"fast"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="n">ModeOpt</span><span class="p">,</span><span class="w"> </span><span class="s">"Alias: fast mode"</span><span class="p">,</span><span class="w"> </span><span class="n">Modes</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"fast"</span><span class="p">)</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="binding-and-callbacks">
+<h3>Binding and Callbacks<a class="headerlink" href="#binding-and-callbacks" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">OptionCategory</span><span class="w"> </span><span class="n">Tuning</span><span class="p">{</span><span class="s">"Tuning"</span><span class="p">};</span>
+
+<span class="c1">// Bind to external storage</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">threads_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Threads</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"threads"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="sc">'t'</span><span class="p">},</span><span class="w"> </span><span class="s">"Threads"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+<span class="w">  </span><span class="n">Tuning</span><span class="p">,</span><span class="w"> </span><span class="n">Location</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">threads_bound</span><span class="p">)</span>
+<span class="p">};</span>
+
+<span class="c1">// Callback on assignment, from any source</span>
+<span class="n">Opt</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Batch</span><span class="p">{</span>
+<span class="w">  </span><span class="s">"batch"</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="s">"Batch size"</span><span class="p">,</span><span class="w"> </span><span class="n">Default</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+<span class="w">  </span><span class="n">Tuning</span><span class="p">,</span><span class="w"> </span><span class="n">Setter</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{[](</span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="n">from</span><span class="p">){</span>
+<span class="w">    </span><span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"Reconfiguring batch={} (source: {})</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">to_string</span><span class="p">(</span><span class="n">from</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="thread-safety-reentrancy">
+<h2>Thread-Safety &amp; Reentrancy<a class="headerlink" href="#thread-safety-reentrancy" title="Link to this heading">#</a></h2>
+<p>Reading through a descriptor is safe from any thread at any time. That is a property of the design, not
+of a convention callers have to keep:</p>
+<ul class="simple">
+<li><p><strong>Descriptors are immutable</strong> once declared, so finding an option needs no synchronization at all.</p></li>
+<li><p><strong>Each option’s value lives in its own slot</strong>, atomic for <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">std::int64_t</span></code>, and <code class="docutils literal notranslate"><span class="pre">double</span></code>,
+and an atomic pointer to an immutable snapshot for <code class="docutils literal notranslate"><span class="pre">std::string</span></code>. Once a descriptor has found its
+slot, <code class="docutils literal notranslate"><span class="pre">config::get</span></code> is a slot load: no lock, no hash, no map. The first read through each descriptor
+copy, and every read before the option is registered, takes the registry mutex for one map lookup.
+<code class="docutils literal notranslate"><span class="pre">config::set</span></code> and <code class="docutils literal notranslate"><span class="pre">set_dynamic</span></code> are safe against concurrent readers.</p></li>
+<li><p><strong>Locks are few and ordered.</strong> The registry mutex guards registration and the dynamic keys; each entry
+also has a snapshot mutex for string values and an observer mutex for its callbacks. Registration takes
+an entry’s snapshot and observer locks while holding the registry mutex, never the other way round.</p></li>
+<li><p><strong>Callbacks run outside the lock.</strong> A <code class="docutils literal notranslate"><span class="pre">Setter</span></code> fires after the value is stored, with nothing held.</p></li>
+</ul>
+<p>Two things remain the caller’s responsibility:</p>
+<ul class="simple">
+<li><p>A read followed by a write is not atomic. Each half is safe; the pair is not.</p></li>
+<li><p>Two options read separately can straddle a concurrent write to both. Code that needs a coherent view
+of several settings should snapshot them into a struct, which is also what a hot path wants.</p></li>
+</ul>
+<p>Registration and parsing are still a single-threaded startup activity, and now say so: the registry is
+frozen once parsing finishes, and a late registration trips an <code class="docutils literal notranslate"><span class="pre">assert</span></code> (a debug-build check; a
+release build does not catch it). Values may be written
+after the freeze, which is what makes <code class="docutils literal notranslate"><span class="pre">config::set</span></code> usable from a test.</p>
+<p>For the parser layer specifically:</p>
+<ul class="simple">
+<li><p>Options add themselves to the registry on construction and remove themselves on destruction, so an option with automatic storage duration is safe to declare inside a scope.</p></li>
+<li><p>Each <code class="docutils literal notranslate"><span class="pre">parse</span></code> resets the state left by the previous one, so occurrence counts and gathered <code class="docutils literal notranslate"><span class="pre">List</span></code> items do not accumulate across repeated parses in one process.</p></li>
+<li><p>Concurrent calls to <code class="docutils literal notranslate"><span class="pre">parse(...)</span></code> are not supported; serialize them.</p></li>
+<li><p>Reading the environment during <code class="docutils literal notranslate"><span class="pre">parse</span></code> is a plain <code class="docutils literal notranslate"><span class="pre">std::getenv</span></code>. Mutating the environment concurrently from another thread is undefined behavior on every platform; configure before threads exist.</p></li>
+</ul>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading">#</a></h2>
+<dl class="simple">
+<dt>How do implicit values work with short options?</dt><dd><p>If a short option that requires a value is the last in a bundle (<code class="docutils literal notranslate"><span class="pre">-l</span></code>), the parser will consume
+the next token only if it <strong>doesn’t look like an option</strong>; otherwise <code class="docutils literal notranslate"><span class="pre">ImplicitValue(...)</span></code> applies.</p>
+</dd>
+<dt>Why are unknown options not an error?</dt><dd><p>To emulate LLVM’s flexibility and to ease integration with upstream tools, unknown tokens and
+passthrough arguments (after <code class="docutils literal notranslate"><span class="pre">--</span></code>) are returned to the caller in <code class="docutils literal notranslate"><span class="pre">unknown_args</span></code> for further dispatch.</p>
+</dd>
+<dt>Can I bind directly into application config structs?</dt><dd><p>Yes, use <code class="docutils literal notranslate"><span class="pre">Location&lt;T&gt;</span></code> to a field that outlives parsing, or use <code class="docutils literal notranslate"><span class="pre">Setter&lt;T&gt;</span></code> to translate,
+validate, and write into your own structure.</p>
+</dd>
+<dt>How do I find out where a value came from?</dt><dd><p>Read <code class="docutils literal notranslate"><span class="pre">value_source</span></code> on the option, and <code class="docutils literal notranslate"><span class="pre">effective_env_name()</span></code> for the variable it consulted.</p>
+</dd>
+</dl>
+<p>See the <a class="reference internal" href="../../../../api/cpp/Einsums/Options/index.html#modules-einsums-options-api"><span class="std std-ref">API reference</span></a> of this module for more
+details.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../Logging/docs/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Logging</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../PackedGemm/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">PackedGemm</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#two-layers-and-which-one-you-want">Two layers, and which one you want</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-an-option">Declaring an option</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#registering">Registering</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-an-option">Reading an option</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-keys">Dynamic keys</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enumerating-the-options">Enumerating the options</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-concepts">Core Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#categories">Categories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-options">Types of Options</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#named-parameter-tags">Named Parameter Tags</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings-callbacks">Bindings &amp; Callbacks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#occurrences-visibility">Occurrences &amp; Visibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#value-precedence">Value Precedence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-variables">Environment Variables</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flags-read-presence-not-a-value">Flags read presence, not a value</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mutual-exclusion-respects-precedence">Mutual exclusion respects precedence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-value-types">Custom value types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#construction-variadic-named-style">Construction (variadic, named-style)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing">Parsing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavior-semantics">Behavior &amp; Semantics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#option-names">Option Names</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-values">Implicit Values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-look-ahead-rule">Numeric look-ahead rule</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-list-gathering">Positional List Gathering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unknown-arguments">Unknown Arguments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#config-files">Config Files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-options">Built-in Options</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#help-layout">Help Layout</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-errors">Validation &amp; Errors</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flags">Flags</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integers-with-range-and-implicit">Integers with Range and Implicit</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#strings-paths">Strings &amp; Paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lists-named-and-positional">Lists (named and positional)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enums">Enums</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aliases">Aliases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#binding-and-callbacks">Binding and Callbacks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thread-safety-reentrancy">Thread-Safety &amp; Reentrancy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#faq">FAQ</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

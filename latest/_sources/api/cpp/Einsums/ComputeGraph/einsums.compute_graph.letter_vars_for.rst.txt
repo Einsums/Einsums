@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.letter_vars_for:
+
+=======================================
+einsums::compute_graph::letter_vars_for
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: LetterVars letter_vars_for(const EinsumDescriptor &desc)
+
+   The letter lookup for one einsum node.
+
+   :param desc: The node's descriptor.
+   :returns: A lookup over its ``EinsumDescriptor::letter_spaces``.

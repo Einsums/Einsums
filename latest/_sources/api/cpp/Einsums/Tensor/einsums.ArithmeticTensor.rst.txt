@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ArithmeticTensor:
+
+=========================
+einsums::ArithmeticTensor
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/ArithmeticTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank, typename... Args> ArithmeticTensor : public tensor_base::CoreTensor
+
+   This struct allows for lazy evaluation of simple arithmetic expressions without the need to create
+   several intermediate tensors.
+
+   The goal is to have these be turned into simple arithmetic expressions
+   on the elements of the input tensors at compile time. Then, when an assignment is performed, the
+   elements of the tensors are looped and placed through this arithmetic expression.
+
+   :tparam T: The underlying type.
+   :tparam Rank: The rank of the tensors.
+   :tparam Args: The specific set of operations needed to perform the arithmetic operations.
+
+
+   .. cpp:function:: ArithmeticTensor(const std::tuple<Args...> &input, Dim<Rank> dims)
+
+      Construct a new ArithmeticTensor using the given tuple and the dimensions.
+
+      :param input: The tuple that defines the arithmetic operation.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: template <typename... MultiIndex> T operator()(MultiIndex... inds) const
+
+      Evaluate the tensor at a given index.
+
+
+   .. cpp:function:: const std::tuple<Args...> * get_tuple() const
+
+      Gets the tuple that defines the arithmetic operation.
+
+
+   .. cpp:function:: Dim<Rank> dims() const
+
+      Gets the dimensions of the tensor.
+
+      :returns: The dimensions of the tensor.
+
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Gets the dimension of a tensor along a given axis.
+
+      :param d: The axis to query.
+      :returns: The dimension along the axis being queried.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Gets the name of the tensor.
+
+      :returns: The name of the tensor.
+
+
+   .. cpp:function:: void set_name(const std::string &new_name)
+
+      Sets the name of the tensor.
+
+      :param new_name: The new name of the tensor.
+
+
+   .. cpp:function:: bool full_view_of_underlying() const noexcept
+
+      Indicates that the tensor is contiguous.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor.

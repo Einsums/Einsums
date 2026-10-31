@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.nrm2:
+
+========================
+einsums::gpu::blas::nrm2
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: template <typename T> T nrm2(int64_t n, const T *x, int64_t incx)
+
+   L2 norm on device memory: result = ||x||_2.
+
+   :param n: Number of elements.
+   :param x: Device pointer to the vector.
+   :param incx: Stride for x.
+   :returns: The Euclidean norm.

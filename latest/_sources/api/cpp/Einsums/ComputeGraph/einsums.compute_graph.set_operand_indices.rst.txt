@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.set_operand_indices:
+
+===========================================
+einsums::compute_graph::set_operand_indices
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void set_operand_indices(EinsumDescriptor &desc, EinsumOperand operand, std::vector<std::string> indices)
+
+   Rewrite one operand's index list, live and snapshot together.
+
+   A rewriter has to keep the two in step, because analysis passes read the snapshot and the
+   executor reads the live block. This writes both, re-derives the link and target lists from the
+   new lists, and re-renders the live block's diagnostic text.
+
+   :param desc: The descriptor to rewrite.
+   :param operand: Which list to replace.
+   :param indices: The new list.

@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.indices_to_sentinel:
+
+============================
+einsums::indices_to_sentinel
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t num_unique_inds> size_t indices_to_sentinel(const size_t *unique_strides, const size_t *inds) noexcept
+
+   The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+
+
+.. cpp:function:: template <size_t num_unique_inds> size_t indices_to_sentinel(const std::array<std::int64_t, num_unique_inds> &unique_strides, const std::array<size_t, num_unique_inds> &inds) noexcept
+
+   The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+
+
+.. cpp:function:: template <size_t num_unique_inds> size_t indices_to_sentinel(const std::array<size_t, num_unique_inds> &unique_strides, const std::array<size_t, num_unique_inds> &inds) noexcept
+
+   The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+
+
+.. cpp:function:: template <size_t num_unique_inds, typename... MultiIndex> requires (std::is_integral_v<std::decay_t<MultiIndex>> && ...) constexpr size_t indices_to_sentinel(const std::array<std::int64_t, num_unique_inds> &unique_strides, MultiIndex &&... indices) noexcept
+
+   The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+
+
+.. cpp:function:: template <typename StorageType1, typename StorageType2> requires (!std::is_arithmetic_v<StorageType1> && !std::is_arithmetic_v<StorageType2>) size_t indices_to_sentinel(const StorageType1 &unique_strides, const StorageType2 &inds)
+
+   The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.

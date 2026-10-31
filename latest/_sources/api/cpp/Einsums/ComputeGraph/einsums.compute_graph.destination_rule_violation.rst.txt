@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.destination_rule_violation:
+
+==================================================
+einsums::compute_graph::destination_rule_violation
+==================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DestinationRead.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<std::string> destination_rule_violation(const Graph &graph, const Node &node)
+
+   Why ``node`` breaks the destination rule, or empty when it keeps it.
+
+   Compared by buffer through ``graph``, so a destination listed through a view of it counts.

@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.FactorTensor:
+
+====================================
+einsums::compute_graph::FactorTensor
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Factorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: FactorTensor
+
+   One factor tensor a provider introduces, described in the provider's own alphabet.
+
+   Letters are the provider's, not the graph's. A provider describing DF writes the ERI's
+   axes as whatever it called them in ``FactorizationPlan::tagged_letters`` and the new
+   auxiliary axis as a letter of its own; the pass renames all of them onto the letters the
+   consuming contraction actually uses. That is what lets one provider serve every contraction
+   a tagged tensor appears in, whatever letters those happen to be spelled with.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string name
+
+      Name for the tensor the pass will create. Made unique if it collides.
+
+
+   .. cpp:member:: std::vector<std::string> letters
+
+      Its index letters, in axis order, in the provider's alphabet.
+
+
+   .. cpp:member:: std::vector<std::size_t> dims
+
+      Extents, in letter order. A letter shared with the tagged tensor must agree with that
+      tensor's extent on the axis it names, which the pass checks rather than assumes.
+
+
+   .. cpp:member:: std::vector<std::string> spaces
+
+      Index-space names, in letter order. An empty string is an unannotated axis, which is
+      legal and yields a weaker cost comparison rather than no comparison.
+
+
+   .. cpp:member:: packed_gemm::ScalarType dtype
+
+      Element type of the factor.

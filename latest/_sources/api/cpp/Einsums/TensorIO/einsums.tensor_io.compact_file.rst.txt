@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.compact_file:
+
+================================
+einsums::tensor_io::compact_file
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void compact_file(std::string path)
+
+   Rewrite ``path`` without the space no entry uses.
+
+   The file is the old one or the compacted one whenever the program stops, and the disk needs room
+   for the entries' bytes while this runs. See ``TensorFile::compact``.
+
+   .. versionadded:: 2.0.0
+
+   :throws std::runtime_error: when the file is missing.

@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.reconstruction_blocker:
+
+==============================================
+einsums::compute_graph::reconstruction_blocker
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string reconstruction_blocker(const Node &node)
+
+   Why ``node`` cannot be rebuilt from data alone.
+
+   Checks more than ``is_reconstructible``: a kind with a builder entry can
+   still carry a descriptor alternative that entry does not handle (the tiled
+   variants), or no descriptor at all where one is required.
+
+   :param node: The node to inspect.
+   :returns: An empty string when the node IS reconstructible; otherwise a short phrase naming the field or property that blocks it.

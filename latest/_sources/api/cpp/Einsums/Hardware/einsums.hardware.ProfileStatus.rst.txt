@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.ProfileStatus:
+
+================================
+einsums::hardware::ProfileStatus
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:class:: ProfileStatus
+
+   A profile file's verdict: its state, its path and, unless loaded cleanly, why.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: bool in_use() const noexcept
+
+      Whether the file's sections are in use.
+
+
+   .. cpp:member:: ProfileState state
+
+      What became of the file.
+
+
+   .. cpp:member:: std::string path
+
+      The file the verdict is about; empty for ``ProfileState::None``.
+
+
+   .. cpp:member:: std::string reason
+
+      Why it is not plainly loaded; empty when it is.

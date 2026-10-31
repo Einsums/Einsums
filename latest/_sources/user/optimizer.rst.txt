@@ -1,0 +1,1040 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+.. _tutorial-optimizer:
+
+*************************************
+Tutorial: The Algebraic Optimizer
+*************************************
+
+Most optimizers rewrite the schedule of a computation whose mathematics is
+fixed. This one can also rewrite the mathematics: it can substitute a
+factorization for an integral, replace an energy denominator by a quadrature,
+truncate a space, re-bracket a product, and turn a program that declares
+four-index tensors into a loop that never holds one.
+
+None of that happens by guesswork. Every rewrite is either exact, or opt-in and
+recorded, and each one is taken because the caller said something the graph
+could not otherwise know: what an axis ranges over, what a tensor is, or what
+factored form is available for it. This page is about those statements and what
+each of them buys.
+
+Everything below is written for the Python surface, ``import einsums.graph as
+cg``. The C++ spelling is the same vocabulary with the same names;
+``TagsAndProviders.cpp`` in the ComputeGraph examples is the C++ tour of the
+same ground.
+
+The two runnable tours are ``optimizer_tour.py``, which writes one
+density-fitted MP2 energy and drives it through every arm below, and
+``annotate_and_rebind.py``, which is the family story on its own. Both live in
+the ComputeGraph examples directory and both run offline from the fixture the
+DLPNO example carries, so nothing here needs an integral engine.
+
+Capture once, optimize, replay
+==============================
+
+The optimizer only ever sees a captured graph. Eager execution gets none of it,
+and that is deliberate: eager is the reference semantics this whole layer is
+validated against, so a numpy-style script stays eager and gets exactly what it
+wrote.
+
+.. code-block:: python
+
+    import einsums
+    import einsums.graph as cg
+
+    g = cg.Graph("mp2")
+    with cg.capture(g):
+        einsums.einsum("Q,i,a ; Q,j,b -> i,a,j,b", K, B, B)
+        ...
+
+    g.apply(cg.default_pass_manager())
+    g.execute()
+
+``default_pass_manager()`` is what a caller gets by asking for nothing. It holds
+the analysis passes, the schedule and memory passes, and the structural rewrites
+that have been proven exact. **No lossy pass is ever in it.** A factorization, a
+quadrature or a basis truncation is something a program asks for by name, and
+until it does, the answer the graph computes is the answer the program wrote.
+
+.. _optimizer-index-spaces:
+
+Saying what the axes are
+========================
+
+A tensor's dimensions say how big *this* problem is. An index space says what an
+axis ranges over and how that set grows, which is a statement about the whole
+family of problems the captured program stands for.
+
+Spaces are registered once, with the letter each contributes to a cost
+polynomial, an advisory extent for the family, a growth class, and the dim
+symbol a rebind solves for:
+
+.. code-block:: python
+
+    registry = cg.global_space_registry()
+    for name, symbol, extent, dim in (("occ", "o", 300.0, "nocc"),
+                                      ("vir", "v", 2700.0, "nvir"),
+                                      ("aux", "x", 9000.0, "naux")):
+        registry.register_space(cg.index_space(name, symbol, extent,
+                                               cg.GrowthClass.linear(), dim))
+
+Only the ratios of those extents reach the cost model. What they say is which
+regime the captured geometry stands for, which matters because the geometry in
+front of the optimizer is usually a small one.
+
+Tensors are annotated one entry per axis, by space name:
+
+.. code-block:: python
+
+    cg.annotate(B, ("aux", "occ", "vir"), graph=g)
+    cg.annotate(K, ("occ", "vir", "occ", "vir"), graph=g)
+
+Only a program's inputs need annotating. ``SpacePropagation`` carries the
+annotation through the intermediates, ``CrossSpaceValidation`` reports a
+contraction letter that binds two different spaces, and ``ScalingAnalysis``
+reports what the program costs as a polynomial in the scale symbols. Those three
+are described in the :ref:`compute graph tutorial <tutorial-compute-graph>`.
+
+An einsum over three or more operands captured after the annotation is planned
+by it as well: of the orders it can contract the operands in, it takes the one
+that scales best by the declared spaces, as ``MultiTermFactorization`` ranks a
+product, and the extents decide only what the spaces leave open.
+
+Why the family annotation decides rewrites
+------------------------------------------
+
+Some rewrites are cheaper at every size and some are cheaper only past a
+crossover. The second kind cannot be judged from the extents a capture happens
+to hold, and this is not a corner case: it is where the interesting rewrites
+live.
+
+The opposite-spin MP2 energy is the plain example. Written as it stands it
+contracts the orbital indices into a four-index integral; with the denominator
+decoupled it contracts them away first and holds an auxiliary-by-auxiliary
+matrix per quadrature point instead. That trades ``o^2 v^2 Q`` for
+``o v Q^2 t``, and neither dominates the other, so the answer is a fact about
+extents. At water in cc-pVDZ, 84 auxiliary functions against 95
+occupied-virtual pairs, the captured form wins and the optimizer says so.
+Annotated for a system of a few thousand basis functions, which is where
+spin-opposite-scaled MP2 is used, the pairless form wins and the optimizer
+reaches it, with no four-index tensor left in the emitted graph.
+
+Both arms are in ``annotate_and_rebind.py``, and the pass is right both times.
+What the annotation changed is which problem it was right about.
+
+The same holds for the two rewrites that are family wins and constant-factor
+losses at a small molecule:
+
+* The **fourth-order opposite-spin form** above. Annotate the three-index
+  tensor with its spaces and the four-index intermediates with theirs; the
+  quadrature's own index is a registered space the transform annotates for you,
+  but only where the denominator itself is annotated, all axes or none.
+* The **tensor hypercontraction ladder**, where fitting the integral and the
+  amplitude on one grid takes the doubles ladder from degree six to degree five
+  while costing more arithmetic at water in cc-pVDZ, because a grid of a few
+  hundred points against a basis of a couple of dozen is what a small molecule's
+  grid looks like. What a caller must supply there is the grid space, through
+  ``ThcFactorization.register_grid_space``, and the annotation on the tensors it
+  fits.
+
+Where a rewrite pays only as a family, the optimizer declines it on an
+unannotated program, and the skip tally says the decomposed form is not
+symbolically cheaper. That is the correct answer to the question it was asked.
+
+Dim symbols, and a graph that outlives its geometry
+---------------------------------------------------
+
+A space carries a dim symbol, and an axis annotated with one is an axis a later
+bind may resize. Two things follow.
+
+The first is that the numeric veto on a factorization abstains over such an
+axis. A rewrite that is asymptotically better and slower at the size in hand is
+normally refused, because a graph rewritten into something slower than what it
+replaced is a real regression traded for a promise. Over an axis the graph
+itself declares resizable, the capture-time number is a placeholder and the veto
+says so rather than acting on it.
+
+The second is reuse. Declare the intermediates over the spaces rather than over
+numbers and the whole program moves:
+
+.. code-block:: python
+
+    g.annotate_dims(B, ["naux", "nocc", "nvir"])
+    occ, vir = registry.find("occ"), registry.find("vir")
+    axes = [cg.SpaceDim(occ), cg.SpaceDim(vir), cg.SpaceDim(occ), cg.SpaceDim(vir)]
+    K = g.declare_zero_tensor_over("K", axes, True)
+
+``declare_zero_tensor_over`` sizes the axes, annotates their spaces and writes
+their dim symbols in one statement, which is the spelling that cannot drift.
+``cg.fixed(8)`` is the literal axis for a dimension that means nothing
+chemically. ``annotate_dims`` is the one-axis-at-a-time form for a tensor the
+caller already allocated.
+
+``annotate_and_rebind.py`` captures the energy at water in cc-pVDZ, saves it,
+binds it to cc-pVTZ, and replays it there against a pair-driven oracle. The
+occupied count is unchanged, the virtual count goes from 19 to 53 and the
+auxiliary count from 84 to 141, and every intermediate follows the symbols.
+
+.. note::
+
+   The exact algebra is what crosses a size boundary today. A graph carrying a
+   quadrature still binds at the geometry whose orbital energies it was fitted
+   from, and the interface is no longer the reason: annotate the energy vectors
+   and their slots carry the dim symbols, whichever of the handles behind a slot
+   the annotation was written on. What is still literal is the quadrature's own
+   working set, the exponential matrices and the scaled integrals the transform
+   declares, so a bind at another size meets them at the extents they were
+   fitted on and is refused there.
+
+Saying what a tensor is
+=======================
+
+Spaces give cost. They cannot say that a tensor *is* an electron repulsion
+integral, or a Kronecker delta, or an energy denominator, and a pass that wants
+to recognize something has to ask that question instead. A provenance tag is the
+answer: an open vocabulary name plus free-form key/value attributes.
+
+.. code-block:: python
+
+    cg.annotate(eri, tag="eri", graph=g)
+    cg.annotate(delta, tag="identity", graph=g)
+    cg.annotate(eri, spaces=("occ", "vir", "occ", "vir"),
+                tag={"name": "eri", "basis": "cc-pvdz"}, graph=g)
+
+A tag is a **declaration** and is never inferred from a tensor's contents. A
+pass could notice that a tensor happens to hold an identity today, and that
+would be wrong in a way easy to miss: a structural rewrite is what a saved graph
+keeps, and a later bind may put a different tensor behind the same name.
+
+A tag crosses an operation only where the output holds the same elements as the
+input, which today is the axis reorderings and nothing else. A view does **not**
+inherit one, and the reason is the tag this rule was written for: a slice of a
+Kronecker delta off the diagonal is an ordinary rectangular matrix of ones and
+zeros, and eliminating a contraction against it would produce a wrong number
+rather than a slower one.
+
+Two tags in the vocabulary have a shape the pass that reads them requires.
+
+``eri``
+    Claimed by the factorization providers below. Nothing in the mechanism knows
+    what an integral is: density fitting is a provider registered on this name,
+    and the chemistry lives in the registration.
+
+``laplace_denominator``
+    Read by :ref:`the Laplace transform <optimizer-lossy>`. Its attributes are
+    the substance rather than decoration: one entry per axis of the tagged
+    tensor, naming the orbital-energy vector that supplies that axis, and one
+    giving the sign with which that energy enters. The tagged tensor is the
+    **reciprocal**, since that is the object a program forms and multiplies.
+    ``cg.LaplaceTransform.denominator_tag(names, signs)`` builds it.
+
+Registering a provider
+======================
+
+A factorization provider registers on a tag and states a factored form, the
+setup computation that produces the factors, and its accuracy statement. One
+generic pass then does the work for all of them: it queries the providers for
+each tagged tensor, substitutes the factors, hands the whole leaf set to the
+same subset search that brackets ordinary products, and accepts the result only
+if it is cheaper.
+
+.. code-block:: python
+
+    registry = cg.FactorizationRegistry()
+    registry.add(cg.MetricFitFactorization("eri", three_index, metric, 1e-6))
+
+    factorization = cg.FactorizationPass(registry)
+    pm = cg.PassManager()
+    pm.add(cg.ProvenancePropagation())   # carries a tag to the operand handles
+    pm.add(factorization)
+    g.apply(pm)
+
+The substitution alone would make the arithmetic **worse**. Replacing one tensor
+by two factors and contracting them in the captured order is more work, not
+less; the whole value is in the re-association afterwards, which is why the pass
+costs the result twice before emitting anything: symbolically, which is the
+claim about the family, and at the extents the graph holds, which is the veto
+described above.
+
+What the library ships
+----------------------
+
+``MetricFitFactorization``
+    Density fitting: a rank-four tensor as ``B[Q,m,n] B[Q,p,q]`` with
+    ``B = J^{-1/2} R`` from a caller-supplied three-index tensor and a symmetric
+    positive-definite metric. The bound it records is **asserted**, and it has to
+    be: the error of a fit is its difference from the exact four-index tensor,
+    and a caller holding that tensor had no reason to fit it. What is measured
+    instead, per bind, is how many auxiliary directions the guarded inverse
+    square root threw away, which is a specific and common way for accuracy to
+    degrade quietly.
+
+``ThcFactorization``
+    Tensor hypercontraction: a five-factor chain over a grid, fitted by least
+    squares from the three-index tensor. The grid is a registered space with a
+    symbolic extent, declared by the caller through ``register_grid_space``,
+    because a grid is chosen per problem. It takes one collocation matrix per
+    axis, so it can fit an occupied-virtual block rather than the whole basis,
+    and on water in cc-pVDZ that block fit is an order of magnitude more accurate
+    than the whole-basis fit of the same integrals. Its tolerance is
+    :option:`--einsums:graph:thc-epsilon`, asserted in the record, with the
+    least-squares residual against the three-index tensor measured per bind.
+    A residual far above the asserted tolerance is the signal that the grid was
+    too coarse.
+
+``NaturalAuxiliaryFactorization``
+    The first provider whose factors **shorten** an index rather than splitting a
+    tensor. The three-index tensor, seen as a matrix against the pair index, has
+    a singular value decomposition, and the directions below
+    :option:`--einsums:graph:naf-threshold` are dropped. Both occurrences of the
+    tensor in a contraction are substituted, and the search then contracts the
+    two truncated transformations together first, which is where the saving is.
+    Nobody had to teach it that the small matrix is nearly an identity, only that
+    it is the cheapest thing to build out of two of them. The record is
+    **measured**: the norm of the dropped singular values. At water in cc-pVDZ a
+    threshold of ``1e-1`` keeps 39 of 84 auxiliary functions at a recorded bound
+    of ``1.06e-1``, against a relative MP2 energy error of ``5.8e-4``. That is a bound on
+    the tensor, so it is loose against an energy, and loose in the safe
+    direction; ``test_naf_python.py`` sweeps four thresholds and asserts it.
+
+``BasisTruncation``
+    Frozen natural orbitals, and the one member of this list that is **not** a
+    provider: nothing is factored, a space is replaced by a contained subspace.
+    The MP2 virtual-virtual density is diagonalized, the orbitals above
+    :option:`--einsums:graph:fno-occupation` are kept, every interface tensor
+    over the virtual space is projected into the smaller one, and the truncated
+    Fock block is semicanonicalized so the denominators are diagonal again. The
+    pass takes the amplitudes, the virtual-virtual Fock block and the occupied
+    orbital energies rather than building them. At water in cc-pVDZ a cutoff of
+    ``1e-3`` keeps 9 of 19 virtual orbitals.
+
+    Its record is the third kind of thing a record can be: not a claimed
+    tolerance and not a dropped norm, but the MP2 correlation energy the
+    truncation removed, measured, which composes on the absolute side. A program
+    that wants the corrected number reads it off the record and adds it back,
+    which is what makes the record worth composing rather than an extra output.
+    ``optimizer_tour.py`` prints the corrected energy landing back on the
+    untruncated one.
+
+Two providers claiming one tag are alternatives ranked by profitability rather
+than a composition. Two passes with a claim on one tensor do not compose at all,
+and the tour shows what that looks like: after the truncation projects the
+three-index tensor, nothing but the setup reads it, so an auxiliary truncation
+looking for a contraction to re-associate around finds none and says so.
+
+.. _optimizer-lossy:
+
+Trading accuracy for scaling
+============================
+
+``LaplaceTransform`` is the pass with no provider behind it. It recognizes a
+tagged energy denominator, replaces it by a quadrature, and pushes the resulting
+per-axis exponentials onto the factors of whatever the denominator multiplies,
+which is what decouples the four indices.
+
+.. code-block:: python
+
+    g.annotate_tag(D, cg.LaplaceTransform.denominator_tag(
+        ["eps_occ", "eps_vir", "eps_occ", "eps_vir"], "+-+-"))
+
+    transform = cg.LaplaceTransform()
+    transform.set_epsilon(1e-5)
+    transform.add_energy("eps_occ", eps_occ)
+    transform.add_energy("eps_vir", eps_vir)
+    pm = cg.PassManager()
+    pm.add(transform)
+    g.apply(pm)
+
+The knob is a target accuracy, :option:`--einsums:graph:laplace-epsilon`, and
+not a point count. A tolerance is what composes with the accuracy budget and
+what a record can state; a count is a means, and the same count over a wider
+spectral range is a different approximation. The count is derived at optimize
+time from the tolerance and the range the bound orbital energies span. At water
+in cc-pVDZ that is 16 points at ``1e-3`` and 60 at ``1e-8``, and the emitted
+node count is the same at both, because the quadrature index becomes an ordinary
+contracted letter rather than a loop over terms.
+
+Two things about writing the denominator are worth knowing before the pass
+declines your program.
+
+The denominator may be built inside the capture, but only as a **recipe the pass
+can read**: an ``outer_sum`` over the tagged energy vectors followed by the
+registered ``recip`` element operation. Everything the tag claims is checked
+against those nodes, and the chain is then dissolved along with the tensor, so
+the four-index denominator is never allocated. An anonymous Python callable in
+place of ``recip`` says only that something is applied to every element, so the
+pass cannot verify that writer and declines, naming it as not the ``recip``
+element transform.
+
+.. code-block:: python
+
+    with cg.capture(g):
+        einsums.linalg.outer_sum(D, [eps_o, eps_v, eps_o, eps_v], [1.0, -1.0, 1.0, -1.0])
+        einsums.linalg.element_transform(D, "recip")     # the registered op, not a lambda
+
+The pass takes its own copy of the numerator it rewrites and leaves the
+definition standing for whatever else reads it, so **one integral is the correct
+program**. A caller who writes the contraction twice gets the same rewrite, the
+same point count and the same energy, from a capture one node larger.
+
+Records, and what they are for
+------------------------------
+
+Every lossy rewrite leaves a record on the graph, saved with the structure:
+
+.. code-block:: python
+
+    for record in g.approximations():
+        print(record.pass_name, record.bound, record.effect, record.origin)
+
+    tolerance = g.approximation_tolerance("E_corr")
+    budget = tolerance.absolute + tolerance.relative * abs(reference)
+
+A record carries the tolerance the pass was **asked** for and, separately, the
+bound it **states**, which are usually equal and are not the same thing. It
+carries the units that bound is in, because a number without units is not a
+bound and the three kinds do not convert into one another: an element-wise
+bound says nothing about a norm. And it carries whether the number was measured
+or asserted, because a bound and a guess are the same double and a reader of a
+saved graph months later cannot tell them apart otherwise.
+
+Composition is per unit and is not addition in general. Two absolute bounds add,
+by the triangle inequality. Two relative ones compose as ``e1 + e2 + e1*e2``,
+because the second rewrite's error is relative to the already perturbed result,
+and dropping the product term makes a composed budget quietly optimistic, which
+is the one direction an accuracy contract must never fail in. The absolute
+bounds, element-wise and energy-like, add into one number; absolute and relative
+bounds do not combine at all and are reported as two numbers.
+
+Two passes that compose on one water program are the basis truncation and the
+quadrature, in that order. They act on different quantities, and the one link
+between them is the energy vector the denominator recipe names: the truncation
+points that recipe at the semicanonical energies it produced, and the quadrature
+then verifies the chain it was always going to verify. The other order is
+declined, because a quadrature carries exponentials fitted for the space the
+denominator ran over and nothing re-derives them from a truncated one.
+
+A graph carries an **accuracy budget** too, which is where a pass refuses rather
+than spends:
+
+.. code-block:: python
+
+    g.set_accuracy_budget(cg.ApproximationEffect.NormRelative, 1e-8)
+
+The budget caps one kind of error, so a record in other units is refused rather
+than admitted under a cap a caller would reasonably read as covering everything.
+It is a property of the run rather than of the graph, so it is never saved: a
+loaded graph's caller states their own. The refusal happens before anything is
+rewritten, so a graph is never left half rewritten with an unrecorded
+approximation in it.
+
+Testing against a lossy graph
+-----------------------------
+
+``einsums.testing`` reads the records, so a comparison does not need a tolerance
+picked by hand:
+
+.. code-block:: python
+
+    from einsums.testing import assert_close
+    assert_close(got, want, graph=g, output="E_corr")
+
+The helper asks the graph for ``approximation_tolerance(output)`` and adds both
+sides to the dtype baseline. Added rather than maxed, because rounding and a
+deliberate approximation are both present in the result and the bound that holds
+is their sum.
+
+The rewrites you will see in the report
+=======================================
+
+Three passes in the default pipeline rewrite what a program computes *with*
+rather than how it is scheduled, and none of them moves the answer beyond the
+bound its tier declares. They are described in full, with what each one reports,
+in the :ref:`pass catalog <computegraph_optimization_passes>`; what follows is
+what a user meets.
+
+``MultiTermFactorization`` is the search. It takes two decisions as one: how each
+product of three or more tensors is bracketed, and which partial products
+several of them should share, because fixing either first assumes the other. It
+is **off by default**, which is the point rather than caution: every other
+structural pass walks the graph once, and a search's runtime is a function of
+how many candidates the program offers, which nobody can predict from outside.
+Switch it on with :option:`--einsums:graph:structural-search` or, for one
+pipeline, ``MultiTermFactorization.set_search_enabled(True)``.
+
+On the coupled-cluster doubles residual it finds the shape a hand-optimized code
+reaches by hand: the tau term routed through two different intermediates is one
+three-factor product under the flattening, the search shares one ``o^4``
+intermediate between both routes, and three contractions replace four with the
+``v^4`` tensor never formed.
+
+**You write the integral once.** An author-named intermediate that several
+statements read used to pin the algebra around it, so a program wanting one half
+of an expression re-bracketed had to write the value twice. The flattener now
+inlines a definition into each consumer whose bracketing it improves and keeps
+the definition for the rest, with the cost deciding rather than a rule: a
+consumer that gains nothing reads the definition instead, and the whole rewrite
+is still measured against the captured bracketing before anything is emitted.
+:option:`--einsums:graph:factorization-max-readers` bounds how many consumers a
+definition may be copied into, four by default, and a definition past it is left
+whole with that reason in the tally.
+
+``DeltaElimination`` is the exact one, and it is in the default pipeline.
+Contraction against a tagged Kronecker delta is a rename, so it does the rename
+and drops the delta; a letter summed over two spaces the registry says share no
+element has no term to sum, so the contraction becomes a scaling of the
+destination by its own prefactor. Both halves are justified by a **declaration**
+rather than by the data, which is why the delta needs its tag and the disjoint
+spaces need their relation.
+
+``LayoutAssignment`` treats per-tensor storage order as a global decision. What
+it minimizes is not the cost of ``Permute`` nodes, of which a real captured
+program has almost none, but the copy a contraction kernel makes inside itself
+for an operand it cannot read as a flat matrix, which never appears as a node at
+all. It also folds away a permuted copy whose chosen storage order equals its
+source's, which is a case a peephole cannot reach when several contractions read
+the copy.
+
+Fitting the program into memory
+===============================
+
+A full-axis capture declares the tensors the equations mention, and for a
+density-fitted method those are exactly the objects density fitting exists to
+avoid. ``AxisTiling`` slices free axes of the program and streams every
+intermediate that carries them, so the body is the same algebra at one slice.
+
+.. code-block:: python
+
+    tiling = cg.AxisTiling()
+    tiling.set_memory_cap(4096)          # bytes
+    pm = cg.PassManager()
+    pm.add(tiling)
+    g.apply(pm)
+    g.apply(cg.default_pass_manager())   # the schedule still needs its lifecycles
+
+The cap is :option:`--einsums:graph:tiling-memory-cap`, in bytes, and it is the
+first knob that describes the **machine** rather than the program or a
+tolerance. It is read three times over: whether to tile at all, since a program
+whose largest intermediate already fits is left alone; which axes and blocks,
+since the pass keeps the candidate the cost model predicts fastest among those
+that bring the footprint under the cap; and how deep, since a chunk of slices is
+the grouped form of the same body. Zero is the spelling for a caller who wants the
+captured schedule.
+
+By default the cap is derived from the machine. An intermediate may take what
+:option:`--einsums:max-memory` leaves after every other tensor alive beside it:
+the caller's tensors throughout, an intermediate from its first writer to its
+last reader, and nothing only a body running before or after this one uses. In
+a program whose peak fits the budget it takes no more than
+:option:`--einsums:graph:tiling-budget-share` of the budget, and in one over its
+budget a loop may take all that the budget leaves. The share is there
+because fitting is not the only reason to stream: an intermediate that takes a
+large part of the machine costs the kernels that write and read it, and a
+program that holds it whole can be slower than one that streams it in blocks. A
+program that fits with no intermediate over its share is left alone. On that
+basis the pass is in the default pipeline, after the algebraic rewrites, and a
+full-axis capture is tiled without being asked when it would not fit or when one
+of its intermediates is that large. A positive cap, as above, bounds each
+intermediate on its own, for a caller who wants a smaller footprint than the
+machine allows, and the share is not read.
+
+An axis a contraction sums over can be sliced as well, when that contraction's
+destination keeps none of the sliced axes and nothing else in the loop reads it.
+The destination is scaled by the contraction's prefactor once, before the loop,
+and each iteration adds its block's share, so a destination that starts with a
+value keeps it exactly once. The report names each such destination. The
+density-fitted particle ladder is the usual case: both of its contractions
+share the auxiliary index, the first producing it and the second summing it,
+and one loop over blocks of it holds the half-transformed tensor a block at a
+time.
+
+Only intermediates are streamed, and a declared tensor is an intermediate only
+when its declaration says so. ``graph.declare_tensor(name, dims)`` declares a
+result: the caller may read it once the graph has run, so it has to exist whole
+then, and the pass leaves it whole however large. Nothing in the equations says
+which declared tensors the caller reads afterwards, so the declaration is the
+only place that can. A tensor the program builds for its own use, such as the
+half-transformed integrals of a density-fitted ladder, belongs in
+``graph.declare_tensor(name, dims, intermediate=True)``. Declared as a result,
+that one is the largest tensor of the program and nothing streams it, and the
+report says so at every verbosity:
+
+.. code-block:: text
+
+    - [structural-resource] AxisTiling: held 'H' whole, 79213800 bytes against a cap
+      of 2684354, because it is declared as a result the caller may read after
+      execute(); declare it as an intermediate if nothing does
+
+The other side of the same declaration: an intermediate keeps its values only
+while the graph replays. A pass may free it after its last use, reuse its
+memory for another tensor, or hold it a block at a time, and which of those
+happens depends on its size, the machine and the pipeline. So using an
+intermediate after ``execute()`` is refused, always, with an error that names
+the tensor and the graph: reading it from Python, and passing it, or a view of
+it, to an eager operation from Python or C++. The same use from inside the
+replay, such as a ``cg.custom`` node, is not refused. Declare a tensor you use
+afterwards as a result.
+A result the graph declared is still the graph's to size: a pass that changes
+the extents of a space, such as a basis truncation, resizes it as it would an
+intermediate.
+
+On the full-axis DF-MP2 capture at water in cc-pVDZ, under a cap of 4096 bytes,
+it chooses the two occupied axes, 25 slices at depth one, and the largest
+intermediate the loop holds falls from 72200 bytes to 2888. With the denominator
+supplied from outside the capture, six captured nodes become two, a ``Scale``
+and a ``Loop``, and the energy agrees with the untiled replay, with a numpy pair
+loop that never forms a four-index tensor, and with the fixture's own reference.
+``test_axis_tiling_python.py`` asserts every one of those. ``optimizer_tour.py``
+prints the axes, the slice count, the footprint and the energy for its own
+capture, which builds the denominator inside it.
+
+The occupied axes are not chosen because they are the smaller ones, though at
+this molecule they are. The exchange permutation of the MP2 energy
+exchanges the two virtual indices, so a slice of the permuted tensor would need
+a slice of its source at a pair the body is not at, and the virtual pair is
+rejected structurally, at every extent, on every molecule. The size argument
+agrees with that answer at water only by accident.
+
+Two things about the schedule are worth stating plainly.
+
+A tensor written by a node the pass cannot re-emit stays whole and outside the
+loop. A denominator built inside the capture is that case, since an
+``outer_sum`` records a node the schedule does not slice; the pass streams the
+tensors of the region it rewrote, and the tour prints which buffers the tiled
+graph actually allocates so the difference is visible. Dissolving a denominator
+is what the Laplace transform is for; slicing the rest is what this pass is for.
+
+A tiled graph does not save, and it is not meant to. The file carries the
+algebra, a load rebinds it to fresh buffers, and the loop is emitted again on
+the other side against whatever cap is in force there. That is the phase rule
+read back rather than a limitation met halfway.
+
+.. _optimizer-backed-tensors:
+
+Tensors that live in a file
+---------------------------
+
+Tiling slices the intermediates a program builds. A tensor the program reads in
+full at every use, the virtual-virtual block of the fitted integrals in a
+DF-CCSD ladder for instance, is not an intermediate, and no slicing of the
+program makes it smaller. A **backing** says where such a tensor lives instead
+of memory: an entry of an ``.etn`` file, given when the tensor is declared on
+the graph.
+
+.. code-block:: python
+
+    bvv = g.declare_tensor("Bvv", backing=einsums.io.etn("ints.etn", "Bvv"))
+
+The entry records the tensor's extents and element type, so a tensor backed for
+reading takes both from it. Extents or a ``dtype`` given as well have to match
+the entry's. ``cg.annotate(bvv, backing=..., graph=g)`` attaches the same
+backing to a tensor already declared, and ``einsums.io.EtnFile`` names a file
+once for all its entries:
+
+.. code-block:: python
+
+    ints = einsums.io.EtnFile("ints.etn")
+    bvv = g.declare_tensor("Bvv", backing=ints.entry("Bvv"))
+    bov = g.declare_tensor("Bov", backing=ints.entry("Bov"))
+
+A tensor backed for reading is filled from its entry at every replay, so a file
+rewritten between replays is picked up by the next one. A tensor declared by
+the program and handed in, rather than declared on the graph, cannot be backed:
+the caller already holds it. A node that writes a read-backed tensor is an error
+``Graph.verify()`` names.
+
+With ``write=True`` the direction is the other one. The graph produces the
+tensor, and the entry receives it.
+
+.. code-block:: python
+
+    bvv = g.declare_tensor("Bvv", [naux, nvir, nvir], backing=einsums.io.etn("ints.etn", "Bvv", write=True))
+
+Declaring it creates the file when it does not exist and reserves the entry at
+the tensor's shape and type, leaving the file's other entries alone. An entry
+of the same shape and type is reused; an entry of any other is refused at the
+declaration rather than at the end of a long replay. A write-backed tensor that
+nothing writes is the other error ``verify()`` names.
+
+A tensor the graph builds by adding terms into it, a residual for instance, is
+declared at zero. It starts at zero at every replay and is stored after its
+last term.
+
+.. code-block:: python
+
+    r2 = g.declare_zero_tensor("r2", [nocc, nocc, nvir, nvir], backing=einsums.io.etn("amps.etn", "r2", write=True))
+
+``SlabStreaming`` streams a write-backed tensor only from a writer that
+overwrites it, so such a tensor is held whole while its terms add into it.
+
+With ``update=True`` the graph does both: each replay starts with the tensor
+holding what the entry holds, and the entry holds the tensor's final value once
+the replay ends. The amplitudes of an iterative method are the case it is for.
+
+.. code-block:: python
+
+    t2 = g.declare_tensor("t2", backing=einsums.io.etn("amps.etn", "t2", update=True))
+    with cg.capture(g):
+        ...                                        # terms that read t2 into r2
+        la.direct_division(1.0, r2, D, 0.0, t2)    # the new t2
+
+The new value is written beside the old one and replaces it in one commit of
+the file at the end of the replay, so a crash leaves the previous value. Every
+update backing a graph has on one file is published in that same commit. A read
+before the first write of the tensor sees the value the replay started from and
+may be streamed from the file; a read after it sees the new value, in memory.
+
+What a backing changes is where the tensor lives; when it is held whole is the
+``SlabStreaming`` pass's decision, which runs after ``AxisTiling`` in the
+default pipeline. A backed tensor larger than its share of
+:option:`--einsums:max-memory` (the same
+:option:`--einsums:graph:tiling-budget-share` tiling reads) is never held whole:
+
+* A contraction inside a loop that already slices the tensor, such as the
+  loop ``AxisTiling`` builds, reads or writes the box that loop's view names,
+  at every iteration, in place of the view. The loop has chosen the box, on
+  whichever axes it slices.
+* Any other contraction that reads it becomes a loop over blocks of its
+  **last** axis, reading one slab per block. The last axis because the file
+  keeps elements column-major, so a block of it is one contiguous read.
+* The contraction that produces a write-backed tensor computes one block at a
+  time and writes it, in either kind of loop. In a loop of the pass's own it
+  must overwrite the tensor (a destination prefactor of zero), be its only
+  writer, and read no backed tensor.
+* A write-backed tensor that several statements write, as a residual is written
+  by every term that adds into it, is a loop of ``AxisTiling``'s own: the pass
+  loops over the tensor's axes with every one of those statements inside, so
+  each box is finished in memory and stored once, after the last of them. The
+  first of them must overwrite the box, since the storage, only ever written,
+  does not hold the value the tensor had before.
+
+A backed tensor that fits, or one the pass declines, is loaded whole before its
+first reader or stored whole after its last writer, once per replay. That is
+also how a graph with the pass switched off runs, so the pass changes the
+footprint and never the answer: a block that writes a slice of the result gives
+the captured result exactly, and a block over a summed letter adds its partial
+sum in a different order, within the re-association tolerance.
+
+``AxisTiling`` counts what moving a backed tensor costs when it chooses its
+loop: a byte of storage weighs :option:`--einsums:graph:storage-byte-weight`
+bytes of memory traffic, and each contiguous run of the storage a block takes
+another :option:`--einsums:graph:storage-run-bytes`. A loop that slices a backed
+operand on the axis its storage can serve as long runs is preferred over one
+that cuts it into many short ones, and over one that re-reads it whole on every
+iteration once the tensor is large enough for that to cost more.
+
+How the file lays the tensor out is chosen as well. An entry a write backing
+creates is stored with its axes in the order that makes the boxes the program
+moves of it the fewest runs of the file, which puts the axis a loop slices last.
+The entry records that order, and every read and write takes the declared order
+whatever it is, so a later run reads the tensor back without being told how it
+was stored. An entry another run created keeps its order; when another order
+would at least halve the runs its boxes cost here, the report says which, at
+every verbosity. ``einsums.io.etn(path, entry, write=True, order=[...])`` fixes
+the order of a new entry, for a caller who knows how a later run will read it.
+
+The report says which tensors were streamed and why the others were not. A
+decline names its reason: the last-axis letter repeated in an operand, a view
+that permutes the tensor, one backed tensor read on both sides of a
+contraction, a destination whose first writer adds into it. Of two backed
+operands both over their share, the larger is read a slab at a time and the
+smaller held whole. Boxes are read and written independently, so a contraction in a
+loop may read a box of each of two backed operands, two views of one tensor
+among them, and write a box of a third. A box over an axis that is not the last
+is many short runs of the file, and the report gives the count for each box.
+
+``out_of_core.py`` in the ComputeGraph examples builds one program as a CC code
+is built, for water in cc-pVTZ under a 16 MB budget: a setup body produces
+``Bvv`` into a file, every iteration of the loop runs the particle ladder on it,
+and the file is stored so the blocks the loop reads are contiguous. A second
+part reuses the file from another graph, as a later run would. Its docstring
+says which lines of the report to read; the program's peak is 11.70 MB, with
+``Bvv`` at 3.2 MB and the ladder's four-index intermediate at 79 MB.
+
+At a size where a backing matters, the same ladder for benzene in cc-pVDZ
+(``Bvv`` 29 MB, the intermediate 12.8 GB) runs under a 128 MB budget at 1.46
+times the time of a resident ``Bvv`` on one thread and 1.33 times on four, for
+26% less peak memory. Under a 4 GB budget a backing costs 9 to 15%.
+A file another program wrote with ``Q`` first, the order in which a ``Q`` block
+is thousands of short runs, makes ``AxisTiling`` slice other axes and read
+``Bvv`` whole at each iteration; that ran in 4.56 seconds on one thread and
+3.70 on four, against 5.01 and 3.50 for the order the program chooses.
+
+Driving the pass manager
+========================
+
+Every pass declares a phase, and the phase answers one question: may a saved
+graph keep this pass's output, or must the output be re-derived on the machine
+that loads it?
+
+.. code-block:: python
+
+    cg.analysis_pass_manager()     # read-only; safe on a graph in any state
+    cg.structural_pass_manager()   # machine-independent rewrites; what a file keeps
+    cg.resource_pass_manager()     # tiled-op lowering, placement, distribution; never saved
+    cg.tuning_pass_manager()       # batching, reordering, memory planning, streams
+    cg.default_pass_manager()      # the ones safe by default, in the default order
+
+They are views of the default pipeline rather than a re-planned one, built in
+place by ``populate_analysis``, ``populate_structural``, ``populate_resource``,
+``populate_tuning`` and ``populate_default``. The two a caller runs over a
+loaded graph are the resource and tuning ones, in that order, which is what the
+:ref:`round trip <optimizer-round-trip>` below does.
+
+Switching a pass off
+--------------------
+
+:option:`--einsums:pass:disable` takes a comma-separated list of pass names, and
+``PassManager.disable`` / ``PassManager.enable`` are the programmatic half. An
+explicit ``enable`` wins over the option, because the more specific statement
+about this pipeline is the one that should win, and a name matching no pass in
+the pipeline is reported rather than ignored. Switching passes off one at a time
+against an unoptimized replay is what ``cg.BisectDriver`` automates when an
+optimized graph produces a wrong number.
+
+The optimizer's own budget
+--------------------------
+
+:option:`--einsums:graph:optimizer-budget` is a wall-clock allowance in
+milliseconds for each search pass, and ``PassManager.set_optimizer_budget``
+overrides it for one pipeline. Zero means unlimited.
+
+**A cut-off search returns a different graph.** It is a valid one, the arithmetic
+is equivalent and a lossy pass's error stays inside the bound it recorded, but
+the tree is the best candidate the search had reached rather than the best one
+there is, so two machines running one script can emit two different programs.
+``MultiTermFactorization.was_cut_off`` is what says which happened, and the skip
+tally says so from verbosity 2 up. A program that compares two emitted graphs, or
+a test that pins one, should take the allowance away with
+``set_optimizer_budget(0)`` and assert that nothing was cut off; both example
+tours do exactly that and say why in a comment.
+
+Two more bounds on the search are knobs rather than constants because they are
+properties of the program a caller brings.
+:option:`--einsums:graph:factorization-max-factors` is the largest number of
+factors a term may have before it is declined instead of searched, fourteen by
+default. The per-term program is ``3^N`` in that count, so a value in the
+twenties is a request to run under the budget and keep the best tree found when
+it expires rather than a way to hang a pipeline; the option help says so.
+:option:`--einsums:graph:factorization-max-readers` is the linear one described
+above.
+
+The result cache
+----------------
+
+The search is a pure function of a region's structure, so its answer is kept and
+replayed when a structurally identical graph comes back. What an entry holds is
+a **plan** rather than a graph: the shared pairs that were committed, in order,
+the contraction tree chosen for each term, and which consumers a definition was
+kept for, written positionally so a plan found on one graph applies to another
+that hashes the same. The case it pays for is a pipeline whose stages present
+the same program under the same name.
+
+It does not pay for re-running a script, which is a new process with an empty
+cache; that case is what saving the optimized graph is for. A search cut off by
+its allowance is never stored, so a plan that comes back out is one an unbounded
+search would have found. The cache is on by default, and
+``--einsums:graph:no-factorization-cache`` switches it off, which is the first thing to do when bisecting a wrong number, since two
+supposedly identical graphs getting one plan is the cheapest explanation to rule
+out.
+
+.. _optimizer-round-trip:
+
+Saving, loading and binding
+===========================
+
+.. code-block:: python
+
+    g.apply(cg.structural_pass_manager())
+    cg.save_graph(g, "mp2.eig")
+
+    loaded = cg.load_graph("mp2.eig")            # or load_graph_into(path, registry)
+    cg.bind(loaded, {"B_ov": B, "D": D, "E_corr": E})
+    loaded.apply(cg.resource_pass_manager())
+    loaded.apply(cg.tuning_pass_manager())
+    loaded.execute()
+
+Three categories of artifact are kept strictly apart, and the split is a
+correctness rule rather than a convenience.
+
+**Structure is saved**: nodes, descriptors, edges, the interface manifest, space
+annotations, provenance tags and approximation records.
+
+**Tuning is re-derived**: batching and bucket choices, the memory plan, stream
+assignment, GPU placement, the distribution plan, per-node thread widths, and
+the tiling schedule. Nothing machine-dependent is in the file. Reusing a saved
+tuning decision across machines is not a performance risk to weigh against
+convenience; a graph planned with mixed thread widths against one BLAS vendor
+and replayed against another does not merely run slower. So ``save_graph``
+refuses a graph that a resource or tuning pass has already changed, and names
+those passes: save after ``cg.structural_pass_manager()``, as above, and run the
+other two after loading. A pass counts however it was run, through a manager or
+on its own, unless all it changed is something the file leaves out, such as
+thread widths or stream assignment. A file that will only ever be loaded where it
+was planned can be written anyway with
+``cg.save_graph(g, path, allow_machine_dependent=True)``.
+
+**Setup is computed at bind**: fitted factors, inverted metrics, quadrature
+points and weights. A setup body runs at the first ``execute`` after a bind
+rather than during the bind itself, so a bind that is never executed costs
+nothing, and ``Graph.run_setup`` is there for a caller who wants the fitting
+paid at a moment of their choosing.
+
+Repeated binds of one problem can skip the refit. ``Graph.set_setup_key`` takes a
+caller-supplied problem identity, and a body whose key matches what it last
+computed for is skipped; the default is an empty key, which refits on every
+bind, because refitting is always correct and a graph whose caller has said
+nothing about problem identity should get the behavior that cannot be wrong.
+
+Save **before** the resource phase runs. A ``Materialize`` node carries an
+allocating closure, and allocation is a resource decision a load re-derives
+rather than reads. ``Graph.serializability_report()`` names any node that blocks
+a save and the field that blocks it, so "can this graph be saved" has an
+actionable answer rather than a boolean; a graph holding a grouped batched GEMM,
+a parametric view, or an ``outer_sum`` is refused with that reason.
+
+Space names are what a file carries, and a load resolves them against the
+loading process's registry. That is why the default registry is process-global.
+A program that does not save has no use for a shared namespace and should take
+one of its own, which is one line:
+
+.. code-block:: python
+
+    registry = cg.private_space_registry(g)
+
+A registry refuses a second declaration of one name with different content
+rather than overwriting it, so two programs at two problem sizes registering a
+space whose extent is derived from the space it sits inside are a conflict, not
+a redeclaration. The message names every field the two declarations disagree on
+and both values.
+
+Reading the report
+==================
+
+When a pass does nothing, the skip tally is the first thing to read, before the
+node count and long before the numbers.
+
+.. code-block:: python
+
+    pm = cg.PassManager()
+    pm.set_verbosity(2)          # the tally prints from level 2 up
+    pm.add(some_pass)
+    pm.run(g)
+    print(pm.explain())
+
+    for reason, count in some_pass.skip_reasons:
+        print(count, reason)
+
+``explain()`` reports what each pass did, which regions formed and which
+declined, with the aggregated reason and the number of candidates it applied to.
+A pass that ran, did nothing and said nothing is treated as a defect in this
+library rather than as normal, so a decline has a reason a caller can act on:
+that the structural search is switched off, that a tagged tensor is read by no
+two-operand contraction, that the decomposed form is not symbolically cheaper,
+that no candidate axis set brings the largest intermediate under the cap.
+
+The same report is there as records a program can read. Every pass keeps a
+``Decision`` for each thing it applied, declined or noted: a stable ``code``
+such as ``"slab-streaming.streamed-read"``, the ``text`` the report prints, the
+``tensors`` and node it is about, and named ``facts`` with units.
+
+.. code-block:: python
+
+    for d in pm.decisions:                    # every pass's, in pipeline order
+        if d.code == "slab-streaming.streamed-read":
+            print(d.tensors, d.fact("block"), d.fact("bytes"))
+    declined = [d for d in some_pass.decisions if d.kind == cg.DecisionKind.Declined]
+
+Match the code, not the words: the words can improve, the codes do not change.
+``g.decisions`` holds what the last ``optimize()`` decided. A decline a pass has
+not yet given a code is still a record, with an empty ``code`` and its words in
+``reason``.
+
+:option:`--einsums:pass:verbosity` supplies a level only where a program has not
+chosen its own with ``set_verbosity``. Level 1 is a summary line per pass, 2 is
+each modification and each declined candidate, 3 is the per-candidate detail
+behind a decline, including which rung of the cost comparison decided it.
+The narration goes where :option:`--einsums:log:destination` says, standard
+error by default, whatever the log level. It is for reading; a program or a test
+reads the same decisions from ``decisions``.
+
+When a rewrite produces a wrong number, :option:`--einsums:graph:dump-regions`
+prints the algebra each region rewrite raised, before and after, in the
+algebraic form rather than as a node list. A diff of two node-list dumps says
+which nodes changed; a diff of the algebra says what the rewrite *claimed*,
+which is where the mistake actually is.
+
+What a replay did
+=================
+
+The report says what the passes planned; ``graph.last_run()`` says what the last
+replay did, measured as it ran.
+
+.. code-block:: python
+
+    g.execute()
+    run = g.last_run()
+    print(run.wall_ms, "ms,", run.peak_bytes, "bytes held at most")
+    for b in run.backings:
+        print(b.tensor, b.bytes_read, "read in", b.reads, "reads,", b.bytes_written, "written")
+    slowest = max(run.nodes, key=lambda node: node.ms)
+
+``nodes`` holds every node the replay ran, a loop body's summed over its
+iterations with ``runs`` counting them. ``backings`` holds what each file entry
+moved, counted wherever a pass moved it: a whole load or store, a streamed slab,
+a box, a publish. ``peak_bytes`` is the most the graph held at once of the
+tensors it allocates and frees, plus MemoryPlanning's arena when there is one,
+which is one block that lives as long as the graph. ``resident_bytes`` is what
+the replay held from its start to its end beside them: the caller's own tensors,
+and any intermediate given storage outside the graph's allocate and free nodes.
+Their sum is what the program held at its peak, library scratch aside, and a
+replay whose sum is over ``--einsums:max-memory`` reports the missed budget as an
+error, once per graph. ``MemoryPlanning.managed_peak_memory`` and
+``MemoryPlanning.resident_memory`` predict the two to the byte;
+``MemoryPlanning.peak_memory`` is the plan's own estimate, which counts every
+tensor freed after its last use. MemoryPlanning declines its arena where, counted
+as a replay counts it, the arena would hold the program over
+``--einsums:max-memory`` and the program without it holds less.
+
+To hear a replay as it runs, attach an observer. ``cg.EventLog`` keeps every
+event: each node's start and end with its duration and thread, each read, write
+and publish of a backing with its bytes, and the replay's start and end.
+
+.. code-block:: python
+
+    log = cg.EventLog()
+    g.set_observer(log)
+    g.execute()
+    ends = [e for e in log.events if e.kind == cg.EventKind.NodeEnd]
+    log.write_chrome_trace("replay.json")   # open in ui.perfetto.dev
+
+An observer belongs to the graph and every body under it, and costs one pointer
+test per node while none is attached. In C++ a class derived from
+``ExecutionObserver`` hears the events as they happen, on the thread they happen
+on, so it has to be thread-safe; one that throws is detached and the replay goes
+on. Python has the log rather than a callback, because a call into Python per
+node would hold the parallel executors to one thread.
+
+``cg.WaggleBridge()`` is the observer for the profiler: while it records, every
+executor opens a zone per node, and the bridge labels it with the graph and node
+and with each read, write and publish of a backing the node made, so the viewer
+on port 19216 and the saved profile name the graph node behind a zone.
+
+What's next
+===========
+
+* :ref:`tutorial-ccsd`, which applies the declarations on this page to one
+  CCSD program, one at a time, and measures each.
+* ``optimizer_tour.py``, ``annotate_and_rebind.py`` and ``TagsAndProviders.cpp``
+  in the ComputeGraph examples directory.
+* :ref:`tutorial-compute-graph` for capture, replay, control flow and the parts
+  of the graph this page assumes.
+* :ref:`tutorial-performance` for the schedule and memory side.
+* :ref:`The pass catalog <computegraph_optimization_passes>` for what each pass
+  of the default pipeline matches and reports.
+* :ref:`arguments` for every option named here, with its default, its
+  environment variable and its history.

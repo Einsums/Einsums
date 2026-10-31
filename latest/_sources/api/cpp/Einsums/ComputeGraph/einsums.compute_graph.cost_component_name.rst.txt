@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.cost_component_name:
+
+===========================================
+einsums::compute_graph::cost_component_name
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view cost_component_name(CostComponent component) noexcept
+
+   Name of a ``CostComponent`` value.
+
+   :param component: The component to name.
+   :returns: "Flops", "Traffic" or "Resident".

@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.swap:
+
+===================
+einsums::blas::swap
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void swap(int_t n, T *x, int_t incx, T *y, int_t incy)
+
+   Swap the contents of two vectors.
+
+   Exchanges :math:`\mathbf{x} \leftrightarrow \mathbf{y}` element by element.
+
+   :param n: Number of elements to swap.
+   :param x: First vector.
+   :param incx: Stride between elements of x.
+   :param y: Second vector.
+   :param incy: Stride between elements of y.

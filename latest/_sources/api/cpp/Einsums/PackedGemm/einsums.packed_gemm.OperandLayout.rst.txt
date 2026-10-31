@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.OperandLayout:
+
+===================================
+einsums::packed_gemm::OperandLayout
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Describe.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: OperandLayout
+
+   One operand of a contraction as a caller without the tensor in hand describes it: its index letters, and the extent and element stride of each position.
+
+
+   .. cpp:member:: std::vector<std::string> indices
+
+   .. cpp:member:: std::vector<int64_t> dims
+
+   .. cpp:member:: std::vector<int64_t> strides

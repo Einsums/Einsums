@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.tune:
+
+============================
+einsums::compute_graph::tune
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Tune.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: int tune(const std::vector<std::string> &args)
+
+   Measure this machine and write its hardware profile, or report on the profile in effect.
+
+   The one implementation behind the ``einsums-tune`` executable, ``einsums`` ``tune`` and
+   ``python`` ``-m`` ``einsums.tune``. Without an action it measures GEMM efficiency, memory and
+   cache bandwidth, permute throughput, call overhead, per-kernel thread efficiency and the OpenMP
+   region cost, and writes them as one profile, by default this machine's in the cache directory.
+   The actions report instead: ``--show`` the profile in effect and why one is not used, ``--check``
+   whether a current one applies, ``--export`` its path, and ``--import`` adopts a file measured
+   elsewhere. ``--help`` lists every argument.
+
+   The runtime must be running; its own ``--einsums:*`` options among ``args`` are skipped.
+
+   .. versionadded:: 2.0.0
+
+   :param args: The arguments, without the program name.
+   :returns: The exit status: 0 on success, 1 when an action reports failure, 2 for bad arguments.

@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.is_concatenation:
+
+======================================
+einsums::packed_gemm::is_concatenation
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool is_concatenation(const std::vector<std::string> &whole, const std::vector<std::string> &prefix, const std::vector<std::string> &suffix)
+
+   True when ``prefix`` ++ ``suffix`` == ``whole``, element for element.

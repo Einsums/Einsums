@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.value_key:
+
+=================================
+einsums::compute_graph::value_key
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: ValueKey value_key(const ExprTerm &leaf)
+
+   The value ``leaf`` denotes.
+
+   :param leaf: The leaf term.
+   :returns: Its member list when ragged, else its tensor id alone.
+
+
+.. cpp:function:: ValueKey value_key(const ExprStatement &statement)
+
+   The value ``statement`` writes.
+
+   :param statement: The statement.
+   :returns: Its destination member list when grouped, else its target alone.

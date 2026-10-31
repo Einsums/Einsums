@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.verify_after_pass:
+
+=========================================
+einsums::compute_graph::verify_after_pass
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void verify_after_pass(const Graph &graph, std::string_view pass_name)
+
+   When ``einsums:pass:verify`` is set, fail if ``graph`` breaks a structural invariant, naming ``pass_name`` as the pass that left it that way. A no-op otherwise.
+
+   :throws std::logic_error: listing every problem ``Graph::verify`` found.

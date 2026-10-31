@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DefaultPassRegistration:
+
+===============================================
+einsums::compute_graph::DefaultPassRegistration
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DefaultPassRegistration
+
+   A pass registered into the default pipelines from outside the library.
+
+
+   .. cpp:member:: std::string name
+
+      The pass's ``name()``.
+
+
+   .. cpp:member:: std::string anchor
+
+      The pass it runs beside.
+
+
+   .. cpp:member:: PassAnchor where
+
+   .. cpp:member:: std::string owner
+
+      The library that registered it, for diagnostics.

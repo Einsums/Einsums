@@ -1,0 +1,165 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Tensor_api:
+
+==============
+Tensor C++ API
+==============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Tensor>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::ArithmeticTensor` - This struct allows for lazy evaluation of simple arithmetic expressions without the need to create several intermediate tensors.
+- :cpp:any:`~einsums::BlockTensor` - Represents a block-diagonal tensor in core memory.
+- :cpp:any:`~einsums::DiskTensor` - Represents a tensor stored on disk.
+- :cpp:any:`~einsums::DiskView` - Represents a view of a DiskTensor.
+- :cpp:any:`~einsums::FuncPointerTensor` - This is a function tensor that wraps a function pointer.
+- :cpp:any:`~einsums::FunctionTensorView` - Acts as a view of a FunctionTensor.
+- :cpp:any:`~einsums::GeneralRuntimeTensor` - Represents a tensor whose properties can be determined at runtime but not compile time.
+- :cpp:any:`~einsums::GeneralTensor` - Represents a general tensor
+- :cpp:any:`~einsums::IndexSpace` - A per-irrep selection of indices along one axis of a tiled tensor.
+- :cpp:any:`~einsums::KroneckerDelta` - This function tensor represents the Kronecker delta, and can be used in einsum calls.
+- :cpp:any:`~einsums::RuntimeTensorView` - Represents a view of a tensor whose properties can be determined at runtime but not compile time.
+- :cpp:any:`~einsums::tensor_base::BlockTensor` - Represents a block-diagonal tensor.
+- :cpp:any:`~einsums::tensor_base::FunctionTensor` - Optional base class for function tensors. This class provides some useful functionality.
+- :cpp:any:`~einsums::tensor_base::TiledTensor` - Represents a tiled tensor. Is a lockable type.
+- :cpp:any:`~einsums::TensorPrintOptions` - Represents options and default options for printing tensors.
+- :cpp:any:`~einsums::TensorView` - Represents a view of a tensor, which may have a different rank and different dimensions and start at a different index.
+- :cpp:any:`~einsums::TiledRuntimeTensor` - A runtime-rank, tile-wise sparse tensor.
+- :cpp:any:`~einsums::TiledRuntimeTensorView` - A non-owning, per-irrep-sliced view of a ``TiledRuntimeTensor``.
+- :cpp:any:`~einsums::TiledTensor` - Holds a tile-wise sparse tensor.
+- :cpp:any:`~einsums::TiledTensorView` - Tensors of this class hold views of the tiles of a tiled tensor.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::RuntimeRankSymmetryTensor` - A walkable runtime-rank tensor that also CARRIES a descriptor, which the forms reading a tensor's own declared symmetry need.
+- :cpp:any:`~einsums::RuntimeRankWalkable` - A runtime-rank tensor the walks below can traverse: extents, strides and a base pointer, which is all an offset odometer needs.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::check_symmetry` - Verify that ``tensor`` satisfies its declared symmetry to within ``tolerance`` (or the descriptor's own tolerance if the argument is negative). Returns true when every pair agrees; false on first violation.
+- :cpp:any:`~einsums::create_disk_tensor` - Create a disk tensor object.
+- :cpp:any:`~einsums::create_disk_tensor_like` - Create a disk tensor object.
+- :cpp:any:`~einsums::create_tensor` - Create a new tensor with ``name`` and ``args`` .
+- :cpp:any:`~einsums::fprintln` - Prints a TiledTensor to a file pointer.
+- :cpp:any:`~einsums::hdf5_scratch_path` - The full path of the HDF5 scratch file this process uses.
+- :cpp:any:`~einsums::open_hdf5_file` - Open an existing HDF5 file for read/write. False when it is not usable (e.g. a stale scratch file from a reused PID); the caller should recreate it.
+- :cpp:any:`~einsums::pool_empty` - Runtime-rank tensor carved from ``pool``, contents uninitialized.
+- :cpp:any:`~einsums::pool_new_empty` - Python entry point for ``pool_empty``.
+- :cpp:any:`~einsums::pool_new_zeros` - Python entry point for ``pool_zeros``.
+- :cpp:any:`~einsums::pool_tensor` - Compile-time-rank tensor carved from ``pool``, contents uninitialized.
+- :cpp:any:`~einsums::pool_zero_tensor` - Compile-time-rank tensor carved from ``pool`` and zeroed.
+- :cpp:any:`~einsums::pool_zeros` - Runtime-rank tensor carved from ``pool`` and zeroed.
+- :cpp:any:`~einsums::println` - Prints a TiledTensor to standard output.
+- :cpp:any:`~einsums::register_Einsums_Tensor_options` - Give the Tensor module's options their command-line presence. Idempotent.
+- :cpp:any:`~einsums::symmetrize` - Enforce the declared symmetry on ``T`` in place by averaging all elements related by each generator. The result satisfies ``check_symmetry()`` to within the descriptor's tolerance (up to round-off).
+- :cpp:any:`~einsums::zero` - Function that zeros a tensor.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::PendingInit` - What kind of post-materialization initialization a deferred tensor wants.
+
+Types
+-----
+
+- :cpp:any:`~einsums::BufferRuntimeTensor`
+- :cpp:any:`~einsums::BufferTensor`
+- :cpp:any:`~einsums::GPUTensor` - GPU-resident tensor using the gpu:: abstraction layer. On the mock backend, with no GPU, it uses std::malloc with the same behavior, so it is testable anywhere.
+- :cpp:any:`~einsums::RuntimeGPUTensor` - GPU-resident runtime-rank tensor using the gpu:: abstraction layer.
+- :cpp:any:`~einsums::RuntimeTensor` - Runtime-rank in-core tensor: GeneralRuntimeTensor with the standard allocator. Mostly used for communication with the Python interface.
+- :cpp:any:`~einsums::ShapeVector` - Storage for a tensor's dimensions, strides and index coordinates.
+- :cpp:any:`~einsums::Tensor` - The standard in-core tensor: GeneralTensor with the standard allocator. The data is stored contiguously in memory.
+- :cpp:any:`~einsums::VectorData`
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::DeleteHdf5Files` - Remove the per-process scratch file on exit.
+- :cpp:any:`~einsums::option::Hdf5FileName` - The scratch file's name. Defaults to einsums.[pid].h5, where [pid] is the process id, so a second process does not adopt the first one's file.
+- :cpp:any:`~einsums::option::ScratchDir` - Where the scratch file for disk-backed tensors lives.
+- :cpp:any:`~einsums::option::TensorHugePages` - Back large tensor buffers with transparent huge pages.
+
+Macros
+------
+
+- :c:macro:`TENSOR_ALLOC_DEFINE` - Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_ALLOC_EXPORT` - Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_DEFINE` - Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_DEFINE_ALLOC_RANK` - Creates exported template definitions for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_DEFINE_ALLOC_TR` - Creates an exported template definition for a tensor with the given type and rank.
+- :c:macro:`TENSOR_DEFINE_DISK_VIEW` - Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks and view ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_DEFINE_RANK` - Creates exported template definitions for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_DEFINE_RANK2_DISK_VIEW` - Creates exported template definitions for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all view ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_DEFINE_RANK_DISK_VIEW` - Creates exported template definitions for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_DEFINE_TR` - Creates an exported template definition for a tensor with the given type and rank.
+- :c:macro:`TENSOR_DEFINE_TR_DISK_VIEW` - Creates an exported template definition for a tensor with the given type and rank.
+- :c:macro:`TENSOR_EXPORT` - Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_EXPORT_ALLOC_RANK` - Creates exported template declarations for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_EXPORT_ALLOC_TR` - Creates an exported template declaration for a tensor with the given type and rank.
+- :c:macro:`TENSOR_EXPORT_DISK_VIEW` - Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all ranks and view ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_EXPORT_RANK` - Creates exported template declarations for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_EXPORT_RANK2_DISK_VIEW` - Creates exported template declarations for a tensor for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` , and for all view ranks between 1 and 4 inclusive.
+- :c:macro:`TENSOR_EXPORT_RANK_DISK_VIEW` - Creates exported template declarations for a tensor with the given rank, and for each stored type from ``float`` , ``double`` , ``std::complex<float>`` , and ``std::complex<double>`` .
+- :c:macro:`TENSOR_EXPORT_TR` - Creates an exported template declaration for a tensor with the given type and rank.
+- :c:macro:`TENSOR_EXPORT_TR_DISK_VIEW` - Creates an exported template declaration for a tensor with the given type and rank.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.ArithmeticTensor
+   einsums.BlockTensor
+   einsums.check_symmetry
+   einsums.create_disk_tensor
+   einsums.create_disk_tensor_like
+   einsums.create_tensor
+   einsums.DiskTensor
+   einsums.DiskView
+   einsums.fprintln
+   einsums.FuncPointerTensor
+   einsums.FunctionTensorView
+   einsums.GeneralRuntimeTensor
+   einsums.GeneralTensor
+   einsums.hdf5_scratch_path
+   einsums.IndexSpace
+   einsums.KroneckerDelta
+   einsums.open_hdf5_file
+   einsums.pool_empty
+   einsums.pool_new_empty
+   einsums.pool_new_zeros
+   einsums.pool_tensor
+   einsums.pool_zero_tensor
+   einsums.pool_zeros
+   einsums.println
+   einsums.register_Einsums_Tensor_options
+   einsums.RuntimeRankSymmetryTensor
+   einsums.RuntimeRankWalkable
+   einsums.RuntimeTensorView
+   einsums.symmetrize
+   einsums.tensor_base.BlockTensor
+   einsums.tensor_base.FunctionTensor
+   einsums.tensor_base.TiledTensor
+   einsums.TensorPrintOptions
+   einsums.TensorView
+   einsums.TiledRuntimeTensor
+   einsums.TiledRuntimeTensorView
+   einsums.TiledTensor
+   einsums.TiledTensorView
+   einsums.zero
+   enums
+   types
+   variables
+   macros

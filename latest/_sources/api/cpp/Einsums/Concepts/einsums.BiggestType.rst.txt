@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.BiggestType:
+
+====================
+einsums::BiggestType
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename First, typename... Rest> BiggestType
+
+   Gets the type with the biggest storage specification.
+
+   .. versionadded:: 1.0.0

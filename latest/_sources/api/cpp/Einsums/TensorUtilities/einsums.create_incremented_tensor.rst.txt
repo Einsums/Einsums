@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_incremented_tensor:
+
+==================================
+einsums::create_incremented_tensor
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/CreateIncrementedTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T = double, std::same_as<bool> RowMajor = bool, typename... MultiIndex> Tensor<T, sizeof...(MultiIndex)> create_incremented_tensor(RowMajor row_major, const std::string &name, MultiIndex... index)
+
+   Create a new tensor with ``name`` and ``index`` filled with incremental data.
+
+   Just a simple factory function for creating new tensor with initial data. The first element of the tensor is 0 and then each subsequent
+   entry is +1.0 of the prior element. Defaults to using double for the underlying data and automatically determines the rank of the tensor
+   from ``index`` .
+
+   A ``name`` is required for the tensor. ``name`` is used when printing and performing disk operations.
+
+   .. code-block:: text
+
+      auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2> with data ranging from 0.0 to 8.0
+      auto b = create_incremented_tensor<float>("b", 4, 5, 6); // auto -> Tensor<float, 3> with data ranging from 0.0f to 119.0f
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The datatype of the underlying tensor. Defaults to double.
+   :tparam RowMajor: The type of the layout flag. Always bool.
+   :tparam MultiIndex: The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+   :param row_major: Lay the elements out in row-major order instead of column-major.
+   :param name: The name of the new tensor.
+   :param index: The arguments needed to construct the tensor.
+   :returns: A new tensor filled with incremented data
+
+
+.. cpp:function:: template <typename T = double, typename... MultiIndex> Tensor<T, sizeof...(MultiIndex)> create_incremented_tensor(const std::string &name, MultiIndex &&... index)
+
+   Create a new tensor with ``name`` and ``index`` filled with incremental data.
+
+   Just a simple factory function for creating new tensor with initial data. The first element of the tensor is 0 and then each subsequent
+   entry is +1.0 of the prior element. Defaults to using double for the underlying data and automatically determines the rank of the tensor
+   from ``index`` .
+
+   A ``name`` is required for the tensor. ``name`` is used when printing and performing disk operations.
+
+   .. code-block:: text
+
+      auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2> with data ranging from 0.0 to 8.0
+      auto b = create_incremented_tensor<float>("b", 4, 5, 6); // auto -> Tensor<float, 3> with data ranging from 0.0f to 119.0f
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The datatype of the underlying tensor. Defaults to double.
+   :tparam MultiIndex: The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+   :param name: The name of the new tensor.
+   :param index: The arguments needed to construct the tensor.
+   :returns: A new tensor filled with incremented data

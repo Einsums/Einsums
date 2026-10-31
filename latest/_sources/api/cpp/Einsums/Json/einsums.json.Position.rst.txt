@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.Position:
+
+=======================
+einsums::json::Position
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: Position
+
+   A 1-based source position, for a diagnostic that points at the text.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::size_t line
+
+      1-based line number.
+
+
+   .. cpp:member:: std::size_t column
+
+      1-based column, counted in bytes.

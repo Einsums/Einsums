@@ -1,0 +1,67 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_LinearAlgebra_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:enum-class:: Norm
+
+   Indicates the type of norm to compute.
+
+
+   .. cpp:enumerator:: MAXABS
+
+   .. cpp:enumerator:: ONE
+
+   .. cpp:enumerator:: INFTY
+
+   .. cpp:enumerator:: FROBENIUS
+
+   .. cpp:enumerator:: TWO
+
+
+.. cpp:enum-class:: Transpose
+
+   Transpose mode for a matrix operand, mapping 1:1 onto the BLAS op flag.
+   Enumerators are the BLAS letters. ``None`` is avoided because it is a Python
+   keyword.
+
+
+   .. cpp:enumerator:: N
+
+   .. cpp:enumerator:: T
+
+   .. cpp:enumerator:: C
+
+
+.. cpp:enum-class:: Vectors
+
+   Compute modes for the singular value decomposition.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      The enum member names are now all caps to match the recommended style. The overwrite option is also removed since the
+      input should be const and should not be overwritten.
+
+
+   .. cpp:enumerator:: ALL
+
+   .. cpp:enumerator:: SOME
+
+   .. cpp:enumerator:: NONE

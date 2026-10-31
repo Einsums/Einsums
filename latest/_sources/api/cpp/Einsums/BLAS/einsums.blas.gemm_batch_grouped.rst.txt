@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gemm_batch_grouped:
+
+=================================
+einsums::blas::gemm_batch_grouped
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void gemm_batch_grouped(const char *transa_array, const char *transb_array, const int_t *m_array, const int_t *n_array, const int_t *k_array, const T *alpha_array, const T **a_array, const int_t *lda_array, const T **b_array, const int_t *ldb_array, const T *beta_array, T **c_array, const int_t *ldc_array, int_t group_count, const int_t *group_size)
+
+   Perform a batch of independent GEMMs whose shapes need not agree.
+
+   The batch is described as ``group_count`` groups, each a uniform batch of its
+   own: every parameter ``gemm_batch`` shares across the whole call is per
+   group here. The pointer arrays hold the groups' members concatenated in group
+   order, so their length is the sum of ``group_size``.
+
+   One OpenMP region for all the shapes: at a few hundred small GEMMs, entering a region costs as
+   much as the arithmetic.
+
+   :tparam T: Element type (float, double, complex<float>, complex<double>).

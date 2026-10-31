@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.Range:
+
+==================
+einsums::cl::Range
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Source.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: Range
+
+   Inclusive bounds applied to a numeric option after parsing.
+
+   Integral and floating bounds are kept separately, so neither loses precision.
+
+
+   .. cpp:member:: long long int_min
+
+   .. cpp:member:: long long int_max
+
+   .. cpp:member:: long double real_min
+
+   .. cpp:member:: long double real_max

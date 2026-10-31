@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums: The Absolute Basics for Beginners &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/absolute_beginners';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/absolute_beginners.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Einsums in Python" href="python.html" />
+    <link rel="prev" title="Einsums User Guide" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums: The Absolute Basics for Beginners</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-the-absolute-basics-for-beginners">
+<span id="absolute-beginners"></span><h1>Einsums: The Absolute Basics for Beginners<a class="headerlink" href="#einsums-the-absolute-basics-for-beginners" title="Link to this heading">#</a></h1>
+<p>Welcome to the absolute beginner’s guide to Einsums! If you have comments or
+suggestions, please do not hesitate to <a class="reference external" href="https://discord.gg/8GvtkyWZUv">reach out</a>!</p>
+<section id="welcome-to-einsums">
+<h2>Welcome to Einsums!<a class="headerlink" href="#welcome-to-einsums" title="Link to this heading">#</a></h2>
+<p>Einsums is an open-source C++ library. It provides <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Tensor</span></code></a>, a homogeneous n-dimensional
+tensor object, with methods to efficiently operate on it. Einsums can be used to perform
+a wide variety of mathematical operations on tensors.</p>
+</section>
+<section id="installing-einsums">
+<span id="installing"></span><h2>Installing Einsums<a class="headerlink" href="#installing-einsums" title="Link to this heading">#</a></h2>
+<p>You have two choices for installing Einsums, compiling from source directly or by using conda.
+Compiling from source allows you to enable/disable certain features and to include debugging
+options into your code.</p>
+<p>If you wish to compile from source, visit
+<a class="reference internal" href="../building/index.html#building-from-source"><span class="std std-ref">Building from source</span></a>.</p>
+<p>If you have Python, you can install the last released Einsums with:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="n">conda</span><span class="o">-</span><span class="n">forge</span><span class="w"> </span><span class="n">einsums</span>
+</pre></div>
+</div>
+<p>That package is the 1.x release. The API these tutorials teach needs a build from source.</p>
+</section>
+<section id="how-to-include-einsums">
+<h2>How to include Einsums<a class="headerlink" href="#how-to-include-einsums" title="Link to this heading">#</a></h2>
+<p>To access Einsums within your C++ code, you’ll need to know the locations of the headers and library.
+If you are using CMake use can use the <code class="code docutils literal notranslate"><span class="pre">find_package</span></code> function. Then with the
+<code class="code docutils literal notranslate"><span class="pre">target_link_libraries</span></code> function you can link against Einsums.</p>
+<p>For example, in your CMakeLists.txt file you can have lines similar to the following:</p>
+<pre class="literal-block">find_package(Einsums 2.0.0 CONFIG)
+
+add_executable(sample main.cpp)
+target_link_libraries(sample Einsums::Einsums)</pre>
+<p>Then in your main.cpp you can have something like</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor.hpp&gt;</span><span class="w"> </span><span class="c1">// Provides Tensor</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="c1">// Tensor&lt;double, 2&gt;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Einsums is also compatible with Python through Pybind 11. To use it, simply use <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">einsums</span></code>. Much of
+the C++ code is exported under the <code class="docutils literal notranslate"><span class="pre">einsums._core</span></code> module, with some extra utilities in other modules.</p>
+</section>
+<section id="reading-the-example-code">
+<h2>Reading the example code<a class="headerlink" href="#reading-the-example-code" title="Link to this heading">#</a></h2>
+<p>If you are not already comfortable with reading tutorials that contain a lot code,
+you might not know how to interpret a code block that looks
+like this</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">};</span>
+<span class="n">B</span><span class="p">.</span><span class="n">dims</span><span class="p">();</span><span class="w">  </span><span class="c1">// --&gt; {1, 6}</span>
+</pre></div>
+</div>
+<p>If you are not familiar with this style, it’s very easy to understand.
+If you do not see <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code>, you’re looking at the input, the code that
+you would type. Everything that is a comment and has <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code> in front of it is potential
+output, or a representation of what you should expect, rather than text the program prints.</p>
+</section>
+<section id="setting-up-a-program">
+<h2>Setting up a program<a class="headerlink" href="#setting-up-a-program" title="Link to this heading">#</a></h2>
+<p>In C++ the library has to be brought up before you use it and shut down afterwards. From Python
+importing does that for you.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Runtime.hpp&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Your code here.</span>
+
+<span class="w">    </span><span class="n">finalize</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// end namespace einsums</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// This call takes responsibility of initializing Einsums and then calling</span>
+<span class="w">    </span><span class="c1">// your passed main function.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">einsums</span><span class="o">::</span><span class="n">main</span><span class="p">,</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+
+<span class="c1"># That is the whole of it. The runtime comes up on first use and shuts</span>
+<span class="c1"># down with the interpreter.</span>
+</pre></div>
+</div>
+<p>Nothing else is required, and there is no finalize to call. Note that the
+profiler’s session export is written during shutdown, so a program that ends by
+other means may not produce one; see <a class="reference internal" href="tutorial_performance.html"><span class="doc">Tutorial: Performance Tuning</span></a>.</p>
+</div>
+</div>
+<p>In C++ you can alternatively do this by hand. Do not wrap it in an OpenMP parallel region: inside
+one, the library’s own parallel loops and the BLAS it calls run on a single thread.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Your code here.</span>
+
+<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="how-to-create-a-tensor">
+<h2>How to create a Tensor<a class="headerlink" href="#how-to-create-a-tensor" title="Link to this heading">#</a></h2>
+<p>The tensor type to reach for is <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0EN7einsums13RuntimeTensorE" title="einsums::RuntimeTensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::RuntimeTensor</span></code></a>. Pass a name and the size of
+each dimension:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}};</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The name is not decoration. It is how this tensor is identified in profiler output and in the
+reports the optimizer prints, so a meaningful one pays for itself the first time you read either.</p>
+<p>The number of dimensions is the length of that list, and it is carried by the value rather than
+by the type. One function can therefore take a matrix and a rank-4 tensor without being a
+template, which is why this is the type the Python bindings and the
+<a class="reference internal" href="tutorial_compute_graph.html"><span class="doc">ComputeGraph</span></a> are built around.</p>
+<section id="specifying-your-data-type">
+<h3>Specifying your data type<a class="headerlink" href="#specifying-your-data-type" title="Link to this heading">#</a></h3>
+<p>The element type is the template argument of the type, and it has no default there: write it out.
+The <code class="docutils literal notranslate"><span class="pre">create_*</span></code> factory functions and Python’s <code class="docutils literal notranslate"><span class="pre">dtype</span></code> default to <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}};</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w">  </span><span class="n">B</span><span class="p">{</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}};</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>                     <span class="c1"># float64 by default</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"B"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Einsums also supports complex numbers.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&gt;</span><span class="w">  </span><span class="n">C</span><span class="p">{</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}};</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">{</span><span class="s">"D"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}};</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"complex64"</span><span class="p">,</span>  <span class="n">name</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"complex128"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The supported types are floating point and complex floating point. Integers work for some
+operations; arbitrary objects are not supported.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Einsums also has <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::Tensor</span></code></a>, whose rank is part of its type, spelled
+<code class="docutils literal notranslate"><span class="pre">Tensor&lt;double,</span> <span class="pre">2&gt;</span></code>. It is the right choice for eager code whose ranks are fixed when you
+write it, and a few routines take only that form. Everything in these tutorials works with
+<code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code>, and the two interoperate.</p>
+</div>
+</section>
+<section id="different-tensor-layouts">
+<h3>Different Tensor Layouts<a class="headerlink" href="#different-tensor-layouts" title="Link to this heading">#</a></h3>
+<p>Einsums also provides several different tensor layouts. For a tensor that only has elements along
+a block diagonal, there is the <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.BlockTensor.html#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">BlockTensor</span></code></a>. When a tensor is blockwise sparse,
+but has blocks that are not on the diagonal, or have axes of varying dimensions, there is the
+<a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.TiledTensor.html#_CPPv4I0_6size_tEN7einsums11TiledTensorE" title="einsums::TiledTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">TiledTensor</span></code></a>, which can be viewed by a <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.TiledTensorView.html#_CPPv4I0_6size_tEN7einsums15TiledTensorViewE" title="einsums::TiledTensorView"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">TiledTensorView</span></code></a>.</p>
+</section>
+<section id="different-tensor-storage">
+<h3>Different Tensor Storage<a class="headerlink" href="#different-tensor-storage" title="Link to this heading">#</a></h3>
+<p>Einsums intends to provide tensors that are compatible with GPU and CPU operations, as well as tensors stored on disk.
+These are intended to be drop-in replacements, though there may be some variability in the interfaces for these tensors.
+The disk tensor class is <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.DiskTensor.html#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">DiskTensor</span></code></a>, which can be viewed by a <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.DiskView.html#_CPPv4I0_6size_tEN7einsums8DiskViewE" title="einsums::DiskView"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">DiskView</span></code></a>.
+GPU storage is selected through the allocator: the <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums9GPUTensorE" title="einsums::GPUTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">GPUTensor</span></code></a> and
+<a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0EN7einsums16RuntimeGPUTensorE" title="einsums::RuntimeGPUTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">RuntimeGPUTensor</span></code></a> aliases store their data on the device.</p>
+</section>
+</section>
+<section id="basic-tensor-operations">
+<h2>Basic Tensor operations<a class="headerlink" href="#basic-tensor-operations" title="Link to this heading">#</a></h2>
+<p>There are several basic things we can do with tensors. We can fill tensors with values, perform in-place arithmetic operations, and more.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">}};</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+
+<span class="c1">// Filling values</span>
+<span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">;</span><span class="w">           </span><span class="c1">// Copy the values from B.</span>
+<span class="n">A</span><span class="p">.</span><span class="n">zero</span><span class="p">();</span><span class="w">        </span><span class="c1">// Every element becomes 0.</span>
+<span class="n">A</span><span class="p">.</span><span class="n">set_all</span><span class="p">(</span><span class="mf">0.3</span><span class="p">);</span><span class="w">  </span><span class="c1">// Every element becomes 0.3.</span>
+<span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span><span class="w">         </span><span class="c1">// Same as above.</span>
+
+<span class="c1">// In-place arithmetic with a scalar, element-wise</span>
+<span class="n">A</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">A</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">A</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">A</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># Filling values</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>   <span class="c1"># a copy of B (plain `A = B` would rebind)</span>
+<span class="n">A</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>               <span class="c1"># every element becomes 0</span>
+<span class="n">A</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>         <span class="c1"># every element becomes 0.3</span>
+
+<span class="c1"># In-place arithmetic with a scalar, element-wise</span>
+<span class="n">A</span> <span class="o">+=</span> <span class="mi">2</span>
+<span class="n">A</span> <span class="o">-=</span> <span class="mi">2</span>
+<span class="n">A</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">A</span> <span class="o">/=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Element-wise arithmetic between two tensors of the same shape has operators too (<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">*=</span> <span class="pre">B</span></code> in
+C++, <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">*</span> <span class="pre">B</span></code> in Python, where in-place <code class="docutils literal notranslate"><span class="pre">*=</span></code> takes only a scalar). The same product can also be
+written as a contraction:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij;ij-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">   </span><span class="c1">// A = A * B, element by element</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ij;ij-&gt;ij"</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>   <span class="c1"># A = A * B, element by element</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>That form is worth learning early. A contraction spec says which indices line up, and once tensors have more
+than two dimensions that is the question an operator cannot answer. <a class="reference internal" href="tutorial_einsum.html#tutorial-einsum"><span class="std std-ref">Tutorial: Einstein Summation</span></a> is
+where this goes next, and it is the heart of the library.</p>
+<section id="indexing-and-slicing">
+<h3>Indexing and slicing<a class="headerlink" href="#indexing-and-slicing" title="Link to this heading">#</a></h3>
+<p>Index a tensor with the function call syntax, one argument per dimension:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">"%lf "</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Negative indices wrap around, as in Python.</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+
+<span class="c1">// The same syntax assigns.</span>
+<span class="n">A</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
+
+<span class="c1"># Negative indices wrap around</span>
+<span class="k">assert</span> <span class="n">A</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># The same syntax assigns</span>
+<span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Element access is for inspecting and for setting up small things. A loop over <code class="docutils literal notranslate"><span class="pre">operator()</span></code>
+pays an index computation per element, so it is not how bulk work gets done: that is what the
+contractions in <a class="reference internal" href="tutorial_einsum.html#tutorial-einsum"><span class="std std-ref">Tutorial: Einstein Summation</span></a> are for, and they reach BLAS.</p>
+<p>Slicing uses the same call syntax. Fewer arguments than the rank are allowed, and a
+<a class="reference internal" href="../api/cpp/Einsums/TensorBase/einsums.Range.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">einsums::Range</span></code></a> selects part of a dimension. A range is half-open, so
+<code class="docutils literal notranslate"><span class="pre">Range{0,</span> <span class="pre">2}</span></code> is two entries:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">View1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span><span class="w"> </span><span class="n">All</span><span class="p">);</span><span class="w">          </span><span class="c1">// first two rows</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">View2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">All</span><span class="p">);</span><span class="w">                    </span><span class="c1">// row 2, as a rank-1 view</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">View3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">All</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">                    </span><span class="c1">// column 2, as a rank-1 view</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">View4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">});</span><span class="w">  </span><span class="c1">// a 2x2 block</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+<span class="n">View1</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>     <span class="c1"># first two rows</span>
+<span class="n">View2</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>       <span class="c1"># row 2, as a rank-1 view</span>
+<span class="n">View3</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>       <span class="c1"># column 2, as a rank-1 view</span>
+<span class="n">View4</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>   <span class="c1"># a 2x2 block</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>None of these copy. A view writes through to the tensor it came from, and it is only valid while
+that tensor is. <a class="reference internal" href="tutorial_views.html#tutorial-views"><span class="std std-ref">Tutorial: Views and Slicing</span></a> goes into both.</p>
+</section>
+<section id="shape-and-size-of-a-tensor">
+<h3>Shape and size of a Tensor<a class="headerlink" href="#shape-and-size-of-a-tensor" title="Link to this heading">#</a></h3>
+<p>The dimensions of a tensor can be accessed using the <code class="code docutils literal notranslate"><span class="pre">dim</span></code> and <code class="code docutils literal notranslate"><span class="pre">dims</span></code> methods. The first lets you specify the axis, while
+the second gives all dimensions in a container. To get the size of a tensor, use the <code class="code docutils literal notranslate"><span class="pre">size</span></code> method.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-16">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">}};</span>
+
+<span class="n">assert</span><span class="p">(</span><span class="n">A</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">A</span><span class="p">.</span><span class="n">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">A</span><span class="p">.</span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-17">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"A"</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">5</span>   <span class="c1"># a property in Python</span>
+<span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">dim</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>         <span class="c1"># a method</span>
+<span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>         <span class="c1"># a method</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="reshaping-a-tensor">
+<h3>Reshaping a Tensor<a class="headerlink" href="#reshaping-a-tensor" title="Link to this heading">#</a></h3>
+<p>A statically ranked <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::Tensor</span></code></a> has a constructor that reinterprets an existing
+tensor’s data under new dimensions. It takes the source by rvalue and a name for the result, and
+the source is left empty, so pass it with <code class="docutils literal notranslate"><span class="pre">std::move</span></code> and do not use it afterwards. The data is
+reinterpreted rather than rearranged.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">};</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">};</span>
+<span class="c1">// B is 2x3x10; A is no longer usable.</span>
+</pre></div>
+</div>
+<p>An extent of <code class="docutils literal notranslate"><span class="pre">-1</span></code> is a wildcard, at most one per call, and the constructor works out what it has
+to be for the sizes to match:</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">{</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">};</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">C</span><span class="p">),</span><span class="w"> </span><span class="s">"D"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="c1">// D is 10x6</span>
+</pre></div>
+</div>
+<section id="converting-a-1d-tensor-into-a-2d-tensor">
+<h4>Converting a 1D Tensor into a 2D Tensor<a class="headerlink" href="#converting-a-1d-tensor-into-a-2d-tensor" title="Link to this heading">#</a></h4>
+<p>The same constructor changes the rank:</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">{</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">};</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">};</span>
+<span class="c1">// B is 3x10</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="more-advanced-tensor-operations">
+<h2>More advanced Tensor operations<a class="headerlink" href="#more-advanced-tensor-operations" title="Link to this heading">#</a></h2>
+<p>We can do more complicated things with tensors as well. For instance, we can perform linear algebra with some tensors, tensor contractions,
+transpositions, element mapping, and more. Here are some useful things we can do.</p>
+<section id="permuting-elements">
+<h3>Permuting elements<a class="headerlink" href="#permuting-elements" title="Link to this heading">#</a></h3>
+<p>To permute the axes of a tensor, you can use the <code class="docutils literal notranslate"><span class="pre">cg::permute</span></code> function. This takes an input tensor and an output tensor,
+and it permutes the input tensor, scales it, scales the output tensor, then adds them together.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">});</span>
+<span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">{</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}};</span>
+
+<span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">;</span><span class="w">   </span><span class="c1">// so there is something to add to</span>
+
+<span class="c1">// C = 1 * C + 0.5 * A permuted from (k, j, i) to (i, j, k)</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="s">"ijk &lt;- kji"</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">assert</span><span class="p">(</span><span class="n">C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>   <span class="c1"># so there is something to add to</span>
+
+<span class="c1"># C = 1 * C + 0.5 * A permuted from (k, j, i) to (i, j, k)</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="s2">"ijk &lt;- kji"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">c_pf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a_pf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">expect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">C</span><span class="p">),</span> <span class="n">expect</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="linear-algebra">
+<h3>Linear Algebra<a class="headerlink" href="#linear-algebra" title="Link to this heading">#</a></h3>
+<p>Most procedures provided by LAPACK and BLAS are available to use with tensors. Here are some common examples.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"u"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"v"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">});</span>
+
+<span class="c1">// gemm computes C = alpha * op(A) * op(B) + beta * C. Whether each input is</span>
+<span class="c1">// transposed is a template parameter; the prefactors are arguments.</span>
+<span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+
+<span class="c1">// Dot products. This one does not conjugate the first argument.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<span class="c1">// This one does. Since u and v are real here, the two agree.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">val2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">true_dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"u"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"v"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># gemm computes C = alpha * op(A) * op(B) + beta * C. Transposition is a</span>
+<span class="c1"># keyword argument here rather than a template parameter.</span>
+<span class="n">linalg</span><span class="o">.</span><span class="n">gemm</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="c1"># Dot product, which returns rather than writing through a pointer.</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">true_dot</span></code>, the conjugating form, has no Python binding; for complex data use
+<code class="docutils literal notranslate"><span class="pre">linalg.dotc(result,</span> <span class="pre">u,</span> <span class="pre">v)</span></code>, which writes into a rank-0 <code class="docutils literal notranslate"><span class="pre">result</span></code> tensor rather than
+returning.</p>
+</div>
+</div>
+<p>A few routines want a statically ranked <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::Tensor</span></code></a> rather than a
+<code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code>, because they are written against a compile-time rank of two. General
+eigendecomposition is one, and its eigenvalues and eigenvectors are complex even when the input
+is real:</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w">          </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"M"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">&lt;</span><span class="n">cd</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="n">evals</span><span class="p">{</span><span class="s">"evals"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">};</span>
+<span class="n">Tensor</span><span class="o">&lt;</span><span class="n">cd</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rvecs</span><span class="p">{</span><span class="s">"rvecs"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">};</span>
+<span class="n">Tensor</span><span class="o">&lt;</span><span class="n">cd</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lvecs</span><span class="p">{</span><span class="s">"lvecs"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">};</span>
+
+<span class="c1">// Both sets of eigenvectors.</span>
+<span class="n">linear_algebra</span><span class="o">::</span><span class="n">geev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evals</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">lvecs</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvecs</span><span class="p">);</span>
+
+<span class="c1">// Pass a null pointer for a set you do not want computed.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">M2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"M2"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="n">linear_algebra</span><span class="o">::</span><span class="n">geev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">M2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">evals</span><span class="p">,</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rvecs</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">geev</span></code> overwrites the matrix it is given, which is why each call above gets its own copy.</p>
+</section>
+<section id="tensor-contractions">
+<h3>Tensor Contractions<a class="headerlink" href="#tensor-contractions" title="Link to this heading">#</a></h3>
+<p>This is what Einsums was made for! We can do any operation that looks like <span class="math notranslate nohighlight">\(C_{ijk\cdots} = \alpha C_{ijk\cdots} + \beta A_{abc\cdots} B_{def\cdots}\)</span>.
+Here’s an example for something like <span class="math notranslate nohighlight">\(C_{ijk} = A_{ik}B_{kj}\)</span>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ijk"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ijk"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If we do something that can become a BLAS call, then it will normally become a BLAS call. Index orders that BLAS cannot take
+go to PackedGemm, which rearranges the data as it packs it, and only a pattern neither can form runs on the generic loop.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-24">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">});</span>
+
+<span class="c1">// A single number comes out through dot, which writes through a pointer.</span>
+<span class="c1">// This one reaches a BLAS dot product.</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="o">&amp;</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-25">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># A single number comes out through dot, which returns in Python.</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Writing that full contraction with B’s indices reversed (<code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">&lt;-</span> <span class="pre">ij</span> <span class="pre">;</span> <span class="pre">ji&quot;</span></code>) is a different
+quantity, and it lands on the generic loop: a scalar result is not a shape PackedGemm takes, and
+reaching the BLAS dot product would need a physical permutation that Einsums does not insert on
+your behalf. If you want it, write the permutation and contract the result.
+<a class="reference internal" href="tutorial_performance.html#tutorial-performance"><span class="std std-ref">Tutorial: Performance Tuning</span></a> tabulates which shapes take which kernel, measured rather than
+predicted.</p>
+</section>
+</section>
+<section id="putting-it-together-then-capturing-it">
+<span id="absolute-beginners-graph"></span><h2>Putting it together, then capturing it<a class="headerlink" href="#putting-it-together-then-capturing-it" title="Link to this heading">#</a></h2>
+<p>Here is a whole program using what this page covered. It builds two matrices, contracts them,
+scales the result and prints a number:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-26">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph/Operations.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Print.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Runtime.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/RuntimeTensor.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TensorUtilities/CreateRandomTensor.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TensorUtilities/CreateZeroTensor.hpp&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">});</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">});</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">"C(0, 0) = {}"</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace einsums</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">einsums</span><span class="o">::</span><span class="n">main</span><span class="p">,</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-27">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">linalg</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"C(0, 0) = </span><span class="si">{</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Every call there runs the moment it is reached. That is the right thing for a program that does
+the work once, and it is the wrong thing for one that repeats it, because each call is analysed
+and dispatched again every time and nothing can be optimized across the pair.</p>
+<p>The same work, recorded once and replayed, looks like this:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-28">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph/Graph.hpp&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">});</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"scaled product"</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// intermediate = false: a result this code reads, not working space.</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">create_runtime_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">},</span>
+<span class="w">                                                  </span><span class="cm">/*intermediate=*/</span><span class="nb">false</span><span class="p">);</span>
+
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="n">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">optimize</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">iter</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">"C(0, 0) = {}"</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace einsums</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-29">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">einsums.graph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">])</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="s2">"scaled product"</span><span class="p">)</span>
+
+<span class="c1"># intermediate=False: a result this code reads, not working space.</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">create_tensor</span><span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="n">intermediate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">linalg</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="n">graph</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"C(0, 0) = </span><span class="si">{</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Three things changed and nothing else did. The operations are inside a <code class="docutils literal notranslate"><span class="pre">CaptureGuard</span></code>, so they
+are recorded rather than run. <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> rewrites the recording. And <code class="docutils literal notranslate"><span class="pre">execute()</span></code> replays it,
+as many times as you like, paying the analysis once.</p>
+<p>The tensors the graph creates for you need one piece of information you have to supply:
+<code class="docutils literal notranslate"><span class="pre">intermediate=false</span></code> says <code class="docutils literal notranslate"><span class="pre">C</span></code> is an answer rather than scratch. Without it the optimizer will
+notice that nothing inside the graph reads <code class="docutils literal notranslate"><span class="pre">C</span></code> and remove the contraction that fills it. Python
+refuses to read <code class="docutils literal notranslate"><span class="pre">C</span></code> after <code class="docutils literal notranslate"><span class="pre">execute()</span></code> and names the remedy, but C++ element access is not
+checked and hands back whatever the buffer held, which is why the mistake is worth meeting now.</p>
+<p>Capture when the work repeats. A single contraction gains nothing from being recorded, and an
+iteration gains most of what the library has to offer.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorial_tensors.html#tutorial-tensors"><span class="std std-ref">Tutorial: Tensors 101</span></a> for the tensor type in more detail</p></li>
+<li><p><a class="reference internal" href="tutorial_einsum.html#tutorial-einsum"><span class="std std-ref">Tutorial: Einstein Summation</span></a> for contractions, which is the heart of the library</p></li>
+<li><p><a class="reference internal" href="tutorial_views.html#tutorial-views"><span class="std std-ref">Tutorial: Views and Slicing</span></a> for working on part of a tensor without copying it</p></li>
+<li><p><a class="reference internal" href="tutorial_compute_graph.html#tutorial-compute-graph"><span class="std std-ref">Tutorial: Computation Graphs</span></a> for what capture makes possible across a whole calculation</p></li>
+<li><p><a class="reference internal" href="../howto/index.html#howto"><span class="std std-ref">How-To Guides</span></a> when you know what you want and need the specific way to do it</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Einsums User Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="python.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Einsums in Python</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome-to-einsums">Welcome to Einsums!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-einsums">Installing Einsums</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-include-einsums">How to include Einsums</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-example-code">Reading the example code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-program">Setting up a program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-create-a-tensor">How to create a Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-your-data-type">Specifying your data type</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-tensor-layouts">Different Tensor Layouts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-tensor-storage">Different Tensor Storage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-tensor-operations">Basic Tensor operations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-and-slicing">Indexing and slicing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-and-size-of-a-tensor">Shape and size of a Tensor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reshaping-a-tensor">Reshaping a Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-a-1d-tensor-into-a-2d-tensor">Converting a 1D Tensor into a 2D Tensor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-advanced-tensor-operations">More advanced Tensor operations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#permuting-elements">Permuting elements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-algebra">Linear Algebra</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-contractions">Tensor Contractions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#putting-it-together-then-capturing-it">Putting it together, then capturing it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

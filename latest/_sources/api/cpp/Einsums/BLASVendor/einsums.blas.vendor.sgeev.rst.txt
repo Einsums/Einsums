@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgeev:
+
+============================
+einsums::blas::vendor::sgeev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgeev(char jobvl, char jobvr, int_t n, float *a, int_t lda, std::complex<float> *w, float *vl, int_t ldvl, float *vr, int_t ldvr)
+
+   Compute the eigendecomposition of a general matrix.
+
+   .. versionadded:: 1.0.0
+
+   :param jobvl: Indicates whether to compute the left eigenvectors. Case insensitive. Can be 'n' or 'v'.
+   :param jobvr: Indicates whetherh to compute the right eigenvectors. Case insensitive. Can be 'n' or 'v'.
+   :param n: The number of rows and columns in the matrix.
+   :param a: The matrix to diagonalize. On exit, it will be overwritten with data used in the computation.
+   :param lda: The leading dimension of the matrix.
+   :param w: The output for the eigenvalues.
+   :param vl: The left eigenvectors. For real inputs, this will have a special storage format.
+   :param ldvl: The leading dimension of the left eigenvectors. Must be at least 1, even if not referenced.
+   :param vr: The right eigenvectors. For real inputs, this will have a special storage format.
+   :param ldvr: The leading dimension of the right eigenvectors. Must be at least 1, even if not referenced.
+   :returns: 0 on success. If positive, then the eigenvalue algorithm failed to converge. If negative, then one of the inputs had an invalid value. The absolute value of the return indicates which parameter was invalid.

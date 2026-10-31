@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.MicroKernelShape:
+
+======================================
+einsums::packed_gemm::MicroKernelShape
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/MicroKernel.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: MicroKernelShape
+
+   Register-block shape (MR, NR) the resolved micro-kernel wants.
+
+   The kernel rung owns the packing geometry: NEON/AVX rungs use
+   cpu_config()'s vector blocking (MR = 2*VL, NR = 6), while the SME rung
+   uses ZA-tile blocking (MR = NR = 2 * streaming-VL doubles, 16x16 on
+   Apple M4). blis_contraction must pack panels with the shape of the
+   kernel it resolves, so the two are queried together.
+
+
+   .. cpp:member:: int mr
+
+   .. cpp:member:: int nr
+
+   .. cpp:member:: int64_t kc
+
+      K-block hint: 0 = use the cache-derived default (compute_blocking).
+
+      SME raises it, as ZA holds C across the K loop; its M block shrinks to keep A in L2.
+
+
+   .. cpp:member:: bool fast_scatter
+
+      The scatter path beats Sort+GEMM on this rung (2.3x on M4 SME), so callers with that fallback
+      still take it.
+
+
+   .. cpp:member:: bool block_gemm
+
+      Scatter engine: a vendor GEMM per cache block, then scatter (for vendors reaching matrix
+      units, e.g. AMX on M1-M3), or false for the rung's own tile kernel.
+
+
+   .. cpp:member:: bool use_1m
+
+      Complex elements via Van Zee's 1m method: A packs in the expanded 1e
+      form ([[ar,-ai],[ai,ar]] per element), B packs re/im as adjacent K
+      rows (1r), and the REAL tile kernel of the underlying real type
+      computes interleaved-complex output directly.
+
+      mr/nr/kc then describe the real kernel, and the extents double (Mh = 2M, Kh = 2K). 1.74x over
+      Sort+GEMM for complex<double> on M4 SME.
+
+
+   .. cpp:member:: bool use_3m
+
+      Complex elements via the 3m (Karatsuba) method on the BLOCK-GEMM
+      path: three real GEMMs per block, 25% fewer flops and able to reach AMX. Slightly weaker error
+      bounds (Higham); enable only where measured.

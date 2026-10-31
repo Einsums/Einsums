@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GroupedBatchedGemmDescriptor:
+
+====================================================
+einsums::compute_graph::GroupedBatchedGemmDescriptor
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GroupedBatchedGemmDescriptor
+
+   Metadata for GroupedBatchedGemm nodes.
+
+   Several differently shaped batches under one OpenMP region, which costs tens of microseconds to
+   enter (a DLPNO-MP2 iteration spent 45 ms on 16 ms of arithmetic across 754 batches). The node
+   holds the 2N inputs and the outputs in group order, indexed by ``GemmGroup::first``. ``labels``
+   names the groups so `einsums:graph:profile-groups` can time each.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::vector<GemmGroup> groups
+
+      One entry per shape class, in operand order.
+
+
+   .. cpp:member:: int total
+
+      Sum of every group's count.
+
+
+   .. cpp:member:: BlasScalar scalar
+
+   .. cpp:member:: std::vector<std::string> labels
+
+      Human-readable name per group, parallel to ``groups``. Shape-derived
+      when the capture API grouped the batch itself.
+
+
+   .. cpp:member:: bool blocked
+
+      Whether each member writes a block of a shared base, at an offset only the executor holds.
+      The outputs then list each distinct base, so readers that map members to outputs (region
+      rewrites) must decline a blocked batch.

@@ -1,0 +1,99 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Options_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Source.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:enum-class:: Occurrence
+
+   How many times an option may, or must, be given.
+
+
+   .. cpp:enumerator:: Optional
+
+   .. cpp:enumerator:: Required
+
+   .. cpp:enumerator:: ZeroOrMore
+
+   .. cpp:enumerator:: OneOrMore
+
+
+.. cpp:enum-class:: OptionKind
+
+   How an option is spelled on the command line.
+
+
+   .. cpp:enumerator:: Value
+
+   .. cpp:enumerator:: Flag
+
+
+.. cpp:enum-class:: OptionType
+
+   The value type an option holds. A descriptor fixes it at declaration; the
+   enumeration API hands it to callers who only see an option as data.
+
+
+   .. cpp:enumerator:: Bool
+
+   .. cpp:enumerator:: Int
+
+   .. cpp:enumerator:: Double
+
+   .. cpp:enumerator:: String
+
+
+.. cpp:enum-class:: Source
+
+   Where an option's current value came from.
+
+   In increasing precedence, the order the parser applies them. ``Source::None`` means never set.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Default
+
+   .. cpp:enumerator:: ConfigFile
+
+   .. cpp:enumerator:: Environment
+
+   .. cpp:enumerator:: CommandLine
+
+
+.. cpp:enum-class:: ValueExpected
+
+   Whether an option takes a value, and whether it may go without one.
+
+
+   .. cpp:enumerator:: ValueDisallowed
+
+   .. cpp:enumerator:: ValueOptional
+
+   .. cpp:enumerator:: ValueRequired
+
+
+.. cpp:enum-class:: Visibility
+
+   Whether an option appears in `--help` at all.
+
+
+   .. cpp:enumerator:: Normal
+
+   .. cpp:enumerator:: Hidden

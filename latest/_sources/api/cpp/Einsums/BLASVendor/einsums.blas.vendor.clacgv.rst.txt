@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.clacgv:
+
+=============================
+einsums::blas::vendor::clacgv
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void clacgv(int_t n, std::complex<float> *x, int_t incx)
+
+   Conjugate a vector.
+
+   :param n: The number of elements in the vector.
+   :param x: The vector to conjugate.
+   :param incx: The skip value for the vector.

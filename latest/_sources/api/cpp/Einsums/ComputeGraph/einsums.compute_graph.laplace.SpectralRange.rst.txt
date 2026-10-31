@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.SpectralRange:
+
+==============================================
+einsums::compute_graph::laplace::SpectralRange
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:class:: SpectralRange
+
+   The smallest and largest value a signed sum of per-axis vectors can take.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: double low
+
+      The smallest value of :math:`\sum_k \sigma_k \varepsilon_k[i_k]`.
+
+
+   .. cpp:member:: double high
+
+      The largest.

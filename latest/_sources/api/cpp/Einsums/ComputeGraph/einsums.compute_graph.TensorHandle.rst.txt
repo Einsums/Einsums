@@ -1,0 +1,629 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorHandle:
+
+====================================
+einsums::compute_graph::TensorHandle
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorHandle
+
+   Type-erased handle to a tensor, storing pointer and metadata.
+
+   TensorHandle provides a uniform representation for tensors of any type
+   and rank within the computation graph. It stores:
+
+   - A void pointer to the actual Tensor object (not the raw data pointer)
+   - Dimensional metadata (rank, dims, strides, element size, dtype)
+   - A validation function to detect use-after-free at runtime
+
+   .. note::
+
+      TensorHandle does NOT own the tensor by default. The user is
+      responsible for ensuring tensors outlive the graph, or should
+      use Graph::create_tensor() for graph-owned intermediates.
+
+   .. seealso::
+
+      make_handle() to construct a TensorHandle from a typed tensor
+
+   .. seealso::
+
+      Graph::create_tensor() for graph-owned tensor creation
+
+
+   .. cpp:function:: void * live_ptr() const noexcept
+
+      The tensor object it is legal to DEREFERENCE at execute time.
+
+      Usually ``tensor_ptr`` itself. It differs where the identity stays the
+      caller's address although capture adopted the operand (a tensor another
+      graph owns, a type with no liveness token): the stand-in in ``owner`` is
+      then the object the graph keeps alive, and the one to reach the storage
+      through. ``Graph::live_tensor_ptr`` is the by-id spelling of this and
+      defers to it.
+
+      :returns: The stand-in when the handle holds one, otherwise ``tensor_ptr``.
+
+
+   .. cpp:function:: void * lookup_ptr() const noexcept
+
+      The address the caller knows this tensor by: ``caller_ptr`` when set, else ``tensor_ptr``.
+
+
+   .. cpp:function:: size_t total_elems() const
+
+      Compute the total element count of this tensor.
+
+      :returns: product(dims), or 0 if dims is empty.
+
+
+   .. cpp:function:: size_t total_bytes() const
+
+      Compute the total memory footprint of this tensor in bytes.
+
+      :returns: element_size * product(dims), or 0 if dims is empty.
+
+
+   .. cpp:member:: void *tensor_ptr
+
+      The tensor object this handle names, and the handle's identity.
+
+      Two handles name the same tensor exactly when this is equal, in one graph or across a
+      graph and its loop bodies, which is what every pass that compares tensors compares. It is
+      also the object it is legal to DEREFERENCE: it lives at least as long as the handle.
+
+      For an operand capture adopted (see ``Graph::adopt_operand``) this is the graph's STAND-IN,
+      not the caller's tensor. The caller may destroy its tensor before the graph runs, and from
+      then on the caller's address can hold any later allocation; the stand-in's cannot while a
+      handle holds it. The caller's address is kept in ``caller_ptr`` for lookups by the
+      caller's object. Two exceptions keep the caller's address here, both because it cannot be
+      reused while the handle could be confused with another: a tensor some graph owns (it lives as
+      long as that graph and its loop bodies), and a tensor type that publishes no liveness token
+      (nothing could tell a reuse apart).
+
+      Not the tensor's ``data()`` pointer; that is ``data_ptr``.
+
+
+   .. cpp:member:: void *caller_ptr
+
+      The caller's tensor, when it differs from ``tensor_ptr``; null otherwise.
+
+      A lookup key, never an identity and never dereferenced: the caller may have destroyed it.
+      The graph's pointer index files the handle under it as well, checked against
+      ``caller_token``, so asking the graph about the caller's own object still finds the
+      handle while that object lives. @see lookup_ptr
+
+
+   .. cpp:member:: void *data_ptr
+
+      Pointer to the raw data buffer (tensor.data())
+
+
+   .. cpp:member:: TensorId id
+
+      Unique identifier assigned by Graph::register_tensor()
+
+
+   .. cpp:member:: std::string name
+
+      Human-readable tensor name (copied from tensor at registration)
+
+
+   .. cpp:member:: size_t rank
+
+      Number of dimensions (e.g., 2 for a matrix)
+
+
+   .. cpp:member:: size_t element_size
+
+      Size of one element in bytes (sizeof(ValueType))
+
+
+   .. cpp:member:: std::vector<size_t> dims
+
+      Size of each dimension, in order
+
+
+   .. cpp:member:: std::vector<size_t> strides
+
+      Stride of each dimension, in elements
+
+
+   .. cpp:member:: packed_gemm::ScalarType dtype
+
+      Element type enum for runtime dispatch
+
+
+   .. cpp:member:: bool is_intermediate
+
+      True if this tensor is owned by the graph (from create_tensor())
+
+
+   .. cpp:member:: bool is_tiled
+
+      True if a tile-wise sparse tensor (no single contiguous data() buffer)
+
+
+   .. cpp:member:: bool raw_scalar
+
+      True when ``tensor_ptr`` points at a bare element (the ``T *`` a returning-form op such as
+      a dot writes through) rather than at a tensor object. Rank 0 either way, and the two are not
+      interchangeable: an executor built for one writes through the pointer as the other.
+
+
+   .. cpp:member:: bool is_runtime
+
+      True if tensor_ptr points at a GeneralRuntimeTensor<T> (passes that cast tensor_ptr to a
+      < runtime-tensor type MUST gate on this: statically-typed Tensor<T, Rank> captures pass through
+      < the same handles, and a blind cast is type confusion)
+
+
+   .. cpp:member:: bool is_tensor_view
+
+      True when ``tensor_ptr`` points at a ``RuntimeTensorView<T>`` rather than at an owning
+      ``GeneralRuntimeTensor<T>``.
+
+      ``is_runtime`` says the object is rank-erased and nothing more, and the two rank-erased
+      types have different layouts, so a pass that has to name the STATIC type in order to call
+      a templated capture entry point needs this second bit as well. Reading a tensor's data
+      needs neither: ``impl_fn`` answers that for both without asking.
+
+
+   .. cpp:member:: bool is_distributed
+
+      True if this tensor is distributed across ranks
+
+
+   .. cpp:member:: bool materialize_on_execute
+
+      True for a deferred intermediate a library helper declared on its caller's behalf, such as a
+      partial product of an einsum over three or more operands. The caller never sees it, so a
+      graph run without the Materialization pass gives it storage at its first execute when a node
+      still reads or writes it and no Materialize does; a tensor the caller declared is refused
+      there instead. See ``Graph::declare_internal_tensor``.
+
+
+   .. cpp:member:: bool is_replicated
+
+      True if distributed tensor is replicated on all ranks
+
+
+   .. cpp:member:: TensorOwnership ownership
+
+      Which scope owns this tensor's storage.
+
+      ``TensorOwnership::Graph``, the default, means "supplied to (or created by) this
+      graph and scoped to it". ``TensorOwnership::Pipeline`` means the tensor carries
+      state between a pipeline's stages, and ``TensorOwnership::Workspace`` means it
+      outlives every pipeline over it. Written at the declaring site -
+      ``Workspace::declare_*``, ``Pipeline::declare_*``, ``Graph::declare_tensor`` - and
+      carried to a capturing graph's own handle through ``Graph::add_scope_map``.
+
+      Orthogonal to ``is_intermediate``, but only in one direction: an intermediate is
+      always graph-owned by construction, so ``is_intermediate == true`` implies
+      ``ownership == Graph``, and such a handle never appears in ``InterfaceManifest``.
+      The reverse does not hold - a graph-scoped operand a caller supplied is
+      ``Graph``-owned and IS a manifest entry.
+
+      Handles minted fresh inside a Loop body or a Conditional branch keep the default,
+      as every other piece of handle metadata does at that boundary. See the
+      MetadataBoundary contract.
+
+
+   .. cpp:member:: AllocState alloc_state
+
+      Whether data is allocated (Materialized) or deferred
+
+
+   .. cpp:member:: InitKind init_kind
+
+      How to initialize after materialization
+
+
+   .. cpp:member:: Residency residency
+
+      Where the tensor data currently lives (updated by GPU passes)
+
+
+   .. cpp:member:: std::function<void ()> materialize_fn
+
+      Type-erased function to allocate backing storage for a deferred tensor.
+      Called by MaterializationPass. Null for already-materialized tensors.
+
+
+   .. cpp:member:: std::function<bool ()> is_materialized_fn
+
+      Live query: does the tensor currently have backing storage?
+      ``alloc_state`` is a snapshot from registration time and goes stale if
+      the user calls ``tensor.materialize()`` directly; execute-time
+      validation uses this to avoid false "still deferred" diagnostics.
+      Null means "assume materialized".
+
+
+   .. cpp:member:: std::function<void *()> impl_fn
+
+      Live pointer to the tensor's rank-erased ``detail::TensorImpl<T>``,
+      type-erased to ``void *``. Cast it to ``TensorImpl<T>*`` once the element
+      type is known (from ``dtype``).
+
+      This is how a pass reaches a tensor's CURRENT data pointer, dims, and
+      strides without knowing its static rank -- ``TensorImpl`` carries all
+      three as runtime values, so one dtype dispatch covers every rank. The
+      ``data_ptr`` / ``dims`` / ``strides`` fields above are registration-time
+      snapshots that nothing refreshes (``data_ptr`` is even null for a tensor
+      that was deferred when registered), so they must not be used to build an
+      executor; read through here instead, at call time.
+
+      Null for tile-wise sparse tensors, which have no single impl. Gate on it.
+
+
+   .. cpp:member:: std::function<void (void *)> materialize_into_fn
+
+      Attach caller-provided storage instead of allocating (type-erased
+      Tensor::materialize_into). Set only for owning tensor types that
+      support external storage; the MemoryPlanning arena requires it.
+
+
+   .. cpp:member:: std::function<void ()> release_fn
+
+      Type-erased function to release backing storage (free memory, return to deferred state).
+      Set by make_handle() or declare_tensor(). Called by Free nodes from FreeInsertion pass.
+
+
+   .. cpp:member:: std::function<detail::StorageBase *()> storage_of
+
+      Type-erased access to the tensor's own storage block, for the scratch lease
+      ``Graph::execute`` gives an intermediate. Set only for owning types: a view's block is its
+      parent's, and leasing it would make the parent scratch.
+
+
+   .. cpp:member:: bool scratch_leased
+
+      Whether ``Graph::execute`` has leased this intermediate's storage, so it does it once.
+
+
+   .. cpp:member:: std::function<void ()> zero_fn
+
+      Type-erased function to zero the tensor data.
+      Set by declare_tensor on Workspace/Pipeline/Graph. Called by Initialize nodes.
+
+
+   .. cpp:member:: std::function<void ()> random_fn
+
+      Type-erased function to fill tensor with random values.
+      Set by declare_tensor on Workspace/Pipeline/Graph. Called by Initialize nodes.
+
+
+   .. cpp:member:: std::function<size_t (size_t, size_t, size_t)> begin_local_view_fn
+
+      Type-erased begin/end local view for input slicing.
+      begin_local_view_fn(dim, start, count) → opaque state token
+      end_local_view_fn(token) → restores original state
+
+
+   .. cpp:member:: std::function<void (size_t)> end_local_view_fn
+
+   .. cpp:member:: std::function<void ()> allreduce_sum_fn
+
+      Type-erased in-place allreduce sum across MPI ranks (synchronous).
+      Set by make_handle(). Reads tensor data at execution time.
+
+
+   .. cpp:member:: std::function<comm::Request ()> iallreduce_sum_fn
+
+      Type-erased non-blocking allreduce (async). Returns a Request to wait on.
+      Used by CommunicationScheduling to overlap communication with computation.
+
+
+   .. cpp:member:: std::function<void (const std::vector<size_t> &)> resize_deferred_fn
+
+      Type-erased function to resize a deferred tensor's dimensions before allocation.
+      Called by MaterializationPass when distribution_info is set.
+      Argument: vector of new local dimensions for this rank.
+
+
+   .. cpp:member:: std::function<void (const std::vector<size_t> &, const std::vector<size_t> &)> set_distribution_fn
+
+      Type-erased function to set distribution metadata on the tensor after materialization.
+      Args: (global_dims, local_offsets), enabling T.range(dim) and T.global(indices...).
+
+
+   .. cpp:member:: std::shared_ptr<void> distribution_info
+
+      Distribution metadata (set by DistributionPlanningPass, read by MaterializationPass).
+      Stores the index of the dimension to block-distribute as shared_ptr<size_t>.
+
+
+   .. cpp:member:: std::shared_ptr<const SymmetryDescriptor> symmetry_hint
+
+      Declared or inferred tensor symmetry.
+
+      At registration time ``make_handle()`` reads the backing tensor's
+      ``.symmetry()`` and stores a copy here, and every pass pipeline reads it
+      again before its first pass (``Graph::refresh_declared_symmetry``), so a
+      symmetry declared on a tensor the graph already holds is seen. The
+      ``SymmetryPropagation`` pass may later infer additional symmetry and
+      update this hint plus the backing tensor (via ``set_symmetry_fn``).
+      ``nullptr`` means "no declared symmetry", so downstream dispatch falls
+      through.
+
+
+   .. cpp:member:: std::function<std::shared_ptr<const SymmetryDescriptor> ()> declared_symmetry_fn
+
+      Type-erased getter for the symmetry the backing tensor declares now, or
+      ``nullptr`` when it declares none. Populated by ``make_handle()`` for a
+      tensor type that carries a descriptor.
+
+
+   .. cpp:member:: std::function<void (SymmetryDescriptor)> set_symmetry_fn
+
+      Type-erased setter that pushes a SymmetryDescriptor back to the
+      backing tensor. Populated by ``make_handle()``. Called by the
+      SymmetryPropagation pass so inferred symmetries take effect on the
+      next ``graph.execute()`` through the rank-2 BLAS dispatch path.
+
+
+   .. cpp:member:: std::vector<SpaceId> spaces
+
+      Per-axis index-space annotation, parallel to ``dims``.
+
+      ``spaces[i]`` names the set axis ``i`` ranges over: occupied orbitals, virtuals, an
+      auxiliary basis, a grid. It is what lets a pass reason about how a family of problems
+      GROWS, where ``dims`` only says how big this one instance is.
+
+      Two states are legal and nothing else: EMPTY, meaning unannotated, which is the default
+      and is exactly the behaviour that predates annotations; or exactly ``rank`` entries.
+      ``Graph::annotate_spaces`` is the only supported writer and it enforces that, so nothing
+      on a hot path has to re-check the size.
+
+      ``Graph::annotate_spaces`` rejects an invalid ``SpaceId`` outright, so a populated
+      annotation resolves end to end. A reader that encounters one anyway is to treat that axis
+      as unannotated rather than to fail.
+
+      .. seealso::
+
+         Graph::annotate_spaces
+
+      .. seealso::
+
+         Graph::tensor_spaces
+
+
+   .. cpp:member:: bool spaces_inferred
+
+      Whether ``spaces`` was inferred rather than declared.
+
+      False for an annotation a user wrote with ``Graph::annotate_spaces``, and for the default
+      (empty) state. True when the annotation was derived: by capture, from the letters of the
+      contraction that first writes this intermediate, or by the ``SpacePropagation`` pass, from
+      the annotations on a producing node's operands.
+
+      A declaration is authoritative and an inference is only as good as the declarations it came
+      from, which is exactly the distinction ``CrossSpaceValidation`` needs in order to report a
+      weaker verdict on an inferred slot rather than an authoritative wrong one. It is also what
+      lets propagation refine its own earlier guess while never overwriting a declaration.
+
+      .. seealso::
+
+         Graph::annotate_spaces
+
+
+   .. cpp:member:: ProvenanceTag tag
+
+      What this tensor IS, as a name from an open vocabulary plus free-form attributes.
+
+      Index spaces say how big a tensor's axes are and what they range over, which is enough to
+      cost a contraction and not nearly enough to recognize one. A pass that wants to know a
+      tensor is a Kronecker delta, an electron-repulsion integral, a Coulomb metric or an energy
+      denominator is asking a question about PROVENANCE, and no amount of extent information
+      answers it. This field is that answer.
+
+      **Declared, never derived from values**
+
+      A tag is a statement by whoever built the graph, and the alternative was considered and
+      rejected rather than overlooked: a pass could look at a tensor's CONTENTS and notice it
+      happens to be an identity matrix. That would be wrong here in a way that is easy to miss.
+      A structural-algebraic rewrite's output is what a saved graph keeps, and a later bind may
+      supply a different tensor under the same manifest name, so a rewrite justified by today's
+      contents would be baked into a file and wrong on the next problem. The whole reason the
+      phase rule exists is to stop exactly that, and reading values would route around it.
+
+      **The vocabulary is open**
+
+      Names are strings and nothing validates them against a list, because the set of things
+      worth recognizing grows with the passes that recognize them, and a closed enum would mean
+      a library change for every new one. The cost is that a typo is a tag nobody matches; a
+      pass looking for a name it never finds reports it through its skip tally rather than
+      silently doing nothing.
+
+      **Propagation**
+
+      A tag travels only through operations that preserve IDENTITY - a view, a permute, a copy -
+      and is never inferred through a contraction. The permute of a delta is still a delta; the
+      contraction of two integrals is not an integral. ``ProvenancePropagation`` implements
+      exactly that rule and nothing more permissive.
+
+      Empty ``ProvenanceTag::name`` means untagged, which is the default and the state of every
+      tensor in a program that has not been annotated.
+
+      .. seealso::
+
+         Graph::annotate_tag
+
+      .. seealso::
+
+         Graph::tensor_tag
+
+
+   .. cpp:member:: std::shared_ptr<const TensorBacking> backing
+
+      Where the tensor's data lives when the graph reads it rather than holding it.
+
+      Null for every tensor not annotated through ``Graph::annotate_backing``. Set, the tensor
+      is deferred, never written by the graph, and filled from the backing's reader: whole by the
+      Initialize node Materialization emits, or a slab at a time by a pass that streams it.
+
+      Kept apart from ``tag`` because the two answer different questions and change
+      differently. A tag says what the tensor IS and follows it through a view, a permute or a
+      copy; a backing says where it LIVES, and a copy of a backed tensor lives in memory. It is
+      therefore never propagated, and like every other piece of handle metadata it does not cross
+      into a loop body's fresh handle: a pass that needs it inside a body resolves it by
+      ``tensor_ptr`` through the enclosing graphs.
+
+      .. seealso::
+
+         Graph::annotate_backing
+
+
+   .. cpp:member:: std::vector<std::string> dim_symbols
+
+      Per-axis symbolic extent declaration, parallel to ``dims``.
+
+      What makes a captured graph valid for a FAMILY of problem sizes rather than for the
+      one geometry it was captured at. ``dims`` says how big this instance is;
+      ``dim_symbols[i]`` says whether axis ``i`` is allowed to be a different size in the
+      next problem, and which other axes have to move with it.
+
+      Two states are legal and nothing else: EMPTY, meaning every axis is literal, which
+      is the default and is exactly the behaviour that predates symbolic extents; or
+      exactly ``rank`` entries. ``Graph::annotate_dims`` is the only supported writer and
+      it enforces that.
+
+      Three spellings per entry, all NAME-based so they survive a save unchanged:
+
+      - The empty string: a LITERAL axis. Its extent is part of the contract and ``Graph::bind`` requires an exact match, as ``Graph::rebind`` always has.
+      - Any other ordinary string: a SYMBOL. Every axis in the graph carrying that symbol has one extent, solved from whatever a bind supplies and checked for agreement across every slot that names it.
+      - ``"ragged:<space>"``: a RAGGED axis, whose extent differs per instance of ``\<space\>`` (a PNO domain has a different virtual extent per pair, so no single symbol describes it). Such an axis constrains nothing across slots; the per-instance extents arrive separately through ``Graph::bind_ragged_extents``. Use ``make_ragged_symbol`` rather than spelling the prefix by hand.
+
+      A symbol may also be TIED to an index space, when the same axis carries a ``spaces``
+      annotation. The tie is graph-level state, not handle state, because its purpose is to
+      catch one symbol meaning two different spaces in two places; see
+      ``Graph::symbol_spaces``.
+
+      .. seealso::
+
+         Graph::annotate_dims
+
+      .. seealso::
+
+         Graph::annotate_ragged_dim
+
+      .. seealso::
+
+         Graph::bind
+
+
+   .. cpp:member:: std::function<void *(void *)> swap_data
+
+      Swap the tensor's underlying data pointer with a new one.
+
+      Used by the GPU executor to temporarily redirect a tensor to a device shadow
+      allocation. The function captures the tensor type and performs the swap.
+      Returns the previous data pointer so it can be restored after GPU execution.
+
+      Set by make_handle(). Null for scalar handles.
+
+
+   .. cpp:member:: size_t name_hash
+
+      Hash of the tensor name at registration time.
+
+      Used by the runtime validation system to detect destroyed tensors.
+      Compared against the tensor's current name hash before execution.
+
+
+   .. cpp:member:: TensorId aliases
+
+      Aliasing parent, set when this handle represents a non-owning view of another tensor.
+
+      Populated by ``cg::view()`` (the ``View`` op): the slice's TensorHandle
+      has ``aliases == parent_id``. Storage allocation is the parent's
+      responsibility: the Alloc/Free passes skip handles with ``aliases``
+      set, the Lifetime pass extends the parent's live range to cover all
+      uses of any of its aliases, and the InplaceOptimization /
+      scheduling passes treat reads/writes through an alias as touching
+      the parent.
+
+      ``0`` means "not an alias" (no parent, own your own storage).
+
+
+   .. cpp:member:: std::vector<std::pair<std::int64_t, std::int64_t>> alias_box
+
+      The region this alias covers, in the parent's axis space.
+
+      One ``[lo, hi)`` interval per parent axis. Empty means "unknown", which
+      the hazard scan reads as the whole parent (conservative).
+
+      ``cg::view()`` does not need this: its View node carries a
+      ViewDescriptor the scheduler reads the box from directly. It is for
+      views that reach the graph WITHOUT a View node, i.e. sliced outside a
+      capture and registered on first use, where the box is recovered from
+      the data pointer offset and strides (see Graph::link_alias_storage).
+      Without it every such view would conflict with every other slice of its
+      parent, which is correct but serializes work that is provably disjoint.
+
+
+   .. cpp:member:: std::weak_ptr<void> caller_token
+
+      Liveness token of the CALLER's wrapper at registration time.
+
+      An address does not identify a tensor across a capture that frees them.
+      A destroyed wrapper's address is immediately reusable, so a tensor
+      allocated on top of a dead one would inherit its TensorId from the
+      address-keyed caches and every node referring to it would silently
+      operate on the wrong operand. This token distinguishes "same tensor" from
+      "same address": a recycled address arrives with a different token.
+
+      Empty for handles registered outside capture (``create_tensor`` /
+      ``declare_tensor``), whose wrapper the graph owns and cannot recycle, and
+      for tensor types that expose no token. Both are treated as always
+      matching, which is the behaviour that predates the check.
+
+      .. seealso::
+
+         einsums::compute_graph::detail::untracked
+
+
+   .. cpp:member:: std::shared_ptr<void> owner
+
+      The graph's stand-in for this operand, when it adopted one.
+
+      Set by capture to a wrapper sharing the caller's storage that the graph
+      keeps alive (see ``Graph::adopt_operand``). Every lambda above is baked
+      over this object, and the operand's TensorSlot points at it, which is
+      what lets the caller's own wrapper be destroyed before ``execute()``.
+
+      Empty when the graph adopted nothing: a tensor it already owns, a
+      deferred tensor it will relocate, or a type with no storage block to
+      share. Those keep the older "operands must outlive the graph" contract.
+
+      Cleared by a rebind: the handle then names the tensor it was rebound to,
+      and the slot's own reference keeps the stand-in alive for whatever was
+      built over it before.
+
+
+   .. cpp:member:: std::function<bool ()> validator
+
+      Optional validation function to check if the tensor is still alive.
+
+      Set automatically by make_handle() at registration time. The function captures
+      a reference to the original tensor and checks that its name hash still matches.
+      Returns true if the tensor appears valid, false if it may have been destroyed.
+
+      .. note::
+
+         This is a best-effort check, it catches most use-after-free cases but
+         is not guaranteed to detect all memory corruption.

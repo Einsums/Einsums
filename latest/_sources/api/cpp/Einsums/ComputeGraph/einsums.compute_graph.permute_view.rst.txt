@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.permute_view:
+
+====================================
+einsums::compute_graph::permute_view
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ParentT, size_t Rank> requires HasCompileTimeRank<ParentT> TensorView<typename std::remove_cvref_t<ParentT>::ValueType, Rank> & permute_view(ParentT &parent, const std::array<size_t, Rank> &perm)
+
+   Typed (compile-time rank) transpose / axis-permutation view.
+
+   Result axis i aliases parent axis ``perm[i]``; ``perm`` must be a
+   permutation of ``[0, Rank)``. Compile-time-rank counterpart to the
+   runtime ``cg::permute_view`` that backs Python's capture-aware ``.T``.
+   Records a graph-registered, parent-aliasing view that downstream typed
+   ``cg::*`` ops (einsum, gemm, …) can consume, unlike a raw
+   ``transpose_view``, whose shared data pointer is invisible to the graph.
+   ``Rank`` is deduced from the ``perm`` array (and asserted to equal the
+   parent's rank).
+
+   .. code-block:: text
+
+      with-capture:
+          auto &At = cg::permute_view(A, std::array<size_t, 2>{1, 0});  // A^T
+          cg::gemm(1.0, At, B, 0.0, C);

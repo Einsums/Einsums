@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ApproximationTolerance:
+
+==============================================
+einsums::compute_graph::ApproximationTolerance
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Approximation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ApproximationTolerance
+
+   The comparison tolerance a set of approximation records implies.
+
+   Two numbers rather than one because the effects do not share units: an absolute bound
+   widens the absolute side of a comparison and a relative one widens the relative side.
+   Which is which is ``is_absolute_effect``, in one place.
+
+   Both zero means the graph carries no records, which is exact mode and today's behavior.
+
+   .. seealso::
+
+      Graph::approximation_tolerance
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: double relative
+
+      Composed bound of every relative record. Widens a comparison's relative tolerance.
+
+
+   .. cpp:member:: double absolute
+
+      Composed bound of every absolute record. Widens a comparison's absolute tolerance.

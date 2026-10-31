@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.derive_env_name:
+
+============================
+einsums::cl::derive_env_name
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: std::string derive_env_name(std::string_view prefix, std::string_view long_name)
+
+   Derive an environment variable name from a prefix and an option name.
+
+   Separators become underscores, letters are upper-cased, anything else is dropped, and the prefix
+   is prepended unless already there. Empty when ``prefix`` is.

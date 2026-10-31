@@ -1,0 +1,78 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PassCounter:
+
+===================================
+einsums::compute_graph::PassCounter
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PassCounter
+
+   One of a pass's statistics, snapshotted at the top of its ``OptimizerPass::run``.
+
+   **The problem this exists for**
+
+   ``PassManager::run`` zeroes a pass's counters ONCE per ``apply()``, then invokes ``transform()``
+   once per SUB-GRAPH (see ``OptimizerPass::reset_stats`` for why the reset cannot move into
+   ``transform``). So a counter is a running total across the whole sub-graph tree, and a ``transform()``
+   that answers ``return _num_fused > 0;`` reports THIS graph as modified whenever any EARLIER
+   sub-graph changed something. That is silent for a single loop, whose body is visited last,
+   and wrong the moment a graph holds a conditional or a second loop.
+
+   Every pass that reports a statistic had independently discovered this and written the same
+   three lines - a local ``_at_entry`` snapshot, a comparison, and a four-line comment
+   explaining it - twenty times over. This is those three lines, once, where the next pass
+   author will find them.
+
+   .. code-block:: text
+
+      bool ElementWiseFusion::run(Graph &graph) {
+          PassCounter const fused{_num_fused};
+          // ... fuse, incrementing _num_fused ...
+          return fused.moved();
+      }
+
+   Read-only: the pass keeps incrementing its own member as before, and this only observes.
+   That keeps a conversion to it a two-line change per pass rather than a rewrite of every
+   increment site.
+
+   .. note::
+
+      Holds a POINTER to the counter, so it must not outlive it. Declare it as a local in
+      ``transform()``, which is the only place it makes sense: it is a snapshot of one invocation.
+
+
+   .. cpp:function:: explicit PassCounter(const std::size_t &counter) noexcept
+
+      Snapshot ``counter`` as it stands now.
+
+      :param counter: The pass member to watch. Must outlive this object.
+
+
+   .. cpp:function:: std::size_t delta() const noexcept
+
+      How much this ``transform()`` has added to the counter.
+
+      This is the number a per-graph report wants, where the counter itself holds the total
+      over every sub-graph visited so far.
+
+      :returns: The delta since construction.
+
+
+   .. cpp:function:: bool moved() const noexcept
+
+      Whether this ``transform()`` moved the counter at all.
+
+      :returns: True when it did, which is what ``transform()`` returns.

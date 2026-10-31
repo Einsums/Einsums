@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.raise_region:
+
+====================================
+einsums::compute_graph::raise_region
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<TensorExpr, RaiseFailure> raise_region(const Graph &graph, const Region &region)
+
+   Raise ``region`` of ``graph`` into its algebra.
+
+   Declines rather than approximating. A node whose descriptor does not carry
+   what the algebra needs - a contraction with no index lists, an elementwise op
+   with no registered name - fails the whole region, because a region raised with
+   one node silently dropped would lower into arithmetic that is missing a term.
+
+   :param graph: The graph the region belongs to.
+   :param region: The region, as ``form_regions`` produced it.
+   :returns: The expression, or the reason it could not be raised.

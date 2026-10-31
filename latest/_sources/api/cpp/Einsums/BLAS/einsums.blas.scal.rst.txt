@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.scal:
+
+===================
+einsums::blas::scal
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void scal(int_t n, const T alpha, T *vec, int_t inc)
+
+   Scales a vector by a value.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements to scale the vector by.
+   :param alpha: The scale factor.
+   :param vec: The vector to scale.
+   :param inc: The spacing between elements of the vector.
+
+
+.. cpp:function:: template <Complex T> void scal(int_t n, const RemoveComplexT<T> alpha, T *vec, int_t inc)
+
+   Scales a complex vector by a real value.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements to scale the vector by.
+   :param alpha: The scale factor.
+   :param vec: The vector to scale.
+   :param inc: The spacing between elements of the vector.

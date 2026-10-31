@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.device_name:
+
+=========================
+einsums::gpu::device_name
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Runtime.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:function:: std::string device_name()
+
+   The device name, or "" on the mock.

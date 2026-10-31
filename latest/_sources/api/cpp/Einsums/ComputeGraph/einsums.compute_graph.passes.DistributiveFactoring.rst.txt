@@ -1,0 +1,226 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.DistributiveFactoring:
+
+=====================================================
+einsums::compute_graph::passes::DistributiveFactoring
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/DistributiveFactoring.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: DistributiveFactoring : public OptimizerPass
+
+   Distributive factoring pass: factors out shared operands from accumulating einsums.
+
+   Detects groups of einsum nodes that:
+
+   1. Accumulate into the same output tensor (c_prefactor != 0)
+   2. Share one input operand with identical index pattern
+   3. Have different other operands with identical index pattern and shape
+
+   Rewrites by summing the non-shared operands into an intermediate, then
+   performing a single einsum with the shared operand and the sum.
+
+   The lowering is ordinary nodes, not one fused node: a Scale that zeros the
+   intermediate, one Axpy per summed operand carrying that member's product
+   prefactor, and one Einsum with ``ab_pf = 1``, so other passes can share or
+   hoist the intermediate.
+
+   Groups that sum the same operands, up to an overall factor, share one
+   intermediate, so a quantity several terms consume is built once. This is the
+   shape of CCSD's tau, which feeds W_mnij and W_abef with a quarter and the T2
+   equation with a half: written out term by term, with no hint that tau exists,
+   the pass recovers it, builds it once, and puts each consumer's factor on that
+   consumer's contraction. Reuse lives here rather than in CSE because an
+   accumulation buffer has several writers, and CSE's single-writer guard is what
+   stops readers being redirected onto a buffer that is mutated again.
+
+   **Example (CCSD-like pattern)**
+
+   Before:
+
+   .. code-block:: text
+
+      // R[i,a] += A[i,k] * B1[k,a]     (einsum node 1)
+      // R[i,a] += A[i,k] * B2[k,a]     (einsum node 2)
+      // R[i,a] += A[i,k] * B3[k,a]     (einsum node 3)
+
+   After:
+
+   .. code-block:: text
+
+      // T[k,a]  = 0                            (Scale by zero)
+      // T[k,a] += B1[k,a]                       (Axpy)
+      // T[k,a] += B2[k,a]                       (Axpy)
+      // T[k,a] += B3[k,a]                       (Axpy)
+      // R[i,a] += A[i,k] * T[k,a]               (single Einsum)
+
+   This reduces N contractions to 1 contraction + (N-1) additions, saving
+   significant FLOPs when the contraction is expensive relative to the addition.
+
+   **Profitability**
+
+   Priced, not guessed. The trade is (N-1) contractions saved against one axpy
+   chain over the summed operands plus a buffer, so it pays when the contraction
+   is flop-bound and loses when it is bandwidth-bound: a cheap contraction over
+   large operands spends more assembling the sum than it saves, and pays memory
+   for the privilege. Both sides are estimated in microseconds from the shared
+   ``CostModel``, the same way TiledExpansion chooses between its lowerings, and
+   ``num_unprofitable`` counts the groups declined on those grounds.
+
+   Note the direction of the memory effect: factoring ADDS a buffer that the
+   unfactored form does not need. Sharing reduces how many it adds when several
+   consumers want one sum; it does not make the pass a memory saving.
+
+   **In the default pipeline**
+
+   Registered by ``PassManager::populate_default()``, next to
+   ``LinearCombinationContractionFolding`` and before
+   ``LoopInvariantHoisting``, so a loop-invariant sum is built once rather than
+   every replay. Because it self-gates on cost, it is a no-op on graphs it cannot
+   help. To exercise it alone, or to price it against a chosen profile:
+
+   .. code-block:: text
+
+      auto [modified, pass] = graph.apply<cg::passes::DistributiveFactoring>();
+      auto [modified, pass] = graph.apply<cg::passes::DistributiveFactoring>(my_cost_model);
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("distributive_factoring")
+      with cg.capture(g):
+          einsums.einsum("ia <- ik ; ka", R, A, B1, c_pf=1.0)   # R += A * B1
+          einsums.einsum("ia <- ik ; ka", R, A, B2, c_pf=1.0)   # R += A * B2
+      df = cg.DistributiveFactoring()
+      pm = cg.PassManager(); pm.add(df)
+      g.apply(pm)
+      # df.num_groups -> 1, df.num_eliminated -> 1  (getters are properties, not methods)
+
+   **Limitations**
+
+   - Members must be **einsum** nodes with exactly two inputs and one output, accumulating (`c_prefactor != 0`) into the same output, sharing one operand (same tensor id and index pattern) with the non-shared operands sharing the other index pattern.
+   - Every member after the first must accumulate with `c_prefactor == 1`. The combined contraction applies the output prefactor once, so a member that rescales the partial sum its predecessors wrote cannot be folded: `R = 2*(R + A*B1) + A*B2` is not `R = 2*R + A*(B1 + B2)`. Such a group declines rather than silently computing the second form.
+   - Sharing covers sums that are equal or PROPORTIONAL: a consumer wanting the same sum at a different strength reuses the build and carries the ratio on its own ``ab_pf``, which is free. The ratio must be an exact power of two, because only then does scaling the assembled sum agree with scaling each term (``r*(a+b) == r*a + r*b``). Other ratios decline; lifting that is safe up to rounding but would make the answer depend on what the pass chose to share.
+   - Sums that are not proportional stay separate even when related. CCSD's tau and tau-tilde are ``T2 + P`` and ``T2 + P/2`` for the same ``P``, a ratio of 1 on one term and 1/2 on the others, so they are two tensors here. That matches practice: deriving one from the other saves a single pass over an o^2v^2 buffer against contractions costing o^2v^4, and serialises two builds that are otherwise independent. Seeing them as one quantity at two coefficients is multi-term optimisation over a coefficient matrix, which nothing here does.
+   - Reuse only looks within one graph level. A sum built in a loop body is not offered to the enclosing graph or to a sibling branch.
+   - Non-shared operands must all be **distinct** tensors of identical shape and dtype, and the shared operand may not be one of them.
+   - The factoring math is real-valued: `conj_a`/`conj_b` einsums are skipped, and a prefactor with a nonzero imaginary part declines the node.
+   - Operands may be runtime tensors, typed `Tensor<T, Rank>` or views of either, mixed freely: the summed intermediate is a runtime tensor, and every rebuilt node reads its operands through their rank-erased geometry. The output may not be a view.
+   - Placement/interference gate: the combined node takes the first member's slot, so no node between the first and last member may read/write the output or write a factor operand, and any `Loop`/`Conditional` in the span disqualifies the group.
+
+   **Future improvements**
+
+   - Thread `conj_a`/`conj_b` and complex prefactors through the rewrite so conjugated / complex-scaled contractions can also be factored.
+   - Fold the zeroing Scale into the first Axpy once an Axpby node factory exists, saving a node per group.
+   - Offer sums across graph levels, so a loop-invariant one built in a CC iteration can be shared with, or hoisted above, the enclosing graph.
+
+
+   .. cpp:function:: DistributiveFactoring()
+
+   .. cpp:function:: explicit DistributiveFactoring(Factor factor)
+
+      Override the profitability decision. ``Factor::Always`` skips it entirely.
+
+
+   .. cpp:function:: explicit DistributiveFactoring(CostModel cost_model, Factor factor)
+
+      Price the trade against a supplied profile instead of the detected one.
+      populate_default() passes the profile it shares with the other cost-model
+      passes, so every planning decision is made against one machine.
+
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      Structural-algebraic despite consulting a ``CostModel``: the measurement
+      is a HINT, not a premise. This pass's output has to remain valid, if not
+      optimal, on a machine whose costs differ, which is exactly what makes it
+      safe to persist in a saved graph while a batching or placement decision
+      made from the same measurement is not.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not permutation operators, bare scalars, redirected slots or a node that writes a view: the rebuilt contraction carries no
+      operators, the summed operand is assumed a tensor, and a view output is not a case the rewrite has been checked against.
+      Reading through views is understood: the rebuilt nodes read each operand through its own strides, and the interference and
+      reuse checks compare the buffers operands land in.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Folding A*B1 + A*B2 into A*(B1+B2) sums the operands before contracting instead of after.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Factors loop bodies and conditional branches too; the counters accumulate
+      across the whole tree.
+
+
+   .. cpp:function:: size_t num_unprofitable() const
+
+      Groups declined because the axpy chain would cost more than the
+      contractions it saves. A bandwidth-bound contraction over large operands
+      is the shape that lands here.
+
+
+   .. cpp:function:: size_t num_groups() const
+
+      Number of factoring groups found.
+
+
+   .. cpp:function:: size_t num_eliminated() const
+
+      Total number of einsum nodes eliminated.
+
+
+   .. cpp:function:: const std::vector<FactoringGroup> & groups() const
+
+   .. cpp:class:: FactoringGroup
+
+      Description of each factoring group found.
+
+
+      .. cpp:member:: std::string shared_tensor
+
+         Name of the shared input tensor
+
+
+      .. cpp:member:: std::string output_tensor
+
+         Name of the accumulation output
+
+
+      .. cpp:member:: size_t num_terms
+
+         Number of terms factored together
+
+
+      .. cpp:member:: std::vector<std::string> summed_tensors
+
+         Names of the non-shared tensors that were summed

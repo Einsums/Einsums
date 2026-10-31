@@ -1,0 +1,137 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.Zip:
+
+============
+einsums::Zip
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Iterator/Zip.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename... Containers> Zip final
+
+   Works like Python's ``zip()`` function.
+
+   .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr Zip() = default
+
+      Default constructor.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr Zip(const Zip<Containers...> &other)
+
+      Copy constructor.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr Zip(Containers &... containers)
+
+      Initialize the zip object.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr Zip<Containers...> & operator=(const Zip<Containers...> &other)
+
+      Copy assignment.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr iterator begin()
+
+      The iterator pointing to the beginning of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr iterator end()
+
+      The iterator pointing to the end of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr const_iterator begin() const
+
+      The iterator pointing to the beginning of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr const_iterator end() const
+
+      The iterator pointing to the end of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr const_iterator cbegin() const
+
+      The const iterator pointing to the beginning of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr const_iterator cend() const
+
+      The const iterator pointing to the end of the container.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr bool operator==(const Zip<Containers...> &other) const
+
+      Compare two zip objects.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr bool operator!=(const Zip<Containers...> &other) const
+
+      Compare two zip objects.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr void swap(Zip<Containers...> &other)
+
+      Swap the contents of two zip objects.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr size_t size() const
+
+      Get the size of the zip object.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr size_t max_size() const
+
+      Get the maximum possible size for the zip object.
+
+      .. versionadded:: 1.1.0
+
+
+   .. cpp:function:: constexpr bool empty() const
+
+      Check whether the zip object contains data.
+
+      .. versionadded:: 1.1.0

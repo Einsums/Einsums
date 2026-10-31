@@ -1,0 +1,101 @@
+.. _api_cpp:
+
+=================
+C++ API Reference
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+The reference is organized per module.
+
+Modules
+-------
+
+- :ref:`Assertion <modules_Einsums_Assertion_api>` - no documented public API yet
+- :ref:`BLAS <modules_Einsums_BLAS_api>` - 3 types, 65 functions
+- :ref:`BLASBase <modules_Einsums_BLASBase_api>` - no documented public API yet
+- :ref:`BLASVendor <modules_Einsums_BLASVendor_api>` - 203 functions
+- :ref:`BufferAllocator <modules_Einsums_BufferAllocator_api>` - 4 types, 5 functions
+- :ref:`Comm <modules_Einsums_Comm_api>` - 7 types, 20 functions
+- :ref:`ComputeGraph <modules_Einsums_ComputeGraph_api>` - 228 types, 286 functions
+- :ref:`ComputeGraphTypes <modules_Einsums_ComputeGraphTypes_api>` - 19 types, 16 functions
+- :ref:`Concepts <modules_Einsums_Concepts_api>` - 57 types, 1 function
+- :ref:`Config <modules_Einsums_Config_api>` - 1 type, 7 functions
+- :ref:`CXX23 <modules_Einsums_CXX23_api>` - 2 types
+- :ref:`Debugging <modules_Einsums_Debugging_api>` - 5 functions
+- :ref:`Errors <modules_Einsums_Errors_api>` - 15 types
+- :ref:`FFT <modules_Einsums_FFT_api>` - 3 functions
+- :ref:`GPU <modules_Einsums_GPU_api>` - 4 types, 27 functions
+- :ref:`Hardware <modules_Einsums_Hardware_api>` - 5 types, 34 functions
+- :ref:`HPTT <modules_Einsums_HPTT_api>` - 5 types, 12 functions
+- :ref:`Iterator <modules_Einsums_Iterator_api>` - 2 types, 3 functions
+- :ref:`Json <modules_Einsums_Json_api>` - 6 types, 3 functions
+- :ref:`LinearAlgebra <modules_Einsums_LinearAlgebra_api>` - 35 functions
+- :ref:`Logging <modules_Einsums_Logging_api>` - 3 functions
+- :ref:`Options <modules_Einsums_Options_api>` - 18 types, 26 functions
+- :ref:`PackedGemm <modules_Einsums_PackedGemm_api>` - 23 types, 66 functions
+- :ref:`Preprocessor <modules_Einsums_Preprocessor_api>` - 1 function
+- :ref:`Print <modules_Einsums_Print_api>` - 2 types, 8 functions
+- :ref:`Profile <modules_Einsums_Profile_api>` - 1 type, 4 functions
+- :ref:`Python <modules_Einsums_Python_api>` - 2 types
+- :ref:`Runtime <modules_Einsums_Runtime_api>` - 3 types, 16 functions
+- :ref:`SIMD <modules_Einsums_SIMD_api>` - 2 functions
+- :ref:`StringUtil <modules_Einsums_StringUtil_api>` - 2 types, 13 functions
+- :ref:`TaskPool <modules_Einsums_TaskPool_api>` - 8 types, 3 functions
+- :ref:`Tensor <modules_Einsums_Tensor_api>` - 22 types, 17 functions
+- :ref:`TensorAlgebra <modules_Einsums_TensorAlgebra_api>` - 6 types, 8 functions
+- :ref:`TensorBase <modules_Einsums_TensorBase_api>` - 18 types, 10 functions
+- :ref:`TensorImpl <modules_Einsums_TensorImpl_api>` - no documented public API yet
+- :ref:`TensorIO <modules_Einsums_TensorIO_api>` - 5 types, 21 functions
+- :ref:`TensorPermute <modules_Einsums_TensorPermute_api>` - 1 type, 4 functions
+- :ref:`TensorUtilities <modules_Einsums_TensorUtilities_api>` - 12 functions
+- :ref:`TypeSupport <modules_Einsums_TypeSupport_api>` - 4 types, 5 functions
+- :ref:`Utilities <modules_Einsums_Utilities_api>` - 12 functions
+- :ref:`Version <modules_Einsums_Version_api>` - 13 functions
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   Einsums/Assertion/index
+   Einsums/BLAS/index
+   Einsums/BLASBase/index
+   Einsums/BLASVendor/index
+   Einsums/BufferAllocator/index
+   Einsums/Comm/index
+   Einsums/ComputeGraph/index
+   Einsums/ComputeGraphTypes/index
+   Einsums/Concepts/index
+   Einsums/Config/index
+   Einsums/CXX23/index
+   Einsums/Debugging/index
+   Einsums/Errors/index
+   Einsums/FFT/index
+   Einsums/GPU/index
+   Einsums/Hardware/index
+   Einsums/HPTT/index
+   Einsums/Iterator/index
+   Einsums/Json/index
+   Einsums/LinearAlgebra/index
+   Einsums/Logging/index
+   Einsums/Options/index
+   Einsums/PackedGemm/index
+   Einsums/Preprocessor/index
+   Einsums/Print/index
+   Einsums/Profile/index
+   Einsums/Python/index
+   Einsums/Runtime/index
+   Einsums/SIMD/index
+   Einsums/StringUtil/index
+   Einsums/TaskPool/index
+   Einsums/Tensor/index
+   Einsums/TensorAlgebra/index
+   Einsums/TensorBase/index
+   Einsums/TensorImpl/index
+   Einsums/TensorIO/index
+   Einsums/TensorPermute/index
+   Einsums/TensorUtilities/index
+   Einsums/TypeSupport/index
+   Einsums/Utilities/index
+   Einsums/Version/index

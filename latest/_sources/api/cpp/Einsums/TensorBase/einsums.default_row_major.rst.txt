@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.default_row_major:
+
+==========================
+einsums::default_row_major
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/Options.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: bool default_row_major()
+
+   Whether tensors default to row-major. Reads ``option::RowMajor``.
+
+   Out of line on purpose: a TU outside the library gets its own, unregistered copy of the
+   descriptor, so an inline read there would always return the default.

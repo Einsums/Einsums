@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgetri:
+
+=============================
+einsums::blas::vendor::sgetri
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgetri(int_t n, float *A, int_t lda, const int_t *ipiv)
+
+   Computes the inverse of a matrix using the LU factorization computed
+   by getrf
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of rows and columns of the matrix.
+   :param A: The matrix to invert after being processed by sgetrf.
+   :param lda: The leading dimension of the matrix.
+   :param ipiv: The pivots produced by sgetrf.
+   :returns: 0 on success. If positive, then the matrix is singular and the inverse could not be computed. If negative, then one of the parameters was invalid. The absolute value indicates which parameter was invalid.

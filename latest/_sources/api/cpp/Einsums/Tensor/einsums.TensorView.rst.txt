@@ -1,0 +1,431 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TensorView:
+
+===================
+einsums::TensorView
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/Tensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank> TensorView final : public tensor_base::CoreTensor, public design_pats::Lockable<std::recursive_mutex>, public tensor_base::AlgebraOptimizedTensor
+
+   Represents a view of a tensor, which may have a different rank and different dimensions and start at a different index.
+
+   :tparam T: The data type being stored.
+   :tparam Rank: The rank of the view.
+
+
+   .. cpp:function:: TensorView() = delete
+
+   .. cpp:function:: TensorView(const TensorView<T, rank> &) = default
+
+      Default copy constructor.
+
+
+   .. cpp:function:: template <size_t OtherRank, Container Dim, typename Alloc, typename... Args> explicit TensorView(const GeneralTensor<T, OtherRank, Alloc> &other, const Dim &dims, Args &&... args)
+
+      Creates a view of a tensor with the given properties.
+
+
+   .. cpp:function:: template <size_t OtherRank, Container Dim, typename Alloc, typename... Args> explicit TensorView(GeneralTensor<T, OtherRank, Alloc> &other, const Dim &dims, Args &&... args)
+
+      Creates a view of a tensor with the given properties.
+
+
+   .. cpp:function:: template <size_t OtherRank, Container Dim, typename... Args> explicit TensorView(TensorView<T, OtherRank> &other, const Dim &dims, Args &&... args)
+
+      Creates a view of a tensor with the given properties.
+
+
+   .. cpp:function:: template <size_t OtherRank, Container Dim, typename... Args> explicit TensorView(const TensorView<T, OtherRank> &other, const Dim &dims, Args &&... args)
+
+      Creates a view of a tensor with the given properties.
+
+
+   .. cpp:function:: template <size_t OtherRank, Container Dim, typename Alloc, typename... Args> explicit TensorView(std::string name, GeneralTensor<T, OtherRank, Alloc> &other, const Dim &dims, Args &&... args)
+
+      Creates a view of a tensor with the given properties.
+
+
+   .. cpp:function:: explicit TensorView(const T *data, const Dim<Rank> &dims, bool row_major)
+
+      Wrap a const pointer in a tensor view, specifying the dimensions.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+      :param row_major: Whether ``data`` is laid out in row-major order instead of column-major.
+
+
+   .. cpp:function:: explicit TensorView(T *data, const Dim<Rank> &dims, bool row_major)
+
+      Wrap a pointer in a tensor view, specifying the dimensions.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+      :param row_major: Whether ``data`` is laid out in row-major order instead of column-major.
+
+
+   .. cpp:function:: explicit TensorView(const T *data, const Dim<Rank> &dims)
+
+      Wrap a const pointer in a tensor view, specifying the dimensions.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+
+
+   .. cpp:function:: explicit TensorView(T *data, const Dim<Rank> &dims)
+
+      Wrap a pointer in a tensor view, specifying the dimensions.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+
+
+   .. cpp:function:: explicit TensorView(const T *data, const Dim<Rank> &dims, const Stride<Rank> &strides)
+
+      Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+      :param strides: The strides for the view.
+
+
+   .. cpp:function:: explicit TensorView(T *data, const Dim<Rank> &dims, const Stride<Rank> &strides)
+
+      Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+
+      :param data: The pointer to wrap.
+      :param dims: The dimensions of the view.
+      :param strides: The strides for the view.
+
+
+   .. cpp:function:: explicit TensorView(const detail::TensorImpl<T> &impl, std::shared_ptr<detail::StorageBase> storage)
+
+      Creates a view around an implementation, holding ``storage`` alive.
+
+      The slicing helpers use this form: an impl on its own carries a bare
+      pointer into somebody else's buffer, so a view built from one has no way
+      to keep that buffer alive. Passing the parent's storage block along makes
+      the view self-sufficient, which is what lets a sliced-then-orphaned view
+      still be read (and still be a valid graph operand) after the tensor it
+      came from is gone.
+
+
+   .. cpp:function:: explicit TensorView(const detail::TensorImpl<T> &impl)
+
+   .. cpp:function:: explicit TensorView(const detail::TensorImpl<T> &impl, T *parent)
+
+   .. cpp:function:: explicit TensorView(const detail::TensorImpl<T> &impl, const T *parent)
+
+   .. cpp:function:: ~TensorView() = default
+
+      Default destructor.
+
+
+   .. cpp:function:: TensorView<T, rank> & operator=(const T *other)
+
+      Copy data from a pointer into this view. It always assumes that the source array is stored in row-major
+      order.
+
+      .. attention::
+
+         This is an expert function only. If you are using it, you must know what you are doing!
+
+
+   .. cpp:function:: TensorView<T, rank> & operator=(const TensorView<T, rank> &other)
+
+      Copy assignment.
+
+
+   .. cpp:function:: template <typename AType> requires CoreRankTensor<AType, Rank, T> TensorView<T, rank> & operator=(const AType &other)
+
+      Copy the data from another tensor into this view.
+
+
+   .. cpp:function:: TensorView<T, rank> & operator=(const T &fill_value)
+
+      Fill this view with a single value.
+
+
+   .. cpp:function:: void zero()
+
+   .. cpp:function:: void set_all(T value)
+
+   .. cpp:function:: template <typename TOther> TensorView<T, rank> & operator+=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> TensorView<T, rank> & operator-=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> TensorView<T, rank> & operator*=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> TensorView<T, rank> & operator/=(const TOther &b)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> TensorView<T, rank> & operator+=(const TOther &b)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> TensorView<T, rank> & operator-=(const TOther &b)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> TensorView<T, rank> & operator*=(const TOther &b)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> TensorView<T, rank> & operator/=(const TOther &b)
+
+   .. cpp:function:: Pointer data()
+
+      Get a pointer to the data.
+
+
+   .. cpp:function:: ConstPointer data() const
+
+      See ``TensorView<T,Rank>::data()``.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) ConstPointer data(MultiIndex &&... index) const
+
+      Get a pointer to the data at a certain index in the tensor.
+
+      :param index: The index for the offset.
+
+
+   .. cpp:function:: template <Container Index> ConstPointer data(const Index &index_list) const
+
+      Get a pointer to the data at a certain index in the tensor.
+
+      :param index_list: The index for the offset.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Pointer data(MultiIndex &&... index)
+
+      Get a pointer to the data at a certain index in the tensor.
+
+      :param index: The index for the offset.
+
+
+   .. cpp:function:: template <Container Index> Pointer data(const Index &index_list)
+
+      Get a pointer to the data at a certain index in the tensor.
+
+      :param index_list: The index for the offset.
+
+
+   .. cpp:function:: Pointer full_data() noexcept
+
+   .. cpp:function:: ConstPointer full_data() const noexcept
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) ConstReference operator()(MultiIndex &&... index) const
+
+      Subscript into the tensor.
+
+      Wraps negative indices and checks the bounds.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Reference operator()(MultiIndex &&... index)
+
+      Subscript into the tensor.
+
+      Wraps negative indices and checks the bounds.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (AtLeastOneOfType<AllT, std::remove_cvref_t<MultiIndex>...> || AtLeastOneOfType<Range, std::remove_cvref_t<MultiIndex>...>) TensorView<T, count_of_type<AllT, std::remove_cvref_t<MultiIndex>...>() + count_of_type<Range, std::remove_cvref_t<MultiIndex>...>()> operator()(MultiIndex &&... index)
+
+   .. cpp:function:: template <typename... MultiIndex> requires (AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>) const TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(MultiIndex &&... index) const
+
+   .. cpp:function:: template <typename... MultiIndex> requires (AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>) TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> subscript(MultiIndex &&... index)
+
+   .. cpp:function:: template <typename... MultiIndex> requires (AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>) const TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> subscript(MultiIndex &&... index) const
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) ConstReference subscript(MultiIndex &&... index) const
+
+      Subscript into the tensor.
+
+      Does not do any checking of the indices.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Reference subscript(MultiIndex &&... index)
+
+      Subscript into the tensor.
+
+      Does not do any checking of the indices.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename int_type> requires (std::is_integral_v<int_type>) ConstReference subscript(const std::array<int_type, Rank> &index) const
+
+      Subscript into the tensor.
+
+      Does not do any checking of the indices.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename int_type> requires (std::is_integral_v<int_type>) Reference subscript(const std::array<int_type, Rank> &index)
+
+      Subscript into the tensor.
+
+      Does not do any checking of the indices.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename Container> requires (!std::is_integral_v<Container> && !std::is_same_v<Container, Dim<Rank>> && !std::is_same_v<Container, Stride<Rank>> && !std::is_same_v<Container, Offset<Rank>> && !std::is_same_v<Container, Range>) Reference operator()(const Container &index)
+
+      Subscript into the tensor.
+
+      Wraps negative indices and checks the bounds.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename Container> requires (!std::is_integral_v<Container> && !std::is_same_v<Container, Dim<Rank>> && !std::is_same_v<Container, Stride<Rank>> && !std::is_same_v<Container, Offset<Rank>> && !std::is_same_v<Container, Range>) ConstReference operator()(const Container &index) const
+
+      Subscript into the tensor.
+
+      Wraps negative indices and checks the bounds.
+
+      :param index: The indices to use for the subscript.
+
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Get the dimension of the view along a given axis.
+
+      :param d: The axis to query.
+
+
+   .. cpp:function:: size_t source_dim(int d) const
+
+      Get the dimension of the original tensor along a given axis.
+
+
+   .. cpp:function:: const Dim<Rank> & dims() const
+
+      Get the dimensions of the view.
+
+
+   .. cpp:function:: const Dim<Rank> & source_dims() const
+
+      Get the dimensions of the original tensor.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Get the name of the view.
+
+
+   .. cpp:function:: void set_name(const std::string &name)
+
+      Set the name of the view.
+
+      :param name: The new name for the view.
+
+
+   .. cpp:function:: size_t stride(int d) const
+
+      Get the stride of the view along a given axis.
+
+      :param d: The axis to query.
+
+
+   .. cpp:function:: const Stride<Rank> & strides() const noexcept
+
+      Get the strides of the tensor.
+
+
+   .. cpp:function:: size_t offset(int d) const
+
+      Get the offset of the view along a given axis.
+
+
+   .. cpp:function:: Offset<Rank> offsets() const noexcept
+
+      Get the offsets of the tensor.
+
+
+   .. cpp:function:: TensorView<T, 1> to_rank_1_view() const
+
+      Flatten the view.
+
+      .. warning::
+
+         Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!
+
+
+   .. cpp:function:: bool full_view_of_underlying() const noexcept
+
+      Check whether the view has all elements of the tensor it is viewing.
+
+
+   .. cpp:function:: size_t size() const
+
+      Get the number of elements in the view.
+
+
+   .. cpp:function:: detail::TensorImpl<T> & impl() noexcept
+
+      Get the underlying implementation details.
+
+
+   .. cpp:function:: const detail::TensorImpl<T> & impl() const noexcept
+
+      Get the underlying implementation details.
+
+
+   .. cpp:function:: bool is_row_major() const
+
+   .. cpp:function:: bool is_column_major() const
+
+   .. cpp:function:: const SymmetryDescriptor * symmetry() const noexcept
+
+   .. cpp:function:: bool has_symmetry() const noexcept
+
+   .. cpp:function:: TensorView<T, Rank> transpose_view()
+
+   .. cpp:function:: const TensorView<T, Rank> transpose_view() const
+
+   .. cpp:function:: TensorView<T, Rank> to_row_major()
+
+   .. cpp:function:: const TensorView<T, Rank> to_row_major() const
+
+   .. cpp:function:: TensorView<T, Rank> to_column_major()
+
+   .. cpp:function:: const TensorView<T, Rank> to_column_major() const
+
+   .. cpp:function:: bool is_gemmable(size_t *lda) const
+
+   .. cpp:function:: bool is_totally_vectorable(size_t *incx) const
+
+   .. cpp:function:: template <std::integral... MultiIndex> TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&... index)
+
+   .. cpp:function:: template <std::integral... MultiIndex> const TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&... index) const
+
+   .. cpp:function:: const std::shared_ptr<detail::StorageBase> & storage() const noexcept
+
+      The storage block of the tensor this view was sliced from, or null when
+      the view was built from a raw pointer and has none.
+
+
+   .. cpp:function:: TensorView<T, rank> shallow_alias() const
+
+      A second view over the same region, holding the same parent storage.
+
+      A plain copy, for the interface ``Graph::adopt_operand`` uses on owning tensors.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor view.

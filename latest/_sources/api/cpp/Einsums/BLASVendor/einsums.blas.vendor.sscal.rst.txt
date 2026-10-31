@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sscal:
+
+============================
+einsums::blas::vendor::sscal
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sscal(int_t n, float alpha, float *vec, int_t inc)
+
+   Scales a vector by a scalar. Supports real scalars by real vectors, complex scalars by complex vectors,
+   and real scalars by complex vectors.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vector.
+   :param alpha: The scale factor.
+   :param vec: The vector to scale.
+   :param inc: The skip value for the vector.

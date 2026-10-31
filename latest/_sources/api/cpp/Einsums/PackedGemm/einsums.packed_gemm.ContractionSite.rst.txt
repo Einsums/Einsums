@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.ContractionSite:
+
+=====================================
+einsums::packed_gemm::ContractionSite
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: ContractionSite
+
+   Per-call-site memo for a contraction that repeats.
+
+   Skips building and hashing a key on a repeat (about twenty allocations). One per graph node; its
+   key is re-checked against the spec and operand layouts every call. Not thread-safe.
+
+
+   .. cpp:member:: ContractionKey key
+
+      what ``plan`` was resolved for
+
+
+   .. cpp:member:: const PackingPlan *plan
+
+      cache-owned and stable, or null for "declined"
+
+
+   .. cpp:member:: bool resolved
+
+      ``key`` and ``plan`` are filled
+
+
+   .. cpp:member:: bool allow_scatter
+
+      the policy the resolution was made under
+
+
+   .. cpp:member:: KernelRoute route
+
+      The route this site's contraction is pinned to, or Adaptive for "read
+      the thread regime per call". Written once by whoever plans the site's
+      owner and read on every call; never written by the engine.
+
+
+   .. cpp:member:: bool declined_packed
+
+      The effective route the memo above was recorded under.
+
+      A decline depends on the route (a plan does not), so a memo is re-derived when the route moves.

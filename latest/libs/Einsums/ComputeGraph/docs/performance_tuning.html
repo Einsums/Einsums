@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Performance Tuning &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/performance_tuning';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/performance_tuning.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="GEMM Batching" href="gemm_batching.html" />
+    <link rel="prev" title="Optimization Passes" href="optimization_passes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Performance Tuning</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="performance-tuning">
+<h1>Performance Tuning<a class="headerlink" href="#performance-tuning" title="Link to this heading">#</a></h1>
+<p>This guide covers how to tune Einsums ComputeGraph for optimal performance.
+The defaults work well for most cases; tuning matters at scale (large tensors,
+many ranks, GPU offload).</p>
+<section id="executor-selection">
+<h2>Executor Selection<a class="headerlink" href="#executor-selection" title="Link to this heading">#</a></h2>
+<p>Choose the executor based on your workload:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">                    </span><span class="c1">// Sequential (default) — simplest, no overhead</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span><span class="w">                  </span><span class="c1">// Maximum overlap via TaskPool</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">OpenMPExecutor</span><span class="w"> </span><span class="n">omp</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">omp</span><span class="p">);</span><span class="w">                 </span><span class="c1">// OpenMP task parallelism</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">MPIExecutor</span><span class="w"> </span><span class="n">mpi</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">mpi</span><span class="p">);</span><span class="w">                 </span><span class="c1">// MPI-aware (same as Sequential on 1 rank)</span>
+</pre></div>
+</div>
+<section id="when-to-use-which">
+<h3>When to use which<a class="headerlink" href="#when-to-use-which" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Sequential</strong>: Small graphs (&lt;10 nodes), debugging, or when nodes are already
+internally parallel (OpenMP BLAS). Zero scheduling overhead.</p></li>
+<li><p><strong>DataflowExecutor</strong>: Large graphs with independent branches, async I/O overlap,
+or communication overlap. Best for pipelines and multi-stage computations.</p></li>
+<li><p><strong>OpenMPExecutor</strong>: Medium graphs where BLAS is single-threaded and you want
+node-level parallelism. Avoid if BLAS already uses all cores.</p></li>
+<li><p><strong>MPIExecutor</strong>: Distributed computation. On single rank, identical to Sequential.</p></li>
+</ul>
+</section>
+</section>
+<section id="pass-configuration">
+<h2>Pass Configuration<a class="headerlink" href="#pass-configuration" title="Link to this heading">#</a></h2>
+<section id="disabling-passes">
+<h3>Disabling Passes<a class="headerlink" href="#disabling-passes" title="Link to this heading">#</a></h3>
+<p>Disable specific passes via runtime config:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:pass:disable<span class="w"> </span><span class="s2">"ContractionPlanning,GEMMBatching"</span>
+</pre></div>
+</div>
+<p>Or in code, either by building a pipeline that omits them:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Build custom pipeline without specific passes</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ConstantFolding</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">Reorder</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">Materialization</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="c1">// Omit ContractionPlanning, GEMMBatching, etc.</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>or by switching one off in the canonical pipeline:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">disable</span><span class="p">(</span><span class="s">"GEMMBatching"</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The second form is what a bisect driver wants: it runs the same pipeline once
+per pass with a different one switched off each time, and building a bespoke
+manager per trial would change more than the one variable under test.
+<code class="docutils literal notranslate"><span class="pre">enable(name)</span></code> switches a pass back on and overrides
+<code class="docutils literal notranslate"><span class="pre">--einsums:pass:disable</span></code>, so a program that names a pass is not silently
+overruled by a shell variable left over from an earlier run.</p>
+<p>Switches are consulted at <code class="docutils literal notranslate"><span class="pre">run()</span></code>, so a pass may be switched off before it is
+added. A switch naming no pass in the pipeline is reported through <code class="docutils literal notranslate"><span class="pre">explain()</span></code>
+and logged as a warning rather than quietly doing nothing, which is the failure
+mode a misspelled pass name would otherwise have.</p>
+</section>
+<section id="verbose-pass-logging">
+<h3>Verbose Pass Logging<a class="headerlink" href="#verbose-pass-logging" title="Link to this heading">#</a></h3>
+<p>See what each pass does:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:pass:verbose
+</pre></div>
+</div>
+<p>This logs which passes modify the graph, how many nodes change, and timing.</p>
+</section>
+<section id="analysis-mode">
+<h3>Analysis Mode<a class="headerlink" href="#analysis-mode" title="Link to this heading">#</a></h3>
+<p>Run passes without applying changes (dry run):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:pass:analyze
+</pre></div>
+</div>
+</section>
+</section>
+<section id="distribution-tuning">
+<h2>Distribution Tuning<a class="headerlink" href="#distribution-tuning" title="Link to this heading">#</a></h2>
+<section id="distribution-threshold">
+<h3>Distribution Threshold<a class="headerlink" href="#distribution-threshold" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">DistributionPlanning</span></code> pass only distributes tensors above a size threshold.
+The default is 64 MB. Tensors smaller than this are replicated on every rank.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Lower threshold to distribute smaller tensors</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">DistributionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*threshold=*/</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1 MB</span>
+
+<span class="c1">// Disable distribution entirely</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">DistributionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*threshold=*/</span><span class="n">SIZE_MAX</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="guidelines">
+<h4>Guidelines<a class="headerlink" href="#guidelines" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>For small calculations (&lt; 1000 basis functions): keep default (64 MB). Most
+tensors are small enough that replication is cheaper than communication.</p></li>
+<li><p>For large calculations: lower to 1-10 MB. More tensors get distributed, reducing
+per-rank memory.</p></li>
+<li><p>For debugging distribution: set threshold to 1 byte to force everything distributed.</p></li>
+</ul>
+</section>
+</section>
+<section id="summa-vs-outer-product">
+<h3>SUMMA vs Outer-Product<a class="headerlink" href="#summa-vs-outer-product" title="Link to this heading">#</a></h3>
+<p>On square grids (Pr == Pc), <code class="docutils literal notranslate"><span class="pre">DistributionPlanning</span></code> uses SUMMA (distributes
+link indices too). On non-square grids, it falls back to outer-product.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Force outer-product only (no SUMMA, even on square grids)</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">DistributionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*threshold=*/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="cm">/*enable_summa=*/</span><span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="when-to-disable-summa">
+<h4>When to disable SUMMA<a class="headerlink" href="#when-to-disable-summa" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>When K, the link dimension, is small relative to M and N, so the broadcast
+overhead exceeds the memory savings.</p></li>
+<li><p>When tensors are used in chains where the link dimension changes role, so SUMMA
+distribution may conflict. Conflict resolution handles most such cases.</p></li>
+</ul>
+</section>
+</section>
+<section id="process-grid-shape">
+<h3>Process Grid Shape<a class="headerlink" href="#process-grid-shape" title="Link to this heading">#</a></h3>
+<p>The graph passes (<code class="docutils literal notranslate"><span class="pre">DistributionPlanning</span></code> and <code class="docutils literal notranslate"><span class="pre">SUMMAExpansion</span></code>) always use
+<code class="docutils literal notranslate"><span class="pre">comm::ProcessGrid::default_grid()</span></code>, a near-square grid (P x 1 for prime P).
+It has no setter, so the grid shape the graph distributes over cannot be changed.
+An explicit grid is only for collectives you write by hand:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Your own hand-written collectives only; the graph passes ignore this grid</span>
+<span class="n">comm</span><span class="o">::</span><span class="n">ProcessGrid</span><span class="w"> </span><span class="nf">grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">comm</span><span class="o">::</span><span class="n">Communicator</span><span class="o">::</span><span class="n">world</span><span class="p">());</span><span class="w">  </span><span class="c1">// 4 rows × 2 cols</span>
+</pre></div>
+</div>
+<p>A different grid shape could help when:</p>
+<ul class="simple">
+<li><p>Your problem has very asymmetric dimensions (e.g., M &gt;&gt; N)</p></li>
+<li><p>You want to control which dimension gets more parallelism</p></li>
+</ul>
+</section>
+</section>
+<section id="memory-tuning">
+<h2>Memory Tuning<a class="headerlink" href="#memory-tuning" title="Link to this heading">#</a></h2>
+<section id="freeinsertion-threshold">
+<h3>FreeInsertion Threshold<a class="headerlink" href="#freeinsertion-threshold" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">FreeInsertion</span></code> pass frees intermediate tensors above a size threshold.
+The default is 1 MB. Smaller intermediates stay alive to avoid alloc/free
+overhead in loops.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Free intermediates &gt; 10 MB</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">FreeInsertion</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*min_bytes=*/</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span>
+
+<span class="c1">// Free everything (maximum memory savings, more alloc overhead in loops)</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">FreeInsertion</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*min_bytes=*/</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="c1">// Disable freeing (keep everything alive — fastest for tight loops)</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">FreeInsertion</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*min_bytes=*/</span><span class="n">SIZE_MAX</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="memory-budget">
+<h3>Memory Budget<a class="headerlink" href="#memory-budget" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code> can enforce a memory budget:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">df</span><span class="p">.</span><span class="n">set_memory_budget</span><span class="p">(</span><span class="mi">4ULL</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span><span class="w">  </span><span class="c1">// 4 GB limit</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>When the budget would be exceeded, the executor delays Materialize nodes until
+Free nodes release enough memory. This prevents OOM for graphs with many large
+intermediates.</p>
+<section id="id1">
+<h4>Guidelines<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Set to ~80% of available RAM to leave room for BLAS workspace and OS overhead.</p></li>
+<li><p>If your graph never exceeds RAM, leave at 0 (unlimited) for best parallelism.</p></li>
+<li><p>The budget only gates Materialize nodes; it does not affect compute scheduling.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="i-o-tuning">
+<h2>I/O Tuning<a class="headerlink" href="#i-o-tuning" title="Link to this heading">#</a></h2>
+<section id="async-i-o-overlap">
+<h3>Async I/O Overlap<a class="headerlink" href="#async-i-o-overlap" title="Link to this heading">#</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code> + <code class="docutils literal notranslate"><span class="pre">IOPrefetch</span></code> pass for I/O-compute overlap:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span><span class="w">  </span><span class="c1">// Includes IOPrefetch</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span><span class="w">  </span><span class="c1">// Reads overlap with compute</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">IOPrefetch</span></code> moves DiskRead nodes as early as possible in the schedule.
+Combined with the DataflowExecutor’s async support, reads happen concurrently
+with independent compute.</p>
+</section>
+<section id="etn-file-performance">
+<h3>.etn File Performance<a class="headerlink" href="#etn-file-performance" title="Link to this heading">#</a></h3>
+<p>For maximum throughput:</p>
+<ul class="simple">
+<li><p>Use large tensors, above 1 MB per write call; small writes are overhead-dominated.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ReadWrite</span></code> mode for append, which avoids rewriting existing data.</p></li>
+<li><p>For distributed I/O, <code class="docutils literal notranslate"><span class="pre">DistributedTensorFile</span></code> uses POSIX pwrite with MPI offset
+coordination. It has no MPI-IO dependency and works reliably on all filesystems.</p></li>
+<li><p>For slice reads, the innermost dimension (dim 0 in column-major) is contiguous
+and fastest. Non-contiguous slices require multiple read calls.</p></li>
+</ul>
+</section>
+</section>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading">#</a></h2>
+<p>Enable detailed profiling to find bottlenecks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Detailed text report (the report is on by default; --einsums:profile:no-report suppresses it)</span>
+./my_program<span class="w"> </span>--einsums:profile:detailed
+
+<span class="c1"># JSON export (for visualization; only the profile server writes the file)</span>
+./my_program<span class="w"> </span>--einsums:profile:server<span class="w"> </span>--einsums:profile:save<span class="o">=</span>profile.json
+
+<span class="c1"># Profile server (for live monitoring; --einsums:profile:port defaults to 19216)</span>
+./my_program<span class="w"> </span>--einsums:profile:server<span class="w"> </span>--einsums:profile:port<span class="o">=</span><span class="m">19216</span>
+</pre></div>
+</div>
+<section id="what-to-look-for">
+<h3>What to look for<a class="headerlink" href="#what-to-look-for" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>SUMMA panels</strong>: <code class="docutils literal notranslate"><span class="pre">broadcast_A</span></code>, <code class="docutils literal notranslate"><span class="pre">broadcast_B</span></code>, <code class="docutils literal notranslate"><span class="pre">local_gemm</span></code>. If broadcasts
+dominate, tensors may be too small for SUMMA, so switch to outer-product.</p></li>
+<li><p><strong>MPI collectives</strong>: <code class="docutils literal notranslate"><span class="pre">allreduce</span></code>, <code class="docutils literal notranslate"><span class="pre">broadcast</span></code>, <code class="docutils literal notranslate"><span class="pre">barrier</span></code>. If communication
+dominates, reduce the number of distributed tensors or increase computation per
+communication.</p></li>
+<li><p><strong>FreeInsertion</strong>: <code class="docutils literal notranslate"><span class="pre">free(tensor_name)</span></code> events. If alloc/free overhead is visible,
+increase the FreeInsertion threshold.</p></li>
+<li><p><strong>I/O</strong>: <code class="docutils literal notranslate"><span class="pre">read_etn</span></code>, <code class="docutils literal notranslate"><span class="pre">write_etn</span></code>. If I/O is not overlapped with compute,
+ensure you are using DataflowExecutor with IOPrefetch.</p></li>
+</ul>
+</section>
+</section>
+<section id="common-patterns">
+<h2>Common Patterns<a class="headerlink" href="#common-patterns" title="Link to this heading">#</a></h2>
+<section id="scf-loop">
+<h3>SCF Loop<a class="headerlink" href="#scf-loop" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">DistributionPlanning</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*threshold=*/</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">Materialization</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">InputSlicing</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">FreeInsertion</span><span class="o">&gt;</span><span class="p">(</span><span class="cm">/*min_bytes=*/</span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span><span class="w">  </span><span class="c1">// Free large intermediates</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">CommunicationInsertion</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">max_iter</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// FreeInsertion releases large intermediates after each iteration.</span>
+<span class="w">    </span><span class="c1">// Materialize re-allocates them at the start of the next iteration.</span>
+<span class="w">    </span><span class="c1">// Small intermediates (&lt; 10 MB) stay alive across iterations.</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">converged</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Checkpoint every 5 iterations</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">iter</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">tensor_io</span><span class="o">::</span><span class="n">checkpoint</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">"scf_checkpoint.etn"</span><span class="p">,</span><span class="w"> </span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="large-integral-transformation">
+<h3>Large Integral Transformation<a class="headerlink" href="#large-integral-transformation" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Tight memory budget for large ERI tensors</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">df</span><span class="p">.</span><span class="n">set_memory_budget</span><span class="p">(</span><span class="mi">8ULL</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span><span class="w">  </span><span class="c1">// 8 GB</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span><span class="w">  </span><span class="c1">// Budget prevents OOM, Free nodes release intermediates ASAP</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="optimization_passes.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Optimization Passes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="gemm_batching.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">GEMM Batching</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#executor-selection">Executor Selection</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-which">When to use which</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pass-configuration">Pass Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-passes">Disabling Passes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verbose-pass-logging">Verbose Pass Logging</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-mode">Analysis Mode</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distribution-tuning">Distribution Tuning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#distribution-threshold">Distribution Threshold</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#guidelines">Guidelines</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summa-vs-outer-product">SUMMA vs Outer-Product</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-disable-summa">When to disable SUMMA</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#process-grid-shape">Process Grid Shape</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-tuning">Memory Tuning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freeinsertion-threshold">FreeInsertion Threshold</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-budget">Memory Budget</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Guidelines</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#i-o-tuning">I/O Tuning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-i-o-overlap">Async I/O Overlap</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#etn-file-performance">.etn File Performance</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling">Profiling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-look-for">What to look for</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-patterns">Common Patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scf-loop">SCF Loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#large-integral-transformation">Large Integral Transformation</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

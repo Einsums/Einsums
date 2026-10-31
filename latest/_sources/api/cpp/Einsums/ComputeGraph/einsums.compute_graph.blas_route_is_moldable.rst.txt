@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.blas_route_is_moldable:
+
+==============================================
+einsums::compute_graph::blas_route_is_moldable
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Moldability.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool blas_route_is_moldable()
+
+   Whether a BLAS call's thread count can be dictated by its caller.
+
+   Only a vendor with a per-thread setter qualifies, which today means MKL: its
+   setter scopes the request to the calling thread, so concurrent callers
+   wanting different widths is a regime the library supports.
+
+   An OpenMP-built OpenBLAS OBEYS the caller's ICV but does not SUPPORT
+   concurrent callers whose ICVs differ, and treating obedience as moldability
+   is what let planned mixed widths corrupt results. Its server syncs a
+   process-global thread count to each caller's ``omp_get_max_threads()``,
+   frees the shared pack buffers whenever that global shrinks - under whatever
+   GEMM is in flight - and sizes its work queue from the global while forking
+   the team from the caller, so two callers disagreeing about the width
+   corrupt results or deadlock the position ring. Verified against 0.3.32
+   through 0.3.34 and the development head as of 2026-08; no upstream fix
+   covers it, so the ICV route deliberately answers false. With BLAS-route
+   nodes planned width 1 and the `VendorWidthFence` in the BLAS wrappers
+   clamping any vendor call made under a node-scoped width, at most one width
+   above 1 ever reaches the vendor - the unpinned calling thread's baseline -
+   which is the regime every executor ran in before widths existed.
+
+   Accelerate reads neither knob - it schedules through GCD - and a reference
+   BLAS is serial and has nothing to dictate. Both answer false as well.
+
+   For the vendors that answer false for lack of a knob, a wide plan is merely
+   ineffective: the node still computes the right thing, it just does not get
+   the threads the plan assumed, which makes every width above 1 a lie the
+   plan is built on.

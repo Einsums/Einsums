@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tiled Tensors in the Graph &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/tiled';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/tiled.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Tensor Lifetime Management" href="tensor_lifetime.html" />
+    <link rel="prev" title="Symmetry-Aware Tensors" href="symmetry.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tiled Tensors in the Graph</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tiled-tensors-in-the-graph">
+<span id="computegraph-tiled"></span><h1>Tiled Tensors in the Graph<a class="headerlink" href="#tiled-tensors-in-the-graph" title="Link to this heading">#</a></h1>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/einsums.TiledRuntimeTensor.html#_CPPv4I0EN7einsums18TiledRuntimeTensorE" title="einsums::TiledRuntimeTensor"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">einsums::TiledRuntimeTensor</span></code></a> is a runtime-rank, tile-wise sparse
+tensor: the index range of each axis is partitioned into tiles, every populated
+tile is a dense <a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/types.html#_CPPv4I0EN7einsums13RuntimeTensorE" title="einsums::RuntimeTensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">RuntimeTensor</span></code></a>, and absent tiles are
+<strong>rigorously zero</strong> and are not stored.</p>
+<p>It is the runtime-rank analogue of <a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/einsums.TiledTensor.html#_CPPv4I0_6size_tEN7einsums11TiledTensorE" title="einsums::TiledTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TiledTensor</span></code></a>, which
+carries its rank as a template parameter. Being runtime-rank is what makes it
+capturable: it is the type Python sees, and the type the ComputeGraph operation
+surface accepts.</p>
+<p>Unlike <a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/einsums.BlockTensor.html#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">BlockTensor</span></code></a>, which is the block-diagonal
+square-tile special case, a tile may sit anywhere on the grid and may be
+rectangular. That is what a non-totally-symmetric operator coupling different
+symmetry sectors needs.</p>
+<section id="why-tile-inside-a-graph">
+<h2>Why tile inside a graph<a class="headerlink" href="#why-tile-inside-a-graph" title="Link to this heading">#</a></h2>
+<p>Structural sparsity is free arithmetic. In a symmetry-blocked calculation a
+block is zero unless the irrep product contains the totally symmetric
+representation, so most tile combinations contribute nothing and, because the
+tile is simply absent, nothing is computed for them. On a small CCSD model that
+is roughly a 10x flop saving.</p>
+<p>The catch is that saving flops is not the same as saving time. A tiled
+contraction captures as <strong>one opaque</strong> <code class="docutils literal notranslate"><span class="pre">OpKind::Custom</span></code> node executed tile by
+tile, and no pass can read inside it: the einsum-rewriting passes all filter on
+<code class="docutils literal notranslate"><span class="pre">OpKind::Einsum</span></code>, and a whole-tiled node could not satisfy them anyway, since
+GEMMBatching wants one <code class="docutils literal notranslate"><span class="pre">lda</span></code> and MemoryPlanning’s arena wants one buffer,
+neither of which a tile container has. Left alone, a blocked residual spends its
+whole arithmetic saving on dispatch overhead.</p>
+<p><a class="reference internal" href="#computegraph-tiled-expansion"><span class="std std-ref">TiledExpansion</span></a> is the answer. It runs ahead
+of every rewriting pass in the default pipeline and lowers the opaque node into ordinary dense nodes, at
+which point every existing pass applies unchanged.</p>
+</section>
+<section id="building-one">
+<h2>Building one<a class="headerlink" href="#building-one" title="Link to this heading">#</a></h2>
+<p>A tiled tensor is constructed from its <strong>grid</strong>: one list of tile sizes per axis.
+Tiles are then declared, materialized, and filled per tile.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="c1">// 6x6 logical, partitioned 2|4 on both axes.</span>
+<span class="n">TiledRuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="n">Grid</span><span class="p">{{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">}});</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">off</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">tile_offsets</span><span class="p">();</span><span class="w">   </span><span class="c1">// global start index per tile, per axis</span>
+<span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">sz</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">tile_sizes</span><span class="p">();</span><span class="w">     </span><span class="c1">// tile extents per axis</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">ti</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">ti</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">ti</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">tj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">tj</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">tj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">tile</span><span class="p">({</span><span class="n">ti</span><span class="p">,</span><span class="w"> </span><span class="n">tj</span><span class="p">});</span><span class="w">   </span><span class="c1">// creates the tile (deferred) if absent</span>
+<span class="w">        </span><span class="n">tile</span><span class="p">.</span><span class="n">materialize</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sz</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ti</span><span class="p">];</span><span class="w"> </span><span class="o">++</span><span class="n">lr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">lc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">lc</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sz</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">tj</span><span class="p">];</span><span class="w"> </span><span class="o">++</span><span class="n">lc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">tile</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">{</span><span class="kt">size_t</span><span class="p">(</span><span class="n">lr</span><span class="p">),</span><span class="w"> </span><span class="kt">size_t</span><span class="p">(</span><span class="n">lc</span><span class="p">)})</span><span class="w"> </span><span class="o">=</span>
+<span class="w">                    </span><span class="n">f</span><span class="p">(</span><span class="n">off</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">ti</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lr</span><span class="p">,</span><span class="w"> </span><span class="n">off</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">tj</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lc</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Leave a tile out and it is a structural zero. <code class="docutils literal notranslate"><span class="pre">add_tile(coord)</span></code> declares one
+without touching it, <code class="docutils literal notranslate"><span class="pre">has_tile(coord)</span></code> asks, and <code class="docutils literal notranslate"><span class="pre">num_filled_tiles()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">grid_size()</span></code> report the sparsity.</p>
+<p>From Python the dtype-specific classes are <code class="docutils literal notranslate"><span class="pre">TiledRuntimeTensorF</span></code>, <code class="docutils literal notranslate"><span class="pre">...D</span></code>,
+<code class="docutils literal notranslate"><span class="pre">...C</span></code> and <code class="docutils literal notranslate"><span class="pre">...Z</span></code>, and a tile is filled through a numpy-backed view:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">TiledRuntimeTensorD</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="k">for</span> <span class="n">ti</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">tj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">add_tile</span><span class="p">([</span><span class="n">ti</span><span class="p">,</span> <span class="n">tj</span><span class="p">])</span>
+<span class="n">A</span><span class="o">.</span><span class="n">materialize</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">tile_view</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>   <span class="c1"># dense RuntimeTensorView over one tile</span>
+<span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A multi-tile tensor has no single contiguous backing buffer, so <code class="docutils literal notranslate"><span class="pre">data()</span></code>
+returns <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> (the one-cell degenerate grid returns that tile’s
+pointer) and the type exposes no Python buffer protocol. Read and write it
+through <code class="docutils literal notranslate"><span class="pre">tile_view()</span></code>.</p>
+</div>
+</section>
+<section id="capturing-tiled-operations">
+<h2>Capturing tiled operations<a class="headerlink" href="#capturing-tiled-operations" title="Link to this heading">#</a></h2>
+<p>Inside a <code class="docutils literal notranslate"><span class="pre">CaptureGuard</span></code>, tiled operands work through the same call surface as
+dense ones:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"tiled"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">capture</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">   </span><span class="c1">// one Custom node at capture</span>
+<span class="p">}</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">optimize</span><span class="p">();</span><span class="w">                            </span><span class="c1">// TiledExpansion lowers it</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>These operations accept tiled operands: <code class="docutils literal notranslate"><span class="pre">einsum</span></code>, <code class="docutils literal notranslate"><span class="pre">permute</span></code>, <code class="docutils literal notranslate"><span class="pre">scale</span></code>,
+<code class="docutils literal notranslate"><span class="pre">axpy</span></code>, <code class="docutils literal notranslate"><span class="pre">axpby</span></code>, <code class="docutils literal notranslate"><span class="pre">direct_division</span></code>, <code class="docutils literal notranslate"><span class="pre">element_transform</span></code>, <code class="docutils literal notranslate"><span class="pre">conj</span></code>,
+<code class="docutils literal notranslate"><span class="pre">real</span></code>, <code class="docutils literal notranslate"><span class="pre">imag</span></code>, <code class="docutils literal notranslate"><span class="pre">abs</span></code>, <code class="docutils literal notranslate"><span class="pre">dot</span></code>, <code class="docutils literal notranslate"><span class="pre">dotc</span></code>, <code class="docutils literal notranslate"><span class="pre">norm</span></code>, <code class="docutils literal notranslate"><span class="pre">trace</span></code>, <code class="docutils literal notranslate"><span class="pre">syev</span></code>
+and <code class="docutils literal notranslate"><span class="pre">heev</span></code>.</p>
+<p>Mixing tiled and dense operands in one call is rejected at compile time: a
+tiled <code class="docutils literal notranslate"><span class="pre">einsum</span></code>, <code class="docutils literal notranslate"><span class="pre">permute</span></code>, <code class="docutils literal notranslate"><span class="pre">axpy</span></code> or <code class="docutils literal notranslate"><span class="pre">axpby</span></code> requires <strong>every</strong> operand
+to be a <code class="docutils literal notranslate"><span class="pre">TiledRuntimeTensor</span></code>.</p>
+<section id="semantics">
+<h3>Semantics<a class="headerlink" href="#semantics" title="Link to this heading">#</a></h3>
+<p>The ground truth is <code class="docutils literal notranslate"><span class="pre">detail::tiled_runtime_einsum</span></code>, and every lowering the
+optimizer performs must reproduce it exactly:</p>
+<dl class="simple">
+<dt><strong>Alignment.</strong></dt><dd><p>An index letter shared between operands must carry an <strong>identical</strong> tile
+partition on each of them. A mismatch throws; general re-tiling is out of
+scope.</p>
+</dd>
+<dt><strong>Sparsity.</strong></dt><dd><p>A tile pair contributes only when both operand tiles are present. Output
+tile <code class="docutils literal notranslate"><span class="pre">C(c)</span></code> exists if and only if some contributing combination reaches it
+(infer-and-create: the tile is made on demand, zeroed).</p>
+</dd>
+<dt><strong>The output prefactor applies exactly once.</strong></dt><dd><p>Pre-existing output tiles are scaled by <code class="docutils literal notranslate"><span class="pre">c_pf</span></code> up front, and every
+contribution then accumulates with <code class="docutils literal notranslate"><span class="pre">beta</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>Pre-existing output tiles that receive no contribution are still scaled.</strong></dt><dd><p>They are scaled up front regardless of whether anything reaches them.
+Skipping them would be a silent numerical difference.</p>
+</dd>
+<dt><strong>A tiled axpy visits the tiles stored in X.</strong></dt><dd><p>The matching Y tile is created when absent, starting zeroed. A tile absent
+from X contributes nothing, and a Y tile with no X counterpart is left alone.</p>
+</dd>
+</dl>
+<p>Scalar-output (full-reduction) einsum over tiled operands is not supported.
+Reductions go through <code class="docutils literal notranslate"><span class="pre">dot</span></code>/<code class="docutils literal notranslate"><span class="pre">dotc</span></code>/<code class="docutils literal notranslate"><span class="pre">norm</span></code>/<code class="docutils literal notranslate"><span class="pre">trace</span></code> instead, which write
+into a one-element dense result tensor.</p>
+</section>
+</section>
+<section id="views-of-tiles">
+<h2>Views of tiles<a class="headerlink" href="#views-of-tiles" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cg::tile_view(parent,</span> <span class="pre">coord)</span></code> records a dense, parent-aliasing view of a
+single tile. Because a tile is a full-rank dense block, that view feeds the
+<strong>entire</strong> dense operation surface inside capture, which is exactly how tiled
+workflows iterate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">tile_view</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">tile_view</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ij &lt;- ik ; kj"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">c_pf</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ab_pf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Three details matter:</p>
+<ul class="simple">
+<li><p>The tile is created (deferred, dims fixed by the grid) at capture if absent.
+That is value-equivalent, since absent tiles are rigorous zeros and a created
+tile materializes zeroed.</p></li>
+<li><p>Each replay re-resolves the tile from the <strong>live</strong> parent and re-emplaces the
+view, so a graph-owned deferred parent that FreeInsertion released and
+Materialize re-allocated stays correct.</p></li>
+<li><p>The recorded descriptor carries one constant <code class="docutils literal notranslate"><span class="pre">[c,</span> <span class="pre">c+1)</span></code> range per axis <strong>in
+tile units</strong>, so the disjointness-aware hazard scan proves views of distinct
+tiles non-conflicting and per-tile writes to one output can be scheduled
+concurrently.</p></li>
+</ul>
+<p>Element-granular slicing of a tiled tensor is deliberately not offered: a slice
+crossing tile boundaries has no single buffer. For a per-irrep sub-selection use
+<a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/einsums.TiledRuntimeTensorView.html#_CPPv4I0EN7einsums22TiledRuntimeTensorViewE" title="einsums::TiledRuntimeTensorView"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">einsums::TiledRuntimeTensorView</span></code></a> through
+<code class="docutils literal notranslate"><span class="pre">TiledRuntimeTensor::view(spaces)</span></code>, which takes one
+<a class="reference internal" href="../../../../api/cpp/Einsums/Tensor/einsums.IndexSpace.html#_CPPv4N7einsums10IndexSpaceE" title="einsums::IndexSpace"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">IndexSpace</span></code></a> per axis.</p>
+</section>
+<section id="graph-owned-tiled-scratch">
+<h2>Graph-owned tiled scratch<a class="headerlink" href="#graph-owned-tiled-scratch" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Graph::declare_zero_tiled_tensor(name,</span> <span class="pre">tile_sizes,</span> <span class="pre">intermediate)</span></code> declares a
+graph-owned tiled shell with a <strong>deferred</strong> lifecycle. The shell starts with no
+populated tiles, and ops create them on demand, so Materialize and Initialize are
+cheap. Registering the handle as deferred is what puts the tensor under the same
+lifecycle machinery as dense scratch:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Materialization</span></code> hoists the Materialize/Initialize pair to the loop’s parent
+rather than re-running it per iteration. Those parent nodes count as writes,
+so scratch used inside a loop body is shared across graphs and TiledExpansion
+leaves its nodes opaque (see <a class="reference internal" href="#limits">Limits</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FreeInsertion</span></code> can release the tile storage after the last consumer.
+<code class="docutils literal notranslate"><span class="pre">release()</span></code> keeps the sparsity pattern, so a later replay re-materializes
+into the same structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MemoryPlanning</span></code> leaves tiled scratch alone by construction: the arena
+requires <code class="docutils literal notranslate"><span class="pre">materialize_into</span></code>, and a tile-wise tensor has no single buffer to
+place.</p></li>
+</ul>
+<p>Reusing the scratch across replays is safe for the ops that carry the
+leftover-scale rule. <code class="docutils literal notranslate"><span class="pre">einsum</span></code>’s <code class="docutils literal notranslate"><span class="pre">c_pf</span></code>, and <code class="docutils literal notranslate"><span class="pre">direct_division</span></code>’s and
+<code class="docutils literal notranslate"><span class="pre">permute</span></code>’s <code class="docutils literal notranslate"><span class="pre">beta</span></code>, apply to every stored tile, so stale tiles from a
+previous iteration are zeroed rather than kept.</p>
+</section>
+<section id="tiledexpansion">
+<span id="computegraph-tiled-expansion"></span><h2>TiledExpansion<a class="headerlink" href="#tiledexpansion" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TiledExpansion</span></code> runs ahead of every rewriting pass in the default pipeline;
+only the annotation-only <code class="docutils literal notranslate"><span class="pre">ProvenancePropagation</span></code> precedes it. It is a lowering
+step, so every pass below it should see the per-tile form rather than the opaque
+node.</p>
+<p>It replaces the tiled node with one ordinary dense einsum per contributing tile
+combination, built through <code class="docutils literal notranslate"><span class="pre">Graph::make_einsum_node</span></code>. Because the result is
+ordinary dense nodes, everything downstream applies unchanged: the tile GEMMs
+are same-shape so GEMMBatching batches them, CSE deduplicates repeated tile work,
+MemoryPlanning packs the per-tile buffers (each tile <em>is</em> a dense
+<code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code>, so it has <code class="docutils literal notranslate"><span class="pre">materialize_into</span></code>), and Reorder schedules them.</p>
+<p>Tiled <code class="docutils literal notranslate"><span class="pre">scale</span></code>, <code class="docutils literal notranslate"><span class="pre">axpy</span></code>, <code class="docutils literal notranslate"><span class="pre">direct_division</span></code> and <code class="docutils literal notranslate"><span class="pre">permute</span></code> lower the same
+way, into one dense <code class="docutils literal notranslate"><span class="pre">OpKind::Scale</span></code>, <code class="docutils literal notranslate"><span class="pre">OpKind::Axpby</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OpKind::DirectDivision</span></code> or permute node per tile. A tiled <code class="docutils literal notranslate"><span class="pre">dot</span></code> lowers to a
+single reduction node over the per-tile ids.</p>
+<section id="emission-order">
+<h3>Emission order<a class="headerlink" href="#emission-order" title="Link to this heading">#</a></h3>
+<p>Contracted indices are enumerated <strong>slowest</strong> and output indices fastest, so
+every tile GEMM at the same accumulation step is emitted as one contiguous run.
+GEMMBatching only batches a group whose span contains no outside node touching
+the same buffers; letting the contracted index vary fastest would drop each
+output tile’s later accumulations in between the first writes, disqualifying
+every group and leaving the expansion paying node-count cost for nothing.</p>
+<p>Per output tile the contracted steps stay ascending, so each tile accumulates in
+the order the runtime uses and the result is bit-identical. Only independent
+tiles move relative to one another.</p>
+</section>
+<section id="predicted-tile-sets">
+<h3>Predicted tile sets<a class="headerlink" href="#predicted-tile-sets" title="Link to this heading">#</a></h3>
+<p>A tiled tensor produced <em>inside</em> the graph has none of its tiles yet at pass
+time, so its sparsity cannot be read off the object, and reading the empty object
+would make a consumer expand into nothing. Planning therefore walks the nodes in
+execution order carrying a <strong>predicted</strong> tile set per tensor, seeded from the
+stored tiles and extended by each producer it plans. That is what lets a
+contraction feed another, or feed a scale, and still expand.</p>
+<p>The prediction also decides whether the first write to an output tile carries
+<code class="docutils literal notranslate"><span class="pre">c_pf</span></code> or overwrites, so it must be the set as of <em>this</em> point in the program,
+not the final one.</p>
+</section>
+<section id="stranding">
+<h3>Stranding<a class="headerlink" href="#stranding" title="Link to this heading">#</a></h3>
+<p>Expanding a node replaces its whole-tensor reads and writes with per-tile ones,
+so the whole-tensor <code class="docutils literal notranslate"><span class="pre">TensorId</span></code> loses every reference that node owned. A node
+left behind that still names that id would have its dependency edge silently
+dropped, and with no writer a reader could be scheduled before the tiles are
+filled.</p>
+<p>A candidate therefore expands only when <strong>every</strong> node touching its tiled tensors
+also expands. Since rejecting one candidate can strand another, this iterates to
+a fixpoint, and it is decided before any tile is created: minting a per-tile id
+creates the tile, and a spurious tile changes how the runtime applies <code class="docutils literal notranslate"><span class="pre">c_pf</span></code> on
+the path that ends up not expanding.</p>
+</section>
+<section id="zero-tile-screening">
+<h3>Zero-tile screening<a class="headerlink" href="#zero-tile-screening" title="Link to this heading">#</a></h3>
+<p>Structural sparsity is free, but a tile that is <em>stored</em> and zero still gets a
+full GEMM. The <code class="docutils literal notranslate"><span class="pre">zero_tile_tolerance</span></code> constructor parameter screens those: a
+screened tile is treated as <strong>absent</strong>, so the prefactor and output-existence
+rules apply unchanged instead of being re-derived against already-emitted nodes.</p>
+<p>Sparsity then propagates on its own. An output tile whose every contribution
+screened out is never created, so it is absent to the next contraction, which
+screens further work without being told anything.</p>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">-1.0</span></code>, which disables screening entirely: no tile is inspected
+and the emitted node set is unchanged. Zero prunes only exactly-zero tiles.
+A positive value is a numerical approximation and an accuracy knob. Both origins
+are covered: symmetry blocking is exact and wants tolerance 0, while integral
+screening and local-correlation domains are approximate and want a real
+threshold.</p>
+<p>Only operands that <strong>nothing in the graph writes</strong> are screened. A produced
+tensor’s tiles hold whatever was in them before execution, so inspecting them
+would screen on values the graph has not computed yet. Non-materialized tiles are
+likewise left alone, since planning must not allocate.</p>
+</section>
+<section id="densifying-small-tiles">
+<h3>Densifying small tiles<a class="headerlink" href="#densifying-small-tiles" title="Link to this heading">#</a></h3>
+<p>Expanding per tile only pays when a tile contraction is worth a dispatch. Often
+it is not. A symmetry-blocked CCSD residual on a small model expands to nearly
+4000 einsum nodes carrying 1.3 MFLOP between them, a mean of 330 flops per node,
+which is less work than the call costs. Blocking saves real arithmetic there and
+then spends the whole saving dispatching it.</p>
+<p>So when a tile contraction is not worth its dispatch, the pass lowers it
+differently: gather each tiled operand into a dense buffer, run <strong>one</strong> dense
+einsum, and scatter the result back into exactly the output tiles the per-tile
+path would have written. Absent tiles gather as zeros and forbidden output tiles
+are still never created, so the answer is the same up to floating-point summation
+order.</p>
+<p>Measured on the particle-particle ladder of that model, this replaces 256 nodes
+taking 0.595 ms with 3 nodes taking 0.214 ms: faster despite doing strictly more
+arithmetic, because the dense form reaches about 61 GFLOP/s where 256 tiny
+contractions reach about 2.</p>
+<p>The trade is arithmetic for throughput, so which lowering wins is a question
+about <strong>time</strong>, not about either quantity alone. <code class="docutils literal notranslate"><span class="pre">Densify::Auto</span></code>, the default,
+asks the shared <code class="docutils literal notranslate"><span class="pre">CostModel</span></code>: sum the estimated time over the tile contractions
+that would be emitted, against one dense contraction of the same indices plus
+the gather and scatter traffic at memory bandwidth, and densify only when the
+second is smaller.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A flop-based gate was tried first and does not work. An inflation cap of 16
+takes a 26 spin-orbital model from 19.0 to 11.0 ms but a 50 spin-orbital model
+from 71.5 to 103.1 ms, and a cap of 4 never fires at either size. Those
+contractions inflate the arithmetic by 4x to 16x either way, so no threshold
+on the ratio separates the two cases. What differs is achievable throughput,
+and only a time comparison sees that.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Densification ignores tile screening. <code class="docutils literal notranslate"><span class="pre">zero_tile_tolerance</span></code> prunes
+near-zero operand tiles from the per-tile enumeration; the densified path
+gathers them anyway and contributes their near-zero value rather than
+dropping it. The densified answer is the more accurate of the two.</p>
+</div>
+</section>
+<section id="gathering-an-operand-once">
+<h3>Gathering an operand once<a class="headerlink" href="#gathering-an-operand-once" title="Link to this heading">#</a></h3>
+<p>A densified contraction copies each tiled operand into a dense buffer, and the
+same operand is usually contracted several times running: a CCSD residual gathers
+the singles amplitudes 33 times and the doubles eleven. Those copies are
+identical while nothing has written the tiles between them, so the pass keys each
+gather on the exact list of tile ids it covers and reuses the buffer when that
+list is already in hand.</p>
+<p>Two things keep it honest. A tensor that has <em>gained</em> a tile produces a different
+list, so it misses and is gathered afresh rather than silently contracting a copy
+that is missing a block. And an entry is dropped as soon as any emitted node
+writes a tile it covers.</p>
+<p>On that residual the gathers fall from 92 nodes to 23, and from 2.20 ms to 0.71
+of a 10 ms replay.</p>
+</section>
+<section id="fusing-small-elementwise-tiles">
+<h3>Fusing small elementwise tiles<a class="headerlink" href="#fusing-small-elementwise-tiles" title="Link to this heading">#</a></h3>
+<p>The elementwise ops have the same node-count problem and none of the tension. A
+densified CCSD residual is 82% tiled <code class="docutils literal notranslate"><span class="pre">scale</span></code> and <code class="docutils literal notranslate"><span class="pre">axpy</span></code> nodes, 1152 of 1404,
+each touching a handful of kilobytes. Unlike a contraction there is nothing to
+trade: running the same tiles from inside one node does exactly the same
+arithmetic and touches exactly the same memory, so fusing is never slower.</p>
+<p>What per-tile nodes buy is optimizer exposure, and no cost model can price that.
+So <code class="docutils literal notranslate"><span class="pre">FuseTiles::Auto</span></code>, the default, asks the question it <em>can</em> answer: is a
+tile’s own memory traffic worth the dispatch it costs? It compares the tiles’
+total traffic at memory bandwidth against the cost model’s per-node overhead, and
+collapses the group into a single <code class="docutils literal notranslate"><span class="pre">OpKind::TileElementwise</span></code> node when the
+dispatches dominate.</p>
+<p>On that residual the graph falls from 1404 nodes to 209 and replay from 10.1 to
+9.9 ms. The node count is the larger prize: the executor’s own per-node cost is
+about 0.2 us, so the replay time recovered is a few percent, not the fifth the
+node count suggests.</p>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// The default-pipeline configuration, spelled out.</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">TiledExpansion</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="cm">/*max_nodes=*/</span><span class="mi">4096</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*zero_tile_tolerance=*/</span><span class="mf">-1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">Densify</span><span class="o">::</span><span class="n">Auto</span><span class="p">,</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">FuseTiles</span><span class="o">::</span><span class="n">Auto</span><span class="p">,</span>
+<span class="w">    </span><span class="n">cost_model</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">max_nodes</span></code></dt><dd><p>Expansion produces up to (tiles of A) x (tiles of B) nodes, and per-node
+bookkeeping is on the order of microseconds, so a large grid can cost more in
+overhead than the contraction saves. The pass <strong>declines</strong> above this budget
+rather than guessing: a gate cannot be subtly wrong the way a cost heuristic
+can.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">zero_tile_tolerance</span></code></dt><dd><p>See <a class="reference internal" href="#zero-tile-screening">Zero-tile screening</a> above.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Densify</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Never</span></code> always emits one node per contributing tile combination, <code class="docutils literal notranslate"><span class="pre">Auto</span></code>
+lets the cost model decide per contraction, <code class="docutils literal notranslate"><span class="pre">Always</span></code> densifies whenever it
+is structurally possible (for tests).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">FuseTiles</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Never</span></code> always emits one dense node per tile, <code class="docutils literal notranslate"><span class="pre">Auto</span></code> fuses when the tiles
+cost more to dispatch than to touch, <code class="docutils literal notranslate"><span class="pre">Always</span></code> fuses every group of two or
+more (for tests).</p>
+</dd>
+</dl>
+</section>
+<section id="limits">
+<h3>Limits<a class="headerlink" href="#limits" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Sparsity is decided at pass time. For an operand written earlier in the same
+graph that means a prediction, which holds only while every writer is one this
+pass understands.</p></li>
+<li><p>The pass <strong>declines</strong> rather than guessing whenever tile sparsity is not
+decidable, or the partitions are misaligned, or the budget is exceeded, or the
+candidate shares a tiled tensor with a node that cannot expand. The surviving
+opaque node is correct, merely unoptimized.</p></li>
+<li><p>A tiled tensor that one graph of the tree (a loop body, a branch or a setup
+body) writes and another touches is never expanded in any graph; every node
+that uses it stays the opaque tiled op. That includes graph-owned tiled
+scratch whose Materialize/Initialize sit in the parent of the body using it.</p></li>
+<li><p>Creating the predicted output tiles is a side effect of <code class="docutils literal notranslate"><span class="pre">apply()</span></code> on user
+data, earlier than the execute-time infer-and-create it replaces.</p></li>
+</ul>
+<p>The pass reports <code class="docutils literal notranslate"><span class="pre">num_expanded()</span></code>, <code class="docutils literal notranslate"><span class="pre">num_tile_nodes()</span></code>, <code class="docutils literal notranslate"><span class="pre">num_declined()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">num_screened()</span></code>, <code class="docutils literal notranslate"><span class="pre">num_densified()</span></code>, <code class="docutils literal notranslate"><span class="pre">num_fused()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">num_gathers_reused()</span></code>.</p>
+</section>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="optimization_passes.html"><span class="doc">Optimization Passes</span></a> for where TiledExpansion sits in the pipeline.</p></li>
+<li><p><a class="reference internal" href="views.html"><span class="doc">Views, Aliasing, and Pipeline Parameters</span></a> for the dense view surface that <code class="docutils literal notranslate"><span class="pre">tile_view</span></code> feeds.</p></li>
+<li><p><a class="reference internal" href="workspace.html"><span class="doc">Workspace and Deferred Tensor Allocation</span></a> for the deferred-allocation lifecycle tiled scratch joins.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="symmetry.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Symmetry-Aware Tensors</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tensor_lifetime.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tensor Lifetime Management</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-tile-inside-a-graph">Why tile inside a graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-one">Building one</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#capturing-tiled-operations">Capturing tiled operations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semantics">Semantics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#views-of-tiles">Views of tiles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-owned-tiled-scratch">Graph-owned tiled scratch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tiledexpansion">TiledExpansion</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emission-order">Emission order</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predicted-tile-sets">Predicted tile sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stranding">Stranding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zero-tile-screening">Zero-tile screening</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#densifying-small-tiles">Densifying small tiles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gathering-an-operand-once">Gathering an operand once</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fusing-small-elementwise-tiles">Fusing small elementwise tiles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limits">Limits</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.gather:
+
+==============================
+einsums::compute_graph::gather
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept DstType, CoreBasicTensorConcept SrcType> requires std::is_same_v<typename DstType::ValueType, typename SrcType::ValueType> void gather(DstType *dst, const SrcType &src, const std::vector<std::vector<size_t>> &indices, const std::vector<size_t> &axes)
+
+   Copy an arbitrary index selection out of ``src`` into ``dst``.
+
+   For each axis k, ``indices[k]`` lists the positions of src to take along that
+   axis:
+
+   dst[i0, i1, ...] = src[indices[0][i0], indices[1][i1], ...]
+
+   This is the outer-product selection numpy spells `A[np.ix_(rows, cols)]`,
+   not the zipped selection `A[rows, cols]`.
+
+   Every axis needs an explicit list; there is deliberately no "whole axis"
+   wildcard. Spelling it as the empty list would be the natural choice and is
+   the wrong one: the callers are domain-restricted methods, an empty domain is
+   a legitimate (if degenerate) input there, and having it silently expand to
+   the entire axis would turn a screened-out domain into a full-rank one with
+   no error. An empty list therefore selects nothing, and a whole axis is
+   `std::iota` / `range(n)` at the call site.
+
+   ``block_copy`` covers the contiguous case; this covers the case where the
+   wanted elements are scattered, which is what domain-restricted methods do
+   constantly: a local-correlation pair domain is a sorted list of orbital
+   indices, and every operand is `A[domain, domain]`. Doing that on the host
+   forces the extraction out of the graph, which is what this exists to avoid.
+
+   Both tensors must have the same rank and dtype, and dst's extent on each
+   axis must equal the number of indices selected there. Capture-aware: outside
+   capture it runs immediately; inside, it records a node with src as an input
+   and dst as an output, so a whole per-pair setup can be one graph.
+
+   ``axes`` optionally reorders the axes on the way out: source axis k lands on
+   destination axis `axes[k]`, so
+
+   dst[..., i_{axes[k]} = ik, ...] = src[..., indices[k][ik], ...]
+
+   Empty (the default) is the identity. This exists because the alternative is
+   a gather followed by a permute, and both are full passes over the result:
+   selecting and reordering together is one pass, and the traversal already
+   walks the destination through per-axis strides, so permuting is only a
+   different set of strides. Callers that need to reinterpret rather than move
+   axes want ``RuntimeTensor::reshape_view``, which does not copy at all.

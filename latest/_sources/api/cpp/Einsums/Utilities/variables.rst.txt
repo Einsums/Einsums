@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Utilities_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Random.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:var:: std::default_random_engine random_engine
+
+   The global random engine for random number generation.
+
+   .. versionadded:: 1.0.0

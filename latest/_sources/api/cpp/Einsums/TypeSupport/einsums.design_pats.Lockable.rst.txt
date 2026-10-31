@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.design_pats.Lockable:
+
+==============================
+einsums::design_pats::Lockable
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/Lockable.hpp``.
+
+.. cpp:namespace:: einsums::design_pats
+
+.. cpp:class:: template <typename Mutex> Lockable
+
+   Base class that makes a class Lockable, with a mutex of type ``Mutex``.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: Lockable() = default
+
+      Default constructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: Lockable(const Lockable<Mutex> &)
+
+      Copies nothing; exists so subclasses can be copyable.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void lock() const
+
+      Lock the object.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: bool try_lock() const
+
+      Try to lock the object. Returns true if successful.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: void unlock() const
+
+      Unlock the object.
+
+
+   .. cpp:function:: Mutex & get_mutex()
+
+      Get the underlying mutex.
+
+      .. versionadded:: 1.0.0

@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorAlgebra_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/Index.hpp``.
+
+.. c:macro:: EINSUMS_TENSOR_ALGEBRA_DETAIL_INDEX_HPP
+
+   Defined whenever this header is included, so that a module which must not reach the compile-time
+   index machinery (ComputeGraph) can assert it at compile time, through any chain of includes.
+
+
+.. c:macro:: MAKE_INDEX(x)
+
+   Macro that defines new index tags that can be used with einsums. Also includes code
+   for easy printing using fmtlib.

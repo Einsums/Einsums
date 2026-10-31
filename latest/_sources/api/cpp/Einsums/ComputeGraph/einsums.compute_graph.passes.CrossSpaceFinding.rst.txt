@@ -1,0 +1,113 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.CrossSpaceFinding:
+
+=================================================
+einsums::compute_graph::passes::CrossSpaceFinding
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/CrossSpaceValidation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: CrossSpaceFinding
+
+   One index letter of one contraction binding two different index spaces.
+
+   A value type, so a caller may keep it after the pass and the graph are gone. The two sides are
+   named "first" and "second" in operand order (A before B before C), and the message repeats
+   everything the fields carry so a report needs nothing else.
+
+
+   .. cpp:member:: CrossSpaceSeverity severity
+
+      How much to worry.
+
+
+   .. cpp:member:: std::string graph_name
+
+      Graph the node belongs to.
+
+
+   .. cpp:member:: NodeId node_id
+
+      The node's id within that graph.
+
+
+   .. cpp:member:: std::string node_label
+
+      The node's human-readable label.
+
+
+   .. cpp:member:: std::string letter
+
+      The index letter that binds both spaces.
+
+
+   .. cpp:member:: SpaceId first_space
+
+      Space bound on the earlier operand.
+
+
+   .. cpp:member:: std::string first_space_name
+
+      That space's registered name.
+
+
+   .. cpp:member:: const char *first_operand
+
+      Which operand it sits on: "A", "B" or "C".
+
+
+   .. cpp:member:: TensorId first_tensor
+
+      That operand's tensor id.
+
+
+   .. cpp:member:: std::string first_tensor_name
+
+      That operand's tensor name.
+
+
+   .. cpp:member:: SpaceId second_space
+
+      Space bound on the later operand.
+
+
+   .. cpp:member:: std::string second_space_name
+
+      That space's registered name.
+
+
+   .. cpp:member:: const char *second_operand
+
+      Which operand it sits on.
+
+
+   .. cpp:member:: TensorId second_tensor
+
+      That operand's tensor id.
+
+
+   .. cpp:member:: std::string second_tensor_name
+
+      That operand's tensor name.
+
+
+   .. cpp:member:: bool rests_on_inferred
+
+      Whether either side's annotation was INFERRED rather than declared. A finding that rests on
+      an inference is reported one severity level lower than the same finding on two declarations.
+
+
+   .. cpp:member:: std::string message
+
+      The full sentence, ready to print.

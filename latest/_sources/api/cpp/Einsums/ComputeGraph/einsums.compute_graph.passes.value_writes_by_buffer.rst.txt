@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.value_writes_by_buffer:
+
+======================================================
+einsums::compute_graph::passes::value_writes_by_buffer
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: std::map<TensorId, std::vector<std::size_t>> value_writes_by_buffer(const Graph &graph)
+
+   Every value write each buffer receives, as node positions in program order.
+
+   Keyed by alias root, so a write through a view counts against the buffer it lands in.
+   Lifecycle nodes produce no value and are left out. A tensor's contents are settled by ALL of
+   its writes, not by the last one, which is what a single-writer test cannot express: an
+   accumulated intermediate has no single settling node.

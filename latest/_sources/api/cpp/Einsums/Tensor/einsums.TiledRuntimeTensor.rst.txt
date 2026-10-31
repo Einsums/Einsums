@@ -1,0 +1,263 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TiledRuntimeTensor:
+
+===========================
+einsums::TiledRuntimeTensor
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledRuntimeTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> TiledRuntimeTensor : public tensor_base::CoreTensor, public tensor_base::TiledTensorNoExtra, public design_pats::Lockable<std::recursive_mutex>
+
+   A runtime-rank, tile-wise sparse tensor.
+
+   This is the runtime-rank analogue of ``TiledTensor``. Where ``TiledTensor``
+   carries its rank as a compile-time template parameter (and therefore keys its
+   tiles by ``std::array<int, Rank>``), TiledRuntimeTensor stores its rank at
+   runtime and keys tiles by ``std::vector<int>``. Each populated tile is a dense
+   ``RuntimeTensor`` (which reuses ``detail::TensorImpl`` for its runtime-rank
+   dims/strides machinery); absent tiles are rigorously zero and are not stored.
+
+   Like ``TiledTensor`` this models a *general* tiled layout: a tile may sit
+   anywhere on the grid (not only the diagonal) and may be rectangular. The
+   block-diagonal, square-tile special case is what ``BlockTensor`` captures;
+   the off-diagonal / rectangular cases (e.g. a non-totally-symmetric operator
+   coupling different symmetry sectors) require this general form.
+
+   **ComputeGraph integration (Tier A)**
+
+   This type satisfies ``CoreBasicTensorConcept`` so it can be captured into a
+   ComputeGraph for *lifecycle orchestration* (materialize / release / zero) and
+   passed around as an operand handle. Because a multi-tile tensor has no single
+   contiguous backing buffer, ``data()`` returns ``nullptr`` for the multi-tile
+   case (and the single tile's pointer in the degenerate one-cell grid), and the
+   type advertises itself via ``is_tiled_tensor()`` so the graph can flag the
+   handle (``TensorHandle::is_tiled``) and keep it out of dense buffer-level code
+   paths. Tiled *contraction inside the graph* is intentionally not provided here.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The data type stored in each tile.
+
+
+   .. cpp:function:: TiledRuntimeTensor() = default
+
+   .. cpp:function:: TiledRuntimeTensor(std::string name, std::vector<std::vector<int>> tile_sizes, bool row_major)
+
+      Construct an empty tiled tensor from a tile grid.
+
+      No tiles are populated yet; use ``add_tile`` / ``tile`` to declare the
+      sparsity pattern. The grid is given as one vector of tile sizes per axis,
+      so ``tile_sizes.size()`` determines the rank.
+
+      :param name: The name of the tensor.
+      :param tile_sizes: One vector per axis giving that axis's tile extents.
+      :param row_major: Memory layout for the *global* shape metadata and for tiles created lazily. Defaults to the library setting.
+
+
+   .. cpp:function:: TiledRuntimeTensor(std::string name, std::vector<std::vector<int>> tile_sizes)
+
+   .. cpp:function:: TiledRuntimeTensor(const TiledRuntimeTensor<T> &) = default
+
+   .. cpp:function:: TiledRuntimeTensor(TiledRuntimeTensor<T> &&) = default
+
+   .. cpp:function:: TiledRuntimeTensor<T> & operator=(const TiledRuntimeTensor<T> &) = default
+
+   .. cpp:function:: TiledRuntimeTensor<T> & operator=(TiledRuntimeTensor<T> &&) = default
+
+   .. cpp:function:: virtual ~TiledRuntimeTensor() = default
+
+   .. cpp:function:: size_t rank() const noexcept
+
+      Runtime rank (number of grid axes).
+
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Global extent along axis ``d`` (sum of that axis's tile sizes). Supports
+      Python-style negative indexing.
+
+
+   .. cpp:function:: std::vector<size_t> dims() const
+
+      Global shape (one extent per axis).
+
+
+   .. cpp:function:: size_t stride(int d) const
+
+      Row/column-major stride of the global bounding shape along axis ``d``.
+      This is advisory only, since a tiled tensor has no single contiguous
+      buffer; the strides describe the dense shape the tiles tile over.
+
+
+   .. cpp:function:: std::vector<size_t> strides() const
+
+      Global strides (see ``stride``).
+
+
+   .. cpp:function:: size_t size() const noexcept
+
+      Number of elements in the dense global bounding shape (product of dims).
+
+
+   .. cpp:function:: bool full_view_of_underlying() const noexcept
+
+      A tiled tensor is always considered a full view of itself.
+
+
+   .. cpp:function:: const std::string & name() const noexcept
+
+   .. cpp:function:: void set_name(const std::string &new_name)
+
+   .. cpp:function:: bool is_row_major() const noexcept
+
+   .. cpp:function:: T * data() noexcept
+
+      Raw data pointer.
+
+      A multi-tile tensor has no single contiguous buffer, so this returns
+      ``nullptr``. In the degenerate single-cell grid (one possible tile) it
+      returns that tile's buffer if the tile exists, matching the dense case.
+      See the class note on ComputeGraph integration.
+
+
+   .. cpp:function:: const T * data() const noexcept
+
+   .. cpp:function:: bool is_tiled_tensor() const noexcept
+
+      Advertises this type as tiled so ComputeGraph can flag its handle and
+      keep it out of dense buffer-level passes. Probed via ``if constexpr``.
+
+
+   .. cpp:function:: size_t grid_size() const noexcept
+
+      Number of grid cells (product of the per-axis tile counts). This is the
+      number of *possible* tiles, not the number populated.
+
+
+   .. cpp:function:: size_t num_filled_tiles() const noexcept
+
+      Number of populated (non-zero) tiles.
+
+
+   .. cpp:function:: const std::vector<std::vector<int>> & tile_sizes() const noexcept
+
+      The per-axis tile sizes (the grid).
+
+
+   .. cpp:function:: const std::vector<std::vector<int>> & tile_offsets() const noexcept
+
+      The per-axis tile offsets (running sums of the tile sizes).
+
+
+   .. cpp:function:: const map_type & tiles() const noexcept
+
+      Read-only access to the populated tiles.
+
+
+   .. cpp:function:: map_type & tiles() noexcept
+
+      Mutable access to the populated tiles.
+
+
+   .. cpp:function:: bool has_tile(const std::vector<int> &coord) const
+
+      True if a tile exists at the given grid coordinate.
+
+
+   .. cpp:function:: void add_tile(const std::vector<int> &coord)
+
+      Declare a tile at ``coord``. The declaration is deferred, with no storage allocated.
+
+      Creates a shell ``RuntimeTensor`` with the right dims for that grid cell
+      but no backing data. The tile is allocated later by ``materialize`` (or
+      by the ComputeGraph MaterializationPass). No-op if the tile already
+      exists.
+
+      :param coord: The grid coordinate, one index per axis.
+
+
+   .. cpp:function:: StoredType & tile(const std::vector<int> &coord)
+
+      Access the tile at ``coord``, creating it (deferred) if absent.
+
+      :param coord: The grid coordinate, one index per axis.
+      :returns: Reference to the tile.
+
+
+   .. cpp:function:: const StoredType & tile(const std::vector<int> &coord) const
+
+      Access an existing tile; throws if it is not populated.
+
+
+   .. cpp:function:: void add_alias_tile(const std::vector<int> &coord, T *ptr, bool row_major)
+
+      Experimental zero-copy bridge.
+
+      Add a tile at ``coord`` aliasing ``ptr``, which must outlive this tensor (e.g. a psi4 irrep block).
+
+
+   .. cpp:function:: RuntimeTensorView<T> tile_view(const std::vector<int> &coord)
+
+      Python-facing tile accessor: materialize the tile at ``coord`` (creating
+      it if absent) and return a numpy-backed view of it. KEEP_ALIVE(0,1) ties
+      this tensor's lifetime to the returned view, so the tile's storage
+      outlives any numpy array Python builds from it.
+
+
+   .. cpp:function:: TiledRuntimeTensorView<T> view(const std::vector<IndexSpace> &spaces)
+
+      Create a non-owning ``TiledRuntimeTensorView`` restricted to one
+      ``IndexSpace`` per axis (e.g. ``A.view({o, v, o, v})``). The view keeps
+      this tensor alive; defined out-of-line below TiledRuntimeTensorView.
+
+
+   .. cpp:function:: void materialize()
+
+      Allocate backing storage for every populated tile. Idempotent.
+
+
+   .. cpp:function:: bool is_materialized() const
+
+      True iff every populated tile is materialized (vacuously true when there
+      are no tiles). Drives the handle's initial AllocState in make_handle.
+
+
+   .. cpp:function:: void release()
+
+      Release backing storage for every populated tile, returning to the
+      deferred state. The sparsity pattern (which tiles exist) is preserved.
+
+
+   .. cpp:function:: void zero()
+
+      Zero every populated tile.
+
+
+   .. cpp:function:: void set_all(T val)
+
+      Set every element of every populated tile to ``val``.
+
+
+   .. cpp:function:: std::weak_ptr<void> liveness_token() const
+
+      Lazily-created liveness token for ComputeGraph's runtime validator (see
+      TensorHandle::make_handle). Mirrors RuntimeTensor::liveness_token.
+
+
+   .. cpp:member:: static constexpr int Rank
+
+      Compile-time rank sentinel; the real rank is only known at runtime via
+      ``rank()``. See ``einsums::dynamic_rank`` for what this triggers in
+      compile-time rank checks.

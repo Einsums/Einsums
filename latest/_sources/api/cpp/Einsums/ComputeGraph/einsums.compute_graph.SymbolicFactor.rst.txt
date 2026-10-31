@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SymbolicFactor:
+
+======================================
+einsums::compute_graph::SymbolicFactor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SymbolicFactor
+
+   One variable raised to one power inside a monomial.
+
+   The exponent is signed because the type does not forbid a reciprocal, but every polynomial this
+   module builds uses positive exponents, and the scale-order rung of ``compare`` abstains when it
+   meets a negative one.
+
+
+   .. cpp:member:: SymbolicVar variable
+
+      The variable being raised.
+
+
+   .. cpp:member:: int exponent
+
+      The power. Zero factors are dropped by canonicalization.

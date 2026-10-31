@@ -1,0 +1,215 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.StreamContractionFusion:
+
+=======================================================
+einsums::compute_graph::passes::StreamContractionFusion
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/StreamContractionFusion.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: StreamContractionFusion : public OptimizerPass
+
+   Fuse contractions that stream the same large tensor into one pass over it (the SCF "J and K from one TEI read" idiom).
+
+   Detects groups of einsum nodes that each contract the SAME large tensor
+   :math:`S` against a small operand, where every output index and every
+   small-operand index is drawn from :math:`S`'s index pattern (the
+   "GEMV-shaped" class: each element of :math:`S` is read exactly once and
+   contributes :math:`\alpha_k\,S[\mathrm{idx}]\,W_k[\pi_k(\mathrm{idx})]` to
+   :math:`C_k[\rho_k(\mathrm{idx})]`). Such contractions are memory-bandwidth
+   bound - their cost is one stream of :math:`S` - so :math:`N` of them cost
+   :math:`N` streams executed separately, but only ONE stream when fused: the
+   replacement node walks :math:`S` once in storage order and feeds every
+   member's accumulator from the same element.
+
+   **Example (Fock build)**
+
+   Before (two 800 MB streams of the TEI at n = 100, plus the scrambled K
+   pattern running below stream speed):
+
+   .. code-block:: text
+
+      // J[mu,nu] += 2 * TEI[mu,nu,lam,sig] * D[lam,sig]
+      // K[mu,nu] -= 1 * TEI[mu,lam,nu,sig] * D[lam,sig]
+
+   After: one storage-order stream of TEI updating both J and K, with
+   thread-private accumulators for the (small) outputs.
+
+   Members may write different outputs (J and K) or accumulate into a shared
+   one; for a shared output every member after the first must purely
+   accumulate (c prefactor 1), mirroring
+   ``LinearCombinationContractionFolding``'s tail rule. Conjugated members
+   and repeated indices are left unfused. Complex prefactors fuse on complex
+   tensors (the kernel carries element-typed alphas); on real tensors a
+   prefactor with a nonzero imaginary part declines the member rather than
+   silently dropping it. The streamed tensor must dominate the member
+   operands and outputs in size (ratio gate below).
+
+   **Output handling: privatization, with owner-computes chunking above the cap**
+
+   Outputs are normally accumulated in thread-private buffers and reduced at
+   the end, which requires them to stay cache-resident: with a
+   ``CostModel`` carrying cache sizes the cap is derived as
+   last-level-cache / threads bytes per output (so the aggregate private
+   buffers fit in cache); without one a fixed fallback applies. When a
+   member's output exceeds the cap, the group switches to owner-computes
+   chunking instead of declining: partitioning a physical :math:`S` axis whose
+   label lands in the output pins one output coordinate, so threads owning
+   disjoint blocks of that axis write disjoint output slices directly - no
+   private copy, no reduction, no size cap. An axis covers a member only when
+   every member writing the same output puts its label in the same place
+   there: members accumulating into one output through transposed patterns
+   would hand each thread a row stripe and a column stripe, and the stripes of
+   different threads cross. The pass records every axis that covers all
+   over-cap members; the kernel partitions the highest-stride one
+   (a low-stride partition turns each thread's read into a strided comb,
+   measured ~5x slower than contiguous slabs). Under-cap members not covered
+   by the chosen axis keep their private buffers inside the same stream. An
+   over-cap member no axis can cover drops out of the group and stays an
+   ordinary einsum. Groups with all outputs under the cap keep the flat
+   privatized walk unconditionally - its contiguous per-thread slabs are the
+   measured-fastest layout.
+
+   **Aliasing: every operand is compared as a BUFFER**
+
+   Fusion interleaves the members and moves every member's write to the first
+   member's position, so it is only equivalent to the original order when no
+   member's write is observable by another member or by any node it moves
+   across. Both questions are decided on ``Graph::resolve_alias`` roots rather
+   than TensorIds, because a view and its parent are different ids over one
+   buffer - and in a real capture views are the common case (a DLPNO-CCSD
+   iteration registers ~5800 of them against ~1200 whole tensors). A group
+   declines when an output shares a buffer with the streamed tensor, with a
+   weight, or with another output, and when any node between the members shares
+   a buffer with one of them. The graph merges partially overlapping byte spans
+   into one buffer, so two interleaved strided slices of one parent count as
+   shared even though their elements are disjoint; proving such slices apart
+   would need the per-view interval boxes the hazard scan builds
+   (Graph::for_each_hazard_edge), which this pass does not read yet. Until it
+   does, a view-heavy graph is where the pass declines most.
+
+   **Relationship to LinearCombinationContractionFolding**
+
+   LCCF serves the same 2J-K algebra by materializing a linear combination
+   :math:`L` of the streamed tensor and contracting once - measured 2.7x over
+   unfused for the Fock idiom, but it still makes ~4 passes over
+   :math:`S`-sized data. This pass replaces those with a single pass. When both
+   passes are registered, run this one FIRST: it consumes the pattern LCCF
+   would otherwise fold.
+
+   **Opt-in**
+
+   Registered in ``PassManager::create_default`` (after Materialization /
+   SymmetryPropagation, before GPU placement): the size and ratio gates make
+   it a no-op on graphs without a qualifying stream, and it declines
+   distributed operands.
+
+   .. code-block:: text
+
+      cg::PassManager pm; pm.add(std::make_shared<StreamContractionFusion>());
+      graph.apply(pm);
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("stream_fusion")
+      with cg.capture(g):
+          # Two contractions streaming the same large TEI against the small density D.
+          einsums.einsum("mn <- mnls ; ls", J, TEI, D, c_pf=0.0, ab_pf=2.0)   # J += 2 * TEI * D
+          einsums.einsum("mn <- mlns ; ls", K, TEI, D, c_pf=0.0, ab_pf=-1.0)  # K -= 1 * (scrambled TEI) * D
+      g.apply(cg.default_pass_manager())         # StreamContractionFusion runs in the default pipeline
+      # You may also add cg.StreamContractionFusion() to a manual cg.PassManager, but
+      # its num_groups / num_eliminated counters are not exposed as Python properties.
+
+   **Limitations**
+
+   - Members must be **einsum** nodes with two inputs and one output, no repeated index in any of C/A/B (diagonal patterns decline), and non-conjugated (`conj_a`/`conj_b` decline).
+   - One operand is the streamed tensor :math:`S`, the other the small :math:`W`; every C index and every W index must be drawn from :math:`S`'s index pattern (the GEMV-shaped class - each element of :math:`S` read exactly once).
+   - :math:`S`, :math:`W` and C must all be **runtime** tensors (owning or view) of one dtype, each with a live ``TensorHandle::impl_fn``; a mixed-dtype member declines (the kernel casts all three to :math:`S`'s element type) and so does a tile-wise sparse operand, which has no single geometry to read.
+   - A group declines when its operands share a buffer, or when a node between its members touches one (see the aliasing note above).
+   - On a real dtype, `ab_prefactor` and `c_prefactor` must be real-valued; complex prefactors ride through only on complex dtypes.
+   - Distributed operands decline (they belong to the InputSlicing / SUMMAExpansion communication passes).
+   - Size gates: :math:`S` needs >= `kMinStreamElems` (4096) elements and must be >= `kMinSizeRatio` (8x) larger than each member's :math:`W` and output.
+   - A group needs >= 2 members over the same :math:`S`, and for a shared output only the first member touching it may have `c_prefactor != 1` (contributions interleave in the one stream). An interference guard also rejects the group if any node between the first and last member writes the buffer of an operand or reads the buffer of an output.
+   - Privatized members are held to `max_output_elems` (cache-derived with a cost_model, a fixed fallback without); an over-cap member is only kept if an owner-computes partition axis covers it, otherwise it drops out and stays an ordinary einsum.
+
+   **Future improvements**
+
+   - Admit conjugated members and repeated-index (diagonal) patterns, currently declined outright.
+   - Support statically-typed `Tensor<T,Rank>` captures, not only runtime tensors.
+   - Read the hazard scan's per-view interval boxes so element-disjoint slices of one parent stop counting as one buffer, which is what currently declines every candidate group in a view-heavy graph.
+   - Coordinate with the communication passes so distributed streams can fuse instead of declining.
+
+
+   .. cpp:function:: StreamContractionFusion() = default
+
+   .. cpp:function:: explicit StreamContractionFusion(CostModel cost_model)
+
+      Profile-aware construction: the output-size cap is derived from the
+      CPU cache hierarchy (see ``max_output_elems``) instead of the fixed
+      fallback. The default-constructed pass keeps the fallback cap.
+
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not permutation operators or redirected slots: the stream kernel computes the unpermuted term and reads operands through the handle.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Safe on loop bodies / conditional branches: a local rewrite within the
+      graph it is handed.
+
+
+   .. cpp:function:: size_t num_groups() const
+
+      Number of fused stream groups created.
+
+
+   .. cpp:function:: size_t num_eliminated() const
+
+      Total number of einsum nodes eliminated (fused away).
+
+
+   .. cpp:function:: size_t max_output_elems(size_t elem_size) const
+
+      Cap on a member output's element count for the given element size.
+
+      The fused kernel gives every thread a private copy of each output, so
+      the transient footprint is threads x output bytes. The privatized
+      accumulators only stay cheap while each thread's copy is
+      cache-resident, so with a cost_model carrying cache sizes the cap is
+      (last-level cache bytes / threads) / elem_size
+      i.e. the aggregate private buffers fill at most the last-level cache.
+      Clamped below by kMinOutputElemsFloor so implausibly small detected
+      caches cannot disable the pass outright. Without a cost_model (or
+      without cache data) returns kMaxOutputElemsFallback.

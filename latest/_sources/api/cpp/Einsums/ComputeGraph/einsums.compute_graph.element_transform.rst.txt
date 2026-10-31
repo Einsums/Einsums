@@ -1,0 +1,67 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_transform:
+
+=========================================
+einsums::compute_graph::element_transform
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreTensorConcept CType, typename UnaryOperator> requires BasicTensorConcept<CType> && RankTensorConcept<CType> && (!std::convertible_to<UnaryOperator, std::string_view>) void element_transform(CType *C, UnaryOperator unary_op)
+
+   Graph-aware element_transform: apply unary operator element-wise.
+
+   The kernel is a closure, so a node this records carries NO descriptor and
+   cannot be written to a file; ``Graph::serializability_report`` names it
+   with the fix. That is deliberate rather than a gap -- an anonymous lambda
+   stays fully legal on every non-serialized path. The string-taking overload
+   below is the saveable spelling, and the constraint here is what keeps a
+   string from being deduced as a "unary operator".
+
+
+.. cpp:function:: template <TiledTensorConcept CType, typename UnaryOperator> requires (!std::convertible_to<UnaryOperator, std::string_view>) void element_transform(CType *C, UnaryOperator unary_op)
+
+   Tiled element_transform: apply ``unary_op`` to every stored tile. (The generic
+   overload requires BasicTensorConcept, which a tiled tensor does not satisfy.)
+
+
+.. cpp:function:: template <CoreBasicTensorConcept CType> void element_transform(CType *C, std::string_view op_name, std::optional<double> param)
+
+   Graph-aware element_transform whose kernel is looked up by NAME.
+
+   The saveable spelling of the overload above: the node records the name and
+   ``build_executor`` resolves it, so an ``OpKind::ElementTransform`` node is
+   data all the way down and a rebuilt executor runs the same kernel a capture
+   did.
+
+   The lookup happens HERE, at capture, not at replay: an op this process has
+   not registered is a caller error and the message names the op, rather than a
+   surprise part-way through an execute(). Eager and captured runs go through
+   the same rank-erased walk, so the two cannot diverge.
+
+   Accepts the runtime-rank tensors too, which the closure overload cannot: the
+   walk is over the operand's ``TensorImpl``, so compile-time rank is not needed.
+   A TILED destination is not accepted; a tiled transform stays anonymous, and
+   it records under ``OpKind::Custom`` in any case.
+
+   A PARAMETERIZED op takes its policy number here, and the node carries it, so
+   a drop threshold is part of what a saved graph says it computes rather than
+   something the process that replays it has to remember. Passing nothing runs
+   the op at the default its registration documents; passing a number to an op
+   that takes none is an error rather than an ignored argument.
+
+   :param C: The tensor to transform in place.
+   :param op_name: Name of the kernel in the process's element-op registry.
+   :param param: The policy number for a parameterized op.
+   :throws std::invalid_argument: When no op of that name is registered, when it is not defined for ``C`` 's element type, or when ``param`` is supplied for an op that takes none.

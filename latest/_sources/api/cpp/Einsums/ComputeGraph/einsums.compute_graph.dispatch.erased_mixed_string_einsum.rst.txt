@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.erased_mixed_string_einsum:
+
+============================================================
+einsums::compute_graph::dispatch::erased_mixed_string_einsum
+============================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Detail/ErasedEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename TC, typename TA, typename TB> void erased_mixed_string_einsum(const ParsedEinsumSpec &parsed, TC c_pf, detail::TensorImpl<TC> &C, detail::PromoteT<TA, TB> ab_pf, const detail::TensorImpl<TA> &A, const detail::TensorImpl<TB> &B, bool conj_a, bool conj_b)
+
+   The mixed-precision counterpart of ``erased_string_einsum``, on operands whose element types differ.
+
+   Runs ``mixed_string_einsum``. Explicitly instantiated in the library for every triple of the four
+   element types; a triple that is uniform, or that would store a complex product in a real C,
+   throws ``std::logic_error``, since ``cg::einsum`` rejects both before calling it.

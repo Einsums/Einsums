@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor_call_is_fenced:
+
+====================================
+einsums::blas::vendor_call_is_fenced
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: bool vendor_call_is_fenced()
+
+   Whether a vendor call made from this thread right now would be clamped to one thread.
+
+   The wrappers' fence condition, for kernels choosing between the vendor (one thread when fenced)
+   and their own loops (the full width). Per call; never cache it with a contraction.
+
+   .. versionadded:: 2.0.0

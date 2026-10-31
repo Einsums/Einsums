@@ -1,0 +1,49 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorUse:
+
+=================================
+einsums::compute_graph::TensorUse
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/UsageAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorUse
+
+   One read or write of a tensor buffer by one node.
+
+   Position-keyed against the graph's current node order (position IS program
+   order in this IR). ``via_subtree`` distinguishes uses that only exist through
+   a control-flow node's sub-graph (Loop bodies, Conditional branches, found
+   via effective-IO expansion) from uses recorded on the node's own
+   input/output lists; consumers that want only the latter filter on it.
+
+
+   .. cpp:member:: std::uint32_t pos
+
+      Node position in the current (sorted) node order
+
+
+   .. cpp:member:: OpKind kind
+
+      The using node's kind (for lifecycle filtering: Alloc/Free/Materialize/Initialize)
+
+
+   .. cpp:member:: bool is_write
+
+      True if the node writes the buffer, false if it reads
+
+
+   .. cpp:member:: bool via_subtree
+
+      True if the use surfaced only through effective-IO (Loop/Conditional body)

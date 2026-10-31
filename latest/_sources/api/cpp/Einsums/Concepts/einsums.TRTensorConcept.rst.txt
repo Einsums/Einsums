@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TRTensorConcept:
+
+========================
+einsums::TRTensorConcept
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D, size_t Rank, typename T> TRTensorConcept
+
+   Tests whether the given tensor type has a storage type and rank.
+
+   This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
+   Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor type to check.
+   :tparam T: The storage type stored by the tensor.
+   :tparam Rank: The expected rank of the tensor.

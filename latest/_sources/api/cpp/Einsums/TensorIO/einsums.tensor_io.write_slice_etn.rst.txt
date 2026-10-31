@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.write_slice_etn:
+
+===================================
+einsums::tensor_io::write_slice_etn
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/GraphIO.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> void write_slice_etn(std::string file_path, std::string tensor_name, const Slab &slab, const TensorType *input)
+
+   Write a slab of a tensor to a .etn file, graph-aware.
+
+   During capture, records a DiskWrite node that patches the slab in place (see ``Slab``). The
+   entry must already exist, from ``write_etn`` or ``TensorFile::reserve``.
+
+   .. code-block:: text
+
+      Slab slab{{ {0, 4}, {0, 4} }};
+      tensor_io::write_slice_etn("scratch.etn", "T", slab, &block);

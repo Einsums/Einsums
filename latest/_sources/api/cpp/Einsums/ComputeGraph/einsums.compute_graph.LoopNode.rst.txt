@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.LoopNode:
+
+================================
+einsums::compute_graph::LoopNode
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Pipeline.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: LoopNode
+
+   An iterative subgraph with convergence-based early exit.
+
+   Contains a Graph (the loop body) that is executed repeatedly until either:
+
+   - The LoopCondition returns false (convergence)
+   - max_iterations is reached (safety limit)
+
+   The condition is evaluated AFTER each iteration, so the body always runs at
+   least once.
+
+   .. seealso::
+
+      Pipeline::add_loop()
+
+
+   .. cpp:member:: Graph body
+
+      The subgraph to execute each iteration
+
+
+   .. cpp:member:: size_t max_iterations
+
+      Maximum number of iterations (safety limit)
+
+
+   .. cpp:member:: LoopCondition condition
+
+      Predicate: return false to stop, true to continue
+
+
+   .. cpp:member:: size_t last_iteration_count
+
+      Set after execution: the actual number of iterations that ran.

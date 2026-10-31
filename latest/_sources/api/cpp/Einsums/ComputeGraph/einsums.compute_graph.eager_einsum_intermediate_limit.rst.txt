@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.eager_einsum_intermediate_limit:
+
+=======================================================
+einsums::compute_graph::eager_einsum_intermediate_limit
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NaryEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::size_t eager_einsum_intermediate_limit(std::size_t element_size)
+
+   The most elements an eager einsum over several operands lets a partial product hold.
+
+   A captured einsum is not limited: its partial products are graph intermediates, and the graph's
+   ``AxisTiling`` pass builds one a block at a time when it is too large to hold. An eager einsum
+   has no such pass, so its partial products are held to what ``--einsums:max-memory`` allows.
+
+   .. versionadded:: 2.0.0
+
+   :param element_size: The bytes of one element.
+   :returns: The limit, or zero for none.

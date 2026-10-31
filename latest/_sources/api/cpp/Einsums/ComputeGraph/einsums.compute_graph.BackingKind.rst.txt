@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BackingKind:
+
+===================================
+einsums::compute_graph::BackingKind
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorBacking.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BackingKind
+
+   How to open the storage of one backing kind from its saved location.
+
+   ``name`` must be QUALIFIED - contain a ``.``, as in ``"tensor_io.etn"`` - for the same reason a
+   registered descriptor's must: no two modules can then claim one name by accident.
+
+
+   .. cpp:member:: std::string name
+
+      The kind's name, as ``TensorBacking::kind`` spells it.
+
+
+   .. cpp:member:: std::function<TensorBacking (const std::vector<std::pair<std::string, std::string>> &, bool)> open
+
+      The backing for a saved location. For a read backing, with its dims, dtype and reader
+      filled in; for a write backing (``write`` true), unprepared, as the kind's own constructor
+      returns one, to be completed by ``TensorBacking::prepare`` when it is annotated. Throw
+      ``std::invalid_argument`` when the storage cannot be opened or does not hold the location;
+      the loader reports the message against the tensor.

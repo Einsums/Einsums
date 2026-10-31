@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.op_kind_from_name:
+
+=========================================
+einsums::compute_graph::op_kind_from_name
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Enums.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<OpKind> op_kind_from_name(std::string_view name)
+
+   The ``OpKind`` spelled ``name``, if there is one.
+
+   Saved graphs store kinds by name, since enumerators get inserted mid-enum. Asks
+   ``op_kind_name``'s switch rather than keeping a second table.
+
+   .. versionadded:: 2.0.0
+
+   :param name: A spelling ``op_kind_name`` produces.
+   :returns: The kind, or an empty optional when nothing is spelled that way.

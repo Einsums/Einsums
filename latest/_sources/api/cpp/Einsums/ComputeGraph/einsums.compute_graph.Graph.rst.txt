@@ -1,0 +1,3754 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Graph:
+
+=============================
+einsums::compute_graph::Graph
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Graph
+
+   A directed acyclic graph (DAG) of tensor operations.
+
+   The Graph class is the central container for the computation graph. It stores
+   a sequence of operation nodes and the tensor handles they reference. Key features:
+
+   - **Capture**: Operations are added during a capture phase (via CaptureGuard).
+   - **Topological sorting**: Nodes are sorted based on data dependencies before execution.
+   - **Execution**: All nodes execute in dependency order. Calling execute() multiple times replays the same operations (useful for iterative algorithms).
+   - **Optimization**: Passes can be applied to fuse, eliminate, or reorder nodes.
+   - **Tensor ownership**: Intermediate tensors can be created via create_tensor() so the graph manages their lifetimes.
+   - **Validation**: Before execution, tensor pointers are checked for use-after-free.
+   - **Profiling**: execute() wraps each node in profiler regions with annotations.
+   - **Visualization**: print_dot() exports GraphViz format; print_summary() prints text.
+
+   .. code-block:: text
+
+      namespace cg = einsums::compute_graph;
+
+      auto A = create_random_tensor<double>("A", 10, 5);
+      auto B = create_random_tensor<double>("B", 5, 8);
+
+      cg::Graph graph("my_graph");
+
+      // declare_, not create_: C is a RESULT this code reads after execute(), so it must not be
+      // marked scratch. create_zero_tensor would make it an intermediate, and DeadNodeElimination
+      // removes the einsum below the moment the graph is optimized, leaving C as it was.
+      auto &C = graph.declare_zero_tensor<double, 2>("C", 10, 8);
+
+      {
+          cg::CaptureGuard guard(graph);
+          cg::einsum("ik;kj->ij", &C, A, B);
+      }
+
+      graph.optimize();  // also materializes C, whose allocation declare_ deferred
+
+      graph.execute();   // C = A * B
+
+      graph.execute();   // Replay: C = A * B again
+
+   .. seealso::
+
+      CaptureGuard for the RAII capture mechanism
+
+   .. seealso::
+
+      Pipeline for multi-stage workflows with loops
+
+   .. seealso::
+
+      OptimizerPass for graph optimization
+
+
+   .. cpp:function:: explicit Graph(std::string name)
+
+      Construct an empty graph.
+
+      :param name: Human-readable name for profiling and debugging output.
+
+
+   .. cpp:function:: Graph(Graph &&other) noexcept
+
+   .. cpp:function:: Graph(const Graph &) = delete
+
+   .. cpp:function:: ~Graph()
+
+   .. cpp:function:: Graph & operator=(Graph &&other) noexcept
+
+   .. cpp:function:: Graph & operator=(const Graph &) = delete
+
+   .. cpp:function:: std::shared_ptr<const GraphAnchor> anchor()
+
+      A handle naming this graph that stays valid when the graph is moved.
+
+      An executor a pass bakes into a node must capture this, never ``&graph``, when it looks
+      tensors up through the graph at run time. A captured address names the moved-from object
+      once the graph is returned from a function or stored in a container.
+
+      :returns: The graph's anchor, created on first request.
+
+
+   .. cpp:function:: NodeId add_node(Node node)
+
+      Add an operation node to the graph.
+
+      Assigns a unique NodeId and appends the node. Marks the graph as unsorted.
+      Typically called internally by CaptureContext::record(), not by users directly.
+      The node is taken as it is: its inputs must already follow the destination rule of
+      DestinationRead.hpp, which CaptureContext::record and make_node apply and verify() checks.
+
+      :param node: The node to add (moved into the graph).
+      :returns: The assigned NodeId.
+
+
+   .. cpp:function:: NodeId reserve_node_id()
+
+      Reserve a fresh unique NodeId without adding a node.
+
+      For a pass that needs a spliced node's id before it hands the graph back. A pass
+      that does not can leave the node at ``unassigned_node_id`` and let
+      ``assign_node_ids`` issue one.
+
+
+   .. cpp:function:: void assign_node_ids()
+
+      Issue a fresh id to every node still carrying ``unassigned_node_id``.
+
+      Runs when a pass hands the graph back and on every sort, so a node spliced into the
+      list directly, or moved in from another graph, is numbered before anything keys on its
+      id. Ids already issued are kept. Does not descend into sub-graphs.
+
+
+   .. cpp:function:: std::vector<std::string> verify() const
+
+      Every structural invariant this graph and its sub-graphs break, one message each.
+
+      Checks that every node id is issued and unique within its graph, that every operand is a
+      registered tensor, that each lifecycle node names the registered tensor it manages, that
+      every node has an executor, and that each contraction and permutation carries index lists
+      as long as its operands' ranks. Backings are checked both ways: no node may write a tensor
+      whose backing is only read, and a tensor with a write backing must be written, in memory or
+      straight into its storage. Empty for a well-formed graph. Run after every pass when
+      ``einsums:pass:verify`` is set.
+
+
+   .. cpp:function:: TensorId register_tensor(TensorHandle handle)
+
+      Register a tensor handle with the graph.
+
+      Assigns a unique TensorId and stores the handle's metadata. The tensor itself
+      is NOT copied, only a pointer and metadata are stored.
+
+      :param handle: The tensor handle to register (moved into the graph).
+      :returns: The assigned TensorId.
+
+
+   .. cpp:function:: void link_alias_storage()
+
+      Link a freshly registered handle to any registered tensor whose storage contains it (or that it contains).
+
+      ``cg::view()`` sets ``TensorHandle::aliases`` itself, but a view sliced
+      OUTSIDE a capture never goes through it: Python's capture-aware
+      ``__getitem__`` falls through to the eager slice, and the resulting view
+      reaches the graph as an ordinary operand on first use. Registered as-is
+      it has ``aliases == 0``, so the scheduler sees no relationship to its
+      parent and is free to order a read of the parent before a write through
+      the view. That produced silently wrong results with no error, and the
+      pattern is not exotic: a captured view must outlive the graph, which
+      pushes callers to build views up front.
+
+      So containment is detected here from the registration-time data pointer
+      and strides, which closes the hole whatever the view's provenance.
+      Runs once over all registered tensors rather than per registration:
+      a containment test is O(n) against what is already there, so doing it on
+      every registration is quadratic, and a DLPNO-MP2 capture registers ~13k
+      tensors. Idempotent and cheap to call; register_tensor just marks it
+      stale.
+
+      .. note::
+
+         DELEGATES to ``link_alias_structural`` when no handle in the graph
+         carries an address at all, which is the state of a graph read from a
+         file: nothing is allocated, so there is nothing to compare. Linking
+         nothing there is not a safe default - it is the shape of the
+         full-cover alias bug, a silently incomplete relation that surfaces
+         as a race rather than an error.
+
+      .. note::
+
+         A MIXED graph - some handles with addresses, some without - is the
+         ordinary case, not an error: a deferred shell has no address until
+         it is materialized, and ``TensorHandle::data_ptr`` is a
+         registration-time snapshot nothing refreshes. The rule is that the
+         pointer derivation runs whenever ANY handle carries an address and
+         simply cannot see a null-address handle, unchanged from before,
+         while the structural derivation takes the whole graph only when NONE
+         does. Spanning both modes are ``declare_alias`` declarations, which
+         are applied first in either and are the only way an alias between
+         two address-less operands is expressible at all.
+
+      .. seealso::
+
+         link_alias_structural
+
+
+   .. cpp:function:: void resync_slot_storage()
+
+      Re-seat the cached data pointer of every slot this graph's nodes name on its tensor's current buffer.
+
+      ``Graph::adopt_operand`` gives a graph a STAND-IN for an operand it does not own: a
+      wrapper that shares the caller's storage block so the caller's own wrapper may die
+      between capture and replay. The stand-in shares the block, not the cached address
+      inside it - ``TensorImpl`` holds its own copy of that - and a Free followed by the next
+      replay's Materialize relocates the block under it. From that replay on the stand-in
+      names memory the block has already freed, which is a read of freed storage for a
+      sub-graph body and, where the allocator has not reused the bytes, a silently correct
+      one.
+
+      This is where ``einsums::detail::StorageBase::generation`` is consumed. ``execute()``
+      runs it before the first node, and a sub-graph body runs it at its own ``execute()``,
+      which is after the parent's Materialize has placed the buffer the body is about to
+      read. A slot whose tensor has not moved costs one comparison.
+
+      A stand-in is shared by every graph that adopted the same tensor, so every re-seat in the
+      process is serialized: two graphs, or two nodes of one, may reach one stand-in at once.
+
+      A slot no node names is left alone. The node that replays a body is ordered against the
+      tensors the body's nodes touch, so a stand-in that outlived its readers (a hoisted node
+      took them) may belong to a tensor another thread is freeing.
+
+      .. seealso::
+
+         TensorSlot::resync_of
+
+
+   .. cpp:function:: void lease_scratch()
+
+      Give every intermediate this graph holds a scratch lease on its storage block.
+
+      An intermediate is the graph's to free, reuse or hold a tile at a time, so its values mean
+      something only while the graph replays; the lease is what lets a read from outside a replay
+      say so instead of returning whatever the passes left (see ``einsums::detail::ScratchLease``).
+      Run at the start of every ``execute``; each handle is leased once, and a tensor that already
+      carries a lease keeps the one it has.
+
+
+   .. cpp:function:: void resync_slot_storage(std::span<const TensorId> ids)
+
+      Re-seat the adopted stand-ins of ``ids`` only.
+
+      For a node that runs outside this graph's own ``execute()`` but reaches its operands
+      through this graph's slots, as a node LoopInvariantHoisting lifts out of a body does. Its
+      dataflow edges order it after the Materialize and Free of the tensors it touches and of
+      no others, so it may read the storage of those alone: a re-seat of the whole graph would
+      read a block another thread is relocating and rewrite a stand-in another node is reading.
+      A redirected id is re-seated through the slot it redirects to.
+
+      :param ids: Tensors of this graph, as the node names them.
+
+
+   .. cpp:function:: void link_alias_structural()
+
+      Derive the alias relation from ``View`` nodes and manifest declarations, with no address consulted anywhere.
+
+      The counterpart of ``link_alias_storage`` for a graph that has no
+      addresses to derive from, and the mechanism a loaded graph uses: the
+      structure was read from a file, nothing is allocated, and the tensors
+      bound afterwards are not the tensors that were captured. Writes its result
+      through the same two fields - ``TensorHandle::aliases`` and
+      ``TensorHandle::alias_box`` - so ``resolve_alias``, the hazard edges and
+      ``rebind``'s redirect chain consume it unchanged.
+
+      Two sources, and they are exhaustive because nothing else can survive a
+      save:
+
+      - **``View`` nodes.** A ``ViewDescriptor`` says which parent axis each result axis reads (through ``ViewDescriptor::permutation``) and what interval that axis is restricted to. Chains COMPOSE: a view of a view is placed inside its parent's own region and linked to the root, the same path compression the pointer derivation does and for the same reason - ``resolve_alias`` walks the chain on every hazard-scan lookup. A bound that is not a compile-time constant (a Param or a Callback, unknown until execute) yields NO box, so the view conflicts as its whole parent, which is the same conservative answer the pointer path gives for a region it cannot prove.
+      - **Manifest declarations.** Two caller-supplied tensors that share storage with no ``View`` node recording it are declared through ``declare_alias``, which ``ManifestEntry::aliases_input`` carries across a save. The declaration names a buffer, never a region, so such a pair conflicts as the whole parent until the schema records boxes.
+
+      Recurses into ``Loop`` bodies and ``Conditional`` branches, which are
+      separate graphs with their own handles; a body left unlinked answers "this
+      view aliases nothing" and loses its hazard edges silently.
+
+      .. note::
+
+         Does NOT mark the pointer derivation as done. Running this and then
+         ``link_alias_storage`` on a graph with addresses leaves the relation
+         unchanged, which is the equivalence stated the other way round and is
+         what every scheduling path enforces once this has been called.
+
+      .. note::
+
+         Idempotent, and safe to run on a graph that HAS addresses - it is
+         then strictly a second opinion, describing the ``View`` chains the
+         pointer path skipped (it skips any handle capture already linked) and
+         leaving the pointer-only relations, a reshaped window of a scratch
+         pool among them, to ``link_alias_storage``. Structural is therefore
+         not a replacement for the pointer derivation on a live graph; it is
+         what a graph with no addresses has instead of one.
+
+      .. seealso::
+
+         link_alias_storage
+
+      .. seealso::
+
+         declare_alias
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void declare_alias(TensorId child, TensorId parent)
+
+      Declare that ``child's`` storage is part of ``parent's``.
+
+      The manifest-level alias relation, and the only kind that survives a save:
+      an aliasing pair with no
+      ``View`` node recording it exists solely as two addresses that happen to
+      coincide, and a loaded graph has neither. Installs the link immediately
+      (with no box, since a declaration names a buffer and not a region) and
+      remembers it, so it is reapplied by every later linking pass and is not
+      lost to ``clear_alias_links``.
+
+      .. note::
+
+         A no-op when the two ids are equal or either is 0, the "no tensor" id.
+
+      .. seealso::
+
+         link_alias_structural
+
+      .. seealso::
+
+         Graph::bind
+
+      .. versionadded:: 2.0.0
+
+      :param child: The tensor whose storage is part of another's.
+      :param parent: The tensor that owns the storage.
+      :throws std::invalid_argument: If either id names no tensor in this graph.
+      :throws std::invalid_argument: If the declaration would make the two tensors each other's alias parent. Containment is not symmetric, and a cycle turns every later ``resolve_alias`` into a throw whose message is about a corrupt link rather than about the declaration that made it.
+
+
+   .. cpp:function:: void clear_alias_links() noexcept
+
+      Forget every derived alias link, keeping the declared ones.
+
+      Clears ``TensorHandle::aliases`` and ``TensorHandle::alias_box`` on every
+      handle and marks the relation stale, so the next ``link_alias_storage``
+      rebuilds it from scratch. Exists so the two derivations can be compared on
+      the same footing - the equivalence is tested rather than hoped for - and so
+      a loader can install a fresh relation over a graph that
+      carries a stale one.
+
+      .. note::
+
+         Declarations made through ``declare_alias`` SURVIVE, because they
+         are an input to the derivation rather than an output of it.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: TensorId find_or_register_tensor_ptr(const TensorHandle &handle)
+
+      Reuse or mint a TensorId for ``handle's`` buffer in this graph.
+
+      Looks ``handle's`` ``tensor_ptr`` up in the pointer INDEX and returns the id it
+      names; otherwise registers ``handle``. This is the orphan-parent-handle convention,
+      and effective_io, LoopInvariantHoisting, Materialization, FreeInsertion and IOPrefetch
+      all reach it through here: a buffer used only inside sub-graphs gets one stable parent
+      id, so every parent node touching it (hoisted lifecycle nodes and the control-flow
+      node's effective I/O) resolves to the same id and a dependency edge forms.
+
+      :param handle: Handle whose tensor_ptr keys the lookup.
+      :returns: The existing or newly assigned TensorId.
+
+
+   .. cpp:function:: TensorId find_tensor_id_by_ptr(const void *ptr) const noexcept
+
+      The id registered for ``ptr``, or 0 if there is none. A caller's address whose object has
+      been destroyed names nothing: the handle filed under it is not returned.
+
+
+   .. cpp:function:: TensorHandle * find_tensor_by_ptr(const void *ptr) noexcept
+
+      The handle of the tensor that lives at ``ptr`` NOW, or null when none is registered there.
+
+      The lookup for a tensor this graph has just allocated or declared and needs the
+      handle of. It goes through the pointer index rather than a first-match scan of the
+      tensor table, because an address does not identify a tensor across a destruction:
+      capture lets a caller's wrapper die while its handle stays registered, filed under that
+      wrapper's address among others (``TensorHandle::caller_ptr``, or the identity itself for a
+      type with no liveness token), and the next allocation of the same size can land on the
+      freed address. A scan then finds two handles at one address and returns
+      whichever the table happens to iterate first, which under the MSVC STL is the STALE
+      one. The index has no such ambiguity: ``register_tensor`` reassigns it to the tensor
+      that lives there now.
+
+
+   .. cpp:function:: TensorHandle & tensor(TensorId id)
+
+      Look up a tensor handle by its TensorId.
+
+      :param id: The tensor identifier.
+      :throws std::out_of_range: If no tensor with the given ID exists.
+      :returns: Reference to the TensorHandle.
+
+
+   .. cpp:function:: const TensorHandle & tensor(TensorId id) const
+
+   .. cpp:function:: TensorHandle * find_tensor(TensorId id) noexcept
+
+      Look up a tensor handle by its TensorId, without throwing.
+
+      :param id: The tensor identifier.
+      :returns: Pointer to the TensorHandle, or nullptr if no tensor with the given ID exists. The non-throwing counterpart of tensor() for the optimizer passes' "handle or skip" lookups.
+
+
+   .. cpp:function:: const TensorHandle * find_tensor(TensorId id) const noexcept
+
+   .. cpp:function:: TensorId live_tensor_id_by_ptr(const void *ptr, const std::weak_ptr<void> &token) const noexcept
+
+      The id registered for ``ptr``, when that registration is still about the SAME tensor.
+
+      An address does not identify a tensor across a destruction: a wrapper freed while a graph
+      is being built leaves its address free for the next allocation, and a tensor allocated on
+      top of a dead one would inherit its ``TensorId``. Every by-object lookup on this class
+      goes through here rather than through ``find_tensor_id_by_ptr`` for that reason.
+
+      :param ptr: Address of the caller's tensor.
+      :param token: The caller's liveness token. An untracked token on either side matches, which keeps tensor types that expose no token on the pre-existing behaviour.
+      :returns: The id, or 0 when there is none, or when the cached one belongs to a tensor that has since been destroyed.
+
+
+   .. cpp:function:: SpaceRegistry & space_registry() const noexcept
+
+      The registry this graph resolves index spaces against.
+
+      A graph annotated against one registry must be queried against the same one: a
+      ``SpaceId`` is a handle into the registry that issued it and means nothing anywhere else.
+      The process-global registry is the default precisely so that the common case never has to
+      think about it; a test (or a capture that wants an isolated set of spaces) overrides it.
+
+      :returns: The registry set by ``set_space_registry``, or the process-global one.
+
+
+   .. cpp:function:: void set_space_registry(SpaceRegistry &registry) noexcept
+
+      Resolve this graph's index spaces against ``registry`` instead of the global one.
+
+      Set it BEFORE annotating anything. Ids already stored on this graph's handles were issued
+      by the previous registry and are not translated.
+
+      :param registry: The registry to use. It must outlive the graph.
+
+
+   .. cpp:function:: void annotate_spaces(TensorId id, std::vector<SpaceId> spaces)
+
+      Annotate a registered tensor's axes with the index spaces they range over.
+
+      Annotation is a declaration, so it is checked here, once, rather than on any path that
+      later reads it. Annotate before capturing the operations that use the tensor: capture
+      reads the annotation off the handle to bind the letters of each contraction, and an
+      annotation added afterwards does not reach nodes that are already recorded.
+
+      :param id: The tensor to annotate.
+      :param spaces: One space per axis, in axis order. Pass an empty vector to clear the annotation. Every axis must name a real space; to leave one axis unannotated, see ``annotate_space_axis``.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :throws std::invalid_argument: if the count differs from the tensor's rank, or if any id is invalid or does not resolve in ``space_registry``.
+
+
+   .. cpp:function:: void annotate_space_axis(TensorId id, std::size_t axis, SpaceId space)
+
+      Annotate ONE axis, leaving the others as they are.
+
+      ``annotate_spaces`` takes THE COMPLETE annotation and rightly refuses a hole in it: a
+      caller handing over a whole vector has said something about every axis, and an invalid id
+      in one slot is far more likely a mistake than an intention. This is how the hole is made
+      deliberately, one axis at a time, for a tensor that mixes axes over a space with axes
+      whose extent is a fixed number meaning nothing chemically - a DIIS history depth beside a
+      pair of orbital indices. Axes nobody has named stay unannotated, which every reader of
+      the annotation already handles per axis.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to annotate.
+      :param axis: Which axis.
+      :param space: The space that axis ranges over.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :throws std::invalid_argument: if ``axis`` is past the tensor's rank, or if ``space`` is invalid or does not resolve in ``space_registry``.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void annotate_spaces(const TensorType &tensor, std::vector<SpaceId> spaces)
+
+      Annotate a tensor's axes, addressing it by the caller's tensor object.
+
+      The by-object form of ``annotate_spaces(TensorId, std::vector<SpaceId>)``, mirroring
+      ``rebind``'s pair of overloads. A tensor the graph has not seen yet is registered here,
+      exactly the way capture would register it (storage adopted into a graph-owned stand-in,
+      filed under the caller's object as well), so annotating before the first capture that uses
+      the tensor costs it none of the ownership guarantees capture would have given it.
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to annotate.
+      :param spaces: One space per axis, in axis order.
+      :throws std::invalid_argument: if the count differs from the tensor's rank, or if any id is invalid or does not resolve in ``space_registry``.
+
+
+   .. cpp:function:: const std::vector<SpaceId> & tensor_spaces(TensorId id) const
+
+      The index spaces annotated on a registered tensor's axes.
+
+      :param id: The tensor to read.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :returns: One space per axis, or an empty vector when the tensor carries no annotation.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> const std::vector<SpaceId> & tensor_spaces(const TensorType &tensor) const
+
+      The index spaces annotated on a tensor's axes, addressing it by the caller's object.
+
+      The read counterpart of ``annotate_spaces(TensorType const &, std::vector<SpaceId>)``, and
+      deliberately NOT its mirror image: reading is const and registers nothing. A tensor the
+      graph does not know has no annotation to report and no handle to put one on, and saying so
+      is more useful than silently adopting its storage on a read.
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to read.
+      :throws std::out_of_range: if this graph has never seen that tensor.
+      :returns: One space per axis, or an empty vector when the tensor carries no annotation.
+
+
+   .. cpp:function:: void annotate_tag(TensorId id, ProvenanceTag tag)
+
+      Declare what a tensor IS, by name.
+
+      Index spaces say how big a tensor's axes are; this says what the tensor is, which is the
+      question a pass that wants to RECOGNIZE something has to ask. ``DeltaElimination`` looks
+      for ``provenance_identity``; a factorization provider will look for its own name.
+
+      The vocabulary is open and unvalidated on purpose, because the set of things worth
+      recognizing grows with the passes that recognize them. The cost is real and worth stating:
+      a misspelled name is a tag nothing matches, and the only symptom is a pass that quietly
+      finds no candidates. A pass is expected to report that through its skip tally rather than
+      to stay silent.
+
+      Attributes are sorted on the way in, so two tags built by setting the same keys in a
+      different order compare equal and a saved graph's bytes do not depend on call order.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to tag.
+      :param tag: The tag. An empty name clears any tag the tensor carried.
+      :throws std::out_of_range: if no tensor with that id is registered.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void annotate_tag(const TensorType &tensor, ProvenanceTag tag)
+
+      Declare what a tensor is, addressing it by the caller's tensor object.
+
+      The by-object form, registering the tensor if the graph has not seen it, exactly as
+      ``annotate_spaces(TensorType const &, ...)`` does and for the same reason.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to tag.
+      :param tag: The tag.
+
+
+   .. cpp:function:: const ProvenanceTag & tensor_tag(TensorId id) const
+
+      What a registered tensor is declared to be.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to read.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :returns: The tag, whose ``ProvenanceTag::name`` is empty for an untagged tensor.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> const ProvenanceTag & tensor_tag(const TensorType &tensor) const
+
+      What a tensor is declared to be, addressing it by the caller's object.
+
+      Reading is const and registers nothing, which is the same asymmetry
+      ``tensor_spaces`` has against its writer and for the same reason.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to read.
+      :throws std::out_of_range: if this graph has never seen that tensor.
+      :returns: The tag, empty-named when untagged.
+
+
+   .. cpp:function:: void annotate_backing(TensorId id, TensorBacking backing)
+
+      Declare that a tensor's data lives in storage the graph reads at each replay.
+
+      The tensor becomes a read-only input whose elements the caller never holds. Materialization
+      fills it whole from the backing before its first reader, at every replay, so a graph that
+      reads a backed tensor is correct with no other pass; a pass that streams it instead reads
+      it a slab at a time and the whole tensor is never allocated. A node that writes it is an
+      error that ``verify`` reports, since the write would reach the copy in memory and never
+      the storage.
+
+      The backing is kept by a saved graph by kind and location and rebuilt at load through the
+      kind's registered ``BackingKind``. A backed tensor is not part of the graph's interface:
+      it has no manifest entry, and so nothing to bind.
+
+      Separate from ``annotate_tag``, and a tensor may carry both: a tag says what the tensor is,
+      a backing where it lives.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor.
+      :param backing: The storage, built by the module that knows it.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :throws std::invalid_argument: when the tensor is not a deferred, owning, dense tensor; when it is declared as an intermediate rather than an input; when its extents or element type differ from the backing's; when it already carries a backing; or when the backing has no reader.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void annotate_backing(const TensorType &tensor, TensorBacking backing)
+
+      Declare a tensor's backing, addressing it by the caller's tensor object.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor, declared on this graph and still deferred.
+      :param backing: The storage.
+
+
+   .. cpp:function:: std::optional<TensorBacking> tensor_backing(TensorId id) const
+
+      The storage a registered tensor is backed by.
+
+      Asks this graph's handle only. A loop body's handle for a parent's backed tensor carries
+      none (see ``TensorHandle::backing``); resolve it through the enclosing graph.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to read.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :returns: The backing, or nothing for a tensor this graph's handle carries none for.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> std::optional<TensorBacking> tensor_backing(const TensorType &tensor) const
+
+      The storage a tensor is backed by, addressing it by the caller's object.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to read.
+      :throws std::out_of_range: if this graph has never seen that tensor.
+      :returns: The backing, or nothing.
+
+
+   .. cpp:function:: std::optional<std::size_t> space_extent(SpaceId space) const noexcept
+
+      The extent this graph has learned for ``space``, if it knows one.
+
+      Learned, not declared: ``annotate_spaces`` on a tensor whose dims are concrete says how
+      big that space is on this problem, so the graph records it rather than making the caller
+      repeat it. Two annotated axes over one space that disagree leave the space UNPINNED, which
+      is not an error - a PNO domain legitimately has a different extent per pair - but it does
+      mean a space-typed dimension cannot be sized from it.
+
+      .. seealso::
+
+         declare_zero_runtime_tensor(std::string, std::vector<SpaceDim>, bool)
+
+      .. versionadded:: 2.0.0
+
+      :param space: The space to ask about.
+      :returns: The extent, or an empty optional when no annotated tensor has pinned it or when two of them disagree.
+
+
+   .. cpp:function:: std::optional<std::vector<int>> space_tiling(SpaceId space) const
+
+      How ``space`` is canonically cut up, if this graph has been told.
+
+      A tiled program usually cuts one space the same way everywhere - every occupied axis in a
+      tiled CC lands on the same block boundaries - so the partition is worth saying ONCE, at
+      the space, instead of at every tensor that has such an axis. Retiling is then one edit
+      rather than one per declaration.
+
+      Unlike ``space_extent`` this is never learned: a tensor's tiling is a property of that
+      tensor, and taking the first one seen as canonical would silently make one scratch
+      buffer's layout everyone else's.
+
+      .. seealso::
+
+         pin_space_tiling
+
+      .. versionadded:: 2.0.0
+
+      :param space: The space to ask about.
+      :returns: The tile sizes, or an empty optional when none was stated or two statements disagreed.
+
+
+   .. cpp:function:: void pin_space_tiling(SpaceId space, std::vector<int> tile_sizes)
+
+      State how ``space`` is cut up, for every tiled axis that ranges over it.
+
+      Also pins the extent to the sum, because a partition states one: a space cut into
+      ``{2,2}`` measures 4, and leaving those two facts able to disagree would be a bug waiting
+      to happen.
+
+      .. versionadded:: 2.0.0
+
+      :param space: The space.
+      :param tile_sizes: The partition. Empty clears it.
+      :throws std::invalid_argument: If ``space`` is invalid, if any tile is not positive, or if the tiles sum to something other than an extent already known for ``space``.
+
+
+   .. cpp:function:: void pin_space_extent(SpaceId space, std::size_t extent)
+
+      State what ``space`` measures on this problem, rather than waiting to learn it.
+
+      For the graph whose first tensor over a space is the one being declared, so there is
+      nothing to have learned from yet. A later disagreeing annotation still unpins the space.
+
+      .. versionadded:: 2.0.0
+
+      :param space: The space.
+      :param extent: Its extent. Zero clears whatever was known.
+
+
+   .. cpp:function:: void annotate_dims(TensorId id, std::vector<std::string> symbols)
+
+      Declare which of a tensor's extents a ``bind`` may move, and which move together.
+
+      The extent counterpart of ``annotate_spaces``, and what makes a captured graph valid
+      for a family of problem sizes rather than for the one geometry it was captured at.
+      ``rebind`` rejects any dim mismatch, which is right for a same-problem pointer swap
+      and fatal for cross-problem reuse; a symbol is how a caller says "this axis is
+      ``nv``, whatever ``nv`` turns out to be next time".
+
+      **Symbol-space ties**
+
+      When an annotated axis also carries a ``annotate_spaces`` annotation, the pair
+      ``(symbol, space)`` is recorded. One symbol tied to two different spaces anywhere in
+      one graph is a contradiction - ``nv`` cannot be both the virtual space and the
+      auxiliary basis - and is refused here, where both spaces are still in hand, rather
+      than surfacing as an unsolvable bind. The tie is recorded from either side, so
+      annotating spaces after dims catches it too.
+
+      .. seealso::
+
+         bind
+
+      .. seealso::
+
+         symbol_spaces
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to annotate.
+      :param symbols: One entry per axis, in axis order. The empty string leaves an axis LITERAL (a bind must match it exactly). Any other string names a symbol: every axis in this graph carrying that symbol has one extent, and a bind solves it. A ``"ragged:<space>"`` spelling (see ``make_ragged_symbol``, or use ``annotate_ragged_dim``) marks an axis whose extent differs per instance. Pass an empty vector to clear the annotation.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :throws std::invalid_argument: if the count differs from the tensor's rank; if a ragged symbol names a space ``space_registry`` cannot resolve; or if a symbol is already tied to a DIFFERENT index space elsewhere in this graph.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void annotate_dims(const TensorType &tensor, std::vector<std::string> symbols)
+
+      Declare a tensor's symbolic extents, addressing it by the caller's tensor object.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to annotate. Registered here if the graph has not seen it, exactly as ``annotate_spaces`` does.
+      :param symbols: One entry per axis; see ``annotate_dims(TensorId, std::vector<std::string>)``.
+
+
+   .. cpp:function:: void annotate_ragged_dim(TensorId id, std::size_t axis, std::string_view space_name)
+
+      Declare one axis ragged over an index space.
+
+      One symbol per space is not enough for the workload that motivates symbolic extents:
+      a PNO domain has a different virtual extent per pair, and a block or tiled tensor
+      carries per-block dims, so no single ``nv`` describes them. A ragged axis says so
+      explicitly instead of pretending otherwise - it constrains nothing across slots, and
+      a bind accepts whatever extent each bound instance carries.
+
+      Sugar over ``annotate_dims``: it writes ``make_ragged_symbol`` into ``axis`` of the
+      tensor's existing symbol vector, creating an all-literal one first if the tensor has
+      none.
+
+      .. seealso::
+
+         bind_ragged_extents
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to annotate.
+      :param axis: Which axis is ragged.
+      :param space_name: The index space the axis is ragged over.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :throws std::invalid_argument: if ``axis`` is past the tensor's rank, or if ``space_name`` does not resolve in ``space_registry``.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void annotate_ragged_dim(const TensorType &tensor, std::size_t axis, std::string_view space_name)
+
+      Declare one axis ragged, addressing the tensor by the caller's object.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to annotate.
+      :param axis: Which axis is ragged.
+      :param space_name: The index space the axis is ragged over.
+
+
+   .. cpp:function:: const std::vector<std::string> & tensor_dim_symbols(TensorId id) const
+
+      The symbolic extent declaration on a registered tensor's axes.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The tensor to read.
+      :throws std::out_of_range: if no tensor with that id is registered.
+      :returns: One entry per axis, or an empty vector when every axis is literal.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> const std::vector<std::string> & tensor_dim_symbols(const TensorType &tensor) const
+
+      The symbolic extent declaration on a tensor's axes, addressed by the caller's object.
+
+      The extent counterpart of ``tensor_spaces(TensorType const &)``, and const in the same way:
+      reading registers nothing.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to read.
+      :throws std::out_of_range: if this graph has never seen that tensor.
+      :returns: One entry per axis, or an empty vector when every axis is literal.
+
+
+   .. cpp:function:: const std::unordered_map<std::string, SpaceId> & symbol_spaces() const noexcept
+
+      Every ``(symbol, space)`` tie this graph's annotations have established.
+
+      Read by a serializer (the tie is part of what a saved manifest says) and by
+      ``annotate_dims`` itself, which refuses a second, different tie for one symbol.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The map, empty when no annotated axis carries both a symbol and a space.
+
+
+   .. cpp:function:: void * live_tensor_ptr(TensorId id) const noexcept
+
+      The tensor object a node may legally dereference at EXECUTE time.
+
+      Use this, never ``tensor(id).tensor_ptr``, in any lambda a pass bakes
+      into ``Node::execute``.
+
+      ``TensorHandle::tensor_ptr`` is the handle's identity, and for an adopted
+      operand it is usually the stand-in the graph keeps alive, but not always:
+      an adopted tensor some graph owns, or one whose type has no liveness
+      token, keeps the caller's address as its identity while the graph reads
+      it through the stand-in (``TensorHandle::owner``). Every built-in node
+      reaches its operands through ``TensorSlot::ptr``; a pass that rewrites a
+      node into an ``OpKind::Custom`` closure over ``tensor_ptr`` can read a
+      tensor the caller has destroyed, silently, with a zeroed intermediate as
+      the usual symptom.
+
+      :param id: The tensor identifier. A redirected id (see ``redirect_slot``) answers with the tensor its slot was redirected to, since that is the storage its slot reads; the id's own object is the merged-away duplicate that nothing writes any more.
+      :returns: The stand-in when capture adopted one, otherwise the registered pointer. Null if no tensor with that id exists.
+
+
+   .. cpp:function:: void execute()
+
+      Execute all nodes in topological order.
+
+      Performs topological sorting (if not already sorted), validates that all
+      tensor pointers are still alive, then executes each node's lambda in order.
+
+      Can be called multiple times to replay the same computation sequence.
+      All tensors must have the same dimensions as at capture time.
+
+      :throws std::runtime_error: If a tensor appears to have been destroyed (use-after-free detected).
+      :throws std::runtime_error: If a cycle is detected during topological sort.
+
+
+   .. cpp:function:: void execute(Executor &executor)
+
+      Execute using a custom executor.
+
+      Performs topological sorting and validation, then delegates
+      node execution to the provided executor.
+
+      .. note::
+
+         The GIL is released for the duration of execution. The parallel
+         executors run nodes on worker threads; any node that invokes a
+         Python callback (e.g. element_transform) re-acquires the GIL from
+         its worker. Holding the GIL here would deadlock that re-acquire
+         against the waiting main thread.
+
+      :param executor: The execution backend (e.g., OpenMPExecutor).
+
+
+   .. cpp:function:: void set_executor(std::shared_ptr<Executor> executor)
+
+      Choose the executor plain execute() uses for THIS graph.
+
+      The stored executor applies wherever this graph is executed without an
+      explicit executor argument - most importantly loop bodies, which are
+      replayed by the loop node via the argument-less execute() and had no
+      other way to run on a parallel backend:
+
+      .. code-block:: py
+
+         body = g.add_loop("iter", 100, cont)
+         body.set_executor(cg.DataflowExecutor())   # replays overlap independent nodes
+
+      Pass nullptr/None to restore the built-in sequential path. The custom
+      executors dispatch every node's CPU lambda directly, so graphs with
+      GPU-placed nodes should keep the default (it performs the device
+      shadow bookkeeping; the executors do not).
+
+      :param executor: Shared ownership of the executor, or nullptr to reset.
+
+
+   .. cpp:function:: const std::shared_ptr<Executor> & executor() const
+
+      The executor plain execute() will use, or nullptr for the built-in sequential path.
+
+
+   .. cpp:function:: bool apply(PassManager &pm)
+
+      Apply a PassManager (ordered sequence of passes) to the graph.
+
+      Runs all passes in the PassManager in order.
+
+      .. code-block:: text
+
+         auto pm = cg::PassManager::create_default();
+         graph.apply(pm);
+
+      :param pm: The pass manager to run.
+      :returns: True if any pass modified the graph.
+
+
+   .. cpp:function:: bool optimize()
+
+      Optimize with the full default pipeline (OptLevel::O2).
+
+      Compiler-style front door over PassManager: builds the pipeline, runs
+      it, and records a human-readable summary retrievable via explain().
+
+      .. code-block:: text
+
+         graph.optimize();
+         std::cout << graph.explain();
+
+
+   .. cpp:function:: bool optimize(OptLevel level)
+
+      Optimize at a specific level (O0 none, O1 cleanup, O2 full).
+
+
+   .. cpp:function:: const std::string & explain() const
+
+      What the last optimize() did, as a human-readable report.
+
+      Node counts before/after plus the per-pass highlights (chains
+      restructured with estimated speedups, buffers merged in place, Frees
+      inserted, arena size vs the buffers it hosts, batches formed and
+      profitability-gate skips). Empty until optimize() has run.
+
+
+   .. cpp:function:: const std::vector<Decision> & decisions() const
+
+      What the last optimize() decided, as records: the ones ``explain`` prints from.
+
+      .. versionadded:: 2.0.0
+
+      :returns: Every pass's decisions, in pipeline order. Empty until optimize() has run.
+
+
+   .. cpp:function:: template <typename PassType, typename... Args> std::pair<bool, PassType> apply(Args &&... args)
+
+      Apply a single pass by type (convenience).
+
+      Creates the pass, runs it, and returns a pair of (modified, pass).
+      Useful for single-pass application and retrieving analysis results.
+      It runs through a PassManager (see ``apply_single_pass``), so it gets
+      every preparation and check a pipeline gives its passes, and a pass that
+      opts into sub-graph recursion reaches loop bodies and branches exactly as
+      it does there.
+
+      Constructor arguments are forwarded, mirroring PassManager::add, so a
+      cost-model pass can be priced against an explicit profile.
+
+      .. code-block:: text
+
+         auto [modified, mem] = graph.apply<cg::passes::MemoryPlanning>();
+         mem.print_report(std::cout);
+
+      :tparam PassType: The pass class.
+      :tparam Args: Types of the pass's constructor arguments.
+      :param args: Arguments forwarded to the pass's constructor.
+      :returns: Pair of (was_modified, pass_instance).
+
+
+   .. cpp:function:: void validate_shapes_at_capture() const
+
+      Validate that tensor dimensions are compatible between connected nodes.
+
+      For each node, checks that input tensor ranks match the expected number
+      of indices (for Einsum nodes). Called automatically at end of capture.
+
+      :throws std::runtime_error: If a shape mismatch is detected.
+
+
+   .. cpp:function:: void print_timing_report(std::ostream &os) const
+
+      Print a timing report from the last execute() call.
+
+      Shows per-node wall-clock times sorted by duration (longest first).
+      Only populated after calling execute().
+
+      :param os: Output stream.
+
+
+   .. cpp:function:: const std::vector<NodeTiming> & timing_report() const
+
+      Access the timing data from the last execute() call. Labels are
+      resolved here (cached until the next recorded sample), not on the
+      replay path.
+
+      :returns: One entry per node the last replay ran, in run order.
+
+
+   .. cpp:function:: const RunMetrics & last_run() const
+
+      What the last completed replay did, measured as it ran.
+
+      Assembled when asked for, from counts the replay kept: nodes add their times as every
+      executor already records them, a backing counts its own reads and writes on whichever
+      thread runs them, and lifecycle nodes count what they allocate and free.
+
+      .. seealso::
+
+         RunMetrics
+
+      .. versionadded:: 2.0.0
+
+      :returns: Time per node (this graph's and every body's, a loop body's summed over its iterations), bytes and calls per backing, and the most graph-managed memory held at once. Empty before the first replay; a replay that threw leaves the one before.
+
+
+   .. cpp:function:: std::uint64_t resident_bytes() const
+
+      The bytes a replay holds from its start to its end that no lifecycle node of it allocates or frees.
+
+      The other half of the program's memory beside ``RunMetrics::peak_bytes``, which counts
+      what the lifecycle nodes hold. Their sum is what the budget check compares with
+      --einsums:max-memory.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The bytes of every tensor this graph and its bodies read or write that is in memory for the whole replay: the caller's tensors, and any intermediate given storage outside a Materialize node. Each tensor once; views and tensors a Materialize or Free node manages are left out. A backed tensor is read and written through buffers those nodes manage, so its stored bytes are not counted.
+
+
+   .. cpp:function:: void share_run_context(Graph &child)
+
+      Make ``child``, and every graph under it, share this graph's run context.
+
+      Called where a body is attached, so its lifecycle nodes and its replays count into the
+      replay of the graph that holds it.
+
+      .. versionadded:: 2.0.0
+
+      :param child: A body this graph holds.
+
+
+   .. cpp:function:: void set_observer(std::shared_ptr<ExecutionObserver> observer)
+
+      Attach ``observer`` to every replay of this graph and of every body under it.
+
+      The observer belongs to the graph's tree, so attaching it to a body attaches it to the
+      graph that holds the body too. Attach between replays, not during one.
+
+      .. seealso::
+
+         ExecutionObserver
+
+      .. seealso::
+
+         EventLog
+
+      .. versionadded:: 2.0.0
+
+      :param observer: What hears the replays; null detaches the one attached.
+
+
+   .. cpp:function:: std::vector<std::uint32_t> node_zone_ids()
+
+      The interned profiler zone name of every node, in node order, for an executor that opens a zone per node while the profiler records.
+
+      :returns: One id per node: what the built-in loop names its node zones with, built once per change of the node list rather than interned per node per replay.
+
+
+   .. cpp:function:: const std::shared_ptr<detail::RunContext> & run_context() const noexcept
+
+      The run context this graph and its bodies share.
+
+      :returns: The context, never null.
+
+
+   .. cpp:function:: void record_node_timings(std::vector<NodeTimingSample> &&samples)
+
+      Record a run's per-node timings, under a single lock acquisition. A custom Executor calls
+      this after running the graph so that print_timing_report() reports its run.
+
+
+   .. cpp:function:: void clear_timing_report()
+
+      Clear timing data (called at the start of execute()).
+
+
+   .. cpp:function:: void topological_sort()
+
+      Sort nodes in topological order based on data dependencies.
+
+      Uses Kahn's algorithm. Edges are inferred from tensor IDs:
+      if node A writes tensor T and node B reads tensor T (with A before B
+      in the original order), then A must execute before B.
+
+      :throws std::runtime_error: If a dependency cycle is detected.
+
+
+   .. cpp:function:: void verify_level_independence() const
+
+      Throw if any execution level holds two nodes that touch overlapping storage.
+
+      The invariant a level-scheduling executor runs on: everything in one
+      level is launched together, so nothing in one level may conflict. A
+      violation is not a slow schedule, it is a data race that changes the
+      answer from run to run while every serial replay stays correct.
+
+      **Deliberately does not share the hazard scan's alias resolution.** This
+      exists because a scan whose owner lookup silently truncated put two
+      accesses to one buffer under different owners, found no conflict, and
+      let the executor run them together; a checker that resolved owners the
+      same way would have agreed with it. So storage is grouped here by
+      recomputed byte-span overlap, and element-level disjointness is derived
+      fresh from each handle's pointer and strides rather than read off the
+      `aliases` link.
+
+      Conservative where it cannot prove disjointness, so it can report a
+      conflict that is not one; it never misses a real one. That is the right
+      direction for a debug check, and the reason it is not on in release
+      builds.
+
+      One exception to "everything an output names is written": a `View` node
+      writes its slice handle's dims, strides and data pointer, not the
+      parent's elements, so it is modeled as a READER of the region it
+      describes plus a writer of that handle. Two views of one buffer are
+      therefore independent however their slices overlap, while a node that
+      uses the slice, or a second node binding the same handle, still
+      conflicts with the bind.
+
+      Scope: it checks LEVELS, so it covers the level schedulers exactly.
+      Two nodes the dataflow executor may still overlap can sit in different
+      levels, so a clean run here is not a proof for that executor.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::runtime_error: naming both nodes and the storage they share.
+
+
+   .. cpp:function:: void print_dot(std::ostream &os) const
+
+      Export the graph in GraphViz DOT format.
+
+      Tensor nodes are drawn as rectangles, operation nodes as ellipses.
+      Edges show data flow from tensors to operations and back.
+
+      .. code-block:: text
+
+         std::ofstream f("graph.dot");
+         graph.print_dot(f);
+         // Then: dot -Tpng graph.dot -o graph.png
+
+      :param os: Output stream to write DOT content to.
+
+
+   .. cpp:function:: void print_summary(std::ostream &os) const
+
+      Print a human-readable summary of the graph.
+
+      Lists all nodes with their operation kind, label, and input/output tensor names.
+
+      :param os: Output stream.
+
+
+   .. cpp:function:: std::string to_dot() const
+
+      The GraphViz text ``print_dot`` writes, as a string.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The DOT source.
+
+
+   .. cpp:function:: std::string summary() const
+
+      The summary ``print_summary`` writes, as a string.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The summary text.
+
+
+   .. cpp:function:: std::string to_json() const
+
+      Serialize the graph structure as a JSON string.
+
+      Produces a JSON object with:
+
+      - "name": graph name
+      - "tensors": array of {id, name, rank, dims, element_size, dtype, is_intermediate}
+      - "nodes": array of {id, kind, label, inputs, outputs, timing_ms}
+      - "edges": array of {from_node, to_node, tensor_id} (data dependency edges)
+
+      Used by the profile viewer to render an interactive node graph.
+      Can be called at any point, edges are computed on-the-fly from node
+      inputs/outputs, so this works both before and after execute().
+
+      :returns: JSON string representation of the graph structure.
+
+
+   .. cpp:function:: std::vector<SerializabilityBlocker> serializability_report() const
+
+      The nodes that stand between this graph and being saved, with the reason for each.
+
+      A graph can be written to a file only when every node can be rebuilt from
+      ``(kind, dtype, rank, descriptor, operand ids)`` - see
+      ``build_executor``. Conversion is per op kind and deliberately
+      incremental, so "can this graph be saved" has an actionable answer rather
+      than a boolean: this names each node that cannot, by id and label, and
+      says what blocks it.
+
+      .. note::
+
+         Recursive: a ``Loop`` body and each ``Conditional`` branch is a
+         separate sub-graph and is descended into, with
+         ``SerializabilityBlocker::subgraph_path`` naming the path that
+         reaches each blocker. The earlier flat version was justified by
+         Loop and Conditional always blocking on their own closure-shaped
+         predicates, which made a body unreachable-but-unreported an
+         impossibility. Making both predicates data (``PredExpr``
+         and ``BoundExpr``), so a clean control-flow node over a body full
+         of closures now reports clean, and the justification is gone.
+
+      .. seealso::
+
+         reconstruction_blocker for the per-node verdict.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per blocking node, in node order, a control-flow node's own verdict immediately before its body's. Empty means the graph and everything below it is fully reconstructible.
+
+
+   .. cpp:function:: std::uint64_t content_hash() const
+
+      A hash of this graph's STRUCTURE, and of nothing else.
+
+      The digest of the canonical IR bytes with the provenance block removed:
+      schema version, graph name, manifest, index spaces, parameters, gate-flag
+      arrays, tensors, slot redirects and nodes. Two captures of the same
+      program hash equal however they were produced and whoever wrote them; any
+      structural difference - a changed prefactor, a reordered node, a renamed
+      slot - changes the hash.
+
+      .. note::
+
+         Provenance-independent BY CONSTRUCTION rather than by convention:
+         the hash is taken over the same object the writer emits, minus one
+         key, so a field can only enter the hash domain by being put in the
+         structure sections.
+
+      .. seealso::
+
+         save_graph
+
+      .. versionadded:: 2.0.0
+
+      :throws std::invalid_argument: When the graph cannot be written at all (see ``serializability_report``), because a structure that has no canonical form has no hash either. The message carries the report.
+      :returns: The digest.
+
+
+   .. cpp:function:: void name_gate_flags(std::string name, const GateFlags &flags)
+
+      Give a ``GateFlags`` array a name this graph can refer to it by.
+
+      A ``PredExpr::FlagTest`` holds the shared buffer itself and nothing else,
+      which is exactly right at run time and unwritable to a file: a
+      ``shared_ptr`` has no identity that survives a restart. Naming the array
+      is the minimal thing that gives it one, and it is a GRAPH-level table
+      rather than a field on the predicate so that many conditionals gating on
+      one array record one name between them.
+
+      An unnamed array is fully legal and simply cannot be saved:
+      ``save_graph`` refuses such a node, naming it and pointing here.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The name. Must not be empty.
+      :param flags: The array to name. Shared, not copied.
+      :throws std::invalid_argument: If ``name`` is empty, if ``name`` is already bound to a DIFFERENT array, or if ``flags`` is already registered under a different name. Both directions have to be unique for the name to identify the array in a saved file.
+
+
+   .. cpp:function:: void name_gate_flags(std::string name, std::shared_ptr<std::vector<std::uint8_t>> buffer)
+
+      Name a gate-flag array given its shared buffer directly.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The name; see ``name_gate_flags(std::string, GateFlags const &)``.
+      :param buffer: The array to name.
+
+
+   .. cpp:function:: const std::vector<std::pair<std::string, std::shared_ptr<std::vector<std::uint8_t>>>> & named_gate_flags() const noexcept
+
+      Every named gate-flag array, in name order.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The (name, buffer) pairs. Read by the serializer, and by a caller enumerating what a loaded graph expects to be told.
+
+
+   .. cpp:function:: std::string gate_flag_name(const std::shared_ptr<std::vector<std::uint8_t>> &buffer) const
+
+      The name ``buffer`` was registered under.
+
+      .. versionadded:: 2.0.0
+
+      :param buffer: The array to look up.
+      :returns: The name, or an empty string when the array is unnamed.
+
+
+   .. cpp:function:: GateFlags gate_flags(std::string_view name) const
+
+      The named gate-flag array, as a handle a caller can write through.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The name it was registered under.
+      :throws std::invalid_argument: When no array carries that name; the message lists the names that do.
+      :returns: A handle sharing the graph's buffer, so a write reaches the nodes that gate on it.
+
+
+   .. cpp:function:: const std::string & name() const
+
+   .. cpp:function:: void set_pipeline_name(const std::string &n)
+
+   .. cpp:function:: void set_workspace_name(const std::string &n)
+
+   .. cpp:function:: void set_stage_name(const std::string &n)
+
+   .. cpp:function:: void set_stage_type(const std::string &t)
+
+   .. cpp:function:: void set_stage_index(int idx)
+
+   .. cpp:function:: void adopt(std::function<void ()> deleter)
+
+      Hand a custom cleanup function to the graph. Used by capture-time
+      helpers (e.g., ``cg::view``) that allocate auxiliary objects on the
+      heap whose lifetime must match the graph's. The deleter runs when
+      the graph is destroyed.
+
+
+   .. cpp:function:: template <typename T> T * own(std::unique_ptr<T> object)
+
+      Take ownership of ``object`` for the graph's lifetime and return it. Unlike a raw ``new``
+      followed by ``adopt``, nothing can leak between the allocation and the hand-over.
+
+
+   .. cpp:function:: void set_params_ptr(std::shared_ptr<ParamTable> params)
+
+      Set/read the ``ParamTable`` used by the View executor and
+      ``BoundExpr::Param`` resolution. Pipeline plumbs its own table
+      down to each stage Graph at construction. Standalone graphs get
+      a default empty table; callers can replace it via
+      ``set_params_ptr`` if they want to share with another scope.
+
+      A loop body, a conditional branch and a setup body are scopes of the
+      graph that holds them, not separate ones: each is created holding this
+      graph's table, and ``set_params_ptr`` hands the new table to every graph
+      this one contains. A node already captured keeps the table it captured,
+      so set the table before capturing into the graph.
+
+
+   .. cpp:function:: const std::shared_ptr<ParamTable> & params_ptr() const
+
+   .. cpp:function:: int stage_index() const
+
+   .. cpp:function:: const std::string & pipeline_name() const
+
+   .. cpp:function:: const std::string & workspace_name() const
+
+   .. cpp:function:: const std::string & stage_name() const
+
+   .. cpp:function:: const std::string & stage_type() const
+
+   .. cpp:function:: const std::vector<Node> & nodes() const
+
+   .. cpp:function:: std::vector<Node> & nodes()
+
+   .. cpp:function:: bool sync_destination_inputs()
+
+      Make every node's input list follow the destination rule (see DestinationRead.hpp), in this graph and every descendant.
+
+      The PassManager calls it after each pass, because a pass may rewrite a node's destination
+      prefactor in place and leave the input list describing the old one.
+
+      :returns: True when any node's inputs changed.
+
+
+   .. cpp:function:: size_t num_nodes() const
+
+   .. cpp:function:: size_t num_tensors() const
+
+   .. cpp:function:: size_t erase_nodes(const std::vector<bool> &remove)
+
+      Drop nodes flagged for removal, preserving the survivors' order.
+
+      ``remove`` is indexed by node position: position ``i`` is erased when
+      ``i`` < remove.size() && remove[i]. Indices at or past ``remove.size()``
+      are always kept, so a caller may size the mask to a prefix (e.g. only the
+      pre-existing nodes before it appended new ones) and keep the tail.
+
+      Encapsulates the "rebuild a filtered node vector" idiom shared by the
+      mutating passes. It does NOT resort or touch the sortedness flags: erasing
+      while preserving order keeps an existing valid topological order valid, so
+      a pass that only removed nodes should follow with mark_sorted(), while a
+      pass that also appended nodes should follow with topological_sort().
+
+      :returns: The number of nodes removed.
+
+
+   .. cpp:function:: void insert_node_groups(std::vector<std::pair<std::size_t, std::vector<Node>>> groups)
+
+      Splice groups of nodes into the list. Each entry inserts its nodes immediately BEFORE index ``first`` in the current numbering.
+
+      The counterpart to erase_nodes for the passes that build new nodes and
+      insert them at chosen positions. Applied in descending-position order
+      internally so earlier indices stay valid while later ones are spliced, so
+      callers pass positions in the ORIGINAL numbering and need not track shifts.
+      An "insert after node k" is expressed as position ``k+1``. Empty groups are
+      skipped. Marks the graph sorted (the caller vouches for the chosen order).
+
+
+   .. cpp:function:: size_t replace_nodes(const std::vector<bool> &remove, std::vector<std::pair<std::size_t, std::vector<Node>>> inserts)
+
+      Erase the flagged nodes and splice ``inserts`` into the gaps they leave.
+
+      The rewrite every reassociating pass performs: it walks the ORIGINAL node
+      list, marks the nodes it subsumes in ``remove``, and records replacement
+      groups against the positions it saw them at. Both are expressed in the
+      pre-erase numbering, which is the only numbering a pass that has not
+      mutated anything yet can speak. This does the translation once:
+
+      - ``remove`` is applied by ``erase_nodes`` (positions at or past its end are kept, so a mask sized to a prefix keeps the tail; a caller that appended Alloc nodes while planning relies on that),
+      - each insert position is shifted down by the number of erased nodes BELOW it, and
+      - the shifted groups go through ``insert_node_groups``, which splices each one immediately before its position.
+
+      The consequence worth stating once, because every caller depends on it:
+      when a group's own position IS erased, the shifted position lands exactly
+      where that node used to be, so the replacements take its place. When the
+      position is NOT erased (a pass that leaves a consumer standing and only
+      builds an operand for it), the shifted position still names that same
+      node, so the group lands directly ahead of it.
+
+      Leaves the graph marked sorted, as ``insert_node_groups`` does. A caller
+      that appended nodes out of order should follow with ``topological_sort``.
+
+      .. versionadded:: 2.0.0
+
+      :param remove: Removal mask in the pre-erase numbering.
+      :param inserts: (pre-erase position, nodes to splice before it) pairs.
+      :returns: The number of nodes erased.
+
+
+   .. cpp:function:: const std::unordered_map<TensorId, TensorId> & slot_redirects() const noexcept
+
+      Durable slot redirects, child id to the terminal id its slot resolves to.
+
+      Read-only access to the tensor registry (TensorId → TensorHandle map).
+
+      Read by the serializer. A redirect is not a derived cache: CSE merges a
+      duplicate by repointing the loser's SLOT and deliberately leaves the node
+      dataflow naming the loser, so this map is the only record that such a node
+      must read the winner's buffer.
+
+      .. seealso::
+
+         redirect_slot
+
+      .. versionadded:: 2.0.0
+
+      :returns: The map, empty on a graph no merge has rewritten.
+
+
+   .. cpp:function:: const std::unordered_map<TensorId, TensorHandle> & tensors_map() const
+
+   .. cpp:function:: std::unordered_map<TensorId, TensorHandle> & tensors_map()
+
+      Mutable access to the tensor registry (for testing / optimization passes).
+
+
+   .. cpp:function:: void for_each_subgraph(const std::function<void (Graph &)> &visitor)
+
+      Invoke ``visitor`` on each immediate child sub-graph.
+
+      Walks this graph's nodes and, for every control-flow node, hands the
+      visitor a mutable reference to each owned sub-graph:
+
+      - ``OpKind::Loop``         → ``LoopDescriptor::body``
+      - ``OpKind::Conditional``  → ``ConditionalDescriptor::then_branch`` and ``else_branch`` (when non-null)
+      - ``OpKind::Setup``        → ``SetupDescriptor::body``
+
+      Does not recurse into nested control flow, visitor must do its own
+      descent if it wants the whole sub-tree. The order of visits is the node
+      order in the parent graph (with then-branch visited before else-branch
+      for conditional nodes).
+
+      Used by optimization passes that need to look inside or run on
+      sub-graphs. PassManager::run() calls this when a pass overrides
+      ``OptimizerPass::recurse_into_subgraphs()`` to true.
+
+
+   .. cpp:function:: void for_each_subgraph(const std::function<void (const Graph &)> &visitor) const
+
+      Const overload of ``for_each_subgraph``. Visitor sees ``Graph const &``.
+
+
+   .. cpp:function:: void for_each_descendant(const std::function<void (Graph &)> &visitor)
+
+      Call ``visitor`` on every graph nested under this one, at any depth, parents first.
+
+      The recursive form of ``for_each_subgraph``, which visits one level. This graph itself is
+      not visited.
+
+      :param visitor: Called once per descendant graph.
+
+
+   .. cpp:function:: void for_each_descendant(const std::function<void (const Graph &)> &visitor) const
+
+      Const overload of ``for_each_descendant``. Visitor sees ``Graph const &``.
+
+
+   .. cpp:function:: void refresh_declared_symmetry()
+
+      Re-read the symmetry each tensor declares, in this graph and every graph under it.
+
+      A handle copies its tensor's symmetry when the tensor is registered, and a tensor the graph
+      declared is registered by the declaration, so a symmetry set on it afterwards would never be
+      seen. Every pass pipeline calls this before its first pass. A tensor that declares a
+      symmetry replaces its handle's; one that declares none leaves the handle's alone, since a
+      pass may have inferred it.
+
+
+   .. cpp:function:: void collect_subtree_referenced_ptrs(std::unordered_set<const void *> &out, bool *saw_unresolved) const
+
+      Collect the underlying tensor pointers referenced anywhere in this graph's descendant sub-graphs.
+
+      Walks every loop body / conditional branch (recursively) and inserts
+      each referenced tensor's ``TensorHandle::tensor_ptr`` into ``out``.
+      Does not include this graph's own node references, only its
+      descendants'.
+
+      Why pointers, not TensorIds: each Graph assigns its own TensorIds, so
+      the same underlying tensor used in a parent and in a nested body has
+      *different* ids in each map. The ``tensor_ptr`` is the stable identity
+      across graphs.
+
+      Used by passes that must treat a tensor consumed only by a nested
+      control-flow body as live, e.g. DeadNodeElimination, which would
+      otherwise eliminate the producer of a tensor that only a nested loop
+      reads (a Loop node does not list its body's tensor reads as inputs).
+
+      :param out: Set the referenced pointers are inserted into. Existing entries are kept.
+      :param saw_unresolved: Set to true (never cleared) when some reference in the subtree could not be resolved to a pointer, because the sub-graph's map has no entry for that id or the handle is an unattached shell. Such a reference contributes nothing to ``out``, so a caller reading ``out`` alone cannot tell "not referenced" from "could not tell". That distinction is harmless where a missed entry costs a missed rewrite, and unsafe where it would let two live buffers share storage, so a caller in the second group passes this and declines when it comes back true.
+
+
+   .. cpp:function:: std::pair<std::vector<TensorId>, std::vector<TensorId>> effective_io(const Node &node)
+
+      Effective (scheduling) inputs/outputs of a node.
+
+      For ordinary nodes this is just ``{node.inputs, node.outputs}``. For a
+      Loop or Conditional node, whose declared input/output lists are empty
+      because the body/branches are captured after the node is created, this
+      augments them with the tensors the *subtree* reads (→ inputs) and writes
+      (→ outputs), mapped from the subtree's buffer pointers back to this
+      graph's TensorIds. A Setup node carries those lists on itself (see
+      ``refresh_setup_io``), and the augmentation is then a no-op that agrees
+      with them rather than a second source for them.
+
+      Schedulers (``topological_sort`` and the Reorder pass) must use this
+      instead of the raw node lists, or a control-flow node has no dependency
+      edges and can be floated past a producer/consumer of a tensor its body
+      touches: silently reordering it relative to surrounding ops. The node's
+      own lists are left untouched so structural passes (e.g. DeadNodeElimination)
+      still see control-flow nodes as having no SSA outputs.
+
+      Not const: a buffer used *only* inside sub-graphs has no TensorId in this
+      (parent) graph, so it would be dropped from the mapping and two
+      control-flow nodes touching the same such buffer would get no edge between
+      them. To give those buffers a stable shared id this registers a handle for
+      them in the parent on first sight (idempotent; the orphan handle is
+      harmless: no parent node references it).
+
+
+   .. cpp:function:: std::pair<std::vector<TensorId>, std::vector<TensorId>> subtree_io(const Node &node)
+
+      The buffers a control-flow node's subtree reads and writes, as ids of THIS graph.
+
+      The subtree half of ``effective_io``, factored out because ``refresh_setup_io`` needs
+      the same answer and two derivations of one relation disagreeing is this module's
+      signature bug. Not const for the reason ``effective_io`` is not: a buffer named only
+      inside a body gets a parent handle minted for it on first sight.
+
+
+   .. cpp:function:: void refresh_setup_io()
+
+      Write each Setup node's own input/output lists from what its body touches.
+
+      A setup node is an ordinary node for the sort, for ``UsageAnalysis`` and for
+      ``passes::Reorder``: its outputs are the parent tensors its body writes (the fitted
+      factors, the records' tensors) and its inputs the parent tensors its body reads (the
+      fit copy of a tagged tensor, the collocation matrices, the metric). Carrying them means
+      every rule that asks "which node produces this buffer" gets the setup by the ordinary
+      answer instead of by a special case, which is what four position-based bugs in
+      ``passes::Materialization`` came down to.
+
+      The lists are DERIVED and refreshed rather than fixed at construction, because a body is
+      captured after ``add_setup`` returns and a pass may emit into one at any point: there
+      is no moment at which they could be final. This is called at the declaration points that
+      already say the node list may have moved (``topological_sort``, each pass in
+      ``PassManager::run``) and after the capturing ``add_setup`` overload closes its guard.
+      It is idempotent and costs a walk of the setup bodies.
+
+      A Loop or Conditional node is deliberately left alone. Its body runs a variable number
+      of times against its neighbours, so a pass reading its outputs as "produced once, here"
+      would be reading something false; a setup body runs at most once per bound problem,
+      which is exactly what an ordinary node's outputs mean.
+
+
+   .. cpp:function:: std::pair<std::span<const TensorId>, std::span<const TensorId>> effective_io_cached(const Node &node, EffectiveIoCache &cache)
+
+      See EffectiveIoCache. Span-returning fast path used by the hazard
+      scans and UsageAnalysis: ordinary nodes view their own I/O lists (no
+      copies), control-flow nodes memoize the subtree walk in ``cache``.
+
+
+   .. cpp:function:: TensorId resolve_alias(TensorId id) const
+
+      Resolve a TensorId through its alias chain to the owning buffer.
+
+      A view's ``TensorHandle::aliases`` points at its parent; this follows that
+      chain (bounded) and returns the underlying owner's id (or ``id`` unchanged
+      if it isn't a view). Any analysis that reasons about *which buffer* a node
+      reads/writes, scheduling (topological_sort, Reorder), liveness
+      (DeadNodeElimination), must resolve through this, or a write through a
+      view looks unrelated to a read of its parent.
+
+      The owning tensor of ``id``, following alias links to their root.
+
+      **The bound is a cycle detector, not a depth budget, and overrunning it
+      throws rather than returning.** That distinction is the whole of a bug
+      this cost a day of: the previous version gave up after a fixed 32 hops
+      and returned whatever mid-chain id it had reached, which is not a
+      conservative failure but a silent wrong answer. Two accesses to one
+      buffer resolve to different owners, the hazard scan finds no conflict
+      between them, and a threading executor runs them concurrently.
+      DLPNO-(T0) hit it with one scratch buffer shared by 40 triplets: the
+      schedule's widest level came out at exactly (triplets - 32), and the
+      energy came out somewhere different every run.
+
+      Every writer of ``aliases`` imposes a strict order - a view names its
+      parent, and ``link_alias_storage`` links only to a strictly larger (or
+      equal-size, lower-id) container - so a cycle is not constructible today
+      and this throw is unreachable. It is here because the failure it
+      replaces was invisible, and a chain longer than the tensor count means
+      one of those writers has stopped being ordered.
+
+      Chains stay short in practice: ``link_alias_storage`` path-compresses
+      to the root, so only genuinely nested views (a view of a view of a
+      view) walk more than one hop.
+
+
+   .. cpp:function:: TensorId buffer_of(TensorId id) const
+
+      The tensor whose storage ``id`` actually reads and writes.
+
+      Two relations make one buffer answer to several ids: a view names its parent
+      (``resolve_alias``), and a slot redirect sends a merged-away tensor to the survivor's
+      storage (``redirect_slot``). This follows both, alternately, until neither moves, so every
+      id over one buffer answers the same. Any question of the form "is this the same data",
+      "who else writes this" or "who reads this before I change it" is a question about buffers
+      and asks this; ``resolve_alias`` alone misses a redirect, which is how a pass counted one
+      reader of a tensor two nodes read and fused a transpose into a caller's input.
+
+      :param id: A tensor id of this graph.
+      :returns: The id of the tensor that owns ``id's`` storage, or ``id`` itself.
+
+
+   .. cpp:function:: const DependencyInfo & dependencies() const
+
+      Access dependency info (populated by topological_sort()).
+
+
+   .. cpp:function:: size_t schedule_edge_count()
+
+      How many hazard edges the schedule holds, and how wide its levels are.
+
+      The two structural numbers a change to the dependence machinery moves:
+      an access that cannot be described precisely widens to its whole buffer
+      and picks up edges against every other access to it, and those edges are
+      what cost a level scheduler its width. Both are deterministic, so they
+      are what a test about ordering should assert - and what a measurement of
+      ordering should report - rather than a wall clock or an energy.
+
+      Both build the schedule if it is stale, exactly as ``execute()`` would,
+      and so may reorder nodes into a topological order.
+
+      .. versionadded:: 2.0.0
+
+      :returns: ``schedule_edge_count`` the number of dependency edges; ``schedule_level_sizes`` the size of each level in order.
+
+
+   .. cpp:function:: std::vector<size_t> schedule_level_sizes()
+
+      See ``schedule_edge_count``.
+
+
+   .. cpp:function:: std::vector<std::string> unjustified_hazard_edges()
+
+      Hazard edges that nothing about the storage justifies.
+
+      ``verify_level_independence`` asks whether an edge is MISSING, and every alias defect this
+      module has shipped was found by it or by a race. The opposite direction has no detector at
+      all, and it is the direction an over-conservative alias relation fails in: merging two
+      unrelated tensors into one root costs a level scheduler its width and moves no number, so no
+      differential oracle can see it. The deferred-parent merge cost every hazard between the two
+      parents and was invisible for exactly that reason.
+
+      The justification is derived WITHOUT consulting ``TensorHandle::aliases``, which is the
+      relation under test. Two tensors may share memory when they are the same tensor, when one is
+      reachable from the other through the graph's own ``View`` nodes, or when both have a known
+      byte span and the spans overlap. A pair with none of those and no shared parameter name has
+      no reason to be ordered.
+
+      A tensor with no address is therefore related to another only structurally, which is what
+      makes this see the deferred case: two deferred parents have no spans, so an edge between
+      their writers can only come from an alias link that should not exist.
+
+      Builds the schedule if it is stale, exactly as ``schedule_edge_count`` does.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One line per unjustified edge, naming both nodes; empty when the edge set is minimal.
+
+
+   .. cpp:function:: void mark_sorted()
+
+      Mark the graph as topologically sorted.
+
+      Called by optimization passes that produce a valid topological ordering
+      (e.g., Reorder) to prevent execute() from re-sorting.
+
+
+   .. cpp:function:: const UsageAnalysis & usage()
+
+      Cached reader/writer/liveness index for the current node order.
+
+      Rebuilt lazily when a mutation-declaration point (add_node,
+      mark_sorted, topological_sort, rebind) has been hit since the last
+      build, with a node-count defense for undeclared mutations (same
+      contract as DependencyInfo). Do NOT hold the reference across graph
+      mutations.
+
+
+   .. cpp:function:: std::uint64_t analysis_version() const
+
+      Mutation counter, bumped at every mutation-declaration point (add_node,
+      mark_sorted, topological_sort, rebind). Anything caching a derived
+      property of the node list - UsageAnalysis, an executor's per-node
+      scratch - can stamp itself with this and rebuild when it goes stale.
+
+
+   .. cpp:function:: std::uint64_t structure_version() const
+
+      Counter of changes to the NODE SET, distinct from ``analysis_version``.
+
+      Bumped when a node is added, removed or spliced in - the mutations that
+      make a downstream plan describe a graph that no longer exists. NOT bumped
+      by a reorder, by an annotation write (``annotate_spaces``, symmetry
+      inference), by ``rebind``, or by ``execute()``: those change values,
+      metadata or ordering, and a plan built over the node set survives them.
+
+      ``analysis_version`` cannot serve this role. It bumps at every
+      mutation-DECLARATION point, ``mark_sorted()`` included, so it cannot tell
+      a structural rewrite from a pass that merely re-sorted or refreshed a
+      cache - and that is exactly the distinction the phase rule needs. The two
+      live side by side: ``analysis_version`` invalidates position-keyed caches,
+      ``structure_version`` invalidates *plans*.
+
+      The two uses today:
+
+      - ``PassManager::run`` watches it around every pass and throws when an ``PassPhase::Analysis`` or ``PassPhase::Diagnostic`` pass moves it, which is "analysis never rewrites" enforced rather than documented.
+      - A structural pass moving it is the signal that the resource and tuning phases must re-run rather than patch their annotations through the rewrite, and that the analysis phase must re-run at the end.
+
+      Sub-graph mutations bump the SUB-graph's counter, not the parent's; a
+      caller reasoning about a whole tree must walk it.
+
+
+   .. cpp:function:: void note_structural_change()
+
+      Declare that a direct mutation of ``nodes`` changed the node set.
+
+      ``add_node``, ``erase_nodes`` and ``insert_node_groups`` bump
+      ``structure_version`` themselves. A pass that instead rebuilds the node
+      vector in place (the ``nodes = std::move(rebuilt)`` idiom several of them
+      use) bypasses all three and must say so here, or the counter under-reports
+      and a stale plan survives the rewrite that invalidated it.
+
+      Idempotent in effect but not in value: call it once per rewrite, not once
+      per node. Only the fact that the counter moved is meaningful.
+
+
+   .. cpp:function:: void note_structural_pass(std::string pass_name)
+
+      Record that a structural-algebraic pass rewrote this graph.
+
+      The saved form is whatever the structural-algebraic phase produced, so "which passes
+      produced it" is the first question asked of a file whose numbers turn out wrong, and
+      until this existed nothing in the library could answer it: the provenance block took the
+      pass list from whoever called ``save_graph``, which is to say from someone who had to
+      remember.
+
+      Called by ``OptimizerPass::run`` for each pass in that phase that reports a modification,
+      whether a pipeline ran it or a caller did.
+      Order is the order they ran, and a pass that ran twice and changed something twice is
+      recorded once: the list says what shaped this graph, not how many times.
+
+      Provenance is DATA. Nothing reads this back and acts on it - a load does not re-run a
+      named pass, and does not refuse a graph because of what is in here.
+
+      .. versionadded:: 2.0.0
+
+      :param pass_name: The pass that modified this graph.
+
+
+   .. cpp:function:: const std::vector<std::string> & structural_passes() const noexcept
+
+      The structural-algebraic passes that have rewritten this graph, in order.
+
+      Survives a save and a load, so a graph loaded from a file reports what shaped it before
+      it was written rather than starting blank.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The names, empty on a graph nothing has rewritten.
+
+
+   .. cpp:function:: void note_machine_dependent_pass(std::string pass_name)
+
+      Record that a structural-resource or tuning pass has changed this graph.
+
+      Those phases decide for one machine and one memory budget (tiling, materialization,
+      frees, the arena, batching, the schedule), and a file holds only the algebraic form, so
+      ``save_graph`` refuses a graph this list is not empty for. Recorded by ``OptimizerPass::run``,
+      so a pass run on its own leaves the same record as one a pipeline runs, and skipped for
+      a pass whose changes a save drops (``OptimizerPass::changes_saved_form``).
+
+      .. versionadded:: 2.0.0
+
+      :param pass_name: The pass that modified this graph.
+
+
+   .. cpp:function:: const std::vector<std::string> & machine_dependent_passes() const noexcept
+
+      The structural-resource and tuning passes that have changed this graph, in order.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The names, empty on a graph only capture and the structural passes have shaped.
+
+
+   .. cpp:function:: const std::vector<ApproximationRecord> & approximations() const noexcept
+
+      Every lossy rewrite applied to this graph, in the order it was applied.
+
+      Saved with the structure and restored by a load, because a record says what the graph
+      now computes rather than how it runs. Unlike ``structural_passes``, which is
+      provenance and is read by nobody, these ARE acted on: a second lossy pass composes
+      against them, and a tolerance-aware comparison widens by them.
+
+      .. seealso::
+
+         note_approximation
+
+      .. versionadded:: 2.0.0
+
+      :returns: The records, empty on a graph nothing has approximated. An empty list is EXACT mode: a differential comparison against eager stays at bit equality.
+
+
+   .. cpp:function:: void note_approximation(ApproximationRecord record)
+
+      Record a lossy rewrite this graph has just had applied.
+
+      A pass asks ``can_approximate`` BEFORE it rewrites anything, and declines through
+      ``OptimizerPass::approximate`` when the answer is no.
+
+      .. versionadded:: 2.0.0
+
+      :param record: What the rewrite was and what it cost. See ``ApproximationRecord``.
+      :throws std::invalid_argument: With the reason, when ``can_approximate`` refuses it. Throwing rather than returning a flag, because a pass reaching here has already rewritten the graph: a refusal at this point is a pass that did not ask first, and the graph it leaves behind is wrong in a way no return value would fix.
+
+
+   .. cpp:function:: void restore_approximations(std::vector<ApproximationRecord> records)
+
+      Install a whole approximation history, unchecked, as a load does.
+
+      Not ``note_approximation`` in a loop, deliberately. That would re-run
+      ``can_approximate`` against whatever budget THIS process happens to have set, and a
+      record perfectly legal where it was applied would be refused here. A file is a
+      statement of what was already done, not a request to do it.
+
+      .. versionadded:: 2.0.0
+
+      :param records: The records the file carried, in the order they were applied.
+
+
+   .. cpp:function:: std::string can_approximate(const ApproximationRecord &candidate) const
+
+      Whether a pass may apply ``candidate``, and why not when it may not.
+
+      Three ways the answer is no, and each is a real case rather than a guard against
+      nonsense input:
+
+      - The bound is negative or not finite. A pass that cannot state its effect has not met the contract, whatever else it can do.
+      - The composed bound exceeds the declared budget for some output it names.
+      - A budget is set and a record of a DIFFERENT effect already covers an output this one names. Only under a budget: bounds of different kinds coexist happily otherwise, and the tolerance carries them on separate sides. What a budget adds is a claim to be a cap, and a cap that governs one kind of error while another goes uncounted is misleading in a way that saying so is not.
+
+      A graph with no budget therefore refuses only the first case: adding a lossy pass to a
+      manager is the opt-in, and a budget is the further cap on what several may spend
+      together.
+
+      What is NOT decided here is whether a pass's own error model still holds once
+      something else has perturbed its inputs. Only that pass knows; ``approximations`` is
+      readable so it can look, and it declines through ``OptimizerPass::approximate`` like
+      any other refusal.
+
+      .. seealso::
+
+         set_accuracy_budget
+
+      .. versionadded:: 2.0.0
+
+      :param candidate: The rewrite a pass is about to apply.
+      :returns: An empty string when it may; otherwise the reason, phrased for a skip tally.
+
+
+   .. cpp:function:: double accuracy_spent(ApproximationEffect effect, const std::string &output) const
+
+      The composed bound already spent on one output.
+
+      .. versionadded:: 2.0.0
+
+      :param effect: The units to answer in. Records of other effects are not counted, because they do not convert.
+      :param output: The manifest name to ask about, or empty for the graph-wide worst case, which counts every record whatever it names.
+      :returns: The composed bound, 0 when nothing applies.
+
+
+   .. cpp:function:: ApproximationTolerance approximation_tolerance(const std::string &output) const
+
+      The comparison tolerance this graph's records imply for one output.
+
+      The point of entry for Part 5.4's tolerance-aware differential mode, and the reason it
+      lives here rather than in the harness: composition is arithmetic with a correctness
+      argument behind it (see ``compose_approximation``), and a second implementation of it
+      in the test layer would be a second thing to get right.
+
+      .. versionadded:: 2.0.0
+
+      :param output: The manifest name to ask about, or empty for the graph-wide worst case.
+      :returns: The relative and absolute halves. Both zero on a graph with no records, which is exact mode.
+
+
+   .. cpp:function:: void set_accuracy_budget(ApproximationEffect effect, double value)
+
+      Cap what lossy passes may spend on this graph, together.
+
+      Not set by default, and the default is not zero: a lossy pass runs only because a
+      caller put it in a manager, and that is the opt-in. This is the second guard, for the
+      caller who wants several of them and a ceiling on what they cost together.
+
+      .. seealso::
+
+         clear_accuracy_budget
+
+      .. versionadded:: 2.0.0
+
+      :param effect: The units the cap is stated in. A pass bounding itself in any other effect will decline rather than convert.
+      :param value: The largest composed bound any single output may carry.
+      :throws std::invalid_argument: If ``value`` is negative or not finite.
+
+
+   .. cpp:function:: void clear_accuracy_budget()
+
+      Remove the cap, if one was set.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::optional<std::pair<ApproximationEffect, double>> accuracy_budget() const noexcept
+
+      Whether a budget is set, and what it is.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The effect and value, or an empty optional when none is set.
+
+
+   .. cpp:function:: double accuracy_budget_value() const noexcept
+
+      The budget's value, for a caller that cannot hold an optional pair.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The cap, or a negative number when no budget is set.
+
+
+   .. cpp:function:: unsigned int planned_thread_count() const
+
+      Threads the per-node widths on this graph were planned against.
+
+      A width is chosen for one machine at one moment: the planner divides a
+      known number of threads between the nodes, so the same widths on a
+      different thread count are not a worse plan, they are a wrong one.
+      Recording the count the plan assumed lets ``DataflowExecutor`` notice
+      and fall back to running every node at width 1.
+
+      0 means nothing recorded, which is what a hand-set width or an unplanned
+      graph looks like; those are honored as they are found. Deliberately not
+      serialized with the graph, for the same reason the widths are not.
+
+
+   .. cpp:function:: void set_planned_thread_count(unsigned int threads)
+
+      Record the thread count the current widths were planned for.
+
+      .. seealso::
+
+         planned_thread_count
+
+
+   .. cpp:function:: bool plan_threads(bool freeze)
+
+      Choose a thread width for every node, for this machine, now.
+
+      Runs the ``passes::ThreadPlanning`` heuristic standalone - no pipeline
+      needed, because widths touch no structure - and records the thread count
+      the plan assumed so ``DataflowExecutor`` can notice a machine change and
+      fall back to width 1. Loop bodies and conditional branches are planned
+      too, each against the same thread count; the one process-wide width
+      budget composes them at run time.
+
+      Only ``DataflowExecutor`` acts on the result. Under the other executors
+      the graph behaves exactly as an unplanned one.
+
+      **Re-plan policy**
+
+      A plan needs per-node serial times, and the honest ones are measured -
+      but a measurement is taken under whatever plan and whatever concurrency
+      produced it, so a plan computed FROM those timings and the plan they
+      were measured UNDER are never comparable on paper: the re-plan's own
+      estimate is polluted by the incumbent's schedule. (Concretely: co-run
+      contention inflates every sample, the inflated area bound swallows the
+      critical path, and a timings re-plan can then only ever narrow - it
+      un-widened measurably profitable plans in every DLPNO trial.) The one
+      comparator that settles it is the wall clock, so the re-plan is a
+      measured trial rather than a decree:
+
+      - A graph that has already replayed is planned from its recorded timings, and that plan is final.
+      - A graph that has never replayed is planned from the cost model. Replay 1 warms up and records timings, and a re-plan is computed from them; if it chooses the same widths the trial ends there (keeping the re-plan's measured admission priorities). Otherwise replay 2 runs the re-planned widths, replay 3 runs the cold widths again - both steady-state - and the graph keeps whichever replay was faster, the incumbent unless the candidate clearly beat it. A trial the workload never finishes (fewer than three replays) leaves the cold plan in place.
+
+      The consequence is deliberate and is the determinism contract: widths
+      move only inside the trial window, so from the fourth replay onward -
+      or from the first, with ``freeze`` - repeated replays at a fixed thread
+      count are bit-identical.
+
+      .. versionadded:: 2.0.0
+
+      :param freeze: Plan now and never re-plan, even from the cold-start model. For workflows that want every replay bit-identical to the first, at the cost of model-quality widths.
+      :returns: True when at least one node was given a width above 1.
+
+
+   .. cpp:function:: bool thread_replan_armed() const
+
+      Whether the thread plan is still inside its measured trial window: a
+      re-plan is waiting for the next completed replay, or the trial replays
+      are still being timed. False once the widths are final. @see plan_threads
+
+
+   .. cpp:function:: std::tuple<Graph &, Graph &> add_conditional(std::string label, std::function<bool ()> predicate)
+
+      Add a conditional (if-then-else) node to the graph.
+
+      Returns references to the then-branch and else-branch subgraphs.
+      Use CaptureGuard on each to capture operations into the branches.
+      The predicate is evaluated at execution time to select the branch.
+
+      .. code-block:: text
+
+         auto [then_g, else_g] = graph.add_conditional("converge_check",
+             [&]() { return delta < threshold; });
+         { CaptureGuard g(then_g); cg::scale(1.0, &result); }
+         { CaptureGuard g(else_g); cg::einsum(...); }
+
+      :param label: Human-readable label for profiling.
+      :param predicate: Function returning true for then-branch, false for else-branch. Can inspect tensor values and external state.
+      :returns: Tuple of references: (then_branch_graph, else_branch_graph). A tuple (not a pair) so the method can be bound to Python, pybind11 can't cast a pair/tuple of *references* to a non-copyable type cleanly, but a reference-tuple return casts each branch with ``reference_internal``. Structured bindings (``auto [t, e] = ...``) work identically for C++ callers.
+
+
+   .. cpp:function:: std::tuple<Graph &, Graph &> add_conditional(std::string label, PredExpr predicate)
+
+      Add a conditional whose predicate is DATA rather than a closure.
+
+      The same node the ``std::function`` overload builds -- that one wraps its
+      argument in a ``PredExpr`` callback arm and calls this. The difference is
+      only what the node can then be: a comparison over ``ParamTable`` entries,
+      a gate-flag load or a literal rebuilds from the descriptor and can be
+      written to a file, while a callback cannot.
+
+      .. code-block:: text
+
+         auto [then_g, else_g] = graph.add_conditional(
+             "converged", cg::PredExpr::compare(cg::BoundExpr{"delta"}, cg::CmpOp::Lt, cg::BoundExpr{1}));
+
+      :param label: Human-readable label for profiling.
+      :param predicate: The condition. See ``PredExpr`` for the arms.
+      :returns: Tuple of references: (then_branch_graph, else_branch_graph).
+
+
+   .. cpp:function:: std::tuple<Graph &, Graph &> add_conditional_flag(std::string label, const GateFlags &flags, size_t index)
+
+      Add a conditional whose predicate is one flag of a ``GateFlags`` array.
+
+      The same node ``add_conditional`` builds, with the predicate replaced by a load from a
+      shared buffer. Use it when the answers are known before the replay starts and there are many
+      of them: a ``std::function`` bound to a Python callable takes the GIL every time it is
+      evaluated, and a graph whose conditionals run on several threads serializes on that.
+
+      The array is shared, not copied, so the caller may keep writing to it between replays; a
+      copy of the ``shared_ptr`` is baked into the node, so the flags outlive the handle. An index
+      past the end of the array reads false.
+
+      :param label: Human-readable label for profiling.
+      :param flags: The array to read.
+      :param index: Which flag in it selects this node's branch.
+      :returns: Tuple of references: (then_branch_graph, else_branch_graph).
+
+
+   .. cpp:function:: template <typename ThenFn, typename ElseFn = std::nullptr_t> void add_conditional(std::string label, std::function<bool ()> predicate, ThenFn &&then_fn, ElseFn &&else_fn)
+
+      Add a conditional node with lambda-captured branches.
+
+      The then_fn and else_fn lambdas are called during graph construction
+      to capture operations into the respective branches. This is the
+      preferred API, more concise than the Graph-returning variant.
+
+      .. code-block:: text
+
+         graph.add_conditional("check", [&]() { return value(0) > 5.0; },
+             [&]() { cg::scale(0.5, &value); },    // then
+             [&]() { cg::scale(2.0, &value); }      // else
+         );
+
+      :param label: Human-readable label.
+      :param predicate: Runtime predicate: true → then, false → else.
+      :param then_fn: Lambda capturing then-branch operations.
+      :param else_fn: Lambda capturing else-branch operations (optional).
+
+
+   .. cpp:function:: Graph & add_loop(std::string label, size_t max_iterations, std::function<bool (size_t)> condition)
+
+      Add a loop node to the graph (Graph-returning variant).
+
+      Returns a reference to the loop body subgraph. Use CaptureGuard to
+      capture operations into the body.
+
+      :param label: Human-readable label for profiling.
+      :param max_iterations: Maximum number of iterations (safety limit).
+      :param condition: Called after each iteration with the iteration number.
+      :returns: Reference to the loop body Graph.
+
+
+   .. cpp:function:: Graph & add_loop(std::string label, size_t max_iterations, PredExpr condition)
+
+      Add a loop whose condition is DATA rather than a closure.
+
+      The same node the ``std::function`` overload builds; see
+      ``add_conditional(std::string, PredExpr)`` for why the spelling matters.
+      A ``PredExpr::Iteration`` arm compares against the index of the iteration
+      that just finished, which is how a loop expresses "stop after n" without a
+      parameter table entry that would otherwise be visible graph-wide.
+
+      :param label: Human-readable label for profiling.
+      :param max_iterations: Maximum number of iterations (safety limit).
+      :param condition: Evaluated after each iteration: true continues.
+      :returns: Reference to the loop body Graph.
+
+
+   .. cpp:function:: Graph & add_loop_at(std::string label, size_t max_iterations, PredExpr condition, std::size_t position)
+
+      Add a loop node at a chosen position rather than at the end.
+
+      What ``add_loop`` is, with the placement made explicit, and the same argument
+      ``add_setup_at`` makes: a CAPTURING caller always wants the end, because program order is
+      the order they wrote things in, while a PASS that wraps a run of existing nodes in a loop
+      wants the position that run occupied. Appending and then moving would be a second way of
+      doing what ``insert_node_groups`` already knows how to do.
+
+      .. versionadded:: 2.0.0
+
+      :param label: Human-readable label for profiling and diagnostics.
+      :param max_iterations: Maximum number of iterations (safety limit).
+      :param condition: Evaluated after each iteration: true continues.
+      :param position: Index in ``nodes`` to splice at; clamped to the node count.
+      :returns: Reference to the loop body Graph.
+
+
+   .. cpp:function:: template <typename BodyFn> void add_loop(std::string label, size_t max_iterations, std::function<bool (size_t)> condition, BodyFn &&body_fn)
+
+      Add a loop node with lambda-captured body.
+
+      The body_fn lambda is called during graph construction to capture
+      operations into the loop body.
+
+      .. code-block:: text
+
+         graph.add_loop("converge", 100,
+             [&](size_t iter) { return value(0) >= 1.0; },
+             [&]() { cg::scale(0.5, &value); }
+         );
+
+      :param label: Human-readable label.
+      :param max_iterations: Maximum iterations (safety limit).
+      :param condition: After each iteration: true → continue, false → stop.
+      :param body_fn: Lambda capturing loop body operations.
+
+
+   .. cpp:function:: void add_loop(std::string label, size_t max_iterations, std::function<bool (size_t)> condition, std::function<void ()> body_fn)
+
+      Add a loop node, std::function-typed body for Python-friendly binding.
+
+      Identical semantics to the template-bodied ``add_loop`` above; the
+      concrete std::function signature is what pybind11 can bind directly
+      without rvalue-reference deduction issues. C++ callers can keep
+      using either form.
+
+
+   .. cpp:function:: Graph & add_setup(std::string label)
+
+      Add a setup node: a body computed once per bound problem, not once per replay.
+
+      Returns the body sub-graph, to be captured into with a ``CaptureGuard`` exactly as a
+      loop body is. What goes in it is the computation that depends on WHAT is bound rather
+      than on how many times the graph is replayed: a density fitting, a metric inverse, an
+      integral transform. The replay body then reads its outputs and never recomputes them.
+
+      Structurally this is a control-flow node like any other, which is the point: it takes
+      its position in the ordinary schedule, its effective I/O is the sub-graph's reads and
+      writes (so the scheduler orders it before every consumer with no special case), and a
+      pass that walks sub-graphs reaches it through ``for_each_subgraph``. What is special
+      is only the executor, which skips a body that has already computed.
+
+      **When the body runs**
+
+      At the first ``execute`` after capture, and at the first ``execute`` after any
+      ``bind``. It is not run BY the bind: a bind that is never executed should cost
+      nothing, and a caller who wants the factors on hand earlier calls ``run_setup``.
+
+      **What a setup output must not be**
+
+      Its outputs live across replays, so nothing may free them between two. @ref
+      passes::FreeInsertion is told this rather than left to infer it from a live range that
+      looks, within one replay, exactly like an ordinary intermediate's.
+
+      .. code-block:: text
+
+         auto &fit = graph.add_setup("df_fit");
+         {
+             cg::CaptureGuard const guard(fit);
+             cg::einsum("Qmn <- QP ; Pmn", &B, metric_inv_sqrt, ints);
+         }
+         // ... the replay body reads B ...
+         graph.execute();   // fits, then replays
+         graph.execute();   // replays only
+
+      .. seealso::
+
+         run_setup
+
+      .. seealso::
+
+         set_setup_key
+
+      .. seealso::
+
+         invalidate_setup
+
+      .. versionadded:: 2.0.0
+
+      :param label: Human-readable label for profiling and diagnostics.
+      :returns: Reference to the setup body Graph. Valid for the life of this graph.
+
+
+   .. cpp:function:: Graph & add_setup_at(std::string label, std::size_t position)
+
+      Add a setup node at a chosen position rather than at the end.
+
+      What ``add_setup`` is, with the placement made explicit. A CAPTURING caller always
+      wants the end, because program order is the order they wrote things in; a PASS that
+      introduces a fitting does not, because the nodes that will read the factors are
+      already there and a setup appended behind them is a writer behind its readers, which
+      the dependency sort reads as an anti-dependency and orders exactly the wrong way
+      round.
+
+      .. versionadded:: 2.0.0
+
+      :param label: Human-readable label.
+      :param position: Index in ``nodes`` to splice at; clamped to the node count.
+      :returns: Reference to the setup body Graph.
+
+
+   .. cpp:function:: void add_setup(std::string label, std::function<void ()> body_fn)
+
+      Add a setup node with a lambda-captured body.
+
+      .. versionadded:: 2.0.0
+
+      :param label: Human-readable label.
+      :param body_fn: Called during construction to capture the body's operations.
+
+
+   .. cpp:function:: bool has_setup() const noexcept
+
+      Whether this graph carries at least one setup node.
+
+      .. versionadded:: 2.0.0
+
+      :returns: True when it does. Top-level only; a setup node inside a loop body is that body's business and not reported here.
+
+
+   .. cpp:function:: void run_setup(bool force)
+
+      Run every setup body that is not current, now.
+
+      What the next ``execute`` would do anyway, pulled forward for a caller who wants the
+      fitting cost paid at a moment of their choosing rather than inside the first replay's
+      timing. Nothing else differs: the same guards apply, so a body already computed for
+      the bound problem is skipped here exactly as it would be there.
+
+      .. versionadded:: 2.0.0
+
+      :param force: Run every body whatever its state, ignoring both the computed flag and the key. The escape hatch for a caller who changed the CONTENTS of a bound tensor without rebinding it, which nothing can observe.
+
+
+   .. cpp:function:: void invalidate_setup()
+
+      Mark every setup body as needing recomputation.
+
+      Called by ``bind``, which is the one event that can change what a setup body would
+      produce. Public because a caller who mutates a bound tensor in place has made the same
+      change without going through a bind, and nothing else can see that.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void set_setup_key(std::string key)
+
+      Name the problem currently bound, so a re-bind of it can skip refitting.
+
+      The cache of the setup phase, and a claim the caller makes rather than one this graph
+      checks. A bind invalidates every setup body; if the key set here is non-empty and equal
+      to the key the body last computed for, the body is skipped anyway on the ground that
+      the caller has said this is the same problem.
+
+      Empty (the default) disables the cache: every bind refits, which is always correct.
+      A caller supplying a key owns the consequence of supplying the same one for two
+      different problems, which is a stale factorization and no diagnostic. Use something
+      that identifies the problem rather than the call: a molecule and basis, a checkpoint
+      id, a content hash the caller computed for its own reasons.
+
+      .. versionadded:: 2.0.0
+
+      :param key: The problem identity, or empty to disable the cache.
+
+
+   .. cpp:function:: const std::string & setup_key() const noexcept
+
+      The key ``set_setup_key`` last recorded.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The key, empty when none was set.
+
+
+   .. cpp:function:: void free_tensor(TensorId id, std::string name, size_t size_bytes)
+
+      Mark a tensor's lifetime end with a Free node.
+
+      Inserts a Free node into the graph marking where the tensor is no longer needed.
+      The tensor is NOT actually deallocated (the graph still owns it), this is a
+      marker for the MemoryPlanning pass to identify buffer reuse opportunities.
+
+      :param id: The TensorId (from create_tensor's Alloc node).
+      :param name: Tensor name for debugging.
+      :param size_bytes: Size of the tensor in bytes.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, typename... Dims> Tensor<T, Rank> & create_tensor(std::string name, Dims... dims)
+
+      Create a tensor owned by the graph.
+
+      The tensor is heap-allocated and stored in the graph's ``owned_tensors_`` list.
+      It is destroyed when the graph is destroyed. This ensures the tensor outlives
+      all captured lambdas, preventing dangling reference bugs.
+
+      Prefer scratch() for intermediates: it defers allocation to execution
+      and hands the buffer to the memory passes (FreeInsertion,
+      InplaceOptimization, MemoryPlanning's arena). create_tensor allocates
+      NOW and stays allocated unless those passes intervene.
+
+      An Alloc node is inserted into the graph marking the tensor's lifetime start.
+      Pair with free_tensor() to mark the lifetime end. The MemoryPlanning pass
+      uses these markers to identify buffer reuse opportunities.
+
+      Marked as is_intermediate = TRUE, meaning SCRATCH: a tensor nothing in the graph
+      reads is a computation nobody needs, so ``passes::DeadNodeElimination`` removes
+      the node that writes it. If a caller reads this tensor after ``execute()`` it is a
+      result rather than scratch, and creating it here means the answer is optimized away
+      and the buffer keeps whatever it held. Use ``declare_tensor`` for that, or the
+      runtime-rank ``create_runtime_tensor`` with ``intermediate = false``.
+
+      .. code-block:: text
+
+         cg::Graph graph("example");
+         auto &tmp = graph.create_tensor<double, 2>("tmp", 100, 100);
+         // tmp is valid for the lifetime of graph
+
+      :tparam T: Element type (e.g., double, float, std::complex<double>).
+      :tparam Rank: Number of dimensions.
+      :tparam Dims: Dimension size types (must be integral).
+      :param name: Human-readable name for the tensor.
+      :param dims: Size of each dimension.
+      :returns: Reference to the newly created tensor.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, typename... Dims> Tensor<T, Rank> & create_zero_tensor(std::string name, Dims... dims)
+
+      Create a zero-initialized tensor owned by the graph.
+
+      Same as create_tensor() but fills the tensor with zeros after creation.
+
+      :tparam T: Element type.
+      :tparam Rank: Number of dimensions.
+      :tparam Dims: Dimension size types.
+      :param name: Human-readable name.
+      :param dims: Size of each dimension.
+      :returns: Reference to the zero-initialized tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & create_runtime_tensor(std::string name, std::vector<size_t> dims, bool intermediate)
+
+      Create a graph-owned runtime-rank tensor.
+
+      Runtime-rank analog of create_tensor(). Allocates a RuntimeTensor<T, Alloc>
+      with rank determined by `dims.size()`, no rank-4 cap, no compile-time
+      rank in the type. Adds an Alloc node and marks the handle as intermediate.
+      Lives for the lifetime of the graph.
+
+      .. code-block:: text
+
+         auto &tmp = graph.create_runtime_tensor<double>("tmp", {100, 100});
+         auto &big = graph.create_runtime_tensor<double>("big", {2, 3, 4, 5, 6});  // rank-5, fine
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & create_zero_runtime_tensor(std::string name, std::vector<size_t> dims, bool intermediate)
+
+      Runtime-rank analog of create_zero_tensor().
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & create_zero_runtime_tensor(std::string name, std::initializer_list<std::size_t> dims, bool intermediate)
+
+      Declare storage from a braced list of extents; see the note on why this overload exists.
+
+      **Why this exists, since it looks redundant**
+
+      It is what makes the promise on ``SpaceDim``, that a braced list of plain numbers keeps
+      selecting the dims overload, true rather than merely intended. Without it, ``{n}`` --
+      one integer -- is AMBIGUOUS under libstdc++: ``std::vector<SpaceDim>`` has an explicit
+      ``vector(size_type)`` constructor, that constructor is a candidate when the compiler
+      forms the conversion sequence for a braced list, and the two overloads then tie on
+      user-defined conversions. libc++ does not consider it, so the call compiles on macOS and
+      fails on GCC, which is the worst shape a portability trap can have.
+
+      A parameter of type ``std::initializer_list<size_t>`` settles it by the standard's own
+      rule rather than by luck: the conversion sequence for a braced list matching it is the
+      WORST ELEMENT conversion, an identity here, and an identity beats the user-defined
+      sequence either vector needs. So a braced list of numbers lands here on every compiler,
+      a braced list of spaces cannot (no space converts to an integer) and still lands on the
+      ``SpaceDim`` overload, and a mixed list is a compile error as it always was.
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param dims: One extent per axis.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :returns: What the ``std::vector`` overload returns, which is what this forwards to.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & create_zero_runtime_tensor(std::string name, const std::vector<SpaceDim> &shape, bool intermediate)
+
+      Create an eagerly allocated graph-owned tensor shaped in index spaces.
+
+      The ``create_zero_runtime_tensor`` counterpart of the space-shaped
+      ``declare_zero_runtime_tensor``, and deliberately only HALF of it: the axes are sized
+      from their spaces and annotated with them, and no dim symbols are written.
+
+      **Why no dim symbols**
+
+      This tensor is allocated when the call returns, and only DEFERRED intermediates are
+      resized at bind (a materialized one whose derived dims changed is an error). A symbol
+      here would promise a rebindability the storage cannot honour, so the annotation stops at
+      what is true: these axes mean occupied and virtual, and they are this big. New code that
+      wants the graph to be reusable should declare rather than create.
+
+      .. seealso::
+
+         declare_zero_runtime_tensor(std::string, std::vector<SpaceDim> const &, bool)
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param shape: One entry per axis; see the deferred overload. ``fixed`` for a literal.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :throws std::invalid_argument: As the deferred overload, except that a space with no ``IndexSpace::dim_symbol`` is fine here - nothing needs one.
+      :returns: Reference to the zeroed tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_runtime_tensor(std::string name, std::vector<size_t> dims, bool intermediate, std::optional<TensorBacking> backing)
+
+      Declare a graph-owned runtime-rank tensor with DEFERRED allocation.
+
+      The runtime-rank, pybind-exposed analog of declare_tensor(): a shell tensor
+      (valid metadata, no data) registered in THIS graph's tensor map with
+      AllocState::Deferred. No Alloc node is inserted, the MaterializationPass
+      inserts Materialize+Initialize at the right position, and MemoryPlanning /
+      FreeInsertion / InplaceOptimization can then plan, reuse, and free its
+      buffer (unlike create_*_tensor, which is allocated eagerly and so is opaque
+      to those passes). Use this for graph/loop-body scratch you want the memory
+      passes to manage.
+
+      :param name: The tensor's name.
+      :param dims: Its extents.
+      :param intermediate: Whether nothing reads the tensor after ``execute()``. A tensor declared without it is a RESULT: the caller may read it once the graph has run, so it has to exist whole then, and ``AxisTiling`` leaves it whole however large, naming it in its report when it is over the memory budget. Declare every tensor the program builds only for its own use as an intermediate, so the graph may stream it in blocks and never hold it whole.
+      :param backing: Storage the tensor lives in, as ``annotate_backing`` takes it. Passing it here is the same as annotating the declared tensor, except that a refused backing leaves nothing declared.
+      :throws std::invalid_argument: As ``annotate_backing``, when ``backing`` is refused.
+      :returns: The declared tensor, owned by this graph.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_runtime_tensor(std::string name, std::initializer_list<std::size_t> dims, bool intermediate, std::optional<TensorBacking> backing)
+
+      Declare a deferred runtime-rank tensor from a braced list of extents.
+
+      **Why this exists, since it looks redundant**
+
+      It is what makes the promise on ``SpaceDim``, that a braced list of plain numbers keeps
+      selecting the dims overload, true rather than merely intended. Without it, ``{n}`` --
+      one integer -- is AMBIGUOUS under libstdc++: ``std::vector<SpaceDim>`` has an explicit
+      ``vector(size_type)`` constructor, that constructor is a candidate when the compiler
+      forms the conversion sequence for a braced list, and the two overloads then tie on
+      user-defined conversions. libc++ does not consider it, so the call compiles on macOS and
+      fails on GCC, which is the worst shape a portability trap can have.
+
+      A parameter of type ``std::initializer_list<size_t>`` settles it by the standard's own
+      rule rather than by luck: the conversion sequence for a braced list matching it is the
+      WORST ELEMENT conversion, an identity here, and an identity beats the user-defined
+      sequence either vector needs. So a braced list of numbers lands here on every compiler,
+      a braced list of spaces cannot (no space converts to an integer) and still lands on the
+      ``SpaceDim`` overload, and a mixed list is a compile error as it always was.
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param dims: One extent per axis.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :param backing: Storage the tensor lives in; see the ``std::vector`` overload.
+      :returns: What the ``std::vector`` overload returns, which is what this forwards to.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_zero_runtime_tensor(std::string name, const std::vector<SpaceDim> &shape, bool intermediate, std::optional<TensorBacking> backing)
+
+      Declare a deferred graph-owned tensor whose shape is stated in index spaces.
+
+      The three statements a space-shaped scratch tensor needs today, collapsed into the one
+      that cannot disagree with itself:
+
+      .. code-block:: text
+
+         // Today - three calls, three chances to drift apart:
+         auto &T = graph.declare_zero_runtime_tensor<double>("T", {4, 8});
+         graph.annotate_spaces(T, {occ, virt});
+         graph.annotate_dims(T, {"occ", "virt"});
+
+         // Here:
+         auto &T = graph.declare_zero_runtime_tensor<double>("T", {occ, virt});
+
+      **What the axes are annotated with**
+
+      A space-typed axis is annotated with that space AND given a dim symbol, so the tensor is
+      rebindable at new extents without a second call. The symbol is the space's
+      ``IndexSpace::dim_symbol``, declared once at registration; a space registered without one
+      is refused here rather than having a name invented for it. A numeric axis is left literal
+      and unannotated, which is what a fixed size means.
+
+      .. seealso::
+
+         SpaceDim
+
+      .. seealso::
+
+         annotate_dims
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param shape: One entry per axis: an index space, or a number for an axis that is genuinely a fixed size. ``SpaceDim`` converts from both.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :param backing: A write backing; see the dims overload.
+      :throws std::invalid_argument: If a named space has no extent this graph has learned (see ``space_extent``): either nothing annotated over it yet, in which case ``pin_space_extent`` says so directly, or two annotated axes disagree, which is what a ragged family looks like and wants ``annotate_ragged_dim`` instead.
+      :returns: Reference to the deferred tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_runtime_tensor(std::string name, const std::vector<SpaceDim> &shape, bool intermediate, std::optional<TensorBacking> backing)
+
+      The un-zeroed counterpart of the space-shaped ``declare_zero_runtime_tensor``.
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param shape: One entry per axis; see the zeroed overload.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :param backing: Storage the tensor lives in; see the dims overload.
+      :throws std::invalid_argument: As the zeroed overload, or as ``annotate_backing``.
+      :returns: Reference to the deferred tensor.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_runtime_tensor(std::string name, TensorBacking backing, bool intermediate)
+
+      Declare a deferred tensor shaped like the storage a read backing names.
+
+      In Python the element type is taken from the backing as well, so an input kept in a file is
+      declared from the file alone:
+
+      .. code-block:: text
+
+         B = graph.declare_tensor("Bvv", backing=einsums.io.etn("ints.etn", "Bvv"))
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type, which has to be the one the storage holds.
+      :tparam Alloc: Allocator.
+      :param name: The tensor's name.
+      :param backing: A read or update backing; the tensor takes its extents.
+      :param intermediate: Whether nothing reads the tensor after ``execute()``.
+      :throws std::invalid_argument: for a write backing, whose storage takes its shape from the tensor and so has none to give, or as ``annotate_backing``.
+      :returns: The declared tensor, owned by this graph and backed by ``backing``.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_zero_runtime_tensor(std::string name, std::vector<size_t> dims, bool intermediate, std::optional<TensorBacking> backing)
+
+      Runtime-rank analog of declare_zero_tensor(): graph-owned, deferred, and zeroed when it is materialized.
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: The tensor's name.
+      :param dims: Its extents.
+      :param intermediate: Whether nothing reads the tensor after ``execute()``.
+      :param backing: A WRITE backing for a tensor the graph builds up from zero, as a residual whose terms each add into it is: it is zeroed before its first writer at every replay and stored after its last. A read backing is refused, since the storage and the zeros would both fill it.
+      :throws std::invalid_argument: As ``annotate_backing``, when ``backing`` is refused.
+      :returns: The declared tensor, owned by this graph.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_zero_runtime_tensor(std::string name, std::initializer_list<std::size_t> dims, bool intermediate, std::optional<TensorBacking> backing)
+
+      Declare a deferred, zeroed runtime-rank tensor from a braced list of extents.
+
+      **Why this exists, since it looks redundant**
+
+      It is what makes the promise on ``SpaceDim``, that a braced list of plain numbers keeps
+      selecting the dims overload, true rather than merely intended. Without it, ``{n}`` --
+      one integer -- is AMBIGUOUS under libstdc++: ``std::vector<SpaceDim>`` has an explicit
+      ``vector(size_type)`` constructor, that constructor is a candidate when the compiler
+      forms the conversion sequence for a braced list, and the two overloads then tie on
+      user-defined conversions. libc++ does not consider it, so the call compiles on macOS and
+      fails on GCC, which is the worst shape a portability trap can have.
+
+      A parameter of type ``std::initializer_list<size_t>`` settles it by the standard's own
+      rule rather than by luck: the conversion sequence for a braced list matching it is the
+      WORST ELEMENT conversion, an identity here, and an identity beats the user-defined
+      sequence either vector needs. So a braced list of numbers lands here on every compiler,
+      a braced list of spaces cannot (no space converts to an integer) and still lands on the
+      ``SpaceDim`` overload, and a mixed list is a compile error as it always was.
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :tparam Alloc: Allocator.
+      :param name: Human-readable name.
+      :param dims: One extent per axis.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :param backing: A write backing; see the ``std::vector`` overload.
+      :returns: What the ``std::vector`` overload returns, which is what this forwards to.
+
+
+   .. cpp:function:: template <typename T> TiledRuntimeTensor<T> & declare_zero_tiled_tensor(std::string name, std::vector<std::vector<int>> tile_sizes, bool intermediate)
+
+      Tiled analog of declare_zero_runtime_tensor(): a graph-owned
+      TiledRuntimeTensor shell over ``tile_sizes`` with DEFERRED lifecycle.
+
+      The shell starts with no populated tiles - ops create tiles on demand
+      (infer-and-create, zeroed) - so Materialize and Initialize are cheap,
+      but registering the handle as Deferred puts the tensor under the same
+      lifecycle machinery as dense scratch: Materialization hoists the pair
+      to the loop's parent, and FreeInsertion can release the tile storage
+      after the last consumer (release() keeps the sparsity pattern, so a
+      later replay re-materializes into the same structure). MemoryPlanning
+      leaves tiled scratch alone by construction: the arena requires
+      materialize_into, and a tile-wise tensor has no single buffer to
+      place. Scratch REUSE per replay is safe for the ops with the
+      leftover-scale rule (einsum's c_pf, direct_division's and permute's
+      beta apply to every stored tile, so stale tiles from a previous
+      iteration are zeroed, not kept).
+
+
+   .. cpp:function:: template <typename T> TiledRuntimeTensor<T> & declare_zero_tiled_tensor(std::string name, const std::vector<SpaceTiling> &shape, bool intermediate)
+
+      Declare a deferred graph-owned TILED tensor whose shape is stated in index spaces.
+
+      The tiled counterpart of the space-shaped ``declare_zero_runtime_tensor``. An axis names
+      the space it ranges over and, where it differs from that space's canonical partition, its
+      own tiling:
+
+      .. code-block:: text
+
+         graph.pin_space_tiling(occ,  {2, 2});
+         graph.pin_space_tiling(virt, {4, 4});
+
+         auto &T = graph.declare_zero_tiled_tensor<double>("T", {occ, virt});
+         auto &U = graph.declare_zero_tiled_tensor<double>("U", {{occ, {1, 3}}, virt});
+
+      **What the axes are annotated with**
+
+      The space, and its ``IndexSpace::dim_symbol`` - a PLAIN symbol, not a ragged one.
+      A tiled axis's TOTAL is what the space fixes and what a bind moves; how it is cut up is a
+      layout choice that varies between tensors over one space without the space being ragged.
+
+      .. note::
+
+         ``Pass_MemoryPlanning`` leaves tiled scratch alone by construction (the arena needs
+         a single buffer and a tile-wise tensor has none), so this is annotation ergonomics
+         for tiled tensors, not the memory-planning payoff the dense declaration gets.
+
+      .. seealso::
+
+         SpaceTiling
+
+      .. seealso::
+
+         pin_space_tiling
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: Element type.
+      :param name: Human-readable name.
+      :param shape: One entry per axis. ``SpaceTiling`` converts from a bare ``SpaceId`` (take the space's canonical tiling) and carries an explicit partition otherwise; ``tiles`` is an axis with a partition and no space.
+      :param intermediate: Whether the tensor is graph-internal scratch.
+      :throws std::invalid_argument: If an axis names a space with no canonical tiling and supplies none of its own, or if an explicit partition sums to something other than what its space measures.
+      :returns: Reference to the deferred tiled tensor.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_tensor(std::string name, Dims... dims)
+
+      Declare a graph-scoped tensor with deferred allocation.
+
+      Creates a shell tensor (valid metadata, no data) owned by the graph.
+      Data is allocated by the MaterializationPass during apply().
+
+      Marked as is_intermediate = FALSE, which is what separates this from
+      ``create_tensor``: a declared tensor is part of the graph's interface, so
+      ``passes::DeadNodeElimination`` keeps its producer even when nothing inside the
+      graph reads it. That is what you want for a result a caller reads after
+      ``execute()``; use ``create_tensor`` for scratch that dies inside the graph.
+
+      The cost of being deferred is that it must be materialized before the graph runs.
+      ``execute()`` on an unmaterialized declared tensor throws and names it, so the
+      mistake is loud; ``optimize`` (or any PassManager including Materialization)
+      satisfies it.
+
+      :tparam T: Element type.
+      :tparam Rank: Number of dimensions.
+      :tparam Dims: Integral types of the dimensions.
+      :param name: Human-readable tensor name.
+      :param dims: Dimensions of each rank.
+      :returns: Reference to the shell tensor.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_zero_tensor(std::string name, Dims... dims)
+
+      Declare a graph-scoped tensor initialized to zero after materialization.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & scratch(std::string name, Dims... dims)
+
+      Create graph-managed scratch: THE way to make an intermediate.
+
+      One call replaces the create_tensor / declare_tensor / intermediate-flag
+      decision tree. A scratch tensor is:
+
+      - **deferred**: no allocation until execution reaches it (the Materialization pass, or the graph's own lifecycle nodes, allocate it at the right position - possibly resized to a local partition by DistributionPlanning first);
+      - **intermediate**: FreeInsertion reclaims it after its last consumer, InplaceOptimization may merge its storage into a dying input, and MemoryPlanning's arena may host it at a planned offset.
+
+      Prefer this over create_tensor() (eager; allocated for the graph's whole
+      lifetime unless the memory passes intervene) for any tensor that only
+      exists to carry a value between nodes.
+
+      .. code-block:: text
+
+         auto &tmp = graph.scratch<double, 2>("tmp", nocc, nvir);
+         auto &acc = graph.scratch_zero<double, 2>("acc", nocc, nvir);
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & scratch_zero(std::string name, Dims... dims)
+
+      Zero-initialized scratch (zeroed at materialization, like
+      declare_zero_tensor, and managed like scratch()).
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_internal_tensor(std::string name, std::vector<size_t> dims)
+
+      Declare a deferred intermediate on a caller's behalf.
+
+      For a helper that adds tensors the caller never sees, such as the partial products of an
+      einsum over three or more operands. It is an ordinary declared intermediate to every pass,
+      so ``AxisTiling`` may build it a block at a time and ``Materialization`` gives it storage
+      or leaves it without any once nothing uses it. Unlike a tensor the caller declared, it does
+      not make a graph run without those passes fail: its first ``execute()`` gives it storage
+      when a node still reads or writes it and no Materialize node does.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The tensor's name.
+      :param dims: Its extents.
+      :returns: The declared tensor, owned by this graph.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & scratch_runtime(std::string name, std::vector<size_t> dims)
+
+      Runtime-rank scratch (see scratch(); pybind-facing analog).
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & scratch_zero_runtime(std::string name, std::vector<size_t> dims)
+
+      Runtime-rank zero-initialized scratch.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, typename FillFn> Tensor<T, Rank> & declare_tensor_filled(std::string name, Dim<Rank> dims, FillFn &&fill)
+
+      Declare a tensor with a user-provided fill function.
+
+      The fill lambda is called after materialization (and after distribution
+      metadata is set). The tensor supports `T.range(dim)` for the local
+      global-index range and `T.global(indices...)` for global-indexed access.
+
+      Works identically for distributed and non-distributed tensors:
+
+      .. code-block:: text
+
+         auto &eri = graph.declare_tensor_filled<double, 4>("ERI", nao, nao, nao, nao,
+             [&](auto& T) {
+                 auto [p0, p1] = T.range(0);
+                 auto [q0, q1] = T.range(1);
+                 for (size_t p = p0; p < p1; p++)
+                     for (size_t q = q0; q < q1; q++)
+                         // ... compute and fill using T.global(p, q, r, s)
+             });
+
+      :param name: Tensor name.
+      :param dims: Global dimensions.
+      :param fill: Lambda called with a reference to the materialized tensor.
+
+
+   .. cpp:function:: expected<std::pair<TensorId, void *>, GraphError> create_tensor_dynamic(std::string name, packed_gemm::ScalarType dtype, const std::vector<size_t> &dims)
+
+      Create a zero-initialized tensor owned by the graph, using runtime type info.
+
+      Unlike the templated create_tensor/create_zero_tensor, this accepts ScalarType
+      and a vector of dimensions at runtime. Used by optimization passes that need
+      to create intermediate tensors without compile-time type information.
+
+      :param name: Human-readable name.
+      :param dtype: Element type (Float32, Float64, Complex64, Complex128).
+      :param dims: Size of each dimension.
+      :returns: TensorId of the newly created tensor, and a void* to the tensor object. Returns error if dtype is Unknown or dims is empty.
+
+
+   .. cpp:function:: expected<std::pair<TensorId, void *>, GraphError> create_zero_runtime_tensor_dynamic(std::string name, packed_gemm::ScalarType dtype, const std::vector<size_t> &dims)
+
+      Create a zero-initialized **runtime** tensor (GeneralRuntimeTensor) of a dtype/shape known only at run time, returning its id + pointer.
+
+      The runtime analog of ``create_tensor_dynamic``: where that produces a
+      statically-ranked Tensor<T,K> (consumed via static_cast in some passes),
+      this produces a GeneralRuntimeTensor<T>, matching the tensors that the
+      Python/capture surface uses, so passes that combine such operands can cast
+      uniformly to GeneralRuntimeTensor<T>. Supports any rank.
+
+      :param name: Human-readable name.
+      :param dtype: Element type (Float32, Float64, Complex64, Complex128).
+      :param dims: Size of each dimension.
+      :returns: TensorId and void* of the new runtime tensor; error if dtype is Unknown.
+
+
+   .. cpp:function:: std::function<void ()> make_gemm_executor(TensorId a_id, TensorId b_id, TensorId c_id, double alpha, double beta)
+
+      Create an executor lambda that performs C = alpha * A * B + beta * C.
+
+      Uses runtime type dispatch. Only supports rank-2 tensors (matrices).
+
+      A thin forwarder onto ``build_executor`` with a ``GemmDescriptor``, so
+      there is one place that decides what a Gemm node computes.
+
+      A caller that wants the node as well as the callable should build the
+      descriptor itself and record both, so the node it produces is
+      reconstructible; this entry exists for the callable alone.
+
+      :param a_id: TensorId of left operand (M x K).
+      :param b_id: TensorId of right operand (K x N).
+      :param c_id: TensorId of output tensor (M x N).
+      :param alpha: Scalar prefactor for the product.
+      :param beta: Scalar prefactor for the accumulator (0 = overwrite).
+      :throws std::invalid_argument: When an operand exposes no rank-erased geometry.
+      :returns: A callable that performs the GEMM.
+
+
+   .. cpp:function:: Node make_einsum_node(TensorId a_id, TensorId b_id, TensorId c_id, const ParsedEinsumSpec &spec, PrefactorScalar c_pf, PrefactorScalar ab_pf, bool conj_a, bool conj_b, std::string label)
+
+      Build a FIRST-CLASS einsum node for a pass that synthesizes a contraction.
+
+      Returns a complete ``OpKind::Einsum`` node that behaves like a captured one:
+
+      - a full ``EinsumDescriptor``, so every pass that reads the descriptor or the contraction spec (CSE, DeadNodeElimination, ScaleAbsorption, PermuteFusion, StreamContractionFusion, Reorder, the distribution and GPU passes) can see the node instead of stepping over an opaque blob;
+      - freshly allocated *shared* ``EinsumParams`` and ``EinsumIndices``, with an executor that reads THROUGH those handles on every call. A pass that folds a scale into ``ab_prefactor`` or rewrites the index lists therefore takes effect on the next execute;
+      - operands resolved through the graph's slots at call time, so ``rebind()``, ``redirect_slot()`` and Materialization are honored, and the RMW input convention applied for you (the output is declared as an input when ``c_pf`` is nonzero).
+
+      The executor itself comes from ``build_executor``, the same lowering
+      ``cg::einsum`` uses at capture, so a node this assembles is
+      indistinguishable from a captured one.
+
+      **Limits**
+
+      One dtype across the three operands. Rank and static tensor type are NOT
+      restricted: each operand is re-viewed through its rank-erased
+      ``TensorImpl``, which carries data, dims and strides as runtime values, so a
+      statically typed ``Tensor<T, Rank>`` works alongside a runtime tensor and a
+      single dtype dispatch covers every rank with no static-rank cast. Tile-wise sparse tensors have no single impl
+      and are rejected; so is a dtype mismatch. Both throw, since a pass reaching
+      here without gating has a bug.
+
+      A ``GemmHint`` IS built when the shapes qualify (three rank-2 operands,
+      exactly one link index, strides agreeing with each declared layout), so
+      GEMMBatching can batch these nodes. It records each operand's ``TensorId``
+      and its leading dimension as DATA; resolution happens in the batched
+      executor, which follows ``rebind()`` and survives MemoryPlanning repointing
+      storage via ``materialize_into``. See ``derive_gemm_hint``.
+
+      :param a_id: First operand.
+      :param b_id: Second operand. Must match ``spec.b_indices``.
+      :param c_id: Output.
+      :param spec: Index lists for the contraction.
+      :param c_pf: Output prefactor. Nonzero means accumulate (read-modify-write).
+      :param ab_pf: Product prefactor.
+      :param conj_a: Conjugate the first operand.
+      :param conj_b: Conjugate the second operand.
+      :param label: Node label; a default is generated from the spec when empty.
+      :returns: A node ready to splice in, with a reserved id and inputs/outputs set.
+
+
+   .. cpp:function:: Node make_axpby_node(TensorId x, TensorId y, PrefactorScalar alpha, PrefactorScalar beta, std::string label)
+
+      Build a ready-to-splice ``Y = alpha*X + beta*Y`` node.
+
+      The counterpart to ``make_einsum_node`` for the passes that assemble an
+      accumulator (DistributiveFactoring's summed operand, TiledExpansion's
+      per-tile axpy), so the descriptor and the executor cannot disagree about
+      what replay computes.
+
+      The scalars live in the shared params the executor reads on every replay,
+      with the descriptor holding the same handle, so a later pass that folds a
+      scale into ``alpha`` reaches the replay rather than being silently ignored.
+      The executor comes from ``build_executor``, whose axpby keeps the BLAS
+      axpy fast path whenever beta is one.
+
+      .. note::
+
+         ``y`` appears among the inputs unconditionally, which is the RMW
+         convention the schedulers read (see ``make_einsum_node``). Callers
+         building a pure overwrite (``beta`` zero) should say so by leaving
+         ``y`` out, which this helper does not express: no pass needs it yet.
+
+      .. versionadded:: 2.0.0
+
+      :param x: Source operand.
+      :param y: Destination, read when ``beta`` is nonzero and written always.
+      :param alpha: Scale applied to ``x``.
+      :param beta: Scale applied to ``y`` before accumulating.
+      :param label: Node label.
+      :returns: A node with a reserved id and its inputs/outputs set.
+
+
+   .. cpp:function:: Node make_permute_node(TensorId a_id, TensorId c_id, const ParsedPermuteSpec &spec, PrefactorScalar alpha, PrefactorScalar beta, std::string label)
+
+      Build a ready-to-splice ``C = beta*C + alpha*permute(A)`` node.
+
+      The counterpart to ``make_einsum_node`` and ``make_axpby_node`` for a
+      pass that emits a transposed accumulation, which is what lowering a
+      permutation operator produces. Assembling one by hand means reserving the
+      id, filling a ``PermuteDescriptor``, allocating the shared scalars and
+      calling ``build_executor`` in agreement with all of it, and the failure
+      mode when they disagree is a replay that computes something the descriptor
+      does not describe.
+
+      ``spec`` may itself carry operators, which the executor then expands; a
+      lowering pass clears them and emits one node per term instead.
+
+      .. note::
+
+         The inputs follow the destination rule of DestinationRead.hpp: the
+         source, then the destination exactly when ``beta`` is nonzero.
+
+      .. versionadded:: 2.0.0
+
+      :param a_id: Source operand.
+      :param c_id: Destination, read when ``beta`` is nonzero and written always.
+      :param spec: Output and input index lists, and any operators.
+      :param alpha: Scale applied to the permuted source.
+      :param beta: Scale applied to the destination before accumulating.
+      :param label: Node label; a default is generated from the spec when empty.
+      :returns: A node with a reserved id and its inputs/outputs set.
+
+
+   .. cpp:function:: Node make_node(OpKind kind, packed_gemm::ScalarType dtype, OpData descriptor, std::vector<TensorId> inputs, std::vector<TensorId> outputs, std::string label)
+
+      Build a ready-to-splice node whose executor comes from ``build_executor``.
+
+      Reserves the id, attaches the descriptor, and derives the executor from the descriptor and the
+      operand ids, so the node saves, rebuilds and rewrites like a captured one. The executor's rank
+      is the first output's.
+
+      .. versionadded:: 2.0.0
+
+      :param kind: The node's kind.
+      :param dtype: The element type the executor runs in.
+      :param descriptor: The node's descriptor; the executor reads its live blocks.
+      :param inputs: Operand ids read, in the order ``build_executor`` expects for ``kind``.
+      :param outputs: Operand ids written; must not be empty.
+      :param label: Node label.
+      :returns: A node with a reserved id, its operands, descriptor and executor set. Its inputs follow the destination rule of DestinationRead.hpp, so a node that reads its destination lists it last whether or not ``inputs`` did.
+
+
+   .. cpp:function:: void materialize_internal_tensors()
+
+      Give storage to every internal tensor (``declare_internal_tensor``) here or below that a node
+      still reads or writes and no Materialize node brings to life. Run before the first replay validates.
+
+
+   .. cpp:function:: expected<void, GraphError> validate_tensors() const
+
+      Validate that all registered tensors are still alive.
+
+      Calls each tensor's validator function (set by make_handle() at registration time).
+      If any validator returns false, throws a descriptive error message suggesting
+      to use create_tensor() for intermediates.
+
+      Called automatically at the start of execute().
+
+      :returns: Error if any tensor appears to have been destroyed.
+
+
+   .. cpp:function:: TensorSlot * find_slot(TensorId id)
+
+      Find a TensorSlot by TensorId.
+
+      Returns nullptr if no slot exists for this TensorId.
+      Used by optimization passes to redirect captured lambdas to new tensors.
+
+
+   .. cpp:function:: void redirect_slot(TensorId from, TensorId to)
+
+      Redirect a tensor's executor slot to another tensor's buffer.
+
+      Repoints the slot for ``from`` so that any executor lambda which captured
+      it resolves to ``to's`` tensor at the next execute(). This is the
+      execution-side companion to the TensorId metadata rewrite that
+      redirect-based passes (e.g. CSE) perform on Node::inputs.
+
+      The distinction matters because executor lambdas resolve their operands
+      through the captured TensorSlot pointer, *not* through Node::inputs.
+      Rewriting Node::inputs alone keeps liveness analysis correct for
+      downstream passes (MemoryPlanning, FreeInsertion) but is invisible to a
+      lambda baked at capture time; without this slot redirect a consumer of
+      an eliminated duplicate would keep reading the duplicate's (now
+      never-written) buffer. See CSE.
+
+      Both tensors must have a slot (``has_slot``). A tensor without one still
+      has readers: a node a pass builds reads its operands without a slot, so a
+      redirect that quietly did nothing left those readers on a buffer nothing
+      wrote any more. A pass that cannot redirect has to decline instead. The
+      two tensors must hold the same element
+      type: an executor reads ``from's`` buffer as the type it was built for,
+      and its accessor recorded that type before the redirect, so after it
+      nothing downstream would notice the bytes are another type's.
+
+      The redirect is durable, not a one-time pointer copy: it is recorded in
+      ``_slot_redirects`` and re-applied whenever the target slot is
+      repointed later (see rebind()). Without that, a rebind of the surviving
+      tensor after CSE would leave consumers of the merged-away duplicate
+      reading the survivor's old buffer.
+
+      :param from: TensorId whose slot should be repointed.
+      :param to: TensorId whose buffer ``from`` should resolve to, now and after future rebinds of ``to``.
+      :throws std::logic_error: if either tensor has no slot, or both tensors' element types are recorded and differ. A pass that asks for either has a bug.
+
+
+   .. cpp:function:: bool has_slot(TensorId id) const noexcept
+
+      Whether ``id`` has a slot ``redirect_slot`` can repoint.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> std::shared_ptr<void> adopt_operand(const TensorType &tensor)
+
+      The graph-owned stand-in for a captured operand.
+
+      Returns a wrapper over ``tensor's`` storage that this graph keeps alive
+      for its own lifetime. Registration, slots and executor lambdas all bind
+      to the returned object rather than to the caller's, which is what lets a
+      captured operand's own wrapper go out of scope before ``execute()``:
+
+      .. code-block:: text
+
+         cg::Graph g("x");
+         {
+             cg::CaptureGuard guard(g);
+             auto tmp = create_zero_tensor<double>("tmp", m, n);   // dies here
+             cg::gemm(1.0, A, B, 0.0, &tmp);
+             cg::gemm(1.0, tmp, D, 0.0, &E);
+         }
+         g.execute();                                              // still correct
+
+      The stand-in shares storage, so writes through it land in the caller's
+      buffer and the caller reads its results as before. One stand-in per
+      caller wrapper, so repeat captures of the same tensor stay one operand.
+
+      Four kinds of operand are returned unchanged:
+
+      - tensors this graph already owns (``create_tensor`` / ``declare_tensor``), because their wrapper is graph-owned already;
+      - **deferred** tensors, which have no storage yet. These are the ones the graph relocates: Materialization allocates them and MemoryPlanning re-seats them on an arena slice, both during execute, and a stand-in taken at capture time would still hold the pre-materialization pointer. They need no stand-in either, since whatever declared them (a Workspace, a Pipeline, this Graph) outlives the capture by construction;
+      - views a graph's View node maintains, in this graph or any other. The node re-seats the view on every replay, so a copy taken at capture holds what its parent had then, which for a declared tensor is only a placeholder; the graph that made the view keeps it alive, so a loop body that names one binds the live object (Detail/MaintainedViews.hpp);
+      - types with no ``shallow_alias()`` (tile-wise sparse tensors have no single storage block to share), which keep the older "operands must outlive the graph" contract.
+
+      What is left is exactly the operands the graph reads and writes but never
+      moves, which is what makes one stand-in safe for a whole replay.
+
+      One stand-in per caller tensor: while one another graph adopted for ``tensor``
+      lives, it is shared rather than a second one made, so every graph that names the
+      tensor agrees on its identity (``TensorHandle::tensor_ptr``). Each stand-in is
+      recorded with what it stands in for for as long as it lives (Detail/StandIns.hpp),
+      which is how a pass that captures over it later, in this graph or in a loop body it
+      builds, reaches the same operand.
+
+      :tparam TensorType: The operand's type.
+      :param tensor: The caller's tensor.
+      :returns: An owning reference to the stand-in, or empty when the graph adopted nothing and the caller's own tensor is used directly. The caller stores it in the operand's TensorHandle and TensorSlot, so adoption costs one allocation and nothing per node afterwards.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> TensorId register_operand(const TensorType &tensor)
+
+      The id this graph uses for ``tensor``, registering it if it has never seen it.
+
+      The out-of-capture counterpart of ``CaptureContext::get_or_register``, and deliberately
+      the same registration: storage adopted into a graph-owned stand-in via
+      ``adopt_operand``, the handle's lambdas baked over that stand-in, and the handle filed
+      under the caller's own address too (``TensorHandle::caller_ptr``) so a lookup by the
+      user-held tensor still finds it. Capture then finds this handle by pointer and reuses it
+      rather than registering a second one.
+
+      For callers that need a handle to exist before any operation is captured. Metadata set on
+      a tensor (its index spaces) has to have somewhere to live, and the graph's handle is that
+      somewhere.
+
+      The address cache is checked against the caller's liveness token, exactly as
+      ``CaptureContext::get_or_register`` checks it and for the same reason: an address does not
+      identify a tensor across a destruction. A tensor allocated on top of a dead one would
+      otherwise inherit its id, and metadata set here would land on the wrong handle.
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The caller's tensor.
+      :returns: The existing or newly assigned TensorId.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> TensorSlot * get_or_create_slot(const TensorType &tensor, TensorId tensor_id)
+
+      Create a TensorSlot for a tensor.
+
+      Slots are used internally by operation wrappers during capture.
+      Returns a pointer to a stable TensorSlot owned by the graph.
+
+      :tparam TensorType: The tensor type.
+      :param tensor: The tensor to create a slot for.
+      :param tensor_id: The TensorId of this tensor.
+      :returns: Pointer to the slot (stable for the lifetime of the graph).
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void rebind(TensorId id, TensorType &new_tensor)
+
+      Rebind a tensor slot to point to a different tensor.
+
+      The new tensor must have the same rank, element type, and dimensions.
+      After rebinding, subsequent execute() calls will use the new tensor.
+
+      .. note::
+
+         Refreshes the handle's ``TensorHandle::dims``, ``TensorHandle::strides`` and
+         ``TensorHandle::data_ptr`` snapshots from ``new_tensor``, and the slot's own
+         ``TensorSlot::dims`` with them. Leaving them stale was latent while dims could
+         not change and pointer swaps rarely aliased differently; the alias relation is
+         derived from ``TensorHandle::data_ptr``, so a handle still advertising the
+         PREVIOUS buffer is how a rebind loses hazard edges. Moving either the address or
+         the extents therefore also drops this handle's derived alias link, so the next
+         ``link_alias_storage`` re-derives it against what is there now.
+
+      .. note::
+
+         Bumps ``analysis_version``, which is what "rebind is a mutation-declaration
+         point" means for the caches keyed on it. Deliberately does NOT bump
+         ``structure_version``: the node set is untouched, and the two counters mean
+         different things on purpose.
+
+      :tparam TensorType: The tensor type (must match the original).
+      :param id: The TensorId to rebind.
+      :param new_tensor: The new tensor to bind to.
+      :throws std::invalid_argument: If rank or dimensions don't match.
+      :throws std::out_of_range: If no slot exists for this TensorId.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void rebind(const TensorType &old_tensor, TensorType &new_tensor)
+
+      Rebind a tensor by matching the old tensor's pointer.
+
+      Finds the slot currently pointing to ``old_tensor`` and redirects it
+      to ``new_tensor``. The new tensor must have the same rank and dimensions.
+
+      .. code-block:: text
+
+         graph.rebind(A1, A2);  // Swap A1 for A2, one line
+
+      :tparam TensorType: The tensor type (must match for both old and new).
+      :param old_tensor: The tensor currently bound in the graph.
+      :param new_tensor: The new tensor to bind.
+      :throws std::out_of_range: If no slot points to old_tensor.
+      :throws std::invalid_argument: If rank or dimensions don't match.
+
+
+   .. cpp:function:: InterfaceManifest manifest()
+
+      This graph's named, typed, space-annotated, ownership-scoped interface.
+
+      The formalization of the complement of ``TensorHandle::is_intermediate``. Every
+      handle that is NOT an intermediate and that at least one node reads or writes
+      becomes an entry; a handle nothing touches is not part of the interface and is
+      skipped, and an intermediate never appears at all.
+
+      Reader and writer sets come from ``usage``, so control-flow subtree uses count: a
+      buffer the parent graph only hands to a ``Loop`` body is reported through
+      effective-IO expansion and is an entry here, which is right - a caller still has to
+      supply it. What does NOT appear is a buffer the body created for itself, because
+      effective-IO's orphan parent handle is a copy of the body's handle and carries the
+      body's ``is_intermediate``.
+
+      Uses are attributed at BUFFER granularity: ``UsageAnalysis`` resolves alias chains,
+      so a slot that is a view of another entry takes its direction from the buffer they
+      share. Conservative and never wrong about whether a caller must supply a slot.
+
+      .. note::
+
+         Not const, and not by choice: ``usage`` builds through
+         ``effective_io``, which registers a stable parent handle for a buffer only a
+         sub-graph touches, and ``link_alias_storage`` (run here so
+         ``ManifestEntry::aliases_input`` is complete) mutates handles as well.
+
+      .. note::
+
+         TOP-LEVEL only; it never descends into a ``Loop`` body or a ``Conditional``
+         branch. Those graphs hold deliberately fresh, default handles - see the
+         MetadataBoundary contract - so they have no interface of their own, and
+         nothing here propagates scope into one.
+
+      .. seealso::
+
+         bind
+
+      .. seealso::
+
+         InterfaceManifest
+
+      .. versionadded:: 2.0.0
+
+      :throws std::invalid_argument: If two entries carry the same name, naming both ids. Binding is by name, so an ambiguous name is an error here rather than a surprise at bind time.
+      :throws std::invalid_argument: If a slot's ``SpaceId`` does not resolve in ``space_registry``, naming the tensor. That is a corrupted annotation, not a policy question.
+      :returns: The manifest. ``ManifestDirection::InOut`` entries appear in both ``InterfaceManifest::inputs`` and ``InterfaceManifest::outputs``; both vectors are ordered by name, then by id.
+
+
+   .. cpp:function:: template <typename... Args> void bind(Args &&... args)
+
+      Bind caller storage to manifest slots by name.
+
+      Manifest-driven ``rebind``: takes ``(name, tensor)`` pairs, validates each against
+      the named ``ManifestEntry``, and delegates the actual repointing to ``rebind`` so
+      slot pointers, impl accessors, and redirect chains are updated in exactly one place.
+
+      **Extents**
+
+      An axis with no symbol must match the manifest EXACTLY, as ``rebind`` requires. An
+      axis ``annotate_dims`` gave a symbol is SOLVED instead: the bind reads the extent off
+      the tensor supplied for it, and every other axis in the graph naming that symbol must
+      agree. Two bound tensors disagreeing about one symbol is an error naming the symbol,
+      both slots and both extents. A ragged axis accepts whatever each instance carries.
+
+      When the solution moves any extent, the bind then re-derives the graph's own
+      intermediates: an intermediate whose producing contraction ties its axes to solved
+      symbols takes new dims by letter propagation from the operands. Only DEFERRED
+      intermediates can be resized that way, which is the design's "bind ... only then
+      materializes intermediates whose dims are symbol expressions"; an already-materialized
+      intermediate whose derived dims moved is an error naming it and both extents. Finally
+      every node's operands are checked for agreement, so an under-annotated graph fails
+      loudly here instead of executing garbage.
+
+      **What a moved extent refuses**
+
+      A graph whose GEMMs have already been batched (``BatchedGemm`` / ``GroupedBatchedGemm``
+      nodes) refuses an extent change outright. Batching is a resource decision over one set
+      of shapes, it is never saved, and the load path re-runs it; re-forming those nodes
+      under new extents is that phase's job rather than ``bind``'s. Bind before
+      ``apply``, or re-run the batching passes afterwards.
+
+      Spaces are checked only when the incoming tensor is already registered in this graph
+      and its handle carries an annotation. Annotations live on handles, not on tensors, so
+      a tensor the graph has never seen has nothing to check and is accepted in silence.
+
+      The aliasing check compares BASE ADDRESSES only, which is sound (an identical base
+      address is provable overlap) and incomplete (two genuinely overlapping slices of one
+      parent are not caught). Structural alias reconstruction, which derives the relation
+      from ``View`` nodes and manifest declarations with no address consulted at all, is
+      what replaces this comparison; see ``link_alias_structural``.
+
+      A partial bind is legal, exactly as a partial ``rebind`` is: slots not named keep
+      whatever storage they already had. ``unbound_manifest_entries`` reports what a
+      caller has not supplied; enforcing completeness is the loader's job and arrives with
+      ``load_graph``.
+
+      .. code-block:: text
+
+         graph.bind("t2", T2, "fock", F);
+         graph.execute();
+
+      .. seealso::
+
+         manifest
+
+      .. seealso::
+
+         unbound_manifest_entries
+
+      .. versionadded:: 2.0.0
+
+      :tparam Args: Alternating ``std::string``-convertible names and tensor lvalues.
+      :param args: The ``(name, tensor)`` pairs, applied left to right.
+      :throws std::invalid_argument: If a name is not a manifest entry (the message lists the names that are), if the dtype, rank, or any dimension disagrees with the entry, if the incoming tensor carries a graph-side space annotation that disagrees with the entry's, or if this bind makes two entries share storage that the manifest does not declare as aliases.
+
+
+   .. cpp:function:: void bind_begin()
+
+      Begin a multi-slot bind, to be finished by ``bind_commit``.
+
+      ``bind`` is variadic and cannot be bound to Python, and calling the one-pair spelling
+      once per slot is NOT the same operation: a dim symbol is a constraint ACROSS slots, so
+      a caller moving a problem's extents has to hand over every slot before any of them is
+      reconciled. Binding them one at a time solves each against a half-updated interface and
+      fails with operands that "describe two different problems".
+
+      These three calls are that transaction, opened up so a caller without variadics can
+      drive it: ``bind_begin``, then ``bind_add`` once per slot, then ``bind_commit``.
+      Nothing is repointed until the commit, so a refusal leaves the graph as it was.
+
+      .. note::
+
+         Each added tensor must outlive the commit; only a reference is kept.
+
+      .. seealso::
+
+         bind_add
+
+      .. seealso::
+
+         bind_commit
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void bind_add(const std::string &name, TensorType &tensor)
+
+      Add one slot to the bind opened by ``bind_begin``.
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param name: The manifest name of the slot.
+      :param tensor: The storage to bind. Must outlive the commit.
+      :throws std::logic_error: When no bind is open.
+
+
+   .. cpp:function:: void bind_commit()
+
+      Finish the bind opened by ``bind_begin``, as one transaction.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::invalid_argument: As ``bind`` does, with nothing repointed.
+
+
+   .. cpp:function:: template <GraphCapturableTensor TensorType> void bind_slot(const std::string &name, TensorType &tensor)
+
+      Bind ONE named slot, the spelling a binding can carry.
+
+      ``bind`` is variadic, which is right for a C++ caller and unbindable from
+      Python; this is the same operation with one pair, applied through the same
+      solver. Call it once per slot.
+
+      .. seealso::
+
+         bind
+
+      .. versionadded:: 2.0.0
+
+      :tparam TensorType: The tensor type.
+      :param name: The manifest name of the slot.
+      :param tensor: The storage to bind.
+
+
+   .. cpp:function:: std::vector<std::string> manifest_names()
+
+      Every manifest binding key, in the manifest's own order.
+
+      The whole ``InterfaceManifest`` is a richer object than a binding needs;
+      this is the part a caller binds by, and it is what the Python surface
+      exposes so a driver can walk a loaded graph's interface without the
+      manifest type having to be bound too.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The names.
+
+
+   .. cpp:function:: std::vector<ManifestEntry> manifest_entries()
+
+      Every slot of ``manifest`` once, in its order: what Python sees as ``manifest()``.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The entries, an ``InOut`` slot once.
+
+
+   .. cpp:function:: template <typename T> void bind_scalar(const std::string &name, T *storage)
+
+      Bind caller storage to a RANK-0 manifest slot.
+
+      ``bind`` takes tensors, and a rank-0 slot is not one: ``cg::dot(&e, A, B)``
+      registers a bare ``double *`` as a rank-0 handle with no ``TensorImpl`` and
+      no slot, which is the shape ``ScalarAccessor`` exists for. A loaded graph
+      owns a placeholder scalar for such a slot, so without this there would be
+      no way to read the number a replay computes - the one operand class a save
+      could not hand back.
+
+      Repointing works because ``ScalarAccessor`` reads
+      ``TensorHandle::tensor_ptr`` on every call rather than copying it when the
+      executor is built, which is exactly the property that file documents.
+
+      .. seealso::
+
+         bind
+
+      .. versionadded:: 2.0.0
+
+      :tparam T: The scalar type; must match the slot's declared dtype.
+      :param name: The manifest name of the slot.
+      :param storage: Where the replay is to write. Must outlive the graph.
+      :throws std::invalid_argument: If ``name`` is not a manifest entry (the message lists the names that are), if the slot is not rank 0, or if ``T`` disagrees with the slot's dtype.
+
+
+   .. cpp:function:: void bind_ragged_extents(const std::string &name, std::size_t axis, std::vector<std::size_t> extents)
+
+      Supply the per-instance extents of one ragged axis.
+
+      A ragged axis (see ``annotate_ragged_dim``) has no scalar extent to solve, so this is
+      what a caller hands the graph in place of one: the design's "``bind`` supplies a
+      per-instance extent table rather than a scalar".
+
+      .. note::
+
+         ACCEPTED and STORED, not yet consumed, and the task is larger than it first
+         looked. The nodes that read such a table are the grouped/batched ones, and the
+         original plan was that the resource phase re-forms them at load from the table.
+         That assumes grouped nodes are a resource-phase PRODUCT. They are not:
+         ``grouped_batched_gemm`` is a capture-time API and the workload that needs this
+         (DLPNO) calls it directly, so there is no pre-resource algebraic form underneath
+         to fall back to. Worse, a grouped batch partitions its members by SHAPE at
+         capture and reorders the operand lists to match, so moving the extents changes
+         the partition itself and not merely the numbers in it.
+
+      Consuming the table therefore waits on a decision recorded in the design doc:
+      either capture the per-member algebraic form and add a pass that groups it, or
+      keep the grouped form and teach it to re-derive its own partition. Until then a
+      graph containing a grouped node refuses to save, saying so, and the table is
+      available through ``ragged_extent_tables`` and nothing else reads it.
+
+      .. seealso::
+
+         clear_bindings
+
+      .. versionadded:: 2.0.0
+
+      :param name: The manifest name of the slot.
+      :param axis: Which axis of that slot the table describes.
+      :param extents: One extent per instance of the axis's space, in instance order.
+      :throws std::invalid_argument: If ``name`` is not a manifest entry; if ``axis`` is past its rank or is not declared ragged; if ``extents`` is empty; or if another table already stored for the SAME space has a different length. The length is the instance count, which is a property of the space (how many pairs there are) and not of one operand, so two tables over one space disagreeing about it describes nothing.
+
+
+   .. cpp:function:: void rederive_intermediate_extents()
+
+      Re-derive every graph-owned intermediate's extents from what now writes it.
+
+      A bind runs this because the tensors it supplies may be a different size; a PASS that
+      repoints an operand at a tensor of a different size has made the same change from the
+      other end, and the intermediates downstream of it describe a graph that no longer
+      exists. ``passes::BasisTruncation`` is the case this is public for: it points the
+      algebra at tensors projected into a smaller space, and everything that contraction
+      chain writes on the way is then declared over the space that was replaced.
+
+      Only storage the graph OWNS is reshaped. A caller's tensor that no longer fits is not
+      this graph's to resize, and the mismatch is reported against the node that reads it.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::invalid_argument: When a derived shape cannot be applied (an intermediate that is already materialized, or one whose handle carries no resize hook), or when a node's operands no longer agree on an extent.
+
+
+   .. cpp:function:: void resize_intermediate(TensorId id, const std::vector<std::size_t> &dims, std::string_view producer)
+
+      Give one graph-owned intermediate a new shape, or say why it cannot have one.
+
+      The single-tensor form of ``rederive_intermediate_extents``, for the intermediates no
+      derivation reaches. A derivation follows a node's index letters, so an intermediate an
+      OPAQUE node writes has no letters to follow and stays the size it was declared; an
+      energy denominator built by an outer sum is that case, and a caller who annotated its
+      axes with index spaces has already said which of them moved. Nothing but storage this
+      graph owns is reshaped, whichever form asks.
+
+      .. versionadded:: 2.0.0
+
+      :param id: The intermediate.
+      :param dims: Its new extents, one per axis of its current rank.
+      :param producer: What is asking, named in any refusal so the mistake is findable.
+      :throws std::invalid_argument: Under the conditions ``rederive_intermediate_extents`` lists, for this one tensor.
+
+
+   .. cpp:function:: bool decides_extents(TensorId id) const
+
+      Whether this graph decides ``id's`` extents.
+
+      True for a tensor the graph made, by a declare or a create, whether or not the caller reads
+      it afterwards, and for any intermediate. A caller's own tensor keeps the extents the caller
+      gave it. A separate question from ``is_intermediate``, which says whether the values outlive
+      a replay: a result the graph declared is the graph's to size and the caller's to read.
+
+      :param id: A tensor of this graph.
+      :returns: The answer; false for an unknown id.
+
+
+   .. cpp:function:: const std::vector<RaggedExtentTable> & ragged_extent_tables() const noexcept
+
+      Every ragged extent table ``bind_ragged_extents`` has accepted.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The tables, in the order they were supplied.
+
+
+   .. cpp:function:: const RaggedExtentTable * find_ragged_extents(std::string_view name, std::size_t axis) const noexcept
+
+      The ragged extent table stored for one slot's axis.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The manifest name the table was supplied under.
+      :param axis: The axis it describes.
+      :returns: The table, or nullptr when none was supplied.
+
+
+   .. cpp:function:: std::vector<std::string> unbound_manifest_entries()
+
+      Manifest slots no ``bind`` call has supplied storage for.
+
+      A slot missing from this list has been bound at least once; a slot present in it
+      still holds whatever storage capture gave it, which is correct for a freshly
+      captured graph and is exactly what a loaded graph cannot rely on. A loader is the
+      component that must insist this comes back empty; ``bind`` deliberately does not,
+      because partial rebinding is a supported thing to do to a live graph.
+
+      .. seealso::
+
+         bind
+
+      .. versionadded:: 2.0.0
+
+      :returns: The names, in the manifest's own order.
+
+
+   .. cpp:function:: void clear_bindings() noexcept
+
+      Forget which manifest slots have been bound.
+
+      Clears the record ``unbound_manifest_entries`` reports from, the storage
+      identities ``bind`` checks aliasing against, and the ragged extent tables. For a
+      caller that re-binds a graph to a fresh problem and wants the undeclared-aliasing
+      check to start from nothing.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void add_scope_map(TensorScopeMapPtr map)
+
+      Attach a scope table published by a declaring ``Workspace`` or ``Pipeline``.
+
+      A capturing graph builds its own handle for a tensor another scope declared, so
+      ``TensorHandle::ownership`` would default to ``Graph`` and the manifest would call a
+      workspace tensor graph-scoped. The declaring scope publishes its table and this
+      attaches it, retroactively stamping handles that are already registered and stamping
+      later ones as they register. Attaching the same table twice is a no-op.
+
+      .. seealso::
+
+         TensorScopeMap
+
+      .. versionadded:: 2.0.0
+
+      :param map: The table, shared with the declaring scope so a declaration made after this graph was created still reaches it. Null is ignored.
+
+
+   .. cpp:function:: const std::vector<TensorScopeMapPtr> & scope_maps() const noexcept
+
+      The scope tables attached by ``add_scope_map``, in attachment order.
+
+
+   .. cpp:function:: TensorOwnership scope_for_ptr(const void *ptr) const noexcept
+
+      The ownership scope this graph holds for ``ptr``, consulting attached tables.
+
+      .. versionadded:: 2.0.0
+
+      :param ptr: A tensor object's address (``TensorHandle::tensor_ptr``).
+      :returns: The declared scope, or ``TensorOwnership::Graph`` when no table names it.
+
+
+   .. cpp:function:: void update_prefactors(NodeId node_id, PrefactorScalar c_pf, PrefactorScalar ab_pf)
+
+      Update scalar prefactors for an einsum node.
+
+      Finds the node by NodeId and updates its EinsumParams if it was
+      captured with mutable parameters. Also updates the EinsumDescriptor.
+
+      :param node_id: The NodeId of the einsum node.
+      :param c_pf: New C prefactor.
+      :param ab_pf: New AB prefactor.
+
+
+   .. cpp:class:: ResolvedTiledShape
+
+      One space-typed TILED shape, resolved against ``_space_tiles``.
+
+
+      .. cpp:member:: std::vector<std::vector<int>> tile_sizes
+
+      .. cpp:member:: std::vector<SpaceId> spaces
+
+      .. cpp:member:: std::vector<std::string> symbols
+
+      .. cpp:member:: bool any_space
+
+
+   .. cpp:class:: ResolvedSpaceShape
+
+      One space-typed shape, resolved against ``_space_extents``.
+
+
+      .. cpp:member:: std::vector<std::size_t> dims
+
+      .. cpp:member:: std::vector<SpaceId> spaces
+
+      .. cpp:member:: std::vector<std::string> symbols
+
+      .. cpp:member:: bool any_space

@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.to_string:
+
+============================
+einsums::hardware::to_string
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::string_view to_string(ProfileState state) noexcept
+
+   The state's name: "none", "loaded", "loaded-foreign", "foreign", "stale" or "invalid".
+
+   .. versionadded:: 2.0.0
+
+   :param state: The state.
+   :returns: The name.

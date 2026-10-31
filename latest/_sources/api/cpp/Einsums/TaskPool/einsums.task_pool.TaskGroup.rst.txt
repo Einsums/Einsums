@@ -1,0 +1,53 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.TaskGroup:
+
+=============================
+einsums::task_pool::TaskGroup
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/TaskGroup.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: TaskGroup
+
+   Handle for a group of submitted tasks with a collective barrier.
+
+   Created by TaskPool::submit_group(). Use wait_all() to block until
+   every task in the group has completed.
+
+
+   .. cpp:function:: TaskGroup() = default
+
+   .. cpp:function:: void wait_all()
+
+      Block until all tasks in the group complete.
+
+
+   .. cpp:function:: bool ready() const
+
+      Check if all tasks have completed (non-blocking).
+
+
+   .. cpp:function:: size_t size() const
+
+      Number of tasks in the group.
+
+
+   .. cpp:function:: size_t remaining() const
+
+      Number of tasks remaining.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Group name (for profiler).

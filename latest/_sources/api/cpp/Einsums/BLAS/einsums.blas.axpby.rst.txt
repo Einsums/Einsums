@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.axpby:
+
+====================
+einsums::blas::axpby
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void axpby(int_t n, T alpha_x, const T *x, int_t inc_x, T b, T *y, int_t inc_y)
+
+   Adds two vectors together with a scale factor.
+
+   Computes the following.
+
+   .. math::
+
+      \mathbf{y} := \alpha\mathbf{x} + \beta\mathbf{y}
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vectors.
+   :param alpha_x: The scale factor for the input vector.
+   :param x: The input vector.
+   :param inc_x: The skip value for the input vector. It can be negative to go in reverse, or zero to broadcast values to ``y``.
+   :param b: The scale factor for the output vector.
+   :param y: The output vector.
+   :param inc_y: The skip value for the output vector. It can be negative to go in reverse, or zero to sum over the elements of ``x`` .

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.views_python:
+
+====================================
+einsums::compute_graph::views_python
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept ParentT> std::vector<RuntimeTensorView<typename std::remove_cvref_t<ParentT>::ValueType> *> views_python(ParentT &parent, const std::vector<std::vector<std::tuple<int, std::int64_t, std::int64_t>>> &specs)
+
+   Batched ``view_indexed_python``: record N views of one parent in one call.
+
+   Same per-axis ``(kind, a, b)`` triples as ``view_indexed`` - ``0`` full,
+   ``1`` range ``[a, b)``, ``2`` drop at ``a`` - one inner list per view, and
+   the views come back in the order they were asked for.
+
+   This exists for callers that build many views of the same parent in a
+   loop, which is the shape of every batched capture: slicing per-pair blocks
+   out of a pair store issues thousands of these, and the per-call Python and
+   pybind overhead - argument normalization, overload resolution, the
+   crossing itself - was about a third of what each view cost. One crossing
+   for N views leaves only the recording. The recorded graph is identical to
+   N ``view_indexed`` calls; nothing downstream can tell the difference.

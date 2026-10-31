@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_pipeline:
+
+=====================================
+einsums::compute_graph::make_pipeline
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Pipeline.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename BuildFn> Pipeline make_pipeline(std::string name, Workspace &workspace, BuildFn &&build)
+
+   Construct a Pipeline, run ``build(pipeline)`` to register its stages, and return it un-executed.
+
+   .. code-block:: text
+
+      auto p = cg::make_pipeline("compute", ws, [&](cg::Pipeline &p) {
+          auto &C = p.declare_zero_tensor<double, 2>("C", 8, 6);
+          p.add_stage("multiply", [&] {
+              cg::einsum("ij <- ik ; kj", &C, A, B);
+          });
+      });
+      p.run();
+
+   :tparam BuildFn: Invocable taking ``Pipeline &``.
+   :param name: Pipeline name.
+   :param workspace: Workspace that backs pipeline-declared + workspace tensors. Must outlive the returned pipeline.
+   :param build: Callback that adds stages / declares tensors. Receives the freshly-constructed Pipeline.
+   :returns: The built pipeline, ready to ``apply`` + ``execute`` or to be inspected / queried further.

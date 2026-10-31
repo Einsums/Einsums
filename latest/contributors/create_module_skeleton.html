@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Creating Module Skeletons &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributors/create_module_skeleton';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/contributors/create_module_skeleton.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The einsums Command" href="einsums_command.html" />
+    <link rel="prev" title="Documenting the Code" href="documenting.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../libs/overview.html">Library Modules</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libs/Einsums/Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Creating Module Skeletons</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="creating-module-skeletons">
+<span id="create-module-skeleton"></span><h1>Creating Module Skeletons<a class="headerlink" href="#creating-module-skeletons" title="Link to this heading">#</a></h1>
+<p>In the <code class="docutils literal notranslate"><span class="pre">libs</span></code> directory there is a Python package called <code class="docutils literal notranslate"><span class="pre">create_module_skeleton</span></code>. It
+sets up a module skeleton to help you create new modules. The package locates the <code class="docutils literal notranslate"><span class="pre">libs</span></code>
+directory from its own location, so you can run it from any working directory. This page
+documents how to call it and how to modify it.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="w"> </span><span class="n">create_module_skeleton</span><span class="w"> </span><span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span><span class="w"> </span><span class="n">LIBRARY_NAME</span><span class="w"> </span><span class="n">MODULE_NAME</span>
+<span class="n">python3</span><span class="w"> </span><span class="n">create_module_skeleton</span><span class="w"> </span><span class="o">--</span><span class="n">reindex</span><span class="w"> </span><span class="p">[</span><span class="n">LIBRARIES</span><span class="p">,</span><span class="w"> </span><span class="p">...]</span>
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">-h,</span> <span class="pre">--help</span></code>: Print a help message.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--python</span></code>: If included, the module is built with Python bindings. This adds the <code class="docutils literal notranslate"><span class="pre">PYBIND</span></code>
+keyword to the <code class="docutils literal notranslate"><span class="pre">einsums_add_module</span></code> call, which makes apiary generate pybind11 bindings from
+the module’s annotated headers when <code class="docutils literal notranslate"><span class="pre">EINSUMS_BUILD_PYTHON</span></code> is on. The module stays a normal
+C++ module under its real library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--gpu</span></code>: If included, the new package will be set up as a GPU-enabled module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--reindex</span></code>: Updates each library’s module list and the module pages listed in
+<code class="docutils literal notranslate"><span class="pre">libs/overview.rst</span></code> to match the modules that are currently present. The module list keeps
+the order it already has, drops modules that are gone, and appends new ones. If no libraries
+are given, it will reindex all libraries in the <code class="docutils literal notranslate"><span class="pre">libs</span></code> directory.</p>
+<p>Running the tool on an existing module adds any template files the module is missing,
+without overwriting files that exist, and reindexes the library, so it is also how an older
+module picks up files added to the template since it was created.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--libs-dir</span> <span class="pre">DIR</span></code>: The directory that holds the library folders. Defaults to the <code class="docutils literal notranslate"><span class="pre">libs</span></code>
+directory that contains the script, so you normally do not need to set it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LIBRARY_NAME</span></code>: The name of the top-level library. If it does not exist, it will be created.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE_NAME</span></code>: The name of the module to create within the top-level library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LIBRARIES</span></code>: A list of libraries to reindex.</p>
+</section>
+<section id="output-files">
+<h2>Output Files<a class="headerlink" href="#output-files" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>: This is the library’s CMake file, holding its module list. The list is in dependency
+order and the order is maintained by hand: a module that uses another at configure time comes after it.
+Indexing keeps that order and appends new modules at the end, printing a note for each, so move a new
+module earlier when something already listed needs it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">libs/overview.rst</span></code>: The Library Modules page, whose toctree links every module page into the site.
+Indexing rewrites the library’s entries in that toctree, sorted, from the modules that have a
+<code class="docutils literal notranslate"><span class="pre">docs/index.rst</span></code>. A module page left out of every toctree fails the documentation build.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/docs/index.rst</span></code>: This is the top-level documentation for the module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/examples/CMakeLists.txt</span></code>: This is the CMake file that adds and builds example code.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/include/LIBRARY/MODULE/.gitkeep</span></code>: This file makes sure that the directory doesn’t disappear in GitHub,
+even when the directory is empty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/include/LIBRARY/MODULE/InitModule.hpp</span></code>: This file contains the prototypes to initialize the module. If the
+module does not need to be initialized, it can be safely deleted, along with <code class="docutils literal notranslate"><span class="pre">MODULE/src/InitModule.cpp</span></code>,
+and references to it can be removed from <code class="docutils literal notranslate"><span class="pre">MODULE/CMakeLists.txt</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/include/LIBRARY/MODULE/ModuleVars.hpp</span></code>: This file contains a class that initializes module-global
+variables in a way that makes them safe to access, and also ensures that they are properly deleted on program
+exit. The class is called <code class="docutils literal notranslate"><span class="pre">LIBRARY_MODULE_vars</span></code>, and it contains a <code class="docutils literal notranslate"><span class="pre">get_singleton()</span></code> static method for accessing
+the underlying data. If your module does not define any global variables, this file can be safely deleted,
+along with <code class="docutils literal notranslate"><span class="pre">MODULE/src/ModuleVars.cpp</span></code>, and references to it can be removed from <code class="docutils literal notranslate"><span class="pre">MODULE/CMakeLists.txt</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/src/.gitkeep</span></code>: This file makes sure that the directory doesn’t disappear on GitHub when empty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/src/InitModule.cpp</span></code>: This file contains the module initialization code. The functions to modify are
+<code class="docutils literal notranslate"><span class="pre">initialize_LIBRARY_MODULE</span></code> and <code class="docutils literal notranslate"><span class="pre">finalize_LIBRARY_MODULE</span></code>. If your code does not need to be initialized,
+you may delete it, along with <code class="docutils literal notranslate"><span class="pre">MODULE/include/LIBRARY/MODULE/InitModule.hpp</span></code>, and references to it can be removed from <code class="docutils literal notranslate"><span class="pre">MODULE/CMakeLists.txt</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/src/ModuleVars.cpp</span></code>: This file contains the code to handle the setup and access of module-global variables.
+It shouldn’t need to be modified. If your module does not have global variables, it can be safely deleted,
+along with <code class="docutils literal notranslate"><span class="pre">MODULE/include/LIBRARY/MODULE/ModuleVars.hpp</span></code>, and references to it can be removed from <code class="docutils literal notranslate"><span class="pre">MODULE/CMakeLists.txt</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/tests/performance/CMakeLists.txt</span></code>: The CMake file for adding performance tests.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/tests/unit/CMakeLists.txt</span></code>: The CMake file for adding unit tests. Add your test file names to the
+line that says <code class="docutils literal notranslate"><span class="pre">set(MODULETests)</span></code>. C++ tests use a <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> source, for example <code class="docutils literal notranslate"><span class="pre">set(TensorTests</span> <span class="pre">dot.cpp)</span></code>
+adds a test called <code class="docutils literal notranslate"><span class="pre">dot</span></code> built from <code class="docutils literal notranslate"><span class="pre">dot.cpp</span></code>. Python tests use the name <code class="docutils literal notranslate"><span class="pre">test_&lt;snake&gt;_python.py</span></code> and are
+run through pytest, for example <code class="docutils literal notranslate"><span class="pre">test_mixed_ops_python.py</span></code> registers as the Python test <code class="docutils literal notranslate"><span class="pre">MixedOpsPython</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/tests/CMakeLists.txt</span></code>: Top-level CMake file for tests.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/CMakeLists.txt</span></code>: Module CMake file. Add your headers and source files to this file. You
+can use the provided <code class="docutils literal notranslate"><span class="pre">set</span></code> lines. You can also add your own dependencies.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MODULE/README.rst</span></code>: A module-level readme file for documentation.</p>
+<section id="input-files">
+<h3>Input Files<a class="headerlink" href="#input-files" title="Link to this heading">#</a></h3>
+<p>For users who just want to create modules, you don’t need anything further. The following is only
+for those who want to modify the template files used to generate the outputs above. All files are
+interpreted as Python f-strings. As such, any bracket needs to be escaped. The following variable names
+are made available.</p>
+<p><code class="docutils literal notranslate"><span class="pre">module_name</span></code>: The name of the module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lib_name</span></code>: The name of the library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lib_symb</span></code>: The name of the library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pybind_flag</span></code>: When <code class="docutils literal notranslate"><span class="pre">--python</span></code> is given, this is <code class="docutils literal notranslate"><span class="pre">PYBIND</span></code> followed by a newline, which adds the
+<code class="docutils literal notranslate"><span class="pre">PYBIND</span></code> keyword to the <code class="docutils literal notranslate"><span class="pre">einsums_add_module</span></code> call. Otherwise it is empty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">docs_head</span></code>: The name of the library and module, followed by an appropriate amount of equals signs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">readme_head</span></code>: The name of the module, followed by an appropriate amount of equals signs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">export_depends</span></code>: If the current library is Einsums, it will be empty. Otherwise, it will contain <code class="docutils literal notranslate"><span class="pre">Einsums</span></code>,
+which will link the Einsums target to the library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gpu_head</span></code> and <code class="docutils literal notranslate"><span class="pre">gpu_foot</span></code>: Puts an if-statement around the CMake code that only evaluates when GPU support
+is enabled.</p>
+<p><code class="docutils literal notranslate"><span class="pre">modules</span></code>: Contains a list of modules in a library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">module_docs</span></code>: Contains a list of module documentation paths in a library.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="documenting.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Documenting the Code</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="einsums_command.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The einsums Command</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">Options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-files">Output Files</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-files">Input Files</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gesv:
+
+===================
+einsums::blas::gesv
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t gesv(int_t n, int_t nrhs, T *a, int_t lda, int_t *ipiv, T *b, int_t ldb)
+
+   Solve a system of linear equations.
+
+   Solves equations of the following form.
+
+   .. math::
+
+      \mathbf{A}\mathbf{x} = \mathbf{B}
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of rows and columns of :math:`\mathbf{A}` and rows :math:`\mathbf{B}`.
+   :param nrhs: The number of columns of :math:`\mathbf{B}`
+   :param a: The coefficient matrix. On exit, it contains the LU decomposition of ``a``, where the lower-triangle matrix has unit diagonal entries, which are not stored.
+   :param lda: The leading dimension of ``a``.
+   :param ipiv: A list of pivots used in the decomposition.
+   :param b: The results matrix. On exit, it contains the values of :math:`\mathbf{x}` that satisfy the system of equations.
+   :param ldb: The leading dimension of ``b``.
+   :returns: 0 on success. If positive, then the matrix was singular. If negative, then a bad value was passed to the function. The absolute value indicates which parameter was bad.

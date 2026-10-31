@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.shift:
+
+=============================
+einsums::compute_graph::shift
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept AType> void shift(typename AType::ValueType beta, AType *A)
+
+   Graph-aware in-place scalar shift: ``A += beta``.
+
+   The additive complement of ``scale``. Unlike the Python-callable
+   ``element_transform_python`` (a Python call per element), this is a tight
+   compiled loop, so it's the fast backing for the numpy-style scalar ``+`` /
+   ``-`` operators (e.g. ``A + 1.0``, ``A += c``). It works in place with no
+   allocation, which is what lets a denominator scratch be reused across a loop
+   instead of allocating a fresh tensor per iteration. Records an opaque @ref
+   OpKind::Custom node when capturing (no einsum pass rewrites it), or runs
+   eagerly otherwise.
+
+   Walks the contiguous backing storage (``data()[0..size())``), matching
+   ``element_transform_python``'s convention. This is correct for dense tensors
+   and the contiguous views the operators produce.

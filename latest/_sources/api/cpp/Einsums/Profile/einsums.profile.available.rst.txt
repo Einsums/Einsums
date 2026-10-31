@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.profile.available:
+
+===========================
+einsums::profile::available
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Profile/Profile.hpp``.
+
+.. cpp:namespace:: einsums::profile
+
+.. cpp:function:: constexpr bool available()
+
+   Whether this build records anything. ``False`` means einsums was built with
+   ``EINSUMS_WITH_PROFILER=OFF``: the API still exists but does nothing.

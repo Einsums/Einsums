@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.trsv:
+
+===================
+einsums::blas::trsv
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void trsv(char uplo, char trans, char diag, int_t n, const T *a, int_t lda, T *x, int_t incx)
+
+   Solve a triangular system with a single right-hand side.
+
+   Solves :math:`\mathbf{A}\mathbf{x} = \mathbf{b}`,
+   :math:`\mathbf{A}^T\mathbf{x} = \mathbf{b}`, or
+   :math:`\mathbf{A}^H\mathbf{x} = \mathbf{b}` in place, where
+   :math:`\mathbf{A}` is triangular. No singularity check is performed; see
+   trtrs() for the checked, multiple-right-hand-side variant.
+
+   :param uplo: 'U': A is upper triangular; 'L': lower triangular.
+   :param trans: 'N', 'T', or 'C' selecting the system form.
+   :param diag: 'U': A is unit triangular; 'N': non-unit.
+   :param n: Order of A.
+   :param a: The triangular matrix A.
+   :param lda: Leading dimension of a.
+   :param x: On entry the right-hand side b; on exit the solution x.
+   :param incx: Stride between elements of x.

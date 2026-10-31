@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.print.clear_output_sink:
+
+=================================
+einsums::print::clear_output_sink
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Print.hpp``.
+
+.. cpp:namespace:: einsums::print
+
+.. cpp:function:: void clear_output_sink()
+
+   Remove the output sink callback.

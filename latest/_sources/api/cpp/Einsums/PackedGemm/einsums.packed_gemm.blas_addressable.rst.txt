@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.blas_addressable:
+
+======================================
+einsums::packed_gemm::blas_addressable
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <BasicTensorConcept TensorType> bool blas_addressable(const TensorType &t)
+
+   Whether a vendor GEMM or GEMV can address rank-2 ``t`` as a matrix, in either orientation.
+
+   BLAS needs a unit stride along one axis and the other axis's stride as the leading dimension
+   (an axis of extent one is never stepped, so it constrains nothing). A matrix with neither, such
+   as a diagonal folded out of a rank-3 operand, has no BLAS form, and the rank-erased kernels run a
+   hand-written loop for it; PackedGemm packs from any strides, so it keeps such a contraction
+   rather than deferring it to the direct route.

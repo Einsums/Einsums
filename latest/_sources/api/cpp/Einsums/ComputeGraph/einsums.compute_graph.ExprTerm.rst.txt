@@ -1,0 +1,106 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExprTerm:
+
+================================
+einsums::compute_graph::ExprTerm
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExprTerm
+
+   One node of the expression arena.
+
+   A struct with per-kind fields rather than a variant, because the arena is
+   serialized field-by-field into the round-trip encoding, and a variant would put
+   an alternative index between the writer and the names it is supposed to write.
+   Fields not belonging to a term's kind hold their defaults.
+
+
+   .. cpp:function:: bool ragged() const
+
+      Whether this term is a ragged leaf, standing for a member list.
+
+      :returns: True when the term is a leaf over ``members``.
+
+
+   .. cpp:member:: TermKind kind
+
+   .. cpp:member:: std::vector<ExprIndex> indices
+
+      Free indices of the value this term produces, in output order.
+
+
+   .. cpp:member:: std::vector<TermId> operands
+
+      Children, by arena index. Empty for ``TermKind::Leaf``.
+
+
+   .. cpp:member:: std::string name
+
+      ``TermKind::Leaf``: the tensor's name. ``TermKind::Elementwise``: the
+      registered kernel's name. Empty otherwise.
+
+
+   .. cpp:member:: TensorId tensor
+
+      ``TermKind::Leaf``: the graph tensor this leaf denotes. Left at its
+      default on a RAGGED leaf, whose value is a list rather than a tensor;
+      read ``members`` instead and gate on ``ragged``.
+
+
+   .. cpp:member:: std::vector<TensorId> members
+
+      ``TermKind::Leaf``: the member list of a RAGGED leaf, in member order,
+      which is also its identity. Empty on an ordinary leaf.
+
+
+   .. cpp:member:: FamilyId family
+
+      The family whose member letter this term carries, or ``invalid_family``.
+
+
+   .. cpp:member:: PrefactorScalar factor
+
+      ``TermKind::Scale``: the factor. ``TermKind::Contraction``: the product
+      prefactor on the operands.
+
+
+   .. cpp:member:: std::vector<std::vector<ExprIndex>> operand_indices
+
+      ``TermKind::Contraction``: one index list per operand, in operand order.
+
+
+   .. cpp:member:: std::vector<bool> conjugate
+
+      ``TermKind::Contraction``: whether to conjugate each operand.
+
+
+   .. cpp:member:: OpKind element_kind
+
+      ``TermKind::Elementwise``: the op kind whose descriptor ``descriptor`` holds.
+
+
+   .. cpp:member:: OpData descriptor
+
+      ``TermKind::Elementwise``: the node descriptor, carried rather than
+      interpreted. See the file note on why elementwise stays named.
+
+
+   .. cpp:member:: SymbolicCost cost
+
+      What this term costs, as a polynomial in space scales. Populated for
+      ``TermKind::Contraction``, where the cost model has something to say;
+      default (empty, meaning "nothing claimed") for the other kinds, because a
+      zero cost and an unknown cost are different and only one of them is true.

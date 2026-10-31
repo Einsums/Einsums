@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Assertion_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Assert.hpp``.
+
+.. c:macro:: EINSUMS_ASSERT(expr)
+
+   This macro asserts that ``expr`` evaluates to true, but does not have a custom message.
+
+   .. seealso::
+
+      EINSUMS_ASSERT_MSG
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Throws an exception instead of calling exit when the expression is false.
+
+   :param expr: The expression to test.
+   :throws assertion_error: If the expression is false.
+
+
+.. c:macro:: EINSUMS_ASSERT_MSG(expr, ...)
+
+   This macro asserts that ``expr`` evaluates to true.
+
+   On failure the assertion handler (see set_assertion_handler()) reports the location, expression
+   and message. Enabled when *EINSUMS_DEBUG* is set, the default for `CMAKE_BUILD_TYPE=Debug`.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Throws an exception instead of calling exit when the expression is false.
+
+   :param expr: The expression to assert on. This can either be an expression that's convertible to bool or a callable which returns bool
+   :param ...: The optional message that is used to give further information if the assert fails. This should be convertible to a std::string
+   :throws assertion_error: If the expression is false.

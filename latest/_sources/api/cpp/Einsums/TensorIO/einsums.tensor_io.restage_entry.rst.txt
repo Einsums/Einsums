@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.restage_entry:
+
+=================================
+einsums::tensor_io::restage_entry
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void restage_entry(std::string path, std::string name, std::vector<std::size_t> order)
+
+   Store the entry ``name`` of ``path`` with its axes in ``order``, moving its elements.
+
+   The entry holds its old layout or its new one whenever the program stops, and the file needs room
+   for a second copy of it while this runs. See ``TensorFile::restage``.
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file.
+   :param name: The entry.
+   :param order: The declared axis to store at each position.
+   :throws std::runtime_error: when the file or the entry is missing.
+   :throws std::invalid_argument: when ``order`` is not a permutation of the entry's axes.

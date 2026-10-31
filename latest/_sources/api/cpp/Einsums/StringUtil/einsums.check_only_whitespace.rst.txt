@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.check_only_whitespace:
+
+==============================
+einsums::check_only_whitespace
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/FromString.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename Char> void check_only_whitespace(const std::basic_string<Char> &s, std::size_t pos)
+
+   Checks to see if all the characters in the string past a certain point are all whitespace.
+
+   .. versionadded:: 1.0.0
+
+   :tparam Char: The kind of character.
+   :param s: The string to check.
+   :param pos: The position to start checking from.
+   :throws std::invalid_argument: Throws if there are non-whitespace characters after the requested position.

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.register_pre_startup_function:
+
+======================================
+einsums::register_pre_startup_function
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/StartupFunction.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void register_pre_startup_function(StartupFunctionType f)
+
+   Add a function to run before einsums_main and before every startup function.
+
+   .. note::
+
+      Callable before initialization; throws once the pre-startup functions have started.
+
+   .. seealso::
+
+      *einsums::register_startup_function()*
+
+   .. versionadded:: 1.0.0
+
+   :param f: [in] The function to register.

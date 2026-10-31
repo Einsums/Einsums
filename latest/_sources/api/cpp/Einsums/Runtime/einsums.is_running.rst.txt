@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.is_running:
+
+===================
+einsums::is_running
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Runtime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: bool is_running()
+
+   Test whether the runtime system is currently running.
+
+   Whether the state is *einsums::RuntimeState::Running*.
+
+   .. versionadded:: 1.0.0

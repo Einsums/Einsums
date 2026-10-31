@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.last_team_size:
+
+====================================
+einsums::packed_gemm::last_team_size
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: int & last_team_size()
+
+   Threads per team in the most recent packed contraction on this thread: 1 when every thread
+   packs its own B panel, the cores sharing an L3 when they share one (see blis_contraction).
+   Test introspection only, like ``last_packed_engine``.

@@ -1,0 +1,83 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BoundExpr:
+
+=================================
+einsums::compute_graph::BoundExpr
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/BoundExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BoundExpr
+
+   A scalar integer expression that can be resolved at execute time.
+
+   Used to specify slice bounds on ``ViewDesc`` and similar runtime-resolvable
+   scalars. A ``BoundExpr`` is one of:
+
+   - **Const**:    a known integer literal (e.g. ``0``, ``5``).
+   - **Param**:    a named lookup into a ``ParamTable``. Resolved by walking the active pipeline's parameter table at execute time. Codegen emits ``params.<name>``.
+   - **Callback**: a ``std::function<int64_t()>`` evaluated at execute time. Most flexible but interpreted-mode only, since codegen has to either fall back to a thunk or refuse the graph.
+
+   Implicit conversions are provided so callers can write
+   ``cg::Range{0, 5}``, ``cg::Range{0, "n_occ"}``, or
+   ``cg::Range{0, [&]{ return n_occ; }}`` interchangeably.
+
+
+   .. cpp:function:: BoundExpr() = default
+
+   .. cpp:function:: template <std::integral I> BoundExpr(I v)
+
+   .. cpp:function:: BoundExpr(const char *param_name)
+
+   .. cpp:function:: BoundExpr(std::string param_name)
+
+   .. cpp:function:: BoundExpr(std::function<std::int64_t ()> fn)
+
+   .. cpp:function:: const Storage & storage() const noexcept
+
+   .. cpp:function:: bool is_const() const noexcept
+
+      True if this is a compile-time literal. Optimization passes may
+      special-case ``is_const()`` bounds (e.g., fuse two views with
+      statically-known overlapping ranges).
+
+
+   .. cpp:function:: bool is_param() const noexcept
+
+   .. cpp:function:: bool is_callback() const noexcept
+
+   .. cpp:function:: std::int64_t const_value() const
+
+      Read the constant value. Precondition: ``is_const()`` is true.
+
+
+   .. cpp:function:: const std::string & param_name() const
+
+      Read the referenced parameter name. Precondition: ``is_param()``.
+
+
+   .. cpp:function:: std::int64_t resolve(const ParamTable &params) const
+
+      Resolve the expression to a concrete integer.
+
+      - ``Const``:    returns the literal.
+      - ``Param``:    looks up the name in ``params``; throws if absent.
+      - ``Callback``: invokes the captured lambda.
+
+
+   .. cpp:member:: std::int64_t value
+
+   .. cpp:member:: std::string name
+
+   .. cpp:member:: std::function<std::int64_t ()> fn

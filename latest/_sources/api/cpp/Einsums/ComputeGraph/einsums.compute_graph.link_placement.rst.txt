@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.link_placement:
+
+======================================
+einsums::compute_graph::link_placement
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: LinkPlacement link_placement(const std::vector<std::string> &indices, const std::vector<std::string> &link_indices)
+
+   Classify ``indices`` by where the members of ``link_indices`` sit.
+
+   .. seealso::
+
+      LinkPlacement

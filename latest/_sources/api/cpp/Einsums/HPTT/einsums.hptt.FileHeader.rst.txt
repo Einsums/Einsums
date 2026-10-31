@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.FileHeader:
+
+=========================
+einsums::hptt::FileHeader
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Files.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:class:: FileHeader
+
+   File header specification for transpose files.
+
+   ``version[2]`` is the format version (plan_file_format) and ``version[3]`` the writer's
+   endianness ('B' or 'L'); the other two bytes are zero.
+
+
+   .. cpp:member:: char magic[4]
+
+   .. cpp:member:: char version[4]
+
+   .. cpp:member:: uint32_t checksum

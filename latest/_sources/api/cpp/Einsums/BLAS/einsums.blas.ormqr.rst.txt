@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.ormqr:
+
+====================
+einsums::blas::ormqr
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t ormqr(char side, char trans, int_t m, int_t n, int_t k, const T *a, int_t lda, const T *tau, T *c, int_t ldc)
+
+   Multiply a matrix by the orthogonal/unitary Q from geqrf without forming Q explicitly.
+
+   Computes C := op(Q) * C (side='L') or C := C * op(Q) (side='R').
+   For real types: op(Q) = Q ('N') or Q^T ('T').
+   For complex types: op(Q) = Q ('N') or Q^H ('C').
+
+   :param side: 'L' or 'R'.
+   :param trans: 'N', 'T' (real), or 'C' (complex).
+   :param m: Rows of C.
+   :param n: Columns of C.
+   :param k: Number of reflectors from geqrf.
+   :param a: Householder vectors from geqrf.
+   :param lda: Leading dimension of a.
+   :param tau: Scalar factors from geqrf.
+   :param c: The m×n matrix C, overwritten on exit.
+   :param ldc: Leading dimension of c.

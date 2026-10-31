@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Python &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/Python/docs/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/Python/docs/index.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Runtime" href="../../Runtime/docs/index.html" />
+    <link rel="prev" title="Profiling" href="../../Profile/docs/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Python</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="modules-einsums-python">
+<span id="id1"></span><h1>Python<a class="headerlink" href="#modules-einsums-python" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Python</span></code> module exposes Einsums to Python via pybind11. The bindings are
+generated at build time from the C++ headers by <a class="reference external" href="https://github.com/Einsums/Apiary">Apiary</a>, a purpose-built libclang tool packaged
+separately, so the Python surface tracks the C++ surface without
+hand-written glue.</p>
+<p>This page covers the mechanism and the package layout. For how to <em>use</em> the
+bindings, see <a class="reference internal" href="../../../../user/python.html"><span class="doc">Einsums in Python</span></a>; for the full generated
+listing, see the <a class="reference internal" href="../../../../reference/python/index.html#api-python"><span class="std std-ref">Python API reference</span></a>.</p>
+<section id="how-the-bindings-are-generated">
+<h2>How the bindings are generated<a class="headerlink" href="#how-the-bindings-are-generated" title="Link to this heading">#</a></h2>
+<p>Apiary parses each annotated header with libclang, builds a JSON IR of the
+declarations marked for export, and emits both the pybind11 translation units
+and the <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> stubs from that one IR. Nothing is hand-maintained, so a
+signature cannot drift between C++, Python, and the type stubs.</p>
+<p>Headers opt in with <code class="docutils literal notranslate"><span class="pre">APIARY_*</span></code> annotations:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_EXPOSE</span></code></dt><dd><p>Bind this declaration.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_MODULE(&quot;graph&quot;)</span></code></dt><dd><p>Place it in the <code class="docutils literal notranslate"><span class="pre">einsums.graph</span></code> submodule rather than the package root.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_AS(&quot;scale&quot;,</span> <span class="pre">einsums::RuntimeTensor&lt;double&gt;)</span></code></dt><dd><p>Instantiate a template at a concrete type and bind it under the given name.
+Overloads that share a Python signature but differ only in element type are
+folded into <strong>one</strong> Python entry taking a <code class="docutils literal notranslate"><span class="pre">dtype=</span></code> keyword.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_HOLDER(std::shared_ptr)</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_NOCOPY</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_NOMOVE</span></code></dt><dd><p>Holder and value-semantics control.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_GETTER(&quot;num_merged&quot;)</span></code></dt><dd><p>Bind an accessor as a Python <strong>property</strong>, not a method. This is why the
+optimization passes’ counters are <code class="docutils literal notranslate"><span class="pre">p.num_merged</span></code>, without parentheses.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">APIARY_RELEASE_GIL</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_RVP(...)</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_KEEP_ALIVE(0,</span> <span class="pre">1)</span></code></dt><dd><p>GIL release around long-running calls, return-value policy, and lifetime
+tethering for views.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">ComputeGraph/Operations.hpp</span></code> is the reference example: to expose a new operand
+type, add an <code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_AS</span></code> line and the codegen folds it into the
+existing dtype-dispatched entry and regenerates the stubs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A symbol missing <code class="docutils literal notranslate"><span class="pre">EINSUMS_EXPORT</span></code> breaks <code class="docutils literal notranslate"><span class="pre">_core.so</span></code> at dlopen time even
+when the C++ tests link fine. Binding functions that print must call
+<code class="docutils literal notranslate"><span class="pre">std::cout.flush()</span></code> for pytest’s <code class="docutils literal notranslate"><span class="pre">capfd</span></code> to see the output.</p>
+</div>
+</section>
+<section id="the-package">
+<h2>The package<a class="headerlink" href="#the-package" title="Link to this heading">#</a></h2>
+<p>The native extension lives at <code class="docutils literal notranslate"><span class="pre">${CMAKE_BINARY_DIR}/lib/einsums/_core.*.so</span></code>.
+Thin pure-Python shells in <code class="docutils literal notranslate"><span class="pre">libs/Einsums/Python/python/einsums/</span></code> re-export from
+it lazily, so the first attribute access is what brings the runtime up and
+<code class="docutils literal notranslate"><span class="pre">einsums.rc</span></code> still has effect at import time.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">einsums</span></code></dt><dd><p>Tensor types (<code class="docutils literal notranslate"><span class="pre">RuntimeTensor{F,D,C,Z}</span></code>, the matching views, and
+<code class="docutils literal notranslate"><span class="pre">TiledRuntimeTensor{F,D,C,Z}</span></code>), the NumPy-style factories (<code class="docutils literal notranslate"><span class="pre">zeros</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ones</span></code>, <code class="docutils literal notranslate"><span class="pre">empty</span></code>, <code class="docutils literal notranslate"><span class="pre">full</span></code>, <code class="docutils literal notranslate"><span class="pre">eye</span></code>, <code class="docutils literal notranslate"><span class="pre">array</span></code>, <code class="docutils literal notranslate"><span class="pre">asarray</span></code> and their
+<code class="docutils literal notranslate"><span class="pre">*_like</span></code> forms), <code class="docutils literal notranslate"><span class="pre">create_random_tensor</span></code> / <code class="docutils literal notranslate"><span class="pre">create_zero_tensor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">einsum</span></code>, <code class="docutils literal notranslate"><span class="pre">permute</span></code>, and the configuration entry points.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.linalg</span></code></dt><dd><p><a class="reference internal" href="../../LinearAlgebra/docs/index.html#modules-einsums-linearalgebra"><span class="std std-ref">LinearAlgebra</span></a>: <code class="docutils literal notranslate"><span class="pre">gemm</span></code>, <code class="docutils literal notranslate"><span class="pre">gemv</span></code>,
+<code class="docutils literal notranslate"><span class="pre">syev</span></code>/<code class="docutils literal notranslate"><span class="pre">heev</span></code>, <code class="docutils literal notranslate"><span class="pre">svd</span></code>, <code class="docutils literal notranslate"><span class="pre">axpy</span></code>/<code class="docutils literal notranslate"><span class="pre">axpby</span></code>, <code class="docutils literal notranslate"><span class="pre">direct_product</span></code>,
+<code class="docutils literal notranslate"><span class="pre">direct_division</span></code>, <code class="docutils literal notranslate"><span class="pre">element_transform</span></code>, the norms, and the rest.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.graph</span></code></dt><dd><p><a class="reference internal" href="../../ComputeGraph/docs/index.html#modules-einsums-computegraph"><span class="std std-ref">ComputeGraph</span></a>: <code class="docutils literal notranslate"><span class="pre">Graph</span></code>, <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">CaptureContext</span></code>, the executors, the bound optimization
+passes, and the Python-side <code class="docutils literal notranslate"><span class="pre">capture</span></code> / <code class="docutils literal notranslate"><span class="pre">default_pass_manager</span></code> /
+<code class="docutils literal notranslate"><span class="pre">diis</span></code> helpers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.io</span></code></dt><dd><p><a class="reference internal" href="../../TensorIO/docs/index.html#modules-einsums-tensorio"><span class="std std-ref">TensorIO</span></a>: <code class="docutils literal notranslate"><span class="pre">TensorFile</span></code>, <code class="docutils literal notranslate"><span class="pre">Slab</span></code>,
+<code class="docutils literal notranslate"><span class="pre">read</span></code> / <code class="docutils literal notranslate"><span class="pre">write</span></code> and the slab-granular <code class="docutils literal notranslate"><span class="pre">read_slice</span></code> / <code class="docutils literal notranslate"><span class="pre">write_slice</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.gpu</span></code></dt><dd><p>Device queries: <code class="docutils literal notranslate"><span class="pre">device_name</span></code>, <code class="docutils literal notranslate"><span class="pre">device_synchronize</span></code>,
+<code class="docutils literal notranslate"><span class="pre">available_device_memory</span></code>, and the mock-device memory limit used by tests.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.profile</span></code></dt><dd><p><a class="reference internal" href="../../Profile/docs/index.html#modules-einsums-profile"><span class="std std-ref">Profile</span></a> annotations: the <code class="docutils literal notranslate"><span class="pre">section</span></code>
+context manager, <code class="docutils literal notranslate"><span class="pre">annotate</span></code> / <code class="docutils literal notranslate"><span class="pre">annotate_dims</span></code>, <code class="docutils literal notranslate"><span class="pre">mem_alloc</span></code> /
+<code class="docutils literal notranslate"><span class="pre">mem_free</span></code>, <code class="docutils literal notranslate"><span class="pre">print_report</span></code>, <code class="docutils literal notranslate"><span class="pre">export_json</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.testing</span></code></dt><dd><p>Pytest helpers, see <a class="reference internal" href="#einsums-testing">einsums.testing</a> below.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">einsums.interop</span></code></dt><dd><p>Bridges to other codes, see <a class="reference internal" href="#einsums-interop">einsums.interop</a> below.</p>
+</dd>
+</dl>
+<p>A typical session:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">einsums</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">la</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">einsums.graph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cg</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_zero_tensor</span><span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="s2">"matmul"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">la</span><span class="o">.</span><span class="n">gemm</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">())</span>
+<span class="n">g</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="einsums-graph">
+<h2>einsums.graph<a class="headerlink" href="#einsums-graph" title="Link to this heading">#</a></h2>
+<p>The graph module carries the full capture surface, plus a few things that only
+exist on the Python side.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">cg.capture(graph)</span></code></dt><dd><p>Context manager that calls <code class="docutils literal notranslate"><span class="pre">CaptureContext.begin_capture</span></code> on entry and
+<code class="docutils literal notranslate"><span class="pre">end_capture</span></code> on exit (<code class="docutils literal notranslate"><span class="pre">CaptureGuard</span></code> itself is not bound). It also maintains a Python-side
+stack so the NumPy-ergonomics operators know where to allocate the
+intermediates for expressions like <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&#64;</span> <span class="pre">B</span></code>: inside capture
+they come from <code class="docutils literal notranslate"><span class="pre">graph.create_zero_tensor</span></code> rather than the process-owned
+factory, which is what keeps them alive past <code class="docutils literal notranslate"><span class="pre">graph.execute()</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cg.current_graph()</span></code></dt><dd><p>The innermost graph being captured, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cg.default_pass_manager()</span></code></dt><dd><p>A fresh <code class="docutils literal notranslate"><span class="pre">PassManager</span></code> pre-loaded with the canonical pass list, mirroring
+C++’s <code class="docutils literal notranslate"><span class="pre">PassManager::create_default()</span></code>. The static factory cannot be bound
+directly (<code class="docutils literal notranslate"><span class="pre">PassManager</span></code> holds non-copyable members), so this constructs an
+empty one and calls <code class="docutils literal notranslate"><span class="pre">populate_default()</span></code> in place.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cg.diis(pairs,</span> <span class="pre">k=8)</span></code> / <code class="docutils literal notranslate"><span class="pre">cg.DIISAccelerator</span></code></dt><dd><p>Pulay DIIS extrapolation for fixed-point iterations captured as graph loops.
+It keeps a short history of (amplitude, step) snapshots and replaces the
+amplitudes with the least-squares extrapolant between replays, taking the
+update step itself as the error vector.
+<code class="docutils literal notranslate"><span class="pre">DIISAccelerator</span></code> is a shell over the C++ <code class="docutils literal notranslate"><span class="pre">DiisAccelerator&lt;T&gt;</span></code>: a step is
+one call across the boundary whatever the pair count, where the earlier
+implementation made hundreds. <code class="docutils literal notranslate"><span class="pre">cg.diis</span></code> returns it for pairs of dense
+runtime tensors sharing one dtype, and falls back to the Python
+<code class="docutils literal notranslate"><span class="pre">cg._PyDiis</span></code> - the same algorithm, driven operand by operand - for tiled
+amplitudes or mixed dtypes. <code class="docutils literal notranslate"><span class="pre">cg.diis_step(accelerator)</span></code> is the captured
+form: one graph node, reading every amplitude and step tensor and writing
+every amplitude, so the hazard scan orders it inside a loop body.</p>
+</dd>
+</dl>
+<p>These optimization passes are bound as Python classes:
+<code class="docutils literal notranslate"><span class="pre">ProvenancePropagation</span></code>, <code class="docutils literal notranslate"><span class="pre">SpacePropagation</span></code>, <code class="docutils literal notranslate"><span class="pre">CrossSpaceValidation</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DeltaElimination</span></code>, <code class="docutils literal notranslate"><span class="pre">AntisymmetryDetection</span></code>, <code class="docutils literal notranslate"><span class="pre">AntisymmetrizerLinearity</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AntisymmetryInference</span></code>, <code class="docutils literal notranslate"><span class="pre">AntisymmetrizerFolding</span></code>, <code class="docutils literal notranslate"><span class="pre">AntisymmetrizerExpansion</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ConstantFolding</span></code>, <code class="docutils literal notranslate"><span class="pre">ScaleAbsorption</span></code>, <code class="docutils literal notranslate"><span class="pre">PermuteFusion</span></code>, <code class="docutils literal notranslate"><span class="pre">CSE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DeadNodeElimination</span></code>, <code class="docutils literal notranslate"><span class="pre">SymmetrizedAccumulation</span></code>, <code class="docutils literal notranslate"><span class="pre">ElementWiseFusion</span></code>,
+<code class="docutils literal notranslate"><span class="pre">LinearCombinationContractionFolding</span></code>, <code class="docutils literal notranslate"><span class="pre">DistributiveFactoring</span></code>,
+<code class="docutils literal notranslate"><span class="pre">LoopInvariantHoisting</span></code>, <code class="docutils literal notranslate"><span class="pre">ScratchPrivatization</span></code>, <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">LayoutAssignment</span></code>, <code class="docutils literal notranslate"><span class="pre">ContractionPlanning</span></code>, <code class="docutils literal notranslate"><span class="pre">Reorder</span></code>, <code class="docutils literal notranslate"><span class="pre">Materialization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SymmetryPropagation</span></code>, <code class="docutils literal notranslate"><span class="pre">ScalingAnalysis</span></code>, <code class="docutils literal notranslate"><span class="pre">StreamContractionFusion</span></code>,
+<code class="docutils literal notranslate"><span class="pre">InplaceOptimization</span></code>, <code class="docutils literal notranslate"><span class="pre">MemoryPlanning</span></code>, and the opt-in <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BasisTruncation</span></code> and <code class="docutils literal notranslate"><span class="pre">LaplaceTransform</span></code>. <code class="docutils literal notranslate"><span class="pre">FactorizationPass</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RegionRewrite</span></code> and <code class="docutils literal notranslate"><span class="pre">RegionIdentity</span></code> are bound as bases for writing passes.
+Each concrete pass is constructible standalone and exposes its counters as
+<strong>properties</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p</span>  <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">InplaceOptimization</span><span class="p">()</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">num_merged</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">num_candidates</span><span class="p">)</span>   <span class="c1"># properties, not methods</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cg.default_pass_manager()</span></code> still runs the whole C++ pipeline, including the
+passes that have no Python class of their own. Only individually-constructible
+passes are listed above.</p>
+</section>
+<section id="einsums-testing">
+<h2>einsums.testing<a class="headerlink" href="#einsums-testing" title="Link to this heading">#</a></h2>
+<p>Helpers for the pytest suites, and for anyone writing numerical tests against
+Einsums:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">ALL_DTYPES</span></code> / <code class="docutils literal notranslate"><span class="pre">REAL_DTYPES</span></code> / <code class="docutils literal notranslate"><span class="pre">COMPLEX_DTYPES</span></code></dt><dd><p>Parametrization lists. Prefer parametrizing over <code class="docutils literal notranslate"><span class="pre">ALL_DTYPES</span></code>:
+float64-only graph tests have a history of hiding real bugs.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">EXACT_DTYPES</span></code> / <code class="docutils literal notranslate"><span class="pre">EXACT_PREFACTORS</span></code></dt><dd><p>The subset for which integer-valued data contracts exactly.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">tolerance_for(dtype)</span></code></dt><dd><p>The (rtol, atol) pair for a dtype.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">assert_close(actual,</span> <span class="pre">expected)</span></code></dt><dd><p>Tolerance-aware comparison that infers the dtype from the operands.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">integer_data(shape,</span> <span class="pre">dtype,</span> <span class="pre">rng,</span> <span class="pre">radius=4)</span></code> / <code class="docutils literal notranslate"><span class="pre">assert_exact(actual,</span> <span class="pre">expected)</span></code></dt><dd><p>Exact-arithmetic testing: integer-valued inputs small enough that the
+contraction stays inside the 2**53 exact range, then an exact comparison.</p>
+</dd>
+</dl>
+<p>Python tests live per module under
+<code class="docutils literal notranslate"><span class="pre">libs/Einsums/&lt;Module&gt;/tests/unit/test_*_python.py</span></code>, never in the top-level
+<code class="docutils literal notranslate"><span class="pre">tests/</span></code>. Run one by hand with:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHONPATH</span><span class="o">=</span><span class="n">build</span><span class="o">/</span><span class="n">lib</span><span class="w"> </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pytest</span><span class="w"> </span><span class="n">libs</span><span class="o">/</span><span class="n">Einsums</span><span class="o">/</span><span class="n">ComputeGraph</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">unit</span><span class="o">/</span><span class="n">test_einsum_python</span><span class="p">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</section>
+<section id="einsums-interop">
+<h2>einsums.interop<a class="headerlink" href="#einsums-interop" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">einsums.interop.psi4</span></code> assembles Einsums tensors from psi4’s neutral integral
+exports. Nothing in it imports psi4: every function is duck-typed against the
+data it needs (<code class="docutils literal notranslate"><span class="pre">nirrep()</span></code> / <code class="docutils literal notranslate"><span class="pre">symmetry()</span></code> / <code class="docutils literal notranslate"><span class="pre">.nph</span></code> for symmetry-blocked
+matrices, or any 2D array-like for single-block data), so the two projects never
+need to be compiled against each other and either side can be rebuilt freely.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">from_matrix</span></code></dt><dd><p>A symmetry-blocked <code class="docutils literal notranslate"><span class="pre">psi4.core.Matrix</span></code> (<code class="docutils literal notranslate"><span class="pre">mints.so_overlap()</span></code> and friends).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">so_eri</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">mints.so_eri_blocked()</span></code>: a list of <code class="docutils literal notranslate"><span class="pre">([hp,</span> <span class="pre">hq,</span> <span class="pre">hr,</span> <span class="pre">hs],</span> <span class="pre">Matrix)</span></code> pairs.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">mo_bra_half_transform</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">mints.mo_bra_half_transform(C1,</span> <span class="pre">C2)</span></code>: an <code class="docutils literal notranslate"><span class="pre">(n1*n2,</span> <span class="pre">nbf*nbf)</span></code> Matrix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">df_tensor</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">DFTensor.Qso()</span></code> / <code class="docutils literal notranslate"><span class="pre">Qov()</span></code> / …: a <code class="docutils literal notranslate"><span class="pre">(naux,</span> <span class="pre">d2*d3)</span></code> Matrix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">dense</span></code></dt><dd><p>Any single-block 2D array-like.</p>
+</dd>
+</dl>
+</section>
+<section id="build-configuration">
+<h2>Build configuration<a class="headerlink" href="#build-configuration" title="Link to this heading">#</a></h2>
+<p>The Python bindings are gated on a single CMake option:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cmake</span><span class="w"> </span><span class="o">-</span><span class="n">S</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="o">-</span><span class="n">B</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="o">-</span><span class="n">GNinja</span><span class="w"> </span><span class="o">-</span><span class="n">DEINSUMS_BUILD_PYTHON</span><span class="o">=</span><span class="n">ON</span>
+</pre></div>
+</div>
+<p>Turning this on builds the Apiary codegen tool, runs it over every annotated
+C++ header, compiles the generated pybind translation units into
+<code class="docutils literal notranslate"><span class="pre">_core.cpython-*.so</span></code>, emits the <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> stubs for editor and IDE integration,
+and registers the Python unit tests with ctest. It also drives the Python half
+of the documentation build, which renders the same JSON IR to reStructuredText.</p>
+</section>
+<section id="einsums-rc">
+<h2>einsums.rc<a class="headerlink" href="#einsums-rc" title="Link to this heading">#</a></h2>
+<p>Pre-import configuration for the runtime. Set fields before the first compute
+call and they are turned into <code class="docutils literal notranslate"><span class="pre">--einsums:*</span></code> flags and handed to
+<code class="docutils literal notranslate"><span class="pre">einsums::initialize()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums.rc</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">rc</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">rc</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">rc</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">rc</span><span class="o">.</span><span class="n">pass_disable</span> <span class="o">=</span> <span class="s2">"GEMMBatching,ContractionPlanning"</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>            <span class="c1"># the first compute call initializes the runtime</span>
+</pre></div>
+</div>
+<p>Once the runtime is up the fields are read-only as far as Einsums is concerned.
+Changing them post-init has no effect.</p>
+<p>There is a field per option and nothing else, because <code class="docutils literal notranslate"><span class="pre">rc.py</span></code> is generated
+from the option descriptors: apiary parses each module’s <code class="docutils literal notranslate"><span class="pre">Options.hpp</span></code> and
+<code class="docutils literal notranslate"><span class="pre">libs/Einsums/Python/tools/generate_rc.py</span></code> renders the file from what it
+finds, with the prose kept in <code class="docutils literal notranslate"><span class="pre">rc.py.in</span></code>. A field’s name is its option’s name
+with the leading <code class="docutils literal notranslate"><span class="pre">einsums:</span></code> dropped and every <code class="docutils literal notranslate"><span class="pre">:</span></code> and <code class="docutils literal notranslate"><span class="pre">-</span></code> turned into an
+underscore, so <code class="docutils literal notranslate"><span class="pre">einsums:profile:report</span></code> is <code class="docutils literal notranslate"><span class="pre">profile_report</span></code>. Each field
+carries the option’s help text and default in a comment; <a class="reference internal" href="../../../../user/arguments.html"><span class="doc">Command Line Arguments</span></a>
+is the longer reference.</p>
+<p>The one field that is not an option is <code class="docutils literal notranslate"><span class="pre">threads</span></code>: Einsums has no flag for it,
+so the binding routes it through <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> instead.</p>
+<p>Nothing maps a field to a flag by hand. <code class="docutils literal notranslate"><span class="pre">argv_from_rc</span></code> walks the option
+registry, asks <code class="docutils literal notranslate"><span class="pre">rc</span></code> for the matching attribute, and refuses outright if it
+finds an <code class="docutils literal notranslate"><span class="pre">rc</span></code> field the registry does not claim - which is what a stale
+generated file looks like. Boolean fields are three-valued: <code class="docutils literal notranslate"><span class="pre">None</span></code> leaves the
+runtime default alone, <code class="docutils literal notranslate"><span class="pre">True</span></code> passes the flag, and <code class="docutils literal notranslate"><span class="pre">False</span></code> passes its
+generated negation, because a flag that already defaults to on cannot be turned
+off by staying silent.</p>
+<p><code class="docutils literal notranslate"><span class="pre">einsums/__init__.py</span></code> also claims the <code class="docutils literal notranslate"><span class="pre">--einsums:</span></code> namespace out of
+<code class="docutils literal notranslate"><span class="pre">sys.argv</span></code> at import time and forwards those flags to the runtime, so a Python
+script accepts the same options a C++ program does:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">python</span><span class="w"> </span><span class="n">my_script</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="o">--</span><span class="n">einsums</span><span class="o">:</span><span class="n">pass</span><span class="o">:</span><span class="n">disable</span><span class="o">=</span><span class="n">GEMMBatching</span><span class="w"> </span><span class="o">--</span><span class="n">einsums</span><span class="o">:</span><span class="n">log</span><span class="o">:</span><span class="n">level</span><span class="o">=</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>The C++ runtime reads an environment variable for every option, so a test
+harness can disable signal handlers and the debugger prompt without touching the
+script. These two set the generated <code class="docutils literal notranslate"><span class="pre">no-</span></code> spellings of the
+<code class="docutils literal notranslate"><span class="pre">debug_install_signal_handlers</span></code> and <code class="docutils literal notranslate"><span class="pre">debug_attach_debugger</span></code> fields:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EINSUMS_DEBUG_NO_INSTALL_SIGNAL_HANDLERS</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">EINSUMS_DEBUG_NO_ATTACH_DEBUGGER</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="../../../../api/cpp/Einsums/Python/index.html#modules-einsums-python-api"><span class="std std-ref">API reference</span></a> for the C++ side of
+this module, and the <a class="reference internal" href="../../../../reference/python/index.html#api-python"><span class="std std-ref">Python API reference</span></a> for the generated
+binding surface.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../Profile/docs/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Profiling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../Runtime/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Runtime</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-bindings-are-generated">How the bindings are generated</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-package">The package</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-graph">einsums.graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-testing">einsums.testing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-interop">einsums.interop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums-rc">einsums.rc</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

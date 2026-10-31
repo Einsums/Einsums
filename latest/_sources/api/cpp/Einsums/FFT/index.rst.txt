@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_FFT_api:
+
+===========
+FFT C++ API
+===========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_FFT>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::fft::fft` - Performs the fast Fourier transform on the input tensor using the linked FFT library.
+- :cpp:any:`~einsums::fft::fftfreq` - Gets the frequency corresponding to each position in a frequency tensor.
+- :cpp:any:`~einsums::fft::ifft` - Performs the inverse fast Fourier transform on the input tensor using the linked FFT library.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.fft.fft
+   einsums.fft.fftfreq
+   einsums.fft.ifft

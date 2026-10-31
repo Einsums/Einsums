@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ScalarConcept:
+
+======================
+einsums::ScalarConcept
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D> ScalarConcept
+
+   Alias of RankTensorConcept<D, 0>.
+
+   Shorthand for requiring that a tensor be a scalar. That is, a tensor with zero rank or a variable with a type such as double or
+   std::complex<float>.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor to check.

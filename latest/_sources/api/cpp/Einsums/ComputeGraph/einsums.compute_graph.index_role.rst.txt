@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.index_role:
+
+==================================
+einsums::compute_graph::index_role
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: IndexRole index_role(std::string_view letter, const std::vector<std::string> &c, const std::vector<std::string> &a, const std::vector<std::string> &b) noexcept
+
+   The part ``letter`` plays in the contraction whose index lists are ``c``, ``a`` and ``b``.
+
+   :param letter: The index letter to classify.
+   :param c: The output's indices.
+   :param a: The first operand's indices.
+   :param b: The second operand's indices.
+   :returns: Its role. A letter in none of the lists is reported as ``IndexRole::OutputOnly``.

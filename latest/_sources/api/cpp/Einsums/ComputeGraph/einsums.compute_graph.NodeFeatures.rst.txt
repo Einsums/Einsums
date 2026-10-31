@@ -1,0 +1,88 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NodeFeatures:
+
+====================================
+einsums::compute_graph::NodeFeatures
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NodeFeatures.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NodeFeatures
+
+   A set of ``NodeFeature`` values.
+
+
+   .. cpp:function:: constexpr NodeFeatures() = default
+
+      The empty set.
+
+
+   .. cpp:function:: constexpr NodeFeatures(NodeFeature feature)
+
+      The set holding ``feature`` alone.
+
+      :param feature: The feature.
+
+
+   .. cpp:function:: static constexpr NodeFeatures all()
+
+      Every feature there is, which is what a pass that never interprets a node declares.
+
+      :returns: The full set.
+
+
+   .. cpp:function:: constexpr NodeFeatures operator|(NodeFeatures other) const
+
+      The union of two sets.
+
+      :param other: The other set.
+      :returns: Every feature in either.
+
+
+   .. cpp:function:: constexpr NodeFeatures without(NodeFeatures other) const
+
+      This set less ``other``.
+
+      :param other: The features to drop.
+      :returns: Every feature here that is not in ``other``.
+
+
+   .. cpp:function:: constexpr NodeFeatures missing_from(NodeFeatures other) const
+
+      The features of ``other`` this set does not hold.
+
+      :param other: The set to compare against.
+      :returns: ``other`` less this set.
+
+
+   .. cpp:function:: constexpr bool covers(NodeFeatures other) const
+
+      Whether this set holds every feature of ``other``.
+
+      :param other: The set to test.
+      :returns: True when nothing in ``other`` is missing here.
+
+
+   .. cpp:function:: constexpr bool empty() const
+
+      Whether the set is empty.
+
+      :returns: True for the empty set.
+
+
+   .. cpp:function:: constexpr bool operator==(const NodeFeatures &) const = default
+
+      Whether two sets hold the same features.
+
+      :returns: True when they do.

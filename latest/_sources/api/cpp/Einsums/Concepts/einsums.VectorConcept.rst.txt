@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.VectorConcept:
+
+======================
+einsums::VectorConcept
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D> VectorConcept
+
+   Alias of RankTensorConcept<D, 1>.
+
+   Shorthand for requiring that a tensor be a vector.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor to check.

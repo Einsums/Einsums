@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json_escape:
+
+====================
+einsums::json_escape
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/JsonEscape.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::string json_escape(const std::string &s)
+
+   Escape a string for safe embedding in a JSON value.
+
+   Handles quotes, backslashes, and control characters (< 0x20).

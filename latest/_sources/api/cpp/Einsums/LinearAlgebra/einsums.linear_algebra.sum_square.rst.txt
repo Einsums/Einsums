@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.sum_square:
+
+===================================
+einsums::linear_algebra::sum_square
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType> void sum_square(const AType &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) noexcept(BasicTensorConcept<AType>)
+
+   Computes the square sum of a tensor.
+
+   returns the values scale_out and sumsq_out such that
+
+   .. math::
+
+      (scale_{out}^{2})*sumsq_{out} = a( 1 )^{2} +...+ a( n )^{2} + (scale_{in}^{2})*sumsq_{in},
+
+   Under the hood the LAPACK routine `lassq` is used.
+
+   On exit, the value of ``scale`` will normally be 1. However, it may differ if the result of the sum would have caused
+   either an overflow or an underflow.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle tensors. Can also handle non-unit strides and both row- and colum-major layouts.
+      Includes support for block and tiled tensors.
+
+   :tparam AType: The type of the tensor.
+   :param a: The tensor to compute the sum of squares for.
+   :param scale: scale_in and scale_out for the equation provided.
+   :param sumsq: sumsq_in and sumsq_out for the equation provided.

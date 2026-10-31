@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gemv:
+
+===================
+einsums::blas::gemv
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void gemv(char transa, int_t m, int_t n, T alpha, const T *a, int_t lda, const T *x, int_t incx, T beta, T *y, int_t incy)
+
+   Computes a matrix-vector product using a general matrix.
+
+   The gemv routine performs a matrix-vector operation defined as:
+
+   .. math::
+
+      \mathbf{y} := \alpha \mathbf{A} \mathbf{x} + \beta \mathbf{y}
+
+   or
+
+   .. math::
+
+      \mathbf{y} := \alpha \mathbf{A}^T \mathbf{x} + \beta \mathbf{y}
+
+   or
+
+   .. math::
+
+      \mathbf{y} := \alpha \mathbf{A}^H \mathbf{x} + \beta \mathbf{y}
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: the underlying data type of the matrix and vector
+   :param transa: what to do with ``a`` - no trans, trans, conjg
+   :param m: specifies the number of rows of ``a``
+   :param n: specifies the number of columns of ``a``
+   :param alpha: Specifies the scaler alpha
+   :param a: Array, size lda * m
+   :param lda: Specifies the leading dimension of ``a`` as declared in the calling function
+   :param x: array, vector x
+   :param incx: Specifies the increment for the elements of ``x``
+   :param beta: Specifies the scalar beta. When beta is set to zero, then ``y`` need not be set on input.
+   :param y: array, vector y
+   :param incy: Specifies the increment for the elements of ``y`` .
+   :throws std::invalid_argument: If ``transA`` is invalid.
+   :throws std::domain_error: If the values of ``m`` or ``n`` are negative, the value of ``lda`` is invalid, or either ``incx`` or ``incy`` is zero.

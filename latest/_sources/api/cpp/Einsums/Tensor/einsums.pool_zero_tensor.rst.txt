@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.pool_zero_tensor:
+
+=========================
+einsums::pool_zero_tensor
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/PooledTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> pool_zero_tensor(MemoryPool &pool, std::string name, Dims... dims)
+
+   Compile-time-rank tensor carved from ``pool`` and zeroed.
+
+   .. versionadded:: 2.0.0

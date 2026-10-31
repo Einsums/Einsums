@@ -1,0 +1,47 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.contribution_symmetry:
+
+=============================================
+einsums::compute_graph::contribution_symmetry
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymmetryRules.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<SymmetryOp> contribution_symmetry(const EscapeAnalysis &escape, NodeId writer, const SymmetryOp &sigma, std::vector<std::pair<TensorId, SymmetryDescriptor>> *relied_on)
+
+   Is what ``writer`` adds to its output unchanged, up to a sign, when its output's axes are permuted by ``sigma``?
+
+   The question a pass asks before computing half of a contraction and permuting the rest from it.
+   It is asked of the CONTRIBUTION, the term ``writer`` adds, not of the output tensor, which may
+   hold anything else as well.
+
+   An operand of ``writer`` that exactly one einsum writes, by overwriting it, is replaced by that
+   einsum's own operands, and so on down, so a chain of contractions is judged as the one
+   expression it computes. The density-fitted particle ladder, ``H`` = B tau then ``R`` += H B, is
+   judged as ``R`` += B tau B. The remaining factors are then matched against their own images: the
+   contribution is unchanged when some relabeling of the summed letters, together with ``sigma`` on
+   the output letters, carries every factor onto a factor of the same tensor, up to an element of
+   that tensor's symmetry group as it stands where it is read (``symmetry_at``). On the ladder the
+   relabeling exchanges e and f, the two B factors trade places, and tau's (i,a)-(j,b) exchange
+   absorbs the rest.
+
+   Proof, not evidence: every step is an identity the operands satisfy, so a positive answer holds
+   for all values. A negative one may be conservative: the search takes generators as declared and
+   gives up on anything conjugated.
+
+   :param escape: The analysis of the graph ``writer`` belongs to.
+   :param writer: An einsum node.
+   :param sigma: The permutation of the output's positions, in the convention of ``SymmetryOp``: position ``p`` takes the letter at ``sigma.permutation[p]``. Its sign and conjugate fields are ignored.
+   :param relied_on: When given, receives the declared symmetries the proof rests on, as ``symmetry_at`` reports them, each tensor once.
+   :returns: ``sigma`` with the sign the contribution picks up (+1 symmetric, -1 antisymmetric), or nothing when no proof was found.

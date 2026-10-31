@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.herk:
+
+===================
+einsums::blas::herk
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void herk(char uplo, char trans, int_t n, int_t k, RemoveComplexT<T> alpha, const T *a, int_t lda, RemoveComplexT<T> beta, T *c, int_t ldc)
+
+   Hermitian rank-k update.
+
+   Computes :math:`\mathbf{C} := \alpha \mathbf{A}\mathbf{A}^H + \beta \mathbf{C}`
+   (trans='N') or :math:`\mathbf{C} := \alpha \mathbf{A}^H\mathbf{A} + \beta \mathbf{C}`
+   (trans='C'). :math:`\mathbf{C}` is Hermitian, so ``alpha`` and ``beta`` are
+   real and only the referenced triangle is updated.
+
+   :param uplo: Which triangle of C is referenced and updated ('U' or 'L').
+   :param trans: 'N': update with A*A^H; 'C': with A^H*A.
+   :param n: Order of C.
+   :param k: The other dimension of A (see ``trans``).
+   :param alpha: Real scalar on the product.
+   :param a: The matrix A.
+   :param lda: Leading dimension of a.
+   :param beta: Real scalar on C.
+   :param c: The Hermitian matrix C, updated in place.
+   :param ldc: Leading dimension of c.

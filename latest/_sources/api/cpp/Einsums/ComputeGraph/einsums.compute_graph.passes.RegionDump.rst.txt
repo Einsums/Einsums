@@ -1,0 +1,61 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.RegionDump:
+
+==========================================
+einsums::compute_graph::passes::RegionDump
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/RegionRewrite.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: RegionDump
+
+   One region's algebra, before and after a rewrite.
+
+
+   .. cpp:member:: std::size_t region_index
+
+      Which region of the graph, in program order.
+
+
+   .. cpp:member:: std::size_t node_count
+
+      How many nodes it held.
+
+
+   .. cpp:member:: std::string before
+
+      The raised algebra. Empty unless dumping is on.
+
+
+   .. cpp:member:: std::string after
+
+      The algebra the client returned. Empty unless dumping is on.
+
+
+   .. cpp:member:: bool changed
+
+      Whether the client said it rewrote anything.
+
+
+   .. cpp:member:: std::string cost_before
+
+      What the region cost symbolically before and after, as polynomials in space scales.
+
+      Recorded for every ACCEPTED rewrite whether or not dumping is on, because it is the one
+      thing a report can say about a rewrite that is short enough to print unconditionally and
+      still answers the question worth asking: did this make the arithmetic smaller? The
+      algebra itself is far more informative and far too long, which is what dumping is for.
+
+
+   .. cpp:member:: std::string cost_after

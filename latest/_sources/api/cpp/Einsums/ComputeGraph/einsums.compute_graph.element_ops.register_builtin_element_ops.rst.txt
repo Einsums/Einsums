@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_ops.register_builtin_element_ops:
+
+=================================================================
+einsums::compute_graph::element_ops::register_builtin_element_ops
+=================================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ElementOps.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:function:: void register_builtin_element_ops(ElementOpRegistry &registry)
+
+   Seed ``registry`` with the ops this library ships.
+
+   Deliberately a tiny set, and deliberately obvious: it exists to prove the
+   mechanism and to serve the shapes that recur in the tree (a reciprocal for
+   MP2-style denominators, a guarded square root for a metric power, a square,
+   a negation). Hosts register their own; that is what the registry is for, and
+   the library taking a position on which chemistry kernels are "standard" is
+   exactly the layering the design's non-goals rule out.
+
+   :param registry: The registry to seed.

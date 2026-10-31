@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.symbolic_cost_for:
+
+=========================================
+einsums::compute_graph::symbolic_cost_for
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: SymbolicCost symbolic_cost_for(const EinsumDescriptor &desc)
+
+   The symbolic cost of one einsum node, derived mechanically from its contraction spec.
+
+   - ``SymbolicCost::flops`` is ``2`` times the product of the distinct letters of the loop space (``ContractionSpec::all_indices``), the two counting the multiply and the add. A letter repeated within an operand appears once, matching the loop nest rather than the index list.
+   - ``SymbolicCost::traffic`` is the sum of the three operand sizes, C first, then A and B, each from ``symbolic_size_for``. Every operand is counted once, which is what a streaming kernel costs and what a blocked one approaches.
+   - ``SymbolicCost::resident`` equals the traffic polynomial. See ``SymbolicCost`` for why that approximation is used and what it costs.
+
+   Letters absent from ``EinsumDescriptor::letter_spaces`` get anonymous variables, so an
+   unannotated node still yields a comparable cost, just one the scale-order rung cannot rank.
+
+   :param desc: The node's descriptor.
+   :returns: Its flops, traffic and resident polynomials.

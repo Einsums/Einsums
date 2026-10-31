@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cdot:
+
+===========================
+einsums::blas::vendor::cdot
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: std::complex<float> cdot(int_t n, const std::complex<float> *x, int_t incx, const std::complex<float> *y, int_t incy)
+
+   Compute the unconjugated dot product between two vectors.
+
+   The dot product is normally defined to be :math:`\sum_{i} x_i^*y_i`,
+   where the left vector is conjugated. However, this function performs :math:`\sum_{i} x_iy_i`, akin to how it is done for
+   real vectors. For real vectors, the two definitions are the same. For complex vectors, the two definitions are different,
+   so keep this in mind when selecting between the two functions. This is the equivalent to BLAS's cdot\ **u**.
+
+   .. seealso::
+
+      cdotc
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vectors.
+   :param x: The left vector.
+   :param incx: The skip value for the left vector. If it is negative, the vector is traversed backwards.
+   :param y: The right vector.
+   :param incy: The skip value for the right vector. If it is negative, the vector is traversed backwards.
+   :returns: The dot product between two vectors.

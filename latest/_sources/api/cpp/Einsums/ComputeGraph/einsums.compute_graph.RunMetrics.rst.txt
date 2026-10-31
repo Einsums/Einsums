@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.RunMetrics:
+
+==================================
+einsums::compute_graph::RunMetrics
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/RunMetrics.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: RunMetrics
+
+   What the last replay of a graph did, as ``Graph::last_run`` reports it.
+
+   Measured, beside what the passes planned: ``peak_bytes`` is what
+   ``passes::MemoryPlanning::peak_memory`` predicts, and a backing's bytes are what
+   SlabStreaming's report estimates.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: double wall_ms
+
+      Wall-clock milliseconds of the whole replay.
+
+
+   .. cpp:member:: std::vector<NodeRun> nodes
+
+      Every node the replay ran, the graph's own and its bodies'. Each graph's nodes are in the
+      order they first ran, and a body's come before those of the graph holding it, since a body's
+      replay finishes first.
+
+
+   .. cpp:member:: std::vector<BackingRun> backings
+
+      One entry per backing in the graph and its bodies, in name order.
+
+
+   .. cpp:member:: std::uint64_t peak_bytes
+
+      The most bytes of graph-managed tensors held at once: deferred tensors the graph allocated
+      and freed, plus ``arena_bytes``. Not the process's memory: BLAS scratch is outside it, and
+      the caller's own tensors are in ``resident_bytes``.
+
+
+   .. cpp:member:: std::uint64_t arena_bytes
+
+      The arena MemoryPlanning placed intermediates in, held for the whole replay; 0 without one.
+
+
+   .. cpp:member:: std::uint64_t resident_bytes
+
+      What the replay held from its start to its end outside ``peak_bytes``: the caller's
+      tensors and any intermediate given storage outside a lifecycle node (@ref
+      Graph::resident_bytes). The program held ``peak_bytes`` plus this at its peak.

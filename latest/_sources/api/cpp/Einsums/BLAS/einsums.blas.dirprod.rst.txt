@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.dirprod:
+
+======================
+einsums::blas::dirprod
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void dirprod(int_t n, T alpha, const T *x, int_t incx, const T *y, int_t incy, T beta, T *z, int_t incz)
+
+   Computes the direct product between two vectors, scaling the vector it is added to.
+
+   .. math::
+
+      z_i := \alpha x_i y_i + \beta z_i
+
+   One pass over z. When ``beta`` is zero, z is not read, so it may hold anything, NaN included.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vectors.
+   :param alpha: The scale factor for the product.
+   :param x: The first input vector.
+   :param incx: The skip value for the first vector.
+   :param y: The second input vector.
+   :param incy: The skip value for the second vector.
+   :param beta: The scale factor for the accumulation vector.
+   :param z: The accumulation vector. It must not overlap x or y.
+   :param incz: The skip value for the accumulation vector.

@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.form_regions:
+
+====================================
+einsums::compute_graph::form_regions
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<Region> form_regions(const Graph &graph, const EscapeAnalysis &escapes, const RegionOptions &options)
+
+   Find every region of ``graph``, deterministically.
+
+   Runs are found by scanning nodes in program order, so the region set is the
+   same on every run over the same graph. A region set that varied between runs
+   would make every downstream rewrite vary with it.
+
+   :param graph: The graph to scan. Sub-graphs are not descended into.
+   :param escapes: The analysis over ``graph``, used to classify each region's tensors.
+   :param options: Size gate; see ``RegionOptions``.
+   :returns: The regions, in program order.

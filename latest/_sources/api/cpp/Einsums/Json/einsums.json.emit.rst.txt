@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.emit:
+
+===================
+einsums::json::emit
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:function:: std::string emit(const Value &value, EmitOptions options)
+
+   Render ``value`` as JSON text.
+
+   ``parse(emit(v, Canonical))`` reproduces ``value`` exactly, and
+   ``emit(parse(t), Canonical)`` reproduces ``t`` byte for byte when ``t`` is
+   itself canonical. Both directions are tested.
+
+   .. versionadded:: 2.0.0
+
+   :param value: The document.
+   :param options: Layout; see ``EmitOptions``.
+   :throws std::invalid_argument: When the document holds a non-finite double. JSON cannot spell one, and writing ``null`` or ``nan`` in its place would be exactly the silent corruption this model refuses; a schema that needs specials tags them as strings.
+   :returns: The text.

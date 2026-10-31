@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.NotImplemented:
+
+=======================
+einsums::NotImplemented
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: NotImplemented : public std::logic_error
+
+   Indicates that a certain code path is not implemented.
+
+   This may be because the feature is not
+   yet ready, or it may be that the specific combination of parameters is not acceptable. The
+   message provided should give more information. If you absolutely need that set of features,
+   come tell us `on our discussion page <https://github.com/Einsums/Einsums/discussions>`_ or
+   `our Discord server <https://discord.gg/8GvtkyWZUv>`_, and we will try to work it out. If you
+   are an experienced C++ programmer, we would appreciate your assistance if you think you have
+   a solution.
+
+   .. versionadded:: 1.0.0

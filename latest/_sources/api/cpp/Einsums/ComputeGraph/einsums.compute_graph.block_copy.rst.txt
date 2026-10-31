@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.block_copy:
+
+==================================
+einsums::compute_graph::block_copy
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept DstType, CoreBasicTensorConcept SrcType> requires std::is_same_v<typename DstType::ValueType, typename SrcType::ValueType> void block_copy(DstType *dst, const SrcType &src, std::vector<size_t> dst_offsets, std::vector<size_t> src_offsets, std::vector<size_t> extents)
+
+   Copy a contiguous N-dimensional sub-region of ``src`` into ``dst``.
+
+   For each axis k, copies ``extents[k]`` elements starting at ``src_offsets[k]``
+   in src into ``dst_offsets[k]`` in dst:
+
+   dst[dst_offsets + i] = src[src_offsets + i]   for all i in extents
+
+   Both tensors must have the same rank and dtype. Uses per-axis strides so
+   arbitrary memory layouts are handled correctly. Capture-aware: outside
+   capture, runs immediately; inside capture, records a node with src as an
+   input dependency and dst as an output.
+
+   Common patterns:
+
+   * Extract occupied MO block:  block_copy(&C_occ, C, {0,0}, {0,0}, {nbf, nocc})
+   * Extract (ia|jb) ERI block:  block_copy(&iajb, eri_mo, {0,0,0,0}, {0, nocc, 0, nocc}, {nocc, nvirt, nocc, nvirt})

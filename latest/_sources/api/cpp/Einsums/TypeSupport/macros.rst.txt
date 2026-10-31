@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TypeSupport_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/Singleton.hpp``.
+
+.. c:macro:: EINSUMS_SINGLETON_DEF(Type)
+
+   Makes a class a singleton with a static ``Type &get_singleton()``. Place at the start of
+   the class, define a private no-argument constructor, and pair with ``EINSUMS_SINGLETON_IMPL``.
+
+   .. versionadded:: 1.0.0
+
+   :param Type: The type of singleton to construct.
+
+
+.. c:macro:: EINSUMS_SINGLETON_IMPL(Type)
+
+   Creates the code for managing a singleton.
+
+   .. versionadded:: 1.0.0

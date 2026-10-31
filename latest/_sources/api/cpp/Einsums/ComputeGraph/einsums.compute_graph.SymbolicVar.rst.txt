@@ -1,0 +1,119 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SymbolicVar:
+
+===================================
+einsums::compute_graph::SymbolicVar
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SymbolicVar
+
+   One variable of a cost polynomial: either an annotated space or an unannotated letter.
+
+   A variable stands for the EXTENT of something, never for a tensor. Two flavours exist because
+   annotation is partial in practice:
+
+   - A **space** variable names a ``SpaceId``, so its scale symbol, its typical extent and its declared relations to other spaces are all recoverable from a ``SpaceRegistry``.
+   - An **anonymous** variable names an index LETTER that met no annotated slot. It supports no registry query at all, which is exactly why a partially annotated program still yields usable (if weaker) comparisons rather than no comparison.
+
+   **Anonymous-variable scope**
+
+   An anonymous variable is derived from the letter name and nothing else, so it is the same variable
+   in every process, every node and every polynomial that uses that letter. That is deliberate: the
+   comparison's last rung must pick the same candidate in every process, and a variable interned
+   against a per-call counter would depend on call order. The consequence is that an anonymous
+   variable carries NO claim that two nodes using letter ``i`` range over the same set. It means
+   "the letter i", nothing more, and a caller must not read space identity into it. Callers that need
+   that claim must annotate the slots.
+
+
+   .. cpp:function:: SymbolicVar() = default
+
+      Construct an invalid variable: a space variable holding an invalid ``SpaceId``.
+
+
+   .. cpp:function:: static SymbolicVar space(SpaceId id)
+
+      Build the variable standing for a registered space's extent.
+
+      :param id: The space. An invalid id yields an invalid variable.
+      :returns: The space variable.
+
+
+   .. cpp:function:: static SymbolicVar anonymous(std::string_view letter)
+
+      Build the anonymous variable standing for an unannotated letter's extent.
+
+      :param letter: The index letter. Used verbatim, including a multi-character index name.
+      :returns: The anonymous variable.
+
+
+   .. cpp:function:: Kind kind() const noexcept
+
+      The flavour of this variable.
+
+      :returns: ``Kind::Space`` or ``Kind::Anonymous``.
+
+
+   .. cpp:function:: bool is_space() const noexcept
+
+      Whether this variable names a registered space.
+
+      :returns: True for a space variable, including an invalid one.
+
+
+   .. cpp:function:: bool is_anonymous() const noexcept
+
+      Whether this variable names an unannotated letter.
+
+      :returns: True for an anonymous variable.
+
+
+   .. cpp:function:: bool valid() const noexcept
+
+      Whether this variable names something.
+
+      :returns: False only for a default-constructed variable and for an anonymous one with an empty letter.
+
+
+   .. cpp:function:: SpaceId space_id() const noexcept
+
+      The space this variable names.
+
+      :returns: The space id, or an invalid id for an anonymous variable.
+
+
+   .. cpp:function:: const std::string & letter() const noexcept
+
+      The letter this variable names.
+
+      :returns: The letter, or an empty string for a space variable.
+
+
+   .. cpp:function:: std::size_t hash() const noexcept
+
+      Hash so a variable can key an unordered container.
+
+      :returns: A hash of flavour and payload.
+
+
+   .. cpp:enum-class:: Kind
+
+      Which flavour of variable this is.
+
+
+      .. cpp:enumerator:: Space
+
+      .. cpp:enumerator:: Anonymous

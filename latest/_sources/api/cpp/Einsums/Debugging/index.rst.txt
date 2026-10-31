@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Debugging_api:
+
+=================
+Debugging C++ API
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Debugging>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::register_Einsums_Debugging_options` - Give the crash handler's options their command-line presence. Idempotent.
+- :cpp:any:`~einsums::util::attach_debugger` - Tries to break an attached debugger, if not supported a loop is invoked which gives enough time to attach a debugger manually.
+- :cpp:any:`~einsums::util::backtrace` - Generate a backtrace.
+- :cpp:any:`~einsums::util::install_crash_handler` - Install a last-chance handler that reports a hard crash instead of dying silently.
+- :cpp:any:`~einsums::util::remove_crash_handler` - Remove a handler installed by ``install_crash_handler``.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::CrashDumpDir` - Where minidumps go. Empty, the default, means the working directory.
+- :cpp:any:`~einsums::option::CrashHandler` - Report a fatal exception and write a minidump instead of dying silently. Separate from install-signal-handlers, so a Python process can keep its faulthandler on the signals.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.register_Einsums_Debugging_options
+   einsums.util.attach_debugger
+   einsums.util.backtrace
+   einsums.util.install_crash_handler
+   einsums.util.remove_crash_handler
+   variables

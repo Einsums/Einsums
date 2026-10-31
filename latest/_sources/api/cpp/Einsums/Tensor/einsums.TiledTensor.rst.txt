@@ -1,0 +1,69 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TiledTensor:
+
+====================
+einsums::TiledTensor
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t Rank> TiledTensor final : public tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>, public tensor_base::CoreTensor
+
+   Holds a tile-wise sparse tensor.
+
+   Tensors of this class have large blocks that are rigorously zero. These blocks need to line up on a grid.
+   Tiles that are rigorously zero are not stored. This is similar to a BlockTensor, but the tiles do not have
+   to lie on the diagonal, and the grid can be arbitrary on each dimension, rather than needing to be the same
+   across all dimensions.
+
+
+   .. cpp:function:: TiledTensor() = default
+
+   .. cpp:function:: template <typename... Sizes> TiledTensor(std::string name, Sizes &&... sizes)
+
+      Create a new tiled tensor with the given name and grid specification.
+
+      One collection of tile sizes per axis, or a single one applied to every axis.
+
+      :param name: The name of the tensor.
+      :param sizes: The grids for the axes. There must either only be one, or the number must be the same as the rank.
+
+
+   .. cpp:function:: TiledTensor(const TiledTensor<T, Rank> &other)
+
+      Copy constructor.
+
+      :param other: The tensor to copy.
+
+
+   .. cpp:function:: template <TiledTensorConcept OtherTensor> requires (SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>) TiledTensor(const OtherTensor &other)
+
+      Copy cast constructor.
+
+      This constructor copies data from a tiled tensor that is not just a TiledTensor. This includes
+      TiledTensorView, TiledDeviceTensor, and others.
+
+      :param other: The tensor to copy.
+
+
+   .. cpp:function:: ~TiledTensor() override = default
+
+   .. cpp:function:: template <TiledTensorConcept TensorOther> requires (SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>) TiledTensor<T, Rank> & operator=(const TensorOther &copy)
+
+      Copy assignment.
+
+      This copies the data from the other tensor into this one. The other tensor should be
+      some sort of tiled tensor as well.
+
+      :param copy: The tensor to copy.

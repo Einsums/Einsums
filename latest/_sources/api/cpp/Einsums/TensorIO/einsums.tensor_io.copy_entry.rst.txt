@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.copy_entry:
+
+==============================
+einsums::tensor_io::copy_entry
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void copy_entry(std::string src_path, std::string src_entry, std::string dst_path, std::string dst_entry)
+
+   Copy the entry ``src_entry`` of ``src_path`` into the entry ``dst_entry`` of ``dst_path``.
+
+   The destination file is created when it does not exist, and the destination entry, with the
+   source's extents, element type and stored order, when it does not exist. An existing one must
+   have the same extents and element type. The elements pass through a buffer of at most
+   ``--einsums:work-buffer-size``, so neither entry is held whole. See ``TensorFile::copy``.
+
+   .. versionadded:: 2.0.0
+
+   :param src_path: The file holding the entry to copy.
+   :param src_entry: The entry to copy.
+   :param dst_path: The file to copy it into, which may be ``src_path``.
+   :param dst_entry: The entry to copy it into.
+   :throws std::runtime_error: when the source file or entry is missing.
+   :throws std::invalid_argument: when the destination entry exists with other extents or another element type.

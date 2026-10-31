@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DotDescriptor:
+
+=====================================
+einsums::compute_graph::DotDescriptor
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DotDescriptor
+
+   Metadata for the DENSE ``OpKind::Dot`` nodes.
+
+   A dot reduces two same-shaped operands to one scalar. There is exactly one
+   choice to record, and ``conjugated`` is it: ``dot`` sums :math:`A_i B_i` while
+   ``dotc`` sums :math:`\overline{A_i} B_i`, which for a complex operand are
+   different numbers and for a real one are the same. Neither form carries a
+   prefactor -- there is no scalar to scale, since the destination is written
+   rather than accumulated into -- so recording one would invent an operation
+   the kernel does not perform.
+
+   The TILED dot is a different node despite sharing the kind, exactly as the
+   tiled direct division is: it carries a ``TiledDotDescriptor``, whose
+   per-tile reduction has no builder entry. Check ``Node::kind`` AND the
+   alternative, or ask ``reconstruction_blocker``.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: bool conjugated
+
+      true for ``dotc`` (sum conj(A)*B), false for the bilinear ``dot``.

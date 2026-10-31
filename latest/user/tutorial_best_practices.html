@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Performance Best Practices &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/tutorial_best_practices';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/tutorial_best_practices.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How-To Guides" href="../howto/index.html" />
+    <link rel="prev" title="Tutorial: Performance Tuning" href="tutorial_performance.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Performance Best Practices</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-performance-best-practices">
+<span id="tutorial-best-practices"></span><h1>Tutorial: Performance Best Practices<a class="headerlink" href="#tutorial-performance-best-practices" title="Link to this heading">#</a></h1>
+<p>This page collects the practices that get the best performance out of Einsums.
+None of them are folklore: each one was earned by a measurement campaign on the
+DLPNO coupled-cluster port, usually by killing a plausible hypothesis first,
+and the rationale is stated with each rule so you can judge when it applies to
+your code.
+For understanding WHERE your time goes (dispatch routes, profiling, PackedGemm),
+see <a class="reference internal" href="tutorial_performance.html"><span class="doc">Tutorial: Performance Tuning</span></a>; this page is about how to structure code so
+the time goes to arithmetic.</p>
+<section id="capture-once-replay-many">
+<h2>Capture once, replay many<a class="headerlink" href="#capture-once-replay-many" title="Link to this heading">#</a></h2>
+<p>An iterative algorithm should capture its body into a graph once and replay it,
+rather than re-dispatching eager calls every iteration.
+Eager execution is the reference semantics and stays the correctness oracle,
+but every optimization the library offers - the passes, the batched calls, the
+planned thread widths, the memory planning arena - operates on captured graphs.
+A replayed graph pays no Python dispatch, no per-call overload resolution, and
+no capture cost after the first pass, and the one-time graph build amortizes
+with iteration count.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums.graph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cg</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="s2">"iteration body"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">emit_residual</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>          <span class="c1"># ordinary einsums calls, recorded</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iterations</span><span class="p">):</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>                   <span class="c1"># replayed, no capture or Python dispatch</span>
+</pre></div>
+</div>
+<p>Two habits keep captures healthy.
+Build every view BEFORE the capture: a view created inside a capture records a
+node of its own, and a per-request view can cost as many nodes as the
+arithmetic it feeds.
+And use the pointer-writer forms of returning-style operations (<code class="docutils literal notranslate"><span class="pre">syev</span></code>,
+<code class="docutils literal notranslate"><span class="pre">svd</span></code>, <code class="docutils literal notranslate"><span class="pre">dot</span></code>): the returning forms throw during capture by design.</p>
+</section>
+<section id="allocate-transient-state-from-a-memory-pool">
+<h2>Allocate transient state from a memory pool<a class="headerlink" href="#allocate-transient-state-from-a-memory-pool" title="Link to this heading">#</a></h2>
+<p>Constructing a large owning tensor writes every page of it before you ever see
+it: the backing <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> value-initializes, which at seven megabytes
+costs hundreds of microseconds of pure memory writing - measured at 370 us per
+tensor against half a microsecond for a pooled carve.
+A phase that builds thousands of scratch tensors serially pays seconds for
+“allocation” that is really zero-fill, and the zero-fill is silent: the tensor
+looks uninitialized and is not.</p>
+<p>A <a class="reference internal" href="../api/cpp/Einsums/BufferAllocator/einsums.MemoryPool.html#_CPPv4N7einsums10MemoryPoolE" title="einsums::MemoryPool"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::MemoryPool</span></code></a> carves tensors out of a pre-reserved
+mimalloc arena instead.
+A pooled <code class="docutils literal notranslate"><span class="pre">empty</span></code> tensor is GENUINELY uninitialized - the carve is a pointer
+claim, and first touch happens wherever your compute first writes, which in a
+replayed graph is parallel code.
+That makes write-before-read a real contract: every element must be written
+before it is read, which the library’s assign-on-zero-prefactor semantics and
+beta-zero kernels are designed to honor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+
+<span class="n">pool</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">MemoryPool</span><span class="p">(</span><span class="n">reserve_bytes</span><span class="p">,</span> <span class="s2">"my phase"</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">pool</span><span class="o">.</span><span class="n">epoch</span><span class="p">():</span>                       <span class="c1"># cohort scope: bulk-free on exit</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">nq</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">nt</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"(Q|a b)"</span><span class="p">)</span>
+    <span class="o">...</span>                                  <span class="c1"># build, execute, harvest results</span>
+</pre></div>
+</div>
+<p>Guidance that came from measured failures rather than taste:</p>
+<ul class="simple">
+<li><p>Make pools FEW and LONG-LIVED, reserved to their peak once.
+The arena address space is never returned to the OS, and growing in many
+small steps exhausts what one honest reservation would not.</p></li>
+<li><p>Leave pools UNPINNED (the default) unless they are small, hot scratch.
+A pinned pool never shrinks below its high water; a multi-gigabyte pinned
+pool on a laptop turned a working phase into an OS-thrashing one.</p></li>
+<li><p>An epoch is a leak detector as much as a scope: closing it throws if
+something still holds a carve, which is exactly how a graph that adopted a
+pooled operand and outlived its chunk announces itself - loudly, on the main
+thread, instead of as a use-after-free during the next replay.</p></li>
+</ul>
+</section>
+<section id="budget-memory-explicitly-and-count-what-is-actually-allocated">
+<h2>Budget memory explicitly, and count what is actually allocated<a class="headerlink" href="#budget-memory-explicitly-and-count-what-is-actually-allocated" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code> (default: 80% of physical RAM) is a planning ceiling:
+chunked algorithms size their working sets to it, and a pool reservation that
+would push the process past it is refused at the reserve site with both numbers
+in the message - on the owning thread, before the operating system is asked
+for anything, and never inside a kernel.</p>
+<p>Two rules make a chunk budget honest.
+Charge <a class="reference internal" href="../api/cpp/Einsums/BufferAllocator/einsums.pool_reserve_cost.html#_CPPv4N7einsums17pool_reserve_costE6size_t" title="einsums::pool_reserve_cost"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::pool_reserve_cost</span></code></a> for pooled state, not the raw
+byte sum, so the plan and the reservation agree about headroom and rounding.
+And when an intermediate stops being allocated, remove it from the accounting
+the same day: a budget that describes tensors which no longer exist will
+under-fill chunks, and one that misses real tensors will thrash.</p>
+<p>Footprint is a cost even when allocation is free.
+A working set that approaches physical RAM pushes the OS into reclaim and
+compression, and the penalty lands on whatever runs during the high water -
+in one measured case a three-second, 24% penalty on a phase whose kernels were
+individually running at hardware speed.</p>
+</section>
+<section id="never-materialize-scratch-that-dies-on-first-read">
+<h2>Never materialize scratch that dies on first read<a class="headerlink" href="#never-materialize-scratch-that-dies-on-first-read" title="Link to this heading">#</a></h2>
+<p>The pattern to look for: gather or copy a block, feed it to exactly one
+consumer, drop it.
+Materializing that block costs the write traffic, the read-back, the
+footprint, and (see above) possibly an OS-reclaim penalty - and all of it
+disappears if the producer and consumer are fused so the data streams through
+cache-sized tiles instead.</p>
+<p>Einsums ships grouped operations for exactly these shapes:
+<code class="docutils literal notranslate"><span class="pre">grouped_gather_rotate</span></code> streams an index-selected block of a shared source
+through L2-sized tiles and writes only the final rotated result, and
+<code class="docutils literal notranslate"><span class="pre">grouped_sandwich</span></code> does the same for dress-and-contract sequences.
+In the DLPNO port, replacing a gather-then-rotate emission with the grouped
+node deleted 55 GB of intermediate traffic per run, halved the phase’s
+footprint, and let the chunker run whole passes as single chunks - three wins
+from one structural change.
+The grouped nodes are also deterministic by construction: their tiling does
+not change the bits.</p>
+<p>If your pattern is symmetric (same index list and transform on both axes),
+the grouped node applies as-is; an asymmetric rotation belongs on the plain
+gather-plus-einsum path.</p>
+</section>
+<section id="respect-the-threading-model">
+<h2>Respect the threading model<a class="headerlink" href="#respect-the-threading-model" title="Link to this heading">#</a></h2>
+<p>Plan, do not improvise.
+Captured graphs get their thread widths from <code class="docutils literal notranslate"><span class="pre">Graph.plan_threads()</span></code>; kernels the
+library threads itself consume the width they are granted, and vendor BLAS
+calls are fenced to a single width because concurrent vendor callers that
+disagree about thread count corrupt results with an OpenMP-built OpenBLAS.
+Width-one LAPACK nodes run CONCURRENTLY - a graph of 64 independent
+eigendecompositions was measured at 9.1x on ten threads - so expressing
+independent work as independent nodes is how it parallelizes, not by threading
+inside your own emission code.</p>
+<p>A batched GEMM is only threaded if something gives it the team: under the
+OpenMP executor, a graph whose level holds exactly one batched node runs it
+unwrapped with the full team, which is why performance-critical batched calls
+are emitted one to a graph.</p>
+<p>And never call BLAS-backed einsums operations from multiple PYTHON threads:
+an OpenMP OpenBLAS corrupts under callers with differing thread settings.
+Parallelism belongs inside the library - graphs, grouped nodes, batched calls -
+not above it.</p>
+</section>
+<section id="measure-before-optimizing-and-attribute-before-believing">
+<h2>Measure before optimizing, and attribute before believing<a class="headerlink" href="#measure-before-optimizing-and-attribute-before-believing" title="Link to this heading">#</a></h2>
+<p>The campaign this page distills killed more hypotheses than it confirmed.
+The allocator was blamed for cost that was value-initialization; a thread
+fence was blamed for serialization that did not exist; a gather kernel was
+suspected slow while running at memcpy speed; and hot allocate-free
+microbenchmark loops exonerated an allocator that was genuinely costing
+seconds in the monotonic, held-live pattern the real code runs.</p>
+<p>The practices that survive:</p>
+<ul class="simple">
+<li><p>Time at the granularity of the thing you intend to blame - per graph, per
+chunk, with bytes and FLOP rates alongside - before changing anything.
+A phase timer that mixes a memcpy-bound copy with near-peak GEMMs will
+mislead you about both.</p></li>
+<li><p>Benchmark the PATTERN your code runs, not a loop that flatters caches:
+allocators, in particular, behave completely differently under
+allocate-free-allocate than under allocate-and-hold.</p></li>
+<li><p>Run comparisons PAIRED, with an in-run control on the same machine in the
+same minutes; absolute numbers from different sessions on a busy machine
+differ by 20% and mean nothing.</p></li>
+<li><p>Let the dispatch tell you what it did: <code class="docutils literal notranslate"><span class="pre">last_dispatch_route</span></code> and the
+profile annotations name the kernel route a call took, so a silent fallback
+to a generic loop is a fact you check, not a surprise you find in a flame
+graph.</p></li>
+</ul>
+</section>
+<section id="trust-zero-extents">
+<h2>Trust zero extents<a class="headerlink" href="#trust-zero-extents" title="Link to this heading">#</a></h2>
+<p>Zero-extent tensors are valid operands everywhere: empty BLAS and LAPACK
+calls are quick-return no-ops, empty contractions still apply the output
+prefactor exactly once, and the grouped nodes skip empty members.
+Write chunking and screening code that passes empties through rather than
+special-casing them - the special cases are where the off-by-one bugs live -
+and never let a workspace-size formula reach zero.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial_performance.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: Performance Tuning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../howto/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">How-To Guides</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#capture-once-replay-many">Capture once, replay many</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#allocate-transient-state-from-a-memory-pool">Allocate transient state from a memory pool</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#budget-memory-explicitly-and-count-what-is-actually-allocated">Budget memory explicitly, and count what is actually allocated</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#never-materialize-scratch-that-dies-on-first-read">Never materialize scratch that dies on first read</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#respect-the-threading-model">Respect the threading model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measure-before-optimizing-and-attribute-before-believing">Measure before optimizing, and attribute before believing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trust-zero-extents">Trust zero extents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

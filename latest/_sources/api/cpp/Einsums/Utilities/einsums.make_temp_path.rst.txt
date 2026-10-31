@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.make_temp_path:
+
+=======================
+einsums::make_temp_path
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/TemporaryFilename.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::filesystem::path make_temp_path()
+
+   Generate a unique path in the system temporary directory.
+
+   The file is not created. For test scratch files that must not collide under parallel ctest.
+
+   :returns: A unique filesystem path. Converts to ``pathlib.Path`` in Python.

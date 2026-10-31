@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.reduce_lone_letters:
+
+=====================================================
+einsums::compute_graph::dispatch::reduce_lone_letters
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename T, typename TensorType> bool reduce_lone_letters(const std::vector<std::string> &idx, const TensorType &t, const std::vector<std::string> &other, const std::vector<std::string> &c_idx, std::vector<std::string> &kept, std::vector<T> &scratch, detail::TensorImpl<T> &impl)
+
+   Sum an operand over its lone letters, the ones in no other operand and not in C.
+
+   A lone letter is a reduction over that operand alone ("ij <- ikm ; j" sums A over k and m), and
+   summing it first turns a loop over every (target, lone) pair into one pass over the operand
+   followed by a smaller contraction the fast paths can take. ``kept`` receives the remaining
+   letters in their original order, ``scratch`` the summed values, column-major, and ``impl`` a view
+   of them.
+
+   Returns false when the operand has no lone letter, or when every letter is lone: that operand
+   would sum to a scalar, which the routes do not take as an operand, and the loop already reads
+   it once per target element, the same cost as reducing it.

@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.OpenMPExecutor:
+
+======================================
+einsums::compute_graph::OpenMPExecutor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Executor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: OpenMPExecutor : public Executor
+
+   OpenMP task-based executor, launches independent nodes in parallel.
+
+   Uses OpenMP tasks with dependency tracking. When a node completes,
+   it decrements the in-degree of its successors. Successors whose
+   in-degree reaches zero are launched as new tasks.
+
+   .. note::
+
+      BLAS calls within nodes may use their own OpenMP parallelism.
+      For small graphs, the sequential executor may be faster due
+      to reduced thread management overhead.
+
+
+   .. cpp:function:: OpenMPExecutor() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: void execute(Graph &graph) override

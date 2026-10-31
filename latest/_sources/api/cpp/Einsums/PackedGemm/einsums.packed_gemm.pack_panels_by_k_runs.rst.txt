@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.pack_panels_by_k_runs:
+
+===========================================
+einsums::packed_gemm::pack_panels_by_k_runs
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void pack_panels_by_k_runs(T *packed, const T *data, const int64_t *row_offsets, int64_t rows_total, int64_t R, int64_t kc_len, const int64_t *k_offsets, const std::vector<std::pair<int64_t, int64_t>> &runs)
+
+   Pack panels of ``R`` rows whose rows are K-contiguous within each run.
+
+   Writes panel[r + k * R] = data[row_offsets[p * R + r] + k_offsets[k]], a panel
+   of R x kc_len per p, so it serves pack_A's column-major panels and pack_B's
+   row-major ones alike. Every run is a transpose of the panel's rows over that
+   stretch of K, done by the rung's kernel (see PackTransposeFn); complex types,
+   which have none, and a panel taller than the row table take the scalar copy.

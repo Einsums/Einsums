@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.quadrature_point_count:
+
+=======================================================
+einsums::compute_graph::laplace::quadrature_point_count
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:function:: std::size_t quadrature_point_count(const SpectralRange &range, double epsilon)
+
+   How many points a target accuracy needs over a given range.
+
+   The count is what a rewrite bakes into structure, so it is derived once, at optimize time,
+   from the range the capture-bound energies have. A later bind refits the rule AT THIS COUNT
+   over whatever range it then finds, which is the honest trade: a node set whose size depended
+   on run-time data would not be a node set, and a rule refitted at a fixed count over a wider
+   range reports the accuracy it actually reaches through its measured error.
+
+   .. versionadded:: 2.0.0
+
+   :param range: The spectral range of the signed sum. Must not contain zero.
+   :param epsilon: The target RELATIVE accuracy. Must be positive and below one.
+   :throws std::invalid_argument: When ``range`` straddles or touches zero, or ``epsilon`` is not a usable tolerance.
+   :returns: The point count, at least two.

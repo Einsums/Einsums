@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.parse_permute_spec:
+
+==========================================
+einsums::compute_graph::parse_permute_spec
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<ParsedPermuteSpec, GraphError> parse_permute_spec(std::string_view spec)
+
+   Parse a permute specification string.
+
+   Supports arrow notation: `"ijk <- kji"` or `"kji -> ijk"`.
+   No semicolon needed (only one input tensor).
+
+   **Examples**
+
+   .. code-block:: text
+
+      auto s1 = parse_permute_spec("ji <- ij");
+      // s1.c_indices = {"j", "i"}, s1.a_indices = {"i", "j"}
+
+      auto s2 = parse_permute_spec("mu,nu <- nu,mu");
+      // s2.c_indices = {"mu", "nu"}, s2.a_indices = {"nu", "mu"}

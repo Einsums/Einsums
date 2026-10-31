@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PolyComparison:
+
+======================================
+einsums::compute_graph::PolyComparison
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PolyComparison
+
+   The verdict of ``compare_explain``, with the rung that produced it.
+
+
+   .. cpp:member:: std::strong_ordering order
+
+      The ordering.
+
+
+   .. cpp:member:: CompareRung rung
+
+      The rung that decided.

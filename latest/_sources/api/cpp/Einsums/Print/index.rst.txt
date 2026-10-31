@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Print_api:
+
+=============
+Print C++ API
+=============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Print>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::print::Indent` - Controls indentation.
+- :cpp:any:`~einsums::print::ordinal` - Wraps an integer that prints with its ordinal suffix (1st, 2nd, ...), negatives included:
+
+Functions
+---------
+
+- :cpp:any:`~einsums::print::always_print_thread_id` - Controls whether a line header is printed for the main thread or not.
+- :cpp:any:`~einsums::print::clear_output_sink` - Remove the output sink callback.
+- :cpp:any:`~einsums::print::current_indent_level` - Gets the current indentation level.
+- :cpp:any:`~einsums::print::deindent` - Removes spaces from the global indentation counter.
+- :cpp:any:`~einsums::print::indent` - Add spaces to the global indentation counter.
+- :cpp:any:`~einsums::print::set_output_sink` - Register a callback that receives every println/fprintln(stdout/stderr) line (ANSI-stripped).
+- :cpp:any:`~einsums::print::suppress_output` - Silences all output.
+
+Operators
+---------
+
+- :cpp:any:`~einsums::print::operator""_th` - Creates a literal ordinal.
+
+Types
+-----
+
+- :cpp:any:`~einsums::print::OutputSinkCallback` - Callback type for forwarding println output to an external sink (e.g. profiler TCP server).
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.print.always_print_thread_id
+   einsums.print.clear_output_sink
+   einsums.print.current_indent_level
+   einsums.print.deindent
+   einsums.print.Indent-cls
+   einsums.print.indent-fn
+   einsums.print.ordinal
+   einsums.print.set_output_sink
+   einsums.print.suppress_output
+   operators
+   types

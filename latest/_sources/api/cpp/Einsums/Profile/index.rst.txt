@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Profile_api:
+
+===============
+Profile C++ API
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Profile>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::profile::SpdlogSink` - An spdlog sink that streams Einsums' log messages to the profiler's viewers.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::configure_profiler_from_options` - Hand the profiler every profile option given on the command line or in the environment, and count Einsums as one of its users.
+- :cpp:any:`~einsums::profile::available` - Whether this build records anything. ``False`` means einsums was built with ``EINSUMS_WITH_PROFILER=OFF``: the API still exists but does nothing.
+- :cpp:any:`~einsums::profile::recording` - Whether Einsums records profiling data right now.
+- :cpp:any:`~einsums::register_Einsums_Profile_options` - Give the profiler's options their command-line presence. Idempotent.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::ProfileAppend` - Append to the report file rather than truncating it.
+- :cpp:any:`~einsums::option::ProfileDetailed` - Report every zone rather than the summary.
+- :cpp:any:`~einsums::option::ProfileDisable` - Stop recording zones and annotations; a large speedup for many small operations.
+- :cpp:any:`~einsums::option::ProfileFilename` - Where that report goes.
+- :cpp:any:`~einsums::option::ProfileMaxDistinctChildren` - Distinct zone names one parent keeps as separate nodes. Past it, a new name joins that parent's "(other)" node, so names built at run time (a graph's, a loop's) cannot grow the tree without bound. Zero means no limit.
+- :cpp:any:`~einsums::option::ProfilePort` - The port the profile server listens on.
+- :cpp:any:`~einsums::option::ProfileReport` - Write the text report at shutdown.
+- :cpp:any:`~einsums::option::ProfileSave` - Write the session as JSON for the profile viewer. Empty means do not.
+- :cpp:any:`~einsums::option::ProfileServer` - Enable the profile server for remote viewing. It is single-threaded and unauthenticated: local use only.
+- :cpp:any:`~einsums::option::ProfileSources` - The profiler's optional instruments to turn on, comma-separated. "counters" records each zone's hardware counters (cycles, instructions, ...), at a few hundred nanoseconds a zone. "energy" records each zone's energy from macOS's per-thread estimate, at no cost to the zone. "openmp" records each OpenMP parallel region, each thread's share of it and the barrier waits inside; the OpenMP runtime must support OMPT (LLVM's libomp does, GCC's libgomp does not). "signposts" also emits every zone as an os_signpost interval, for Instruments (macOS).
+- :cpp:any:`~einsums::option::ProfileTrace` - Write every zone to a Perfetto trace at this path, for ui.perfetto.dev; "{pid}" becomes the process id. Empty writes none.
+- :cpp:any:`~einsums::option::ProfileWaitForViewer` - Block at startup until a viewer connects.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.configure_profiler_from_options
+   einsums.profile.available
+   einsums.profile.recording
+   einsums.profile.SpdlogSink
+   einsums.register_Einsums_Profile_options
+   variables

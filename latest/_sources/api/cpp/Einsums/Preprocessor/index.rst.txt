@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Preprocessor_api:
+
+====================
+Preprocessor C++ API
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Preprocessor>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::util::unused` - Marks its arguments as used, silencing unused warnings. Binds references only, so it compiles to nothing.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_PP_ARGN_` - Implementation details for figuring out the number of arguments.
+- :c:macro:`EINSUMS_PP_CAT` - Concatenates its arguments.
+- :c:macro:`EINSUMS_PP_CAT_I` - Concatenates its arguments. Inner level because of macro weirdness.
+- :c:macro:`EINSUMS_PP_EXPAND` - Expands into its argument. Needed because of macro weirdness.
+- :c:macro:`EINSUMS_PP_NARGS` - Find the number of arguments.
+- :c:macro:`EINSUMS_PP_STRINGIFY` - Converts its argument into a string.
+- :c:macro:`EINSUMS_PP_STRINGIFY2` - Converts its argument into a string. Second level because of macro weirdness.
+- :c:macro:`EINSUMS_UNUSED` - Silence unused warnings for one or more variables: ``EINSUMS_UNUSED(a, b)``. The macro supplies the trailing semicolon (existing call sites omit it).
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.util.unused
+   macros

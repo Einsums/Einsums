@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.IndexSpace:
+
+==================================
+einsums::compute_graph::IndexSpace
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: IndexSpace
+
+   The semantics of one index space, and nothing else.
+
+   Field-wise equality makes a repeated identical registration idempotent and a conflicting one an
+   error. An aggregate for designated initializers; Python uses ``make_index_space``.
+
+
+   .. cpp:member:: std::string name
+
+      Human-readable name, unique within a registry ("occ", "virt", "aux", "grid", ...).
+
+
+   .. cpp:member:: std::string scale_symbol
+
+      Letter this space contributes to a symbolic cost polynomial ("o", "v", "x", "g", ...).
+
+
+   .. cpp:member:: std::string dim_symbol
+
+      Name a SYMBOLIC EXTENT over this space goes by ("no", "nv", ...). Empty when the space has
+      none, and then an axis over it cannot be given a symbolic extent from the space alone.
+
+      Distinct from ``scale_symbol`` (the cost-polynomial letter) and ``name``. A ragged space
+      uses ``"ragged:<space>"`` instead.
+
+
+   .. cpp:member:: double typical_extent
+
+      Advisory extent, used only to break ties when no tensor instance is bound. Zero means unset.
+
+
+   .. cpp:member:: GrowthClass growth
+
+      How the extent grows with system size.

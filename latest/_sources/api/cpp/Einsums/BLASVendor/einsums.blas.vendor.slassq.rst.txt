@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.slassq:
+
+=============================
+einsums::blas::vendor::slassq
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void slassq(int_t n, const float *x, int_t incx, float *scale, float *sumsq)
+
+   Compute the sum of squares of a vector without overflow. The sum of squares will be ``scale * scale * sumsq``.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vector.
+   :param x: The vector.
+   :param incx: The skip value for the vector.
+   :param scale: The scale factor for the sum that avoids overflow/underflow. If it is non-zero, the ``sumsq`` will be considered as part of the sum as well.
+   :param sumsq: The scaled sum of squares. If it is non-zero, then it will be considered as part of the sum as well.

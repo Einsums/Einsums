@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.slot_resync_accessor:
+
+============================================
+einsums::compute_graph::slot_resync_accessor
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename TensorType> constexpr SlotResyncAccessor slot_resync_accessor()
+
+   The ``TensorSlot::resync_of`` accessor for one static tensor type.
+
+   Beside ``slot_impl_accessor``, and derived the same way, so the two fields
+   of a slot are filled from one place rather than each caller open-coding the
+   ``if constexpr``.
+
+   :tparam TensorType: The type the slot's ``TensorSlot::ptr`` addresses.
+   :returns: A stateless function pointer, or null for a type that holds no storage block of its own (views, tile-wise sparse tensors).

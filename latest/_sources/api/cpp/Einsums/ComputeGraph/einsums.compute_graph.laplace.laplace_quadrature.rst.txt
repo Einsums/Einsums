@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.laplace_quadrature:
+
+===================================================
+einsums::compute_graph::laplace::laplace_quadrature
+===================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:function:: template <typename EnergyType, typename OutputType> void laplace_quadrature(const std::vector<EnergyType *> &energies, OutputType *points, OutputType *weights, OutputType *error, const std::vector<OutputType *> &exponentials, LaplaceQuadratureDescriptor descriptor)
+
+   Capture an ``OpKind::LaplaceQuadrature`` node.
+
+   The weights ride on the FIRST axis's exponential matrix rather than being applied by a node
+   of their own. One multiply per quadrature point either way, and the consumer then needs no
+   statement whose only job is a scalar.
+
+   .. versionadded:: 2.0.0
+
+   :param energies: The per-axis orbital-energy vectors, in axis order. Their storage must outlive every replay, since the node reads it on every bind.
+   :param points: Receives :math:`t_j`. Extent must be the descriptor's point count.
+   :param weights: Receives :math:`w_j`, sign included.
+   :param error: Receives the measured relative error, as a one-element tensor.
+   :param exponentials: Per axis, receives :math:`E_k[j, i] = w_j^{[k=0]} e^{-\sigma_k t_j \varepsilon_k[i]}`.
+   :param descriptor: The tolerance, the point count and the per-axis signs.
+   :throws std::logic_error: When called outside a capture.
+   :throws std::invalid_argument: When the operand lists disagree with the descriptor.

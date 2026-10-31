@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.Dim:
+
+============
+einsums::Dim
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/Common.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <std::size_t Rank> Dim : public std::array<std::int64_t, Rank>
+
+   Holds a list of dimensions in an array.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <typename... Args> requires (std::is_integral_v<std::remove_cvref_t<Args>> && ...) constexpr explicit Dim(Args... args)
+
+      Aggregate constructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <std::input_iterator Iterator> constexpr Dim(Iterator start, Iterator end)
+
+      Construct a dimension array and fill it with values.
+
+      .. versionadded:: 2.0.0
+
+      :param start: An iterator to the start of the data.
+      :param end: An iterator to the end of the data.

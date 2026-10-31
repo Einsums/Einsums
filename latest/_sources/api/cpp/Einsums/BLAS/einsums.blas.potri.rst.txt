@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.potri:
+
+====================
+einsums::blas::potri
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t potri(char uplo, int_t n, T *a, int_t lda)
+
+   Invert a symmetric (Hermitian) positive-definite matrix from its Cholesky factor.
+
+   Computes :math:`\mathbf{A}^{-1}` from the triangular factor previously
+   produced by potrf(), overwriting the referenced triangle in place.
+
+   :param uplo: Which triangle holds the factor, matching the potrf call.
+   :param n: Order of A.
+   :param a: On entry the Cholesky factor; on exit the corresponding triangle of the inverse.
+   :param lda: Leading dimension of a.
+   :returns: 0 on success; i > 0 if the factor has a zero diagonal element (singular).

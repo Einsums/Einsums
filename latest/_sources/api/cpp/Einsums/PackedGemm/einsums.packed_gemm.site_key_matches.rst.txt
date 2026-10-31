@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.site_key_matches:
+
+======================================
+einsums::packed_gemm::site_key_matches
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> bool site_key_matches(const ContractionKey &key, const ContractionSpec &spec_in, ScalarType st, const AType &A, const BType &B, const CType &C)
+
+   Whether a memoized ``key`` still describes this contraction.
+
+   Checks exactly what the ContractionKey encodes (topology, operand layout, and the target and
+   link extents), which is the plan cache's soundness contract, without allocating. ``spec_in's``
+   derived fields are checked only when the caller filled them; they follow from the raw index
+   lists, which are always compared.

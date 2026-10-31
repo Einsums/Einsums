@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.features_of:
+
+===================================
+einsums::compute_graph::features_of
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NodeFeatures.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: NodeFeatures features_of(const Graph &graph, const Node &node)
+
+   The features ``node`` carries in ``graph``.
+
+   :param graph: The graph the node belongs to, for its operands' handles and slot redirects.
+   :param node: The node.
+   :returns: Every feature the node carries; empty for a plain dense operation.

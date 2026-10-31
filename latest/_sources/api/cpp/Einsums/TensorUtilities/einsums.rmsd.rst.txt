@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.rmsd:
+
+=============
+einsums::rmsd
+=============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/RMSD.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType> requires (SameUnderlyingAndRank<AType, BType> && InSamePlace<AType, BType>) ValueTypeT<AType> rmsd(const AType &tensor1, const BType &tensor2)
+
+   Computes the root-mean-squared-difference between two tensors of arbitrary dimension
+
+   This is equivalent to :math:`\sqrt{\frac{1}{n}\sum_{i} \left|A_i - B_i\right|^2}` for rank-1 tensors, and extends to higher-rank tensors.
+
+   .. versionadded:: 1.0.0
+
+   :param tensor1,tensor2: The inputs for the RMSD algorithm.
+   :returns: The root-mean-squared-difference between two tensors.

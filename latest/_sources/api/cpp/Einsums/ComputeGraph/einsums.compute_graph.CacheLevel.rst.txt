@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CacheLevel:
+
+==================================
+einsums::compute_graph::CacheLevel
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CacheLevel
+
+   Cache level description.
+
+
+   .. cpp:member:: size_t size_bytes
+
+   .. cpp:member:: double bandwidth_gbps
+
+   .. cpp:member:: double latency_ns

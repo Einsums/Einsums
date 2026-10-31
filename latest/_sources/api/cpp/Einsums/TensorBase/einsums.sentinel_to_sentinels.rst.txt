@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sentinel_to_sentinels:
+
+==============================
+einsums::sentinel_to_sentinels
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t num_indices, typename StorageType, typename... StridesInds> requires (sizeof...(StridesInds) % 2 == 0) void sentinel_to_sentinels(size_t sentinel, const size_t *index_strides, StridesInds &&... strides_inds)
+
+   Converts a single sentinel value into several sentinels for tensors with different strides.
+
+   :param sentinel: The sentinel to convert.
+   :param index_strides: The strides of the unique indices that the sentinel is iterating over.
+   :param strides_inds: The converted sentinels.

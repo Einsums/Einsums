@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.blis_contraction:
+
+======================================
+einsums::packed_gemm::blis_contraction
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename ValueType, BasicTensorConcept CType, BasicTensorConcept AType, BasicTensorConcept BType> void blis_contraction(const PackingPlan &plan, CType &C, const AType &A, const BType &B, ValueType alpha, ValueType beta, bool conj_a, bool conj_b, bool prefer_packed)
+
+   Execute a tensor contraction with the packed engine.
+
+   The engine's threads divide the output (see ``blis_contraction_body``). When the output is too
+   small to keep the machine's threads busy (see ``choose_k_split``), the contracted extent is cut
+   into shares instead: the threads take the shares in turn, each running the engine alone on its
+   block of K into a buffer of its own, and the buffers are added into C in share order. The cut
+   does not depend on how many threads run it, so every width gives the same result.

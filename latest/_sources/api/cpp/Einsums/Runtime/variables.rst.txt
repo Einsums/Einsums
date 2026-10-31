@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Runtime_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> AttachDebugger
+
+   Offer to attach a debugger when a detected error terminates the process.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> DiagnosticsOnTerminate
+
+   Print extra diagnostics on the way down.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> InstallSignalHandlers
+
+   Install the handlers that report a fatal signal before the process dies.

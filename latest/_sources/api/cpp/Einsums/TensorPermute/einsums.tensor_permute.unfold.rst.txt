@@ -1,0 +1,47 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_permute.unfold:
+
+===============================
+einsums::tensor_permute::unfold
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorPermute/Unfold.hpp``.
+
+.. cpp:namespace:: einsums::tensor_permute
+
+.. cpp:function:: template <typename T> void unfold(std::size_t mode, detail::TensorImpl<T> *C, const detail::TensorImpl<T> &A)
+
+   Write the mode-``mode`` unfolding of ``A`` into ``C``.
+
+   :math:`C(a_{mode}, z) = A(a_0, \ldots, a_{N-1})`, where the column :math:`z` runs over the
+   remaining modes in their order with the first varying fastest:
+   :math:`z = a_{r_1} + d_{r_1} (a_{r_2} + d_{r_2} (\ldots))`. This is the unfolding of Kolda and
+   Bader, and the column order is fixed: it does not depend on either tensor's memory layout.
+
+   It is a permutation that brings ``mode`` to the front, written through a view of ``C`` that splits
+   its column axis into the remaining modes, so no reshaped copy is made.
+
+   .. code-block:: text
+
+      tensor_permute::unfold(1, &C, A);  // A is 3 x 4 x 5, C is 4 x 15
+
+   .. versionadded:: 2.0.0
+
+   :throws RankError: when ``C`` is not rank 2, or ``mode`` is not an axis of ``A``.
+   :throws DimensionError: when ``C`` is not ``A's`` extent along ``mode`` by the product of the others.
+
+
+.. cpp:function:: template <HasTensorImpl CType, HasTensorImpl AType> requires std::is_same_v<typename CType::ValueType, typename AType::ValueType> void unfold(std::size_t mode, CType *C, const AType &A)
+
+   Write the mode-``mode`` unfolding of ``A`` into ``C``, on tensors.
+
+   .. versionadded:: 2.0.0

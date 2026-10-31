@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.validate_graph_ir_file:
+
+==============================================
+einsums::compute_graph::validate_graph_ir_file
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void validate_graph_ir_file(const std::string &path)
+
+   Check ``path``, throwing with every problem when it is not valid.
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file to check.
+   :throws std::runtime_error: With one line per problem found.

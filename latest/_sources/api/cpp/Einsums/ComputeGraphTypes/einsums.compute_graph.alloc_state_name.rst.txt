@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.alloc_state_name:
+
+========================================
+einsums::compute_graph::alloc_state_name
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Enums.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view alloc_state_name(AllocState state) noexcept
+
+   The name of an allocation state, for diagnostics and the saved form.
+
+   Distinct from ``init_kind_name``, which says what a tensor is FILLED with. This says
+   whether it has storage at all, which is what decides whether a bind may still reshape it.
+
+   .. versionadded:: 2.0.0
+
+   :param state: The state to name.
+   :returns: A stable spelling ("materialized", "deferred").

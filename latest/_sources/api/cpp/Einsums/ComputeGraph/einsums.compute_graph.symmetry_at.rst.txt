@@ -1,0 +1,49 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.symmetry_at:
+
+===================================
+einsums::compute_graph::symmetry_at
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymmetryRules.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<SymmetryDescriptor> symmetry_at(const EscapeAnalysis &escape, TensorId tensor, NodeId reader, std::vector<std::pair<TensorId, SymmetryDescriptor>> *relied_on)
+
+   The symmetry ``tensor`` has when ``reader`` reads it.
+
+   A tensor written several times is still symmetric at a given read when the write that set its
+   contents produced the symmetry and every write after it, up to the read, added something that
+   has it too. The amplitude intermediate tau of a coupled-cluster iteration is that shape: an
+   outer product of t1 with itself, then t2 added in place. A single-writer guard cannot accept it;
+   this walks the writes in program order instead:
+
+   - a write with a zero destination prefactor sets the state to what it writes (an einsum's ``self_product_symmetry``, an axpby's source as it stands at that write);
+   - a write that accumulates keeps only the generators both the state and its term have;
+   - a scale keeps the state;
+   - any other write, a write through another view of the buffer, a write by a descendant sub-graph, or an accumulation onto contents nothing before it set, gives no answer.
+
+   With no write before ``reader``, the answer is the tensor's own ``symmetry_hint``: a symmetry the
+   user declared, which is a promise about every value the tensor holds, or one an analysis pass
+   proved for its final contents. That is how a loop-carried amplitude such as t2 enters.
+
+   .. admonition:: Precondition
+
+      The graph's node list is in an order that respects its dependencies, as after capture or
+      ``Graph::topological_sort``. "Before ``reader"`` means earlier in that list.
+
+   :param escape: The analysis of the graph ``reader`` belongs to.
+   :param tensor: The tensor read.
+   :param reader: The node that reads it.
+   :param relied_on: When given, receives every tensor whose own ``symmetry_hint`` the answer rests on, with that hint: the promises a caller may want to check at run time.
+   :returns: The generators that hold at the read, or nothing.

@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.device_malloc:
+
+===========================
+einsums::gpu::device_malloc
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Runtime.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:function:: expected<void *, GpuError> device_malloc(size_t bytes)
+
+   Allocate device memory. Returns error on allocation failure.

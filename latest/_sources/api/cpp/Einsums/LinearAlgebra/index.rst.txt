@@ -1,0 +1,104 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_LinearAlgebra_api:
+
+=====================
+LinearAlgebra C++ API
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_LinearAlgebra>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::linear_algebra::axpby` - Scale and add two tensors together.
+- :cpp:any:`~einsums::linear_algebra::axpy` - Scale and add two tensors together.
+- :cpp:any:`~einsums::linear_algebra::det` - Computes the determinant of a matrix.
+- :cpp:any:`~einsums::linear_algebra::direct_division` - Compute the element-wise (Hadamard) quotient of two tensors and accumulate it into another. The counterpart to ``direct_product``, for building reciprocals and quotients (e.g. amplitude denominators :math:`1/\Delta`) without a per-element host callback.
+- :cpp:any:`~einsums::linear_algebra::direct_product` - Compute the direct product between two tensors and accumulate them into another. This is the element-wise (Hadamard) product of the two tensors.
+- :cpp:any:`~einsums::linear_algebra::dot` - Performs the dot product between two tensors.
+- :cpp:any:`~einsums::linear_algebra::geev` - Compute the general eigendecomposition of a matrix.
+- :cpp:any:`~einsums::linear_algebra::gemm` - General matrix multiplication.
+- :cpp:any:`~einsums::linear_algebra::gemv` - General matrix-vector multiplication.
+- :cpp:any:`~einsums::linear_algebra::ger` - Perform a rank-1 update. Neither vector is conjugated.
+- :cpp:any:`~einsums::linear_algebra::gerc` - Perform a rank-1 update. The right vector is conjugated.
+- :cpp:any:`~einsums::linear_algebra::gesv` - Solve a system of linear equations.
+- :cpp:any:`~einsums::linear_algebra::getrf` - Computes the LU factorization of a general m-by-n matrix.
+- :cpp:any:`~einsums::linear_algebra::getri` - Computes the inverse of a matrix using the LU factorization computed by getrf.
+- :cpp:any:`~einsums::linear_algebra::getrs` - Solves a system of linear equations against a factorization ::getrf already computed.
+- :cpp:any:`~einsums::linear_algebra::heev` - Computes all eigenvalues and, optionally, eigenvectors of a complex Hermitian matrix.
+- :cpp:any:`~einsums::linear_algebra::invert` - Inverts a matrix.
+- :cpp:any:`~einsums::linear_algebra::norm` - Computes the norm of a matrix.
+- :cpp:any:`~einsums::linear_algebra::pow` - Computes the matrix power of a to alpha. Return a new tensor, does not destroy a.
+- :cpp:any:`~einsums::linear_algebra::pseudoinverse` - Compute the pseudoinverse of a matrix.
+- :cpp:any:`~einsums::linear_algebra::qr` - Perform QR decomposition.
+- :cpp:any:`~einsums::linear_algebra::scale` - Scales a tensor by a scalar.
+- :cpp:any:`~einsums::linear_algebra::scale_column` - Scales a column in a matrix by a value.
+- :cpp:any:`~einsums::linear_algebra::scale_row` - Scales a row in a matrix by a value.
+- :cpp:any:`~einsums::linear_algebra::solve_continuous_lyapunov` - Solves a continuous Lyapunov equation.
+- :cpp:any:`~einsums::linear_algebra::sum_square` - Computes the square sum of a tensor.
+- :cpp:any:`~einsums::linear_algebra::svd` - Computes the singular value decomposition.
+- :cpp:any:`~einsums::linear_algebra::svd_dd` - Computes the singular value decomposition using the divide-and-conquer algorithm.
+- :cpp:any:`~einsums::linear_algebra::svd_nullspace` - Computes the nullspace based on the singular value decomposition.
+- :cpp:any:`~einsums::linear_algebra::syev` - Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+- :cpp:any:`~einsums::linear_algebra::symm_gemm` - Computes a common double multiplication between two matrices.
+- :cpp:any:`~einsums::linear_algebra::true_dot` - Performs the true dot product between two tensors.
+- :cpp:any:`~einsums::linear_algebra::truncated_svd` - Perform the truncated singular value decomposition of a matrix.
+- :cpp:any:`~einsums::linear_algebra::truncated_syev` - Perform the truncated eigendecomposition of a matrix.
+- :cpp:any:`~einsums::linear_algebra::vec_norm` - Compute the Euclidean norm of a vector. For higher-rank tensors, this is the same as taking the square root of the sum of the squares of all of the elements.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::linear_algebra::Norm` - Indicates the type of norm to compute.
+- :cpp:any:`~einsums::linear_algebra::Transpose` - Transpose mode for a matrix operand, mapping 1:1 onto the BLAS op flag. Enumerators are the BLAS letters. ``None`` is avoided because it is a Python keyword.
+- :cpp:any:`~einsums::linear_algebra::Vectors` - Compute modes for the singular value decomposition.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.linear_algebra.axpby
+   einsums.linear_algebra.axpy
+   einsums.linear_algebra.det
+   einsums.linear_algebra.direct_division
+   einsums.linear_algebra.direct_product
+   einsums.linear_algebra.dot
+   einsums.linear_algebra.geev
+   einsums.linear_algebra.gemm
+   einsums.linear_algebra.gemv
+   einsums.linear_algebra.ger
+   einsums.linear_algebra.gerc
+   einsums.linear_algebra.gesv
+   einsums.linear_algebra.getrf
+   einsums.linear_algebra.getri
+   einsums.linear_algebra.getrs
+   einsums.linear_algebra.heev
+   einsums.linear_algebra.invert
+   einsums.linear_algebra.norm
+   einsums.linear_algebra.pow
+   einsums.linear_algebra.pseudoinverse
+   einsums.linear_algebra.qr
+   einsums.linear_algebra.scale
+   einsums.linear_algebra.scale_column
+   einsums.linear_algebra.scale_row
+   einsums.linear_algebra.solve_continuous_lyapunov
+   einsums.linear_algebra.sum_square
+   einsums.linear_algebra.svd
+   einsums.linear_algebra.svd_dd
+   einsums.linear_algebra.svd_nullspace
+   einsums.linear_algebra.syev
+   einsums.linear_algebra.symm_gemm
+   einsums.linear_algebra.true_dot
+   einsums.linear_algebra.truncated_svd
+   einsums.linear_algebra.truncated_syev
+   einsums.linear_algebra.vec_norm
+   enums

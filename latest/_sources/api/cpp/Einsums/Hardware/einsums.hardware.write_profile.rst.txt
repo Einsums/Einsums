@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.write_profile:
+
+================================
+einsums::hardware::write_profile
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: bool write_profile(const std::string &path, const json::Value &document, std::string &error)
+
+   Write a profile document, atomically.
+
+   Written to a temporary beside ``path`` and renamed into place, so a process reading the profile
+   never sees half of one. Parent directories are created.
+
+   .. versionadded:: 2.0.0
+
+   :param path: Destination.
+   :param document: The profile.
+   :param error: Why it was not written, when it was not.
+   :returns: Whether the file was written.

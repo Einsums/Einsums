@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.last_route_pin:
+
+====================================
+einsums::packed_gemm::last_route_pin
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: KernelRoute & last_route_pin()
+
+   The route pin the most recent route decision on this thread read. Adaptive means the thread
+   regime decided (``einsums::blas::vendor_call_is_fenced``). Test introspection only.

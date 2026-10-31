@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgemm_batch:
+
+==================================
+einsums::blas::vendor::sgemm_batch
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sgemm_batch(char transa, char transb, int_t m, int_t n, int_t k, float alpha, const float **a_array, int_t lda, const float **b_array, int_t ldb, float beta, float **c_array, int_t ldc, int_t batch_count)
+
+   Performs a batch of independent general matrix-matrix multiplications.
+
+   All batches share the same transa, transb, m, n, k, alpha, beta, lda, ldb, ldc.
+   Only the data pointers differ, passed as arrays of length batch_count.
+
+   :param transa: Whether to transpose A. Can be 'N', 'T', or 'C'.
+   :param transb: Whether to transpose B. Can be 'N', 'T', or 'C'.
+   :param m: Number of rows of C and op(A).
+   :param n: Number of columns of C and op(B).
+   :param k: Number of columns of op(A) and rows of op(B).
+   :param alpha: Scalar multiplier for A*B.
+   :param a_array: Array of batch_count pointers to A matrices.
+   :param lda: Leading dimension of each A.
+   :param b_array: Array of batch_count pointers to B matrices.
+   :param ldb: Leading dimension of each B.
+   :param beta: Scalar multiplier for C.
+   :param c_array: Array of batch_count pointers to C matrices.
+   :param ldc: Leading dimension of each C.
+   :param batch_count: Number of independent GEMMs to perform.

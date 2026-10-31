@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sentinel_to_sentinels_zero_imp:
+
+=======================================
+einsums::sentinel_to_sentinels_zero_imp
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename Stride, typename Sentinel, typename... Rest> void sentinel_to_sentinels_zero_imp(Stride &&, Sentinel &sentinel, Rest &&... rest)
+
+   Implementation details for the sentinel_to_sentinels function. This clears the outputs.

@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.is_initialized:
+
+=============================
+einsums::comm::is_initialized
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Runtime.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:function:: bool is_initialized()
+
+   Check if the communication layer has been initialized.

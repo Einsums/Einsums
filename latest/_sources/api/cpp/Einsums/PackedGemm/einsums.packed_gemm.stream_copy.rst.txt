@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.stream_copy:
+
+=================================
+einsums::packed_gemm::stream_copy
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void stream_copy(T *dst, const T *src, int64_t n)
+
+   Copy ``n`` elements to ``dst`` without first fetching its cache lines.
+
+   An ordinary store to a line the core does not own reads that line from memory first, even when
+   every byte is overwritten; for a C written once and never read, that is an extra pass over C.
+   Streaming stores go through the write-combining buffers, and a line assembled there whole is
+   written with no read, so the run must be contiguous and reasonably long.
+
+   Any alignment and length stream (stripes::stream_store_span): the misaligned head and the
+   partial tail are ordinary stores, and only the lines they touch keep the fetch.
+
+   .. warning::
+
+      Streaming stores are weakly ordered. The caller must ``stripes::stream_fence()``
+      before anything reads ``dst``.

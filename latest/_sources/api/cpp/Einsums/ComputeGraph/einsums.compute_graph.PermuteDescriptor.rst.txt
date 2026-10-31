@@ -1,0 +1,79 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PermuteDescriptor:
+
+=========================================
+einsums::compute_graph::PermuteDescriptor
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PermuteDescriptor
+
+   Metadata for ``OpKind::Permute`` nodes.
+
+   Stores the alpha/beta prefactors: C = beta * C + alpha * permute(A).
+
+   The snapshot scalars are ``std::complex<double>`` (the widest concrete scalar,
+   as in ``BatchedGemmDescriptor``) so a complex permute records exactly what
+   its executor will apply. They were ``double``, filled from ``alpha.real()`` at
+   capture, which made `alpha = 1+3i` read back as a plain `1.0`: PermuteFusion
+   saw a pure axis reorder and fused the permute away, dropping the imaginary
+   part, and CSE merged permutes that differ only in it.
+
+   The INDEX LISTS are deliberately not live-mutable. No pass rewrites them
+   today, and a pass that wants to has a better move than mutating them under a
+   running executor: rewrite the descriptor and call ``build_executor`` again.
+   The scalars are live because passes genuinely do rewrite those between
+   replays.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::complex<double> alpha
+
+      Prefactor for the source tensor (at-capture snapshot).
+
+
+   .. cpp:member:: std::complex<double> beta
+
+      Prefactor for the destination tensor (0 = overwrite).
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Output index names (e.g., {"j","i"}).
+
+
+   .. cpp:member:: std::vector<std::string> a_indices
+
+      Input index names (e.g., {"i","j"}).
+
+
+   .. cpp:member:: std::shared_ptr<ElementwiseParams> params
+
+      Live scalars the executor reads each call.
+
+
+   .. cpp:member:: std::vector<PermutationOperator> operators
+
+      Permutation (antisymmetrizer) operators this permute is wrapped in.
+
+      .. seealso::
+
+         EinsumDescriptor::operators
+
+      .. versionadded:: 2.0.0

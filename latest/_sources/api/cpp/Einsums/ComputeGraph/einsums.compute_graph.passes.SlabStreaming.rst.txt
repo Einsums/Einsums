@@ -1,0 +1,354 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.SlabStreaming:
+
+=============================================
+einsums::compute_graph::passes::SlabStreaming
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/SlabStreaming.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: SlabStreaming : public OptimizerPass
+
+   Read a backed tensor a slab at a time instead of loading it whole.
+
+   A tensor annotated with a backing (``Graph::annotate_backing``) is loaded whole before its
+   first reader, which needs memory for all of it. This pass rewrites each contraction that reads
+   one into a loop over blocks of the backed tensor's LAST axis: every iteration reads one slab
+   from the storage into a buffer the size of the block, then runs the same contraction on it.
+   The last axis because the storage keeps elements column-major, so a block of the last axis is
+   one contiguous extent, read in one piece. A backed tensor no node reads whole any more is then
+   never allocated.
+
+   What a block does to the destination follows the letter the last axis carries. When the
+   destination carries it too, each block writes its own slice and the result is the captured
+   one exactly. When the letter is summed, the blocks add into the destination: the first block
+   applies the destination's prefactor and the rest add, which is the captured contraction's own
+   order of operations with its sum cut into parts, so the result moves within the
+   re-association tolerance.
+
+   A tensor with a WRITE backing is streamed the other way. The contraction that produces it
+   becomes a loop over blocks of its last axis: every iteration computes one block into a buffer
+   the size of the block and writes that slab to the storage, so the tensor is never held whole.
+   The contraction must overwrite the tensor (a destination prefactor of zero), be its only
+   writer in memory, and read no backed tensor; otherwise the tensor is produced in memory and
+   Materialization stores it whole after its last writer. Its readers are streamed as any backed
+   tensor's are, but only once nothing writes it in memory, and they run after the writes: every
+   read and write of a storage carries the storage's key.
+
+   It acts only under a memory budget, the same one AxisTiling plans against: a backed tensor is
+   streamed when it is larger than its share of ``--einsums:max-memory``
+   (``--einsums:graph:tiling-budget-share``). One that fits is loaded once per replay, which beats
+   one read per reading contraction. It runs after AxisTiling and inside every loop body, so a
+   contraction AxisTiling placed in a block loop is streamed there.
+
+   Declined, with the reason in the skip tally, and left to the whole load: a backed tensor whose
+   last-axis letter is repeated in any operand or the destination; one read through a view other
+   than a full one; a contraction that reads one backed tensor on both sides; one with permutation
+   operators; any node but a contraction; operands that are not rank-erased tensors. A backed
+   operand held in memory anyway, one that fits or that the graph wrote, is an ordinary operand,
+   and of two backed operands both over their share the larger is streamed and the smaller held.
+
+   The slab reads run in order with the contraction: a block's read finishes before its
+   contraction starts. A graph this pass has rewritten cannot be saved, like one AxisTiling has
+   rewritten; save the graph before the resource passes.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: SlabStreaming() = default
+
+      Default-construct, reading the budget from the options.
+
+
+   .. cpp:function:: std::string name() const override
+
+      See ``OptimizerPass::name``.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      Taken for a machine reason, how much memory there is, with the algebra untouched.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      A summed letter's blocks add their partial sums in a different order.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      See ``OptimizerPass::recurse_into_subgraphs``.
+
+      The contraction worth streaming is often inside a loop: an iterative method's body, or a
+      block loop AxisTiling emitted. The pass walks those bodies itself rather than being handed
+      them one at a time, because how a backed tensor is best stored follows from every box of it
+      the whole tree moves, which is known only once the walk is over.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Views, because the operands of a contraction in a block loop are views, and the rewrite
+      views the tensor underneath each one directly and removes the original when nothing else
+      uses it; a view that slices the streamed letter is declined. Conjugation, because the
+      rewrite re-emits the contraction's own conjugation flags.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      See ``OptimizerPass::reset_stats``.
+
+
+   .. cpp:function:: std::vector<std::pair<NodeId, TensorId>> compensated_reads() const override
+
+      See ``OptimizerPass::compensated_reads``.
+
+      A contraction that produces a write-backed tensor into its storage leaves the tensor's
+      remaining readers without an in-graph writer. They read the stored tensor instead: its fill
+      from the storage carries the storage's key, which orders it after every slab write.
+
+
+   .. cpp:function:: void set_slab_budget(std::int64_t bytes)
+
+      Override the slab budget for this pipeline, in bytes.
+
+      .. versionadded:: 2.0.0
+
+      :param bytes: A backed tensor larger than this is streamed, in slabs no larger than it. Zero turns the pass off; a negative value derives it from ``--einsums:max-memory`` and ``--einsums:graph:tiling-budget-share``, which is the default.
+
+
+   .. cpp:function:: std::size_t num_streamed() const noexcept
+
+      How many contractions the last apply streamed.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The count, zero when the pass declined everything.
+
+
+   .. cpp:function:: std::vector<std::string> streamed() const
+
+      The backed tensors the last apply streamed, by name, one entry per streamed contraction.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The names, in the order the contractions were rewritten.
+
+
+   .. cpp:function:: std::size_t num_written() const noexcept
+
+      How many of the streamed contractions produce their tensor into its storage.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The count of contractions turned into loops ending in a slab write.
+
+
+   .. cpp:function:: std::vector<std::int64_t> blocks() const
+
+      The block each streamed contraction reads, along the backed tensor's last axis.
+
+      .. versionadded:: 2.0.0
+
+      :returns: One entry per streamed contraction, in the order of ``streamed``.
+
+
+   .. cpp:function:: std::size_t num_boxes() const noexcept
+
+      How many views of a backed tensor the last apply turned into a read of the box each one names.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The count, one per view, whichever loop chose the box.
+
+
+   .. cpp:function:: std::vector<std::size_t> stored_order(const std::string &name) const
+
+      The order the last apply left a backed tensor stored in.
+
+      .. versionadded:: 2.0.0
+
+      :param name: The backed tensor's name.
+      :returns: The declared axis at each stored position, as ``TensorBacking::stored_order`` gives it; empty for a tensor the apply moved no box of, or whose storage has no order.
+
+
+   .. cpp:member:: static constexpr Reason NoBudget
+
+      The codes this pass records its decisions under (``Decision::code``). The box reasons
+      end in ``so it is loaded whole`` or in the write-backed decline when a pass reports them.
+      @{
+
+
+   .. cpp:member:: static constexpr Reason HeldBeside
+
+   .. cpp:member:: static constexpr Reason ReadAfterUpdate
+
+   .. cpp:member:: static constexpr Reason ProducedInMemory
+
+   .. cpp:member:: static constexpr Reason FitsBudget
+
+   .. cpp:member:: static constexpr Reason BothBacked
+
+   .. cpp:member:: static constexpr Reason UnseenView
+
+   .. cpp:member:: static constexpr Reason PermutationOperators
+
+   .. cpp:member:: static constexpr Reason NoLastAxis
+
+   .. cpp:member:: static constexpr Reason RepeatedLetter
+
+   .. cpp:member:: static constexpr Reason ElementType
+
+   .. cpp:member:: static constexpr Reason EmptyOperand
+
+   .. cpp:member:: static constexpr Reason OperandNotViewable
+
+   .. cpp:member:: static constexpr Reason WriteUpdateBacked
+
+   .. cpp:member:: static constexpr Reason WriteFitsBudget
+
+   .. cpp:member:: static constexpr Reason WrittenElsewhere
+
+   .. cpp:member:: static constexpr Reason WriteUnseenView
+
+   .. cpp:member:: static constexpr Reason WriteAddsInto
+
+   .. cpp:member:: static constexpr Reason WriteReadsBacked
+
+   .. cpp:member:: static constexpr Reason WritePermutationOperators
+
+   .. cpp:member:: static constexpr Reason WriteNoLastAxis
+
+   .. cpp:member:: static constexpr Reason WriteRepeatedLetter
+
+   .. cpp:member:: static constexpr Reason WriteElementType
+
+   .. cpp:member:: static constexpr Reason WriteEmptyOperand
+
+   .. cpp:member:: static constexpr Reason WriteOperandNotViewable
+
+   .. cpp:member:: static constexpr Reason BoxUnseenView
+
+   .. cpp:member:: static constexpr Reason BoxPermutingView
+
+   .. cpp:member:: static constexpr Reason BoxViewOfView
+
+   .. cpp:member:: static constexpr Reason BoxUnredirectableView
+
+   .. cpp:member:: static constexpr Reason BoxNestedGraph
+
+   .. cpp:member:: static constexpr Reason BoxWrittenElsewhere
+
+   .. cpp:member:: static constexpr Reason BoxReadElsewhere
+
+   .. cpp:member:: static constexpr Reason BoxFirstWriterAdds
+
+   .. cpp:member:: static constexpr Reason StreamedRead
+
+   .. cpp:member:: static constexpr Reason StreamedWrite
+
+   .. cpp:member:: static constexpr Reason StreamedBox
+
+   .. cpp:member:: static constexpr Reason OrderChosen
+
+   .. cpp:member:: static constexpr Reason OrderAdvised
+
+   .. cpp:class:: Record
+
+      One streamed contraction's report line.
+
+
+      .. cpp:member:: std::string tensor
+
+      .. cpp:member:: std::string label
+
+      .. cpp:member:: std::size_t extent
+
+      .. cpp:member:: std::size_t block
+
+      .. cpp:member:: std::size_t bytes
+
+      .. cpp:member:: double flops
+
+      .. cpp:member:: bool summed
+
+      .. cpp:member:: bool writes
+
+         The contraction produces the tensor into its storage.
+
+
+      .. cpp:member:: bool box
+
+         A view's box is moved in place of the view.
+
+
+      .. cpp:member:: std::vector<std::size_t> extents
+
+         For a box: its extent on each declared axis, and whether that is the whole axis, which
+         with the order the tensor ends up stored in gives its runs.
+
+
+      .. cpp:member:: std::vector<bool> whole_axis
+
+
+   .. cpp:class:: BoxUse
+
+      One shape of box a backed tensor is moved in, and how many such boxes a replay moves: what
+      the choice of its stored order weighs.
+
+
+      .. cpp:member:: std::shared_ptr<const TensorBacking> backing
+
+      .. cpp:member:: std::string name
+
+      .. cpp:member:: std::vector<std::size_t> extents
+
+      .. cpp:member:: std::vector<bool> whole_axis
+
+      .. cpp:member:: double count
+
+         Transfers of it per replay of the root.
+
+
+
+   .. cpp:class:: BackedEntry
+
+      What a graph knows about one backed tensor object.
+
+
+      .. cpp:member:: std::string name
+
+      .. cpp:member:: std::shared_ptr<const TensorBacking> backing
+
+      .. cpp:member:: bool written_outside
+
+         For a write-backed tensor: an operation outside this graph and the graphs below it
+         writes it in memory, so neither its producer nor its readers here may be streamed.
+
+
+      .. cpp:member:: bool update_after
+
+         For an update-backed tensor: this graph runs at or after the first write of it in the
+         graph that declares it, so its storage no longer holds the value this graph reads.
+
+
+      .. cpp:member:: bool held
+
+         Held whole by a loop this pass built to stream a larger backed operand beside it: read
+         from memory in that loop's body, never a slab at a time there.

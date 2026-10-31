@@ -1,0 +1,114 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.Transpose:
+
+========================
+einsums::hptt::Transpose
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Transpose.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:class:: template <typename floatType> Transpose
+
+   Arch-neutral interface to a compiled tensor-transposition plan.
+
+   Create once (hptt::create_plan()), execute() many times; repoint buffers, scales and conjugation
+   between runs. clone() copies; write_to_file()/read_from_file() persist.
+
+   :tparam floatType: The element type this plan transposes.
+
+
+   .. cpp:function:: virtual ~Transpose() = default
+
+   .. cpp:function:: virtual void execute() noexcept = 0
+
+      Executes the transposition.
+
+
+   .. cpp:function:: virtual void set_input_ptr(const floatType *A) noexcept = 0
+
+      Set the pointer for A.
+
+      Useful to reuse the compiled transposition over multiple invocations.
+
+
+   .. cpp:function:: virtual void set_output_ptr(floatType *B) noexcept = 0
+
+      Set the pointer for B.
+
+      Useful to reuse the compiled transposition over multiple invocations.
+
+
+   .. cpp:function:: virtual void set_alpha(floatType alpha) noexcept = 0
+
+      Set the scaling factor for A.
+
+
+   .. cpp:function:: virtual void set_beta(floatType beta) noexcept = 0
+
+      Set the scaling factor for B.
+
+
+   .. cpp:function:: virtual void set_conj_a(bool conjA) noexcept = 0
+
+      Change whether to conjugate the input tensor.
+
+
+   .. cpp:function:: virtual void write_to_file(std::FILE *fp) const = 0
+
+      Serialize this plan (parameters and compiled loop structure) to a file
+      previously prepared with hptt::setup_file(). Restore with
+      read_from_file().
+
+
+   .. cpp:function:: virtual std::shared_ptr<Transpose<floatType>> clone() const = 0
+
+      Deep-copy this plan.
+
+      Replaces the copy constructor of earlier versions: the concrete plan
+      type is hidden behind this interface, so copying must go through a
+      virtual call. Used to clone a cached template plan before repointing
+      it at new buffers.
+
+
+   .. cpp:function:: static std::shared_ptr<Transpose<floatType>> create(const size_t *sizeA, const int *perm, const size_t *outerSizeA, const size_t *outerSizeB, const size_t *offsetA, const size_t *offsetB, const size_t innerStrideA, const size_t innerStrideB, const int dim, const floatType *A, const floatType alpha, floatType *B, const floatType beta, const SelectionMethod selectionMethod, const int numThreads, const int *threadIds, const bool useRowMajor)
+
+      Create a transposition plan.
+
+      The factory behind every hptt::create_plan() overload.
+
+      :param sizeA: dim-dimensional array with the sizes of each dimension of A.
+      :param perm: dim-dimensional array representing the permutation of the indices. For instance, perm[] = {1,0,2} denotes: :math:`B_{i1,i0,i2} \gets A_{i0,i1,i2}`.
+      :param outerSizeA: outer sizes of A, or NULL (meaning equal to sizeA); enables operating on sub-tensors.
+      :param outerSizeB: outer sizes of B, or NULL (meaning equal to perm(sizeA)).
+      :param offsetA: per-dimension offsets into A, or NULL (meaning zero).
+      :param offsetB: per-dimension offsets into B, or NULL (meaning zero).
+      :param innerStrideA: non-unit stride of A's innermost dimension.
+      :param innerStrideB: non-unit stride of B's innermost dimension.
+      :param dim: Dimensionality of the tensors.
+      :param A: Pointer to the raw data of the input tensor A.
+      :param alpha: Scaling factor for A.
+      :param B: Pointer to the raw data of the output tensor B.
+      :param beta: Scaling factor for B.
+      :param selectionMethod: Whether/how to auto-tune (see hptt::SelectionMethod). ATTENTION: auto-tuning (e.g. hptt::MEASURE) writes to B during tuning.
+      :param numThreads: Number of threads participating in the transposition.
+      :param threadIds: OpenMP thread IDs participating, for execution inside an existing parallel region.
+      :param useRowMajor: Row-major memory layout when set (default: column-major).
+
+
+   .. cpp:function:: static std::shared_ptr<Transpose<floatType>> read_from_file(std::FILE *fp, floatType alpha, const floatType *A, floatType beta, floatType *B)
+
+      Reconstruct a plan previously saved with write_to_file().
+
+      The data pointers, alpha, and beta are not part of the serialized
+      form and must be supplied afresh.

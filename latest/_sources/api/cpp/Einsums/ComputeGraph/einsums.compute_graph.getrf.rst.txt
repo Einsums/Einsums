@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.getrf:
+
+=============================
+einsums::compute_graph::getrf
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <MatrixOperand AType> int getrf(AType *A, LuPivots *pivots)
+
+   LU-factorize ``A`` in place, recording the row interchanges in ``pivots``.
+
+   On return ``A`` holds ``L`` and ``U`` in the LAPACK packing (the unit
+   diagonal of ``L`` is not stored) and ``pivots`` holds the interchanges,
+   sized to the order of ``A``. Unlike ``gesv``, the factorization survives
+   every solve made against it, so one ``getrf`` feeds any number of
+   ``getrs`` calls. Returns the LAPACK info code: 0 on success, positive
+   ``i`` if ``U(i,i)`` is exactly zero - the factorization is still complete,
+   but a solve against it is meaningless.
+
+   The same ``pivots`` object must be handed to the matching ``getrs``, and
+   ordering rides on ``A`` rather than on the pivots.

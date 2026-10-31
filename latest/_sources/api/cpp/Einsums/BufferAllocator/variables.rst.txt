@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BufferAllocator_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::string> BufferSize
+
+   Total memory the contraction buffers may hold. Catches a runaway temporary, with room for a
+   wide machine running many contractions at once.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> MaxMemory
+
+   Ceiling on the memory einsums plans against: chunked algorithms size to it and MemoryPool refuses
+   reservations past it. Ordinary allocations are not checked, so nothing throws in a kernel. 0 disables.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> WorkBufferSize
+
+   The largest piece of a disk-backed tensor a contraction reads into memory at once. Zero means an
+   eighth of --einsums:buffer-size.

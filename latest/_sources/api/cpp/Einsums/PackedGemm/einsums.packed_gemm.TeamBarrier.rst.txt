@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.TeamBarrier:
+
+=================================
+einsums::packed_gemm::TeamBarrier
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: TeamBarrier
+
+   A spin barrier for the few threads of one team.
+
+   OpenMP has no barrier for a subset of a parallel region's threads. Members meet twice per K
+   block, after packing the shared panel and before overwriting it. The arriving thread's release
+   and the waiters' acquire order the panel's writes before any member reads it.
+
+
+   .. cpp:function:: void wait()
+
+   .. cpp:member:: std::atomic<int> arrived
+
+   .. cpp:member:: std::atomic<int> generation
+
+   .. cpp:member:: int size

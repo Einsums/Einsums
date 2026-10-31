@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.when_all:
+
+============================
+einsums::task_pool::when_all
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/TaskHandle.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:function:: template <typename T> TaskHandle<std::vector<T>> when_all(std::vector<TaskHandle<T>> handles)
+
+   Fan-in: returns a handle that completes when all input handles complete.
+
+
+.. cpp:function:: TaskHandle<void> when_all(std::vector<TaskHandle<void>> handles)
+
+   Fan-in for void handles.
+
+
+.. cpp:function:: template <typename... Ts> TaskHandle<std::tuple<Ts...>> when_all(TaskHandle<Ts>... handles)
+
+   Variadic when_all: returns TaskHandle<std::tuple<T1, T2, ...>>.
+
+   Completes when ALL input handles are ready. The result tuple contains
+   the values in the same order as the input handles.
+
+   .. code-block:: text
+
+      auto a = pool.submit("a", []() { return 42; });
+      auto b = pool.submit("b", []() { return 3.14; });
+      auto combined = when_all(a, b);
+      auto [x, y] = combined.get();  // x=42, y=3.14

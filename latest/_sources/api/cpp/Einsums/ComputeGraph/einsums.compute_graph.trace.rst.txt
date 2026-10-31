@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.trace:
+
+=============================
+einsums::compute_graph::trace
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType> typename AType::ValueType trace(const AType &A)
+
+   Trace of a square matrix: ``sum(A_ii)``. Returns the scalar.
+
+   Cannot be used during graph capture (returns by value, so there is no
+   destination slot). For the in-graph form use the four-argument
+   ``cg::trace(&result, A)`` with a pre-allocated scalar.
+
+
+.. cpp:function:: template <MatrixConcept AType> void trace(typename AType::ValueType *result, const AType &A)
+
+   Graph-aware trace writing the result to a pre-allocated scalar.
+
+   :tparam AType: A square rank-2 tensor type satisfying ``MatrixConcept``.
+   :param result: Pointer to the destination scalar; populated at execute.
+   :param A: Source tensor; ``A.dim(0) == A.dim(1)`` is required.

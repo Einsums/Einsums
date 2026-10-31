@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.account_for_row_major:
+
+====================================
+einsums::hptt::account_for_row_major
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Utils.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: void account_for_row_major(const size_t *sizeA, const size_t *outerSizeA, const size_t *outerSizeB, const size_t *offsetA, const size_t *offsetB, const int *perm, size_t *tmpSizeA, size_t *tmpOuterSizeA, size_t *tmpouterSizeB, size_t *tmpOffsetA, size_t *tmpOffsetB, int *tmpPerm, const int dim, const bool useRowMajor)
+
+   Reorders parameters to swap between row-major and column-major forms.

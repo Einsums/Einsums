@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgesv:
+
+============================
+einsums::blas::vendor::sgesv
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgesv(int_t n, int_t nrhs, float *a, int_t lda, int_t *ipiv, float *b, int_t ldb)
+
+   Computes the solution to system of linear equations :math:`\mathbf{Ax} = \mathbf{B}` for general
+   matrices.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of rows and columns of the coefficient matrix.
+   :param nrhs: The number of columns in the right-hand side matrix.
+   :param a: The coefficient matrix.
+   :param lda: The leading dimension of the coefficient matrix.
+   :param ipiv: A list for pivots used during LU decomposition.
+   :param b: The right-hand side matrix.
+   :param ldb: The leading dimension of the right-hand side matrix.
+   :returns: 0 on success. If positive, the coefficient matrix was singular. If negative, then there was an invalid parameter. The absolute value indicates which parameter was invalid.

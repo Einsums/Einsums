@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.IsSmartPointerHelper:
+
+=============================
+einsums::IsSmartPointerHelper
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/SmartPointer.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> IsSmartPointerHelper : public details::IsSmartPointerHelper<typename std::remove_cv<T>::type>
+
+   Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
+
+   This one removes const and volatile.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to test.

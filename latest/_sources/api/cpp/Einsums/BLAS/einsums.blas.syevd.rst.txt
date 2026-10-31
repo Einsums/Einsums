@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.syevd:
+
+====================
+einsums::blas::syevd
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t syevd(char jobz, char uplo, int_t n, T *a, int_t lda, T *w)
+
+   Symmetric eigendecomposition via divide-and-conquer.
+
+   Solves :math:`\mathbf{A}\mathbf{x} = \lambda \mathbf{x}` like syev(), but
+   with the divide-and-conquer algorithm instead of QR iteration: typically
+   much faster when eigenvectors are wanted for large matrices, at the cost
+   of a larger workspace.
+
+   :param jobz: 'N': eigenvalues only; 'V': eigenvalues and eigenvectors.
+   :param uplo: Which triangle of A is stored ('U' or 'L').
+   :param n: Order of A.
+   :param a: On entry the matrix A; on exit the orthonormal eigenvectors when jobz='V'.
+   :param lda: Leading dimension of a.
+   :param w: Output: the eigenvalues in ascending order.
+   :returns: 0 on success; > 0 if the algorithm failed to converge.

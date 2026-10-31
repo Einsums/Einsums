@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.check_out_of_range:
+
+===========================
+einsums::check_out_of_range
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/FromString.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename U> T check_out_of_range(const U &value)
+
+   Check if the value is within the range of the requested type.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to check. This determines the maximum and minimum values.
+   :tparam U: The type of the input.
+   :param value: The value to check.
+   :throws std::out_of_range: Throws this if the value is outside of the representable range of the check type.
+   :returns: Casts the value into the new type.

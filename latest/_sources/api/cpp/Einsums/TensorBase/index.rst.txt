@@ -1,0 +1,101 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorBase_api:
+
+==================
+TensorBase C++ API
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorBase>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::AllT` - Type that indicates that all elements along a dimension should be included in a view.
+- :cpp:any:`~einsums::Chunk` - Holds a list of chunks in an array.
+- :cpp:any:`~einsums::Count` - Holds a list of counts in an array.
+- :cpp:any:`~einsums::Dim` - Holds a list of dimensions in an array.
+- :cpp:any:`~einsums::hashes::ContainerHash` - Hashes an arbitrary container object. Containers need to be iterable.
+- :cpp:any:`~einsums::Offset` - Holds a list of offsets in an array.
+- :cpp:any:`~einsums::Range` - Holds two values: a starting value and an ending value.
+- :cpp:any:`~einsums::RemovableRange` - A Range treated as a single index, dropping the dimension, when start equals end. For index lists that can only hold ranges, mostly from Python:
+- :cpp:any:`~einsums::Stride` - Holds a list of strides in an array.
+- :cpp:any:`~einsums::SymmetryDescriptor` - Describes the symmetry of a tensor as a set of generators.
+- :cpp:any:`~einsums::SymmetryOp` - One generator of a tensor's symmetry group.
+- :cpp:any:`~einsums::tensor_base::AlgebraOptimizedTensor` - Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm.
+- :cpp:any:`~einsums::tensor_base::BlockTensorNoExtra` - Marks a block tensor without template parameters. Internal; use BlockTensorBase.
+- :cpp:any:`~einsums::tensor_base::CoreTensor` - Represents a tensor only available to the core.
+- :cpp:any:`~einsums::tensor_base::DiskTensor` - Represents a tensor stored on disk.
+- :cpp:any:`~einsums::tensor_base::RuntimeTensorNoType` - Tag base of every runtime-rank tensor and view, whatever its element type. Test for one with ``std::is_base_of_v<tensor_base::RuntimeTensorNoType, T>``.
+- :cpp:any:`~einsums::tensor_base::RuntimeTensorViewNoType` - Tag base of every runtime-rank tensor view, whatever its element type. Test for one with ``std::is_base_of_v<tensor_base::RuntimeTensorViewNoType, T>``.
+- :cpp:any:`~einsums::tensor_base::TiledTensorNoExtra` - Specifies that a tensor is a tiled tensor without needing to specify type parameters.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::default_row_major` - Whether tensors default to row-major. Reads ``option::RowMajor``.
+- :cpp:any:`~einsums::dims_to_strides` - Compute the strides for turning a sentinel into a list of indices.
+- :cpp:any:`~einsums::indices_to_sentinel` - The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+- :cpp:any:`~einsums::indices_to_sentinel_negative_check` - Converts indices to a sentinel. Checks for negative numbers and converts them.
+- :cpp:any:`~einsums::register_Einsums_TensorBase_options` - Give the storage-order option its command-line presence. Idempotent.
+- :cpp:any:`~einsums::sentinel_to_indices` - Converts a single sentinel value into a list of indices.
+- :cpp:any:`~einsums::sentinel_to_indices_mult_imp` - Implementation details for the sentinel_to_indices function with multiple output lists.
+- :cpp:any:`~einsums::sentinel_to_sentinels` - Converts a single sentinel value into several sentinels for tensors with different strides.
+- :cpp:any:`~einsums::sentinel_to_sentinels_mult_imp` - Implementation details for the sentinel_to_sentinels function.
+- :cpp:any:`~einsums::sentinel_to_sentinels_zero_imp` - Implementation details for the sentinel_to_sentinels function. This clears the outputs.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::All` - Implementation of AllT .
+- :cpp:any:`~einsums::dynamic_rank` - Sentinel value for ``Tensor::Rank`` on tensor types whose rank is not known at compile time (e.g. ``GeneralRuntimeTensor``).
+- :cpp:any:`~einsums::kMaxSymmetryRank` - Maximum rank a symmetry operation can describe; smaller ranks are padded.
+- :cpp:any:`~einsums::option::RowMajor` - Build tensors row-major rather than the column-major default.
+
+Macros
+------
+
+- :c:macro:`DEFINE_STRUCT` - Convenience macro for creating a type derived from a std::array.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.AllT
+   einsums.Chunk
+   einsums.Count
+   einsums.default_row_major
+   einsums.Dim
+   einsums.dims_to_strides
+   einsums.hashes.ContainerHash
+   einsums.indices_to_sentinel
+   einsums.indices_to_sentinel_negative_check
+   einsums.Offset
+   einsums.Range
+   einsums.register_Einsums_TensorBase_options
+   einsums.RemovableRange
+   einsums.sentinel_to_indices
+   einsums.sentinel_to_indices_mult_imp
+   einsums.sentinel_to_sentinels
+   einsums.sentinel_to_sentinels_mult_imp
+   einsums.sentinel_to_sentinels_zero_imp
+   einsums.Stride
+   einsums.SymmetryDescriptor
+   einsums.SymmetryOp
+   einsums.tensor_base.AlgebraOptimizedTensor
+   einsums.tensor_base.BlockTensorNoExtra
+   einsums.tensor_base.CoreTensor
+   einsums.tensor_base.DiskTensor
+   einsums.tensor_base.RuntimeTensorNoType
+   einsums.tensor_base.RuntimeTensorViewNoType
+   einsums.tensor_base.TiledTensorNoExtra
+   variables
+   macros

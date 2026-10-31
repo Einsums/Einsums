@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.validate_graph_ir:
+
+=========================================
+einsums::compute_graph::validate_graph_ir
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<void, GraphError> validate_graph_ir(const std::string &path)
+
+   Check an ``einsums_graph_ir`` file without building a graph, reporting EVERY problem rather than the first.
+
+   ``load_graph`` stops at the first error, which is right for a loader and
+   wrong for a tool: an offline optimizer that emitted three malformed nodes
+   wants to see three messages, not to rediscover them one build at a time. This
+   runs the same checks and collects instead of returning.
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file to check.
+   :returns: Nothing when the file is valid, or an error listing every problem found, one per line.
+
+
+.. cpp:function:: expected<void, GraphError> validate_graph_ir(const std::string &path, SpaceRegistry &registry)
+
+   As ``validate_graph_ir``, resolving index spaces against ``registry``.
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file to check.
+   :param registry: The registry to resolve space names in.
+   :returns: Nothing, or every problem found.

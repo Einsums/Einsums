@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.imag:
+
+============================
+einsums::compute_graph::imag
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename ResultType, typename AType> requires DenseOrTiled<ResultType> && DenseOrTiled<AType> void imag(ResultType *out, const AType &A)
+
+   Graph-aware imaginary part: ``out := Im(A)``. Complex ``A`` produces real
+   ``out``. For real ``A`` it is zeros, since Im(x) == 0, matching numpy
+   ``.imag``. Dense or tiled.

@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NodeIndexLists:
+
+======================================
+einsums::compute_graph::NodeIndexLists
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NodeIndexLists
+
+   The letter lists of a node that carries any: an einsum's (live) or a permute's.
+
+
+   .. cpp:member:: const std::vector<std::string> *c
+
+      The output's indices.
+
+
+   .. cpp:member:: const std::vector<std::string> *a
+
+      The first input's indices.
+
+
+   .. cpp:member:: const std::vector<std::string> *b
+
+      The second input's indices; null for a permute.
+
+
+   .. cpp:member:: const std::vector<PermutationOperator> *operators
+
+      The permutation operators applied to the result. A rewrite that re-states the node must
+      carry them, and one that slices an axis they name must not slice it.

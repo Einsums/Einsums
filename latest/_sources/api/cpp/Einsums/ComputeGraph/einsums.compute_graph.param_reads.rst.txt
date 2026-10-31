@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.param_reads:
+
+===================================
+einsums::compute_graph::param_reads
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<std::string> param_reads(const Node &node)
+
+   Names of ``ParamTable`` entries this node READS - the analogue of ``Node::inputs``.
+
+   A ``View`` whose slice bounds name a parameter re-resolves them every time it
+   executes, so it must stay ordered after whatever writes them. The same is
+   true of a conditional or a loop whose predicate compares parameters, and of
+   a ``WriteParam`` whose source is itself a named parameter.
+
+   Callback-valued bounds and callback predicates are deliberately NOT reported
+   here: they name nothing, so no edge can be derived. Use
+   ``has_runtime_view_bounds`` to ask the weaker question "does this slice move
+   at all", which is what hoisting and folding need. A ``PredExpr::FlagTest``
+   names nothing either, by construction: its array rides outside the dataflow
+   exactly as ``LuPivots`` does.
+
+   A registered descriptor adds the reads its ``accesses`` hook reports (DescriptorHooks.hpp).

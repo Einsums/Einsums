@@ -1,0 +1,158 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Workspace:
+
+=================================
+einsums::compute_graph::Workspace
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Workspace.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Workspace
+
+   Owns tensors that persist across multiple Graphs and Pipelines.
+
+   Workspace is the outermost scoping layer for tensor lifetime:
+
+   - Workspace: cross-computation (ERI, MO coefficients, basis data)
+   - Pipeline: cross-stage (Fock matrix, density, amplitudes)
+   - Graph: single-computation intermediates (temporaries)
+
+   Tensors declared via Workspace use deferred allocation: they have
+   valid metadata (name, dims, dtype) but no backing data until the
+   MaterializationPass runs. This allows the DistributionPlanningPass
+   to decide how to partition large tensors across MPI ranks before
+   any memory is allocated.
+
+   **Example**
+
+   .. code-block:: text
+
+      namespace cg = einsums::compute_graph;
+
+      cg::Workspace ws("h2o");
+
+      // Declare tensors, no data allocated yet
+      auto &eri = ws.declare_tensor<double, 4>("ERI", nao, nao, nao, nao);
+      auto &C   = ws.declare_zero_tensor<double, 2>("C", nao, nmo);
+
+      // Use in a pipeline
+      cg::Pipeline scf("scf");
+      scf.set_workspace(ws);
+      {
+          auto &stage = scf.add_stage("compute");
+          cg::CaptureGuard guard(stage);
+          cg::einsum("ijkl;kl->ij", 0.0, &F, 1.0, eri, D);
+      }
+
+      scf.apply(pm);   // Passes decide distribution, then materialize
+      scf.execute();    // Computation runs on materialized tensors
+
+      // eri and C survive, reuse in MP2, CCSD, etc.
+
+
+   .. cpp:function:: explicit Workspace(std::string name)
+
+   .. cpp:function:: Workspace(const Workspace &) = delete
+
+   .. cpp:function:: Workspace(Workspace &&) = default
+
+   .. cpp:function:: ~Workspace() = default
+
+   .. cpp:function:: Workspace & operator=(const Workspace &) = delete
+
+   .. cpp:function:: Workspace & operator=(Workspace &&) = default
+
+   .. cpp:function:: const std::string & name() const
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a tensor with deferred allocation. No initialization.
+
+      :tparam T: Element type.
+      :tparam Rank: Number of dimensions.
+      :tparam Dims: Integral types of the dimensions.
+      :param tensor_name: Human-readable tensor name.
+      :param dims: Dimensions of each rank.
+      :returns: Reference to the shell tensor (valid object, no data yet).
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_zero_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a tensor initialized to zero after materialization.
+
+
+   .. cpp:function:: template <typename T, size_t Rank, std::integral... Dims> requires (sizeof...(Dims) == Rank) Tensor<T, Rank> & declare_random_tensor(std::string tensor_name, Dims... dims)
+
+      Declare a tensor initialized with random values after materialization.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_runtime_tensor(std::string tensor_name, std::vector<size_t> dims)
+
+      Runtime-rank analog of declare_tensor().
+
+      Same deferred-allocation lifecycle as the typed version (no data until
+      materialize_fn fires) but the rank is carried at runtime. Suitable for
+      Python-bound workflows or any workflow that wants a single dispatch
+      surface across ranks.
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_zero_runtime_tensor(std::string tensor_name, std::vector<size_t> dims)
+
+      Runtime-rank analog of declare_zero_tensor().
+
+
+   .. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> & declare_random_runtime_tensor(std::string tensor_name, std::vector<size_t> dims)
+
+      Runtime-rank analog of declare_random_tensor().
+
+
+   .. cpp:function:: const TensorScopeMapPtr & scope_map() const noexcept
+
+      The ownership scopes of the tensors this workspace declares.
+
+      Published so a ``Graph`` that captures one of these tensors - and builds its own
+      fresh handle for it, which is what ``make_handle`` does - can still report the
+      tensor as workspace-scoped in its ``InterfaceManifest``. ``Pipeline`` attaches this
+      to every stage graph when a workspace is associated.
+
+      Shared, deliberately: a tensor declared after a stage was added still has to reach
+      that stage.
+
+      .. seealso::
+
+         Graph::add_scope_map
+
+      .. versionadded:: 2.0.0
+
+      :returns: The table. Never null.
+
+
+   .. cpp:function:: const std::vector<TensorHandle> & tensor_handles() const
+
+      Access all declared tensor handles (for passes to inspect).
+
+
+   .. cpp:function:: std::vector<TensorHandle> & tensor_handles()
+
+      Mutable access for passes that modify handles (e.g., DistributionPlanning).
+
+
+   .. cpp:function:: size_t size() const
+
+      Number of declared tensors.
+
+
+   .. cpp:function:: void materialize_all()
+
+      Materialize and initialize all deferred tensors.

@@ -1,0 +1,131 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.Object:
+
+=====================
+einsums::json::Object
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: Object
+
+   An ordered, consumption-tracking JSON object.
+
+   Keys keep insertion order (see the file note on the hash domain) and a
+   duplicate key is a parse error rather than a last-one-wins overwrite.
+
+   Reads come in two flavours, and the distinction is the point of the type:
+   ``take`` marks the key consumed, ``peek`` does not. A loader uses
+   ``take`` for everything it understands and then asks ``unconsumed_keys``
+   what is left; anything left is a field this build does not know, which the
+   strict policy refuses.
+
+   .. note::
+
+      The export annotation sits on the individual members, NOT on the class.
+      ``__declspec(dllexport)`` on a class instantiates its implicit members
+      right at the class definition, and this one holds a
+      ``std::vector<Value>`` while ``Value`` is still incomplete: declaring
+      the vector is legal there, destroying it is not. Exporting the class
+      wholesale therefore fails to compile under MSVC and clang-cl even
+      though it is fine on the Itanium ABI. ``Value`` carries the same
+      constraint, for the same reason.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: Object() = default
+
+   .. cpp:function:: void set(std::string key, Value value)
+
+      Append ``key`` with ``value``.
+
+      :param key: The key. Appending a key that is already present is a caller error and throws, mirroring the parser's duplicate-key rule.
+      :param value: The value.
+      :throws std::invalid_argument: When ``key`` is already present.
+
+
+   .. cpp:function:: bool contains(std::string_view key) const noexcept
+
+      Whether ``key`` is present.
+
+      :param key: The key to look for.
+      :returns: True when present, consumed or not.
+
+
+   .. cpp:function:: const Value * peek(std::string_view key) const noexcept
+
+      Read ``key`` WITHOUT marking it consumed.
+
+      :param key: The key to read.
+      :returns: The value, or nullptr when absent.
+
+
+   .. cpp:function:: const Value * take(std::string_view key) const noexcept
+
+      Read ``key`` and mark it consumed.
+
+      :param key: The key to read.
+      :returns: The value, or nullptr when absent (nothing is marked then).
+
+
+   .. cpp:function:: void mark_consumed(std::string_view key) const noexcept
+
+      Mark ``key`` consumed without reading it, for a key a reader deliberately ignores.
+
+      :param key: The key to mark.
+
+
+   .. cpp:function:: std::vector<std::string> unconsumed_keys() const
+
+      Keys still unconsumed, in insertion order.
+
+      :returns: The names. Empty when the reader understood the whole object.
+
+
+   .. cpp:function:: std::vector<std::string> keys() const
+
+      Every key, in insertion order.
+
+      :returns: The names.
+
+
+   .. cpp:function:: std::size_t size() const noexcept
+
+      How many keys the object holds.
+
+
+   .. cpp:function:: bool empty() const noexcept
+
+      Whether the object holds no keys.
+
+
+   .. cpp:function:: const std::string & key_at(std::size_t index) const
+
+      The key at ``index``, in insertion order.
+
+      :param index: Position. Must be less than ``size``.
+      :returns: The key.
+
+
+   .. cpp:function:: const Value & value_at(std::size_t index) const
+
+      The value at ``index``, in insertion order.
+
+      Defined below ``Value``, which is incomplete here: the object holds a
+      ``std::vector`` of values, and a vector of an incomplete type is legal
+      while indexing one is not.
+
+      :param index: Position. Must be less than ``size``.
+      :returns: The value.

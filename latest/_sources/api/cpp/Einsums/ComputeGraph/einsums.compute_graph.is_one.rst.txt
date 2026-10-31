@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.is_one:
+
+==============================
+einsums::compute_graph::is_one
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Prefactor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool is_one(const PrefactorScalar &v)
+
+   True iff the contained value compares equal to one.

@@ -1,0 +1,88 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.Communicator:
+
+===========================
+einsums::comm::Communicator
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Communicator.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: Communicator
+
+   Communicator abstraction wrapping MPI_Comm.
+
+   Provides rank/size queries and communicator management (split, duplicate).
+   On the mock backend, always reports rank=0, size=1.
+
+   Value-semantic via shared_ptr to internal state, so copies are cheap.
+
+   **Example**
+
+   .. code-block:: text
+
+      auto &world = Communicator::world();
+      auto [my_rank, nprocs] = std::pair{world.rank(), world.size()};
+
+      // Split into sub-communicators by parity
+      auto sub = world.split(my_rank % 2, my_rank);
+
+
+   .. cpp:function:: Communicator() = default
+
+      Default constructor: creates an invalid communicator.
+
+
+   .. cpp:function:: static Communicator & world()
+
+      Get the world communicator (wraps MPI_COMM_WORLD or mock singleton).
+
+
+   .. cpp:function:: int rank() const
+
+      Rank of this process within this communicator.
+
+
+   .. cpp:function:: int size() const
+
+      Number of processes in this communicator.
+
+
+   .. cpp:function:: bool is_root() const
+
+      True if this process is rank 0 in this communicator.
+
+
+   .. cpp:function:: Communicator split(int color, int key) const
+
+      Split this communicator by color and key (MPI_Comm_split).
+
+
+   .. cpp:function:: Communicator dup() const
+
+      Duplicate this communicator (MPI_Comm_dup).
+
+
+   .. cpp:function:: explicit operator bool() const
+
+      Check validity.
+
+
+   .. cpp:function:: void * native_handle() const
+
+      Access the underlying native handle (MPI_Comm* or nullptr for mock).
+
+
+   .. cpp:function:: bool operator==(const Communicator &) const = default
+
+      Equality: same underlying communicator.

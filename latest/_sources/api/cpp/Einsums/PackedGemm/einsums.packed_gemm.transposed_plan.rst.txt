@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.transposed_plan:
+
+=====================================
+einsums::packed_gemm::transposed_plan
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: PackingPlan transposed_plan(const PackingPlan &plan)
+
+   The same contraction with the roles of M and N exchanged.
+
+   C[m, n] = Sum_k A[m, k] B[k, n] and C[n, m] = Sum_k B[n, k] A[k, m] are one
+   contraction written two ways, so a caller that swaps the operands along with
+   the plan computes exactly the same C. Everything a packing kernel reads is
+   mirrored: the M group becomes the N group in both the packing operand and in
+   C, and each side's link dims follow the operand they belong to.
+
+   This exists because the tile kernel is not symmetric in m and n. It holds
+   its accumulators as MR-tall vectors, so a C whose consecutive m coordinates
+   are adjacent in memory is a vector store while any other C is MR*NR scalar
+   stores; the scatter wants the same direction for the same reason. A
+   contraction whose unit-stride C index reaches C through B has that direction
+   in the N group, where no loop order can use it - unless the two roles are
+   exchanged, which is what this returns.
+
+   The batch dims are mirrored too, so the returned plan stands on its own; the
+   caller that swaps mid-contraction has already applied the batch offsets.

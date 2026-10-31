@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.check_descriptor:
+
+========================================
+einsums::compute_graph::check_descriptor
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorConformance.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<std::string> check_descriptor(std::string_view name, std::span<const ConformanceSample> samples)
+
+   Run the claims of the codec registered as ``name`` against ``samples``.
+
+   For each sample, the node is captured as ``record_built`` would capture it, run once for a
+   reference, and then held to:
+
+   - its saved form: ``write`` then ``read`` gives the descriptor back (the same JSON, every key read), and the node rebuilt from it computes the reference;
+   - its effects: a node said to be deterministic computes the same bytes when run again;
+   - its destination: a node said to overwrite its destination without reading it computes the reference over a poisoned destination, and its input list keeps the destination rule;
+   - its accesses: a node run with only the parameters it declares computes the reference, and declares none the sample does not set;
+   - its output extents: the hook's answer matches the outputs;
+   - its threading: a moldable node run at ``ConformanceSample::width`` under the DataflowExecutor computes the reference, within ``ConformanceSample::width_tolerance``.
+
+   - its tiles: for a tiled output, every tile the node writes nonzero is one its ``tiles`` hook names, and the ``tile`` hook's node for each named tile computes that tile of the reference.
+
+   - its slices: for a dense output, the ``slice`` hook's node at every index of every axis the node generates (one its ``axes`` hook gives no input) computes that slice of the reference.
+
+   A tiled output is compared tile by tile, an absent tile counting as zero.
+
+   Across the samples, an ``equal`` hook must call each descriptor equal to itself, give the same
+   answer both ways round, and call two descriptors equal only when the second, run on the first
+   sample's inputs, computes the first's reference.
+
+   :returns: One line per problem found, each naming the sample; empty when every claim held. A codec not registered under ``name`` is one problem.

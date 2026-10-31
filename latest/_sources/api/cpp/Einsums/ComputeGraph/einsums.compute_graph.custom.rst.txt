@@ -1,0 +1,125 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.custom:
+
+==============================
+einsums::compute_graph::custom
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename F, CoreBasicTensorConcept... Outputs> void custom(std::string label, F &&executor, Outputs *... outputs)
+
+   Record a custom (user-defined) operation that writes the given tensors.
+
+   Use this for operations that have no built-in graph wrapper, such as
+   computing integrals or applying a transformation the library does not model.
+   The node declares no inputs, so use the tuple form below whenever the
+   operation reads a tensor the graph also produces.
+
+   The node is recorded with ``opaque_effects``; see ``PureTag`` for what that
+   prevents and how to declare the operation pure instead.
+
+   .. code-block:: text
+
+      cg::Graph graph("scf");
+      {
+          cg::CaptureGuard guard(graph);
+
+          cg::custom("compute_ERI", [&]() { compute_two_electron_integrals(basis, ERI); }, &ERI);
+
+          cg::einsum("ijkl;kl->ij", 0.0, &F, 1.0, ERI, D);
+      }
+
+   :param label: Human-readable name for profiling and debugging.
+   :param executor: Lambda that performs the computation.
+   :param outputs: Tensors written by this operation.
+
+
+.. cpp:function:: template <typename F, CoreBasicTensorConcept... Outputs> void custom(PureTag, std::string label, F &&executor, Outputs *... outputs)
+
+   Record a pure custom operation that writes the given tensors.
+
+   As the untagged form, but declared pure (see ``PureTag``): the node may be hoisted out of
+   a loop, and is removed when nothing reads the tensors it writes.
+
+
+.. cpp:function:: template <typename F, typename... Inputs, CoreBasicTensorConcept... Outputs> requires (CoreBasicTensorConcept<std::remove_const_t<Inputs>> && ...) void custom(std::string label, std::tuple<Inputs &...> inputs, std::tuple<Outputs &...> outputs, F &&executor)
+
+   Record a custom operation with typed input and output tensors.
+
+   The inputs tuple may hold const or non-const references, so both
+   ``std::tie(A, B)`` and ``std::make_tuple(std::cref(A), std::cref(B))``
+   work; either way the node only reads them. Pass ``std::tuple<>{}`` for
+   an operation that writes no tensor.
+
+   The node is recorded with ``opaque_effects``; see ``PureTag`` for what that
+   prevents and how to declare the operation pure instead.
+
+   .. code-block:: text
+
+      cg::custom("build_fock", std::tie(ERI, D), std::tie(F), [&]() { build_fock_matrix(ERI, D, F); });
+
+
+.. cpp:function:: template <typename F, typename... Inputs, CoreBasicTensorConcept... Outputs> requires (CoreBasicTensorConcept<std::remove_const_t<Inputs>> && ...) void custom(PureTag, std::string label, std::tuple<Inputs &...> inputs, std::tuple<Outputs &...> outputs, F &&executor)
+
+   Record a pure custom operation with typed input and output tensors.
+
+   As the untagged form, but declared pure (see ``PureTag``).
+
+
+.. cpp:function:: void custom(std::string label, std::function<void ()> executor, bool pure)
+
+   No-dependency custom node, Python-friendly overload.
+
+   Records a graph node that runs ``executor`` with no declared
+   input/output tensor dependencies. Outside a capture context the
+   executor runs immediately. Use the tensor-tagged overload below for
+   read-modify-write patterns where the optimizer should see the
+   dependency.
+
+   A node with no tensors acts only through its effects, so it is recorded with
+   ``opaque_effects`` unless ``pure`` is true (see ``PureTag``).
+
+   .. code-block:: text
+
+      cg::custom("debug_print", []() { fmt::print("hello\n"); });
+
+   :param label: Human-readable name for profiling and debugging.
+   :param executor: Callable that performs the operation.
+   :param pure: True to declare the operation pure.
+
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> void custom(std::string label, std::function<void ()> executor, TensorType *target, bool pure)
+
+   Single-tensor read-modify-write custom node, Python-friendly.
+
+   Records a graph node whose executor mutates ``target`` in place.
+   ``target`` is registered as both an input and an output, so the
+   optimizer treats this node as a read-modify-write barrier on that
+   tensor. Outside a capture context the executor runs immediately.
+
+   The node is recorded with ``opaque_effects`` unless ``pure`` is true
+   (see ``PureTag``).
+
+   .. code-block:: text
+
+      // Body of a graph-driven loop: read slab, transform, write slab.
+      einsums::tensor_io::read_slice_etn(path, "A", slab, &block);
+      cg::custom("scale_x10", [&]() { block *= 10.0; }, &block);
+      einsums::tensor_io::write_slice_etn(path, "A", slab, &block);
+
+   :param label: Human-readable name for profiling and debugging.
+   :param executor: Callable that performs the operation.
+   :param target: Tensor the operation reads and rewrites.
+   :param pure: True to declare the operation pure.

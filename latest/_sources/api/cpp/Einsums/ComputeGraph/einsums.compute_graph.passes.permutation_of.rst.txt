@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.permutation_of:
+
+==============================================
+einsums::compute_graph::passes::permutation_of
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: std::optional<std::vector<std::size_t>> permutation_of(const std::vector<std::string> &a, const std::vector<std::string> &c)
+
+   Where each of ``c's`` letters sits in ``a``, when ``c`` is a permutation of ``a``.
+
+   Returns ``perm`` with ``c[k] == a[perm[k]]``, or nothing when the lists differ in length, a
+   letter repeats in either, or a letter of one is missing from the other. A repeated letter makes
+   the permutation ambiguous, so it is refused rather than resolved.

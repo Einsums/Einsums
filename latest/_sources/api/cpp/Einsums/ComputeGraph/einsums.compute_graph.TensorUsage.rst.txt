@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorUsage:
+
+===================================
+einsums::compute_graph::TensorUsage
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/UsageAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorUsage
+
+   Every use of one owning buffer, in ascending position order.
+
+   Keyed by the OWNER TensorId (alias chains resolved), so a write through a
+   view and a read of its parent land in the same entry.
+
+   The filter parameters on the query helpers exist because the passes this
+   table replaced disagreed on what "counts": FreeInsertion ignores Free nodes
+   when computing last use (a Free's input is a scheduling edge, not a use) and
+   ignores Alloc when finding the first writer (creation, not data); the
+   program-order validator wants every use. Encoding the policy at the call
+   site keeps one canonical scan serving all of them.
+
+
+   .. cpp:function:: size_t last_use(bool ignore_free, bool include_subtree) const
+
+      Position of the last read-or-write. ``ignore_free`` skips Free nodes;
+      ``include_subtree`` admits uses inside Loop/Conditional bodies.
+
+
+   .. cpp:function:: size_t first_use(bool include_subtree) const
+
+      Position of the first read-or-write (same filters as last_use).
+
+
+   .. cpp:function:: size_t first_writer(bool ignore_alloc, bool include_subtree) const
+
+      Position of the first writing node. ``ignore_alloc`` skips Alloc nodes
+      (buffer creation, not a data write).
+
+
+   .. cpp:function:: size_t last_writer(bool include_subtree) const
+
+      Position of the last writing node.
+
+
+   .. cpp:function:: bool has_writer_before(size_t pos) const
+
+      True if any writer sits at a position strictly below ``pos``.
+
+
+   .. cpp:function:: size_t reads() const
+
+      Number of reads / writes (all kinds, subtree included).
+
+
+   .. cpp:function:: size_t writes() const
+
+   .. cpp:member:: static constexpr size_t npos
+
+   .. cpp:member:: std::vector<TensorUse> uses
+
+      Ascending by pos; one entry per (node, direction)

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.StreamLayout:
+
+==================================
+einsums::packed_gemm::StreamLayout
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Stream.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: StreamLayout
+
+   Extents and element strides of one strided operand, one entry per axis.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::vector<int64_t> dims
+
+      Extent of each axis.
+
+
+   .. cpp:member:: std::vector<int64_t> strides
+
+      Stride of each axis, in elements.

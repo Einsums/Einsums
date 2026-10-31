@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.svd_dd:
+
+==============================
+einsums::compute_graph::svd_dd
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType> std::tuple<GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>, GeneralRuntimeTensor<RemoveComplexT<typename AType::ValueType>, std::allocator<RemoveComplexT<typename AType::ValueType>>>, GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>> svd_dd(const AType &A, linear_algebra::Vectors job)
+
+   Divide-and-conquer singular value decomposition (returning): ``A = U * diag(S) * Vt``.
+
+   Faster than ``svd`` for large matrices; uses LAPACK's ``gesdd`` driver.
+   Returns ``(U, S, Vt)`` like ``svd``. ``job`` controls whether the
+   singular vectors are computed (``ALL``, ``SOME``, or ``NONE``).
+   Cannot be used during graph capture (returns by value); ``A`` is left
+   unmodified.

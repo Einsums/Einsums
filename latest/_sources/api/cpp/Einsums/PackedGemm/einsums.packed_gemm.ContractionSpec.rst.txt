@@ -1,0 +1,69 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.ContractionSpec:
+
+=====================================
+einsums::packed_gemm::ContractionSpec
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: ContractionSpec
+
+   Describes the topology of a tensor contraction.
+
+   Indices may repeat (e.g., a_indices = {"i","i"} for a Hadamard A[i,i]).
+   all_indices is the unique loop space: target_indices ++ link_indices.
+
+
+   .. cpp:function:: bool operator==(const ContractionSpec &) const = default
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Raw C index list (may repeat)
+
+
+   .. cpp:member:: std::vector<std::string> a_indices
+
+      Raw A index list (may repeat)
+
+
+   .. cpp:member:: std::vector<std::string> b_indices
+
+      Raw B index list (may repeat)
+
+
+   .. cpp:member:: std::vector<std::string> all_indices
+
+      Unique loop space: target ++ link
+
+
+   .. cpp:member:: std::vector<std::string> link_indices
+
+      Unique link (reduction) dimensions
+
+
+   .. cpp:member:: std::vector<std::string> target_indices
+
+      Unique target (parallel) dimensions
+
+
+   .. cpp:member:: ScalarType scalar_type
+
+   .. cpp:member:: bool conj_a
+
+   .. cpp:member:: bool conj_b
+
+   .. cpp:member:: bool scalar_output
+
+      true when sizeof...(CIndices) == 0

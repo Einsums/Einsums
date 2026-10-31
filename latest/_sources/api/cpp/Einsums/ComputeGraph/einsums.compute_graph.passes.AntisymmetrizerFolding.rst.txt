@@ -1,0 +1,140 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.AntisymmetrizerFolding:
+
+======================================================
+einsums::compute_graph::passes::AntisymmetrizerFolding
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/AntisymmetrizerFolding.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: AntisymmetrizerFolding : public OptimizerPass
+
+   Collapse a permutation operator contracted against an antisymmetric operand into a scalar multiple.
+
+   When :math:`W` is antisymmetric under every permutation :math:`P[G]` sums over,
+
+   .. math::
+
+      \sum_x W(x)\,P[G](V)(x) \;=\; N \sum_x W(x)\,V(x)
+
+   with :math:`N` the operator's term count. Substituting :math:`y = \sigma_t(x)`
+   turns each term into :math:`\mathrm{sign}_t \sum_y W(\sigma_t^{-1}(y))V(y)`, and
+   :math:`W`'s antisymmetry makes that :math:`\mathrm{sign}_t^2 \sum_y W V`, so every
+   term contributes the same thing.
+
+   The saving is the whole antisymmetrizer: :math:`N-1` permuted accumulations over
+   a tensor the size of the contraction's operands, replaced by one scalar
+   multiply. It is the transformation
+   `examples/toy/ccsd_t_spinorbital_toy.py` performs by hand between its "naive"
+   and "folded" (T) spellings, where its own table puts it at about a third of the
+   whole-tensor runtime.
+
+   **What it matches**
+
+   - a ``OpKind::Dot`` whose operands are ``A`` and ``B``;
+   - ``B`` written by exactly one node, which carries an operator with a ZERO destination prefactor;
+   - ``A`` carrying a ``TensorHandle::symmetry_hint`` that states antisymmetry on every axis the operator permutes;
+   - nothing between the two nodes writing either operand.
+
+   The rewrite repoints the contraction at the operator's SOURCE and inserts a
+   scale by :math:`N\alpha` on the result, with :math:`\alpha` the operator node's
+   own scale (:math:`B = \alpha P[G](V)`), conjugated when the contraction is a
+   ``dotc`` and ``B`` is its conjugated operand. A real result under an imaginary
+   :math:`\alpha` is left alone. The operator node is left standing;
+   ``DeadNodeElimination`` removes it when nothing else reads it, which in the
+   toy's naive (T) is true of ``V`` and false of ``W``, matching by construction
+   what the hand-written folded spelling does.
+
+   **Where the premise comes from**
+
+   ``AntisymmetryInference``, which must run first, and behind it
+   ``AntisymmetryDetection`` for any premise that is not structural. Together
+   they reach both arms: an operator whose groups are all singletons carries its
+   antisymmetry unconditionally, and a coset form carries it once its operand is
+   known antisymmetric within each group. See
+   `DESIGN-permutation-operator-folding.md`.
+
+   **What the guard covers, and what it does not**
+
+   The rewrite is justified by the tensors bound when the pass ran, so it emits an
+   ``OpKind::Setup`` body that re-checks those facts and throws naming the
+   tensor. A BIND clears that body's ``computed`` flag, so the check runs once per
+   bound problem.
+
+   An IN-PLACE mutation of a checked input is not a bind, and the graph cannot see
+   it: the tensor belongs to the caller, no node of this graph writes it, and its
+   address does not change. So a caller who overwrites the contents of a tensor
+   this pass validated, and then replays without rebinding, gets the folded
+   arithmetic against data nothing re-checked. That is the boundary, stated rather
+   than papered over, and ``Graph::invalidate_setup`` is the way across it: it
+   puts the guard back to work on the next execute.
+
+   The shape this arises in is narrower than it sounds. A quantity the graph
+   itself updates is written by some node, and ``AntisymmetryDetection`` only
+   ever looks at tensors NOTHING writes, so an amplitude a captured iteration
+   updates was never a premise in the first place.
+
+   **Ordering**
+
+   Before ``AntisymmetrizerExpansion``, which strips the operator and so removes
+   the thing this matches on.
+
+
+   .. cpp:function:: AntisymmetrizerFolding() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not views, mixed precision, tiled operands or a bare scalar: the fold repoints the dot at a root-shaped source and rebuilds its
+      executor from the root.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      The folded form sums ONE term where the original summed :math:`N` and then
+      multiplies, so it is exact in its algebra and not to the last bit: the
+      discarded terms were equal in exact arithmetic and merely close in
+      floating point.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      A residual is captured as a loop body.
+
+
+   .. cpp:function:: std::size_t num_candidates() const
+
+      Contractions examined whose operand came from an operator.
+
+
+   .. cpp:function:: std::size_t num_folded() const
+
+      Contractions rewritten.

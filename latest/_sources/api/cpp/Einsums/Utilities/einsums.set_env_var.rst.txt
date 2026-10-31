@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.set_env_var:
+
+====================
+einsums::set_env_var
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/SetEnv.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void set_env_var(const std::string &name, const std::string &value)
+
+   Set (or overwrite) an environment variable, portably.
+
+   setenv on POSIX, _putenv_s on MSVC.
+
+   .. warning::
+
+      Racing std::getenv on another thread is undefined behavior. Call during startup or
+      test setup, before other threads exist.
+
+   :param name: The variable name.
+   :param value: The value to set.

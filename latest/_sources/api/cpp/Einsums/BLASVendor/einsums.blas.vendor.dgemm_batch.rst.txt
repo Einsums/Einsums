@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.dgemm_batch:
+
+==================================
+einsums::blas::vendor::dgemm_batch
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void dgemm_batch(char transa, char transb, int_t m, int_t n, int_t k, double alpha, const double **a_array, int_t lda, const double **b_array, int_t ldb, double beta, double **c_array, int_t ldc, int_t batch_count)
+
+   See ``sgemm_batch``.

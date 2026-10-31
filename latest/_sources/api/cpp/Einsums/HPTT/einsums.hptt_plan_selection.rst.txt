@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt_plan_selection:
+
+============================
+einsums::hptt_plan_selection
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Options.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: hptt::SelectionMethod hptt_plan_selection()
+
+   How hard HPTT should search for a plan. Reads ``option::HpttSelectionMethod`` and maps it to HPTT's enum.
+
+   Out of line, as an inline read outside the library would see an unregistered copy of the option.

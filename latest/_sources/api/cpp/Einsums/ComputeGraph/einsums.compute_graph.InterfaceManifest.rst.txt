@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.InterfaceManifest:
+
+=========================================
+einsums::compute_graph::InterfaceManifest
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: InterfaceManifest
+
+   A graph's named, typed, space-annotated, ownership-scoped interface.
+
+   Entries are partitioned by direction: ``ManifestDirection::InOut`` slots appear in
+   BOTH ``inputs`` and ``outputs``, because a caller has to supply such a slot and reads
+   a result out of it. Within each vector the order is by ``ManifestEntry::name``, then by
+   ``ManifestEntry::id``, and that order is part of the contract - a serializer writes
+   entries in it and a test asserts against it.
+
+   .. note::
+
+      TOP-LEVEL only. A ``Loop`` body and a ``Conditional`` branch are separate graphs
+      whose handles are deliberately fresh and default (see the MetadataBoundary
+      contract), so a body has no meaningful interface of its own and this never
+      descends into one. A buffer the parent hands to a body still appears here: the
+      parent's control-flow node reports it through effective-IO expansion, which is a
+      use of the PARENT's handle.
+
+   .. seealso::
+
+      Graph::manifest
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: const ManifestEntry * find(std::string_view name) const noexcept
+
+      Find an entry by binding key.
+
+      :param name: The name to look for.
+      :returns: The entry, or nullptr when no slot carries that name. An ``InOut`` slot is held in both vectors; the input copy is returned, and the two are equal.
+
+
+   .. cpp:function:: const ManifestEntry * find_by_id(TensorId id) const noexcept
+
+      Find an entry by this graph's id for it.
+
+      :param id: The ``ManifestEntry::id`` to look for.
+      :returns: The entry, or nullptr when no slot carries that id.
+
+
+   .. cpp:function:: std::vector<ManifestEntry> entries() const
+
+      Every entry once, ``InOut`` slots included exactly once.
+
+      :returns: The union of ``inputs`` and ``outputs``, in the same name-then-id order.
+
+
+   .. cpp:function:: std::vector<std::string> names() const
+
+      Every binding key, in the manifest's own order.
+
+      :returns: The names, for a diagnostic that has to list what a caller could have meant.
+
+
+   .. cpp:function:: std::size_t size() const noexcept
+
+      Number of distinct slots (an ``InOut`` slot counts once).
+
+
+   .. cpp:member:: std::vector<ManifestEntry> inputs
+
+      Slots the graph reads. Sorted by name, then id.
+
+
+   .. cpp:member:: std::vector<ManifestEntry> outputs
+
+      Slots the graph writes. Sorted by name, then id.

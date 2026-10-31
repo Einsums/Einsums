@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.build_executor:
+
+======================================
+einsums::compute_graph::build_executor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::function<void ()> build_executor(OpKind kind, packed_gemm::ScalarType dtype, std::size_t rank, const OpData &desc, Graph &graph, std::span<const TensorId> inputs, std::span<const TensorId> outputs)
+
+   Build a ``Node::execute`` callable from data alone.
+
+   A descriptor whose params handle is null is not an error: the builder
+   synthesizes a private one from the descriptor's snapshot scalars, so a node
+   a pass assembled by hand still runs. Such a node does not get the
+   live-rewrite guarantee, because there is nothing shared to rewrite - callers
+   that want it populate ``params`` before calling, as capture does.
+
+   :param kind: Which operation to build.
+   :param dtype: Element type shared by every operand.
+   :param rank: Operand rank. Validated; see the dispatch-routes note in this file's header for why it is not dispatched on.
+   :param desc: The node's ``OpData``. Must hold the alternative the kind expects; a live params handle on it is shared with the returned callable, so a later rewrite of those scalars is honored on the next execute.
+   :param graph: Graph the operand ids belong to. Slots are resolved from it once, here, not on every call.
+   :param inputs: The node's input ids, in capture order.
+   :param outputs: The node's output ids, in capture order.
+   :throws std::invalid_argument: When ``kind`` has no builder entry (the message names the kind), when ``desc`` holds the wrong alternative, when the operand lists are too short, or when an operand has no resolvable geometry (a tile-wise sparse tensor, which has no single buffer).
+   :returns: A callable that performs the operation.

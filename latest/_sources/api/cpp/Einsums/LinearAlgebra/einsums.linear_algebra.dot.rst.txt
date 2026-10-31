@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.dot:
+
+============================
+einsums::linear_algebra::dot
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType> requires (SameRank<AType, BType> && InSamePlace<AType, BType>) BiggestTypeT<typename AType::ValueType, typename BType::ValueType> dot(const AType &A, const BType &B)
+
+   Performs the dot product between two tensors.
+
+   This performs :math:`\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}`. This may differ from the geometric dot product for complex tensors.
+   This does not conjugate either tensor, while the geometric dot product conjugates the left tensor.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType,BType: The tensor types.
+   :param A,B: The tensors to dot together.
+   :throws RankError: If the input tensors do not have the same rank.
+   :throws DimensionError: If the input tensors do not have the same shape.
+   :returns: The dot product of the tensors.
+
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType> requires (InSamePlace<AType, BType, CType> && SameRank<AType, BType, CType>) BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> dot(const AType &A, const BType &B, const CType &C)
+
+   Performs the dot product between three tensors.
+
+   This performs :math:`\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}C_{ijk\cdots}`
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType,BType,CType: The tensor types.
+   :param A,B,C: The tensors to dot together.
+   :throws RankError: If the input tensors do not have the same rank.
+   :throws DimensionError: If the input tensors do not have the same shape.
+   :returns: The triple dot product.

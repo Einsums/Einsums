@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.validate_graph_ir_string:
+
+================================================
+einsums::compute_graph::validate_graph_ir_string
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<void, GraphError> validate_graph_ir_string(std::string_view text)
+
+   Check ``einsums_graph_ir`` text, reporting every problem.
+
+   .. versionadded:: 2.0.0
+
+   :param text: The document.
+   :returns: Nothing when valid, or an error listing every problem found.
+
+
+.. cpp:function:: expected<void, GraphError> validate_graph_ir_string(std::string_view text, SpaceRegistry &registry)
+
+   As ``validate_graph_ir_string``, resolving index spaces against ``registry``.
+
+   .. versionadded:: 2.0.0
+
+   :param text: The document.
+   :param registry: The registry to resolve space names in.
+   :returns: Nothing, or every problem found.

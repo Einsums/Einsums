@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.runtime_state_name:
+
+===========================
+einsums::runtime_state_name
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Runtime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: constexpr std::string_view runtime_state_name(RuntimeState state) noexcept
+
+   The name of a runtime state, for diagnostics: ``"Running"``, ``"Stopped"`` and so on, or
+   ``"Unknown"`` for a value outside the enumeration.
+
+   .. versionadded:: 2.0.0

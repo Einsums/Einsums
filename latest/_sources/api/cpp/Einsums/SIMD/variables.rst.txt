@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_SIMD_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/SIMD/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::string> SimdArch
+
+   Cap the SIMD dispatch rung. Empty leaves the choice to Stripes (STRIPES_ARCH, else the best the
+   machine runs). It can only lower the rung: an unsupported rung falls to the next one below, with
+   a warning (see stripes::resolve_arch()). The rung is fixed at the first dispatch, so set this on
+   the command line or in the environment.

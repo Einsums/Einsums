@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.TeamState:
+
+===============================
+einsums::packed_gemm::TeamState
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: TeamState
+
+   What one team shares besides its panel: the barrier its members meet at, and the counter they claim M blocks from.
+
+   Members claim blocks rather than taking fixed shares, because member speeds vary from one K
+   block to the next and fixed shares make the others wait at every barrier. The counter only
+   rises, and every member steps its view of the current K block's start identically, so it never
+   needs a reset.
+
+
+   .. cpp:member:: TeamBarrier barrier
+
+   .. cpp:member:: std::atomic<int64_t> next_block

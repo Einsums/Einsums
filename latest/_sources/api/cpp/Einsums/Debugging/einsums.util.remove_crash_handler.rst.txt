@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.util.remove_crash_handler:
+
+===================================
+einsums::util::remove_crash_handler
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Debugging/CrashHandler.hpp``.
+
+.. cpp:namespace:: einsums::util
+
+.. cpp:function:: void remove_crash_handler()
+
+   Remove a handler installed by ``install_crash_handler``.
+
+   Restores the previous filter. Safe to call when none was installed.
+
+   .. versionadded:: 2.0.0

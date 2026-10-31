@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.abs:
+
+===========================
+einsums::compute_graph::abs
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename ResultType, typename AType> requires DenseOrTiled<ResultType> && DenseOrTiled<AType> void abs(ResultType *out, const AType &A)
+
+   Graph-aware magnitude: ``out := |A|``. Real or complex ``A`` produces real
+   ``out``. Dense or tiled.

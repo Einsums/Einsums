@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_permute:
+
+=======================================
+einsums::compute_graph::grouped_permute
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept AType, CoreBasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename CType::ValueType> void grouped_permute(const std::string &spec, std::vector<CType *> c_list, std::vector<const AType *> a_list, std::vector<double> c_pfs, std::vector<double> a_pfs)
+
+   One node holding many independent permutes: ``C_i = c_pfs[i] * C_i + a_pfs[i] * permute(A_i)`` for every member, all of them under one spec.
+
+   The grouped counterpart of ``string_permute``, for the shape a
+   local-correlation phase produces: one small reorder per pair or per triplet,
+   hundreds of them, every one a node of its own. The arithmetic is unchanged
+   and the dispatch is paid once.
+
+   **Members run CONCURRENTLY and that costs nothing in reproducibility.** A
+   permute is element-wise - every output element is one input element scaled
+   and added to what was there - so no member's result depends on how the run
+   was divided, and each member writes only its own destination. The last bit
+   of every member is therefore the last bit the single call would have
+   written, whatever the schedule. That is why this one threads where
+   ``grouped_dot`` and ``grouped_axpby`` do not: theirs is a REDUCTION whose
+   order a schedule would decide.
+
+   One spec for the whole run, because a batch drawn at one emission site has
+   one. Per-member prefactors, because that is the difference between members
+   worth merging: a term-by-term accumulation disagrees on its coefficients and
+   on whether it is the first term (``c_pf`` zero) or a later one.
+
+   Destinations must be distinct, for the concurrency above.
+
+   Outside capture this executes immediately, so the same call works eagerly.
+
+   :param spec: The permutation, e.g. ``"abc <- acb"``, shared by every member.
+   :param c_list: Destinations, one per member. Must be distinct.
+   :param a_list: Sources, same length as ``c_list``.
+   :param c_pfs: Per-member prefactor on the destination. A non-zero entry means the member reads C as well as writing it, which the node records as a dependency.
+   :param a_pfs: Per-member prefactor on the source.

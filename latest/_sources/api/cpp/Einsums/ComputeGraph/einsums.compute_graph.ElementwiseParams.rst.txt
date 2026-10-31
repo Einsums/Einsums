@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ElementwiseParams:
+
+=========================================
+einsums::compute_graph::ElementwiseParams
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ElementwiseParams
+
+   Live-mutable scalars for every kind whose operation is ``dst = alpha*<source> + beta*dst``,
+   shared with the executor lambda - the same snapshot + shared-params pattern as
+   ``EinsumParams``.
+
+   The executor reads its prefactors from here on every call, so a pass that rewrites one
+   writes it through this handle and the change takes effect on the next ``graph.execute()``.
+
+   A descriptor also keeps an at-capture SNAPSHOT of the same scalars, which is what analysis
+   passes read; a rewriter must write both, and the ``live_*`` accessors below are how a reader
+   stays right about which one matters.
+
+   **One type, three names**
+
+   Axpby, the dense element-wise kinds and the tiled element-wise kinds share it; each is reached
+   through its own descriptor's ``params``, never discriminated, and the aliases below keep each
+   descriptor in its own vocabulary.
+
+   Not every kind uses both halves: a Scale is an in-place multiply with no destination
+   prefactor, and a tiled Scale or Axpy is the same, so ``beta`` stays at its default there.
+
+
+   .. cpp:member:: PrefactorScalar alpha
+
+      Prefactor on the source operand(s).
+
+
+   .. cpp:member:: PrefactorScalar beta
+
+      Prefactor on the destination (0 = pure overwrite).

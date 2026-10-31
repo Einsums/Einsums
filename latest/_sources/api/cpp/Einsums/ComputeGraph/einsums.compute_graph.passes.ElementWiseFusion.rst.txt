@@ -1,0 +1,107 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.ElementWiseFusion:
+
+=================================================
+einsums::compute_graph::passes::ElementWiseFusion
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/ElementWiseFusion.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: ElementWiseFusion : public OptimizerPass
+
+   Element-wise operation fusion: collapses directly consecutive Scale or axpby ops on the same tensor into a single node.
+
+   In the default pipeline (populate_default; also the O1 cleanup cluster in PassManager::create_for). Runs after
+   SymmetrizedAccumulation, which must fold its `r2 += s*(tmp + P(tmp))` idiom before this pass merges the two axpby and hides
+   the pattern.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("elementwise_fusion");
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::scale(2.0, &C);   // C *= 2
+          cg::scale(3.0, &C);   // C *= 3   -- adjacent scale on the same tensor
+      }
+      cg::PassManager pm; pm.add<cg::passes::ElementWiseFusion>();
+      graph.apply(pm);          // or PassManager::create_default()
+      // One scale node remains with factor 6.
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("elementwise_fusion")
+      with cg.capture(g):
+          einsums.linalg.scale(2.0, C)   # C *= 2
+          einsums.linalg.scale(3.0, C)   # C *= 3
+      ewf = cg.ElementWiseFusion()
+      pm = cg.PassManager(); pm.add(ewf)
+      g.apply(pm)                        # or cg.default_pass_manager()
+      # ewf.num_fused -> 1   (getter is a property, not a method)
+
+   **What it fuses**
+
+   - **axpby chains**: `Y = a1·X + b1·Y` directly followed by `Y = a2·X + b2·Y` on the same pair becomes `Y = (a2 + b2·a1)·X + (b2·b1)·Y`. axpby reads its scalars from live shared params, so this is a real fusion - the result is ONE sweep over Y. If the composed `beta` is zero the node stops listing Y as an input, since it no longer reads it.
+   - **Scale-into-Scale** on the same tensor: the factors multiply. Also a real fusion - the composed factor is written to the scale's live params and the merged node applies ONE multiply.
+
+   **Limitations**
+
+   - Both fusions need live shared params on every participant, so a Scale or Axpby some pass assembled by hand without them is skipped rather than chained.
+   - Both fusions need the participants to be DIRECTLY consecutive; the scan breaks on any intervening node, so ops separated by another node do not fuse even when nothing in between touches the tensor.
+   - axpby fusion requires the same source X and the same destination Y. Two different sources are a three-operand update, which no single axpby expresses. It also requires all four prefactors to share a PrefactorScalar alternative.
+   - axpby fusion also requires X and Y to occupy different buffers. Two views of one tensor are distinct ids, and when they overlap the first update changes the X the second one reads, which the composed scalars do not model. Disjoint views of one parent are declined with them.
+   - `ElementTransform` is not composed: it holds an opaque callable, so two of them can only be chained, not merged.
+   - Merged scalars are plain floating-point arithmetic; no reassociation or overflow handling.
+
+
+   .. cpp:function:: ElementWiseFusion() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Every feature: a fusion only rewrites the scalars of two adjacent nodes on the same ids, and X and Y are told apart by
+      buffer, so a view or a redirected slot reaches the storage the scalars already describe.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Folding consecutive element-wise ops multiplies their scalars, which is done once instead of once per element and lands
+      on the same value.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Safe on loop bodies / conditional branches: a local fusion of
+      adjacent element-wise ops within the graph it's handed.
+
+
+   .. cpp:function:: size_t num_fused() const

@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.apply_single_pass:
+
+=========================================
+einsums::compute_graph::apply_single_pass
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool apply_single_pass(OptimizerPass &pass, Graph &graph)
+
+   Run ``pass``, which the caller owns, over ``graph`` through a PassManager.
+
+   The one way a single pass is applied, so it gets exactly what a pipeline gives each pass: view
+   storage linked across the tree, settled and unique node ids, verification, and the checks that
+   a read-only phase did not rewrite and that a changed node set was declared. Graph::apply<PassType>
+   is built on it.
+
+   :returns: Whether the pass changed the graph.

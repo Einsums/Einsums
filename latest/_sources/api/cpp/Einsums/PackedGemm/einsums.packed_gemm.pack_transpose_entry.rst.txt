@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.pack_transpose_entry:
+
+==========================================
+einsums::packed_gemm::pack_transpose_entry
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> PackTransposeFn<T> pack_transpose_entry()
+
+   Resolve the panel transpose for element type T, or nullptr where no per-rung kernel exists (the complex types), for the caller's scalar loop.
+
+   Resolved in src/MicroKernelDispatch.cpp and cached like micro_kernel_entry; hoist the call out of panel loops.

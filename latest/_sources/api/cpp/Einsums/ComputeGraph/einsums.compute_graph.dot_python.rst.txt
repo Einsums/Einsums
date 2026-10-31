@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dot_python:
+
+==================================
+einsums::compute_graph::dot_python
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, typename AType, typename BType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> && std::is_same_v<typename AType::ValueType, typename BType::ValueType> && DenseOrTiled<AType> && DenseOrTiled<BType> void dot_python(ResultType *result, const AType &A, const BType &B)
+
+   Python-friendly graph-aware dot: writes the result into ``result->data()[0]``.
+
+   ``result`` is a pre-allocated rank-1 (or higher, but only element 0 is
+   touched) tensor that gives Python users a graph-native scalar handle, so
+   SCF energy patterns like ``e = ½ Σ D · (H+F)`` can be captured.

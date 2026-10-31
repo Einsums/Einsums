@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.parallel_reduce:
+
+=======================================
+einsums::compute_graph::parallel_reduce
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename Acc, typename InitFactory, typename Body, typename Combiner, CoreBasicTensorConcept... TensorTypes> void parallel_reduce(std::string name, size_t begin, size_t end, Acc *result, InitFactory &&init, Body &&body, Combiner &&combine, TensorTypes *... tensors)
+
+   Graph-aware parallel_reduce that captures into the computation graph.
+
+   During capture, records a ParallelReduce node. At execution time, delegates
+   to TaskPool::parallel_reduce() and stores the result.
+
+   .. code-block:: text
+
+      double energy = 0.0;
+      cg::CaptureGuard guard(graph);
+      cg::parallel_reduce<double>("energy", 0, N, &energy,
+          []() { return 0.0; },
+          [&](size_t i, double &acc) { acc += contrib(i); },
+          [](double &g, double const &l) { g += l; },
+          &D_mat, &F_mat  // Tensors read during the reduction
+      );

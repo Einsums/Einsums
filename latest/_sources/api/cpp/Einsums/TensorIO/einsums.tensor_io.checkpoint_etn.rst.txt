@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.checkpoint_etn:
+
+==================================
+einsums::tensor_io::checkpoint_etn
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/GraphIO.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void checkpoint_etn(std::string file_path, compute_graph::Graph &graph)
+
+   Checkpoint all graph tensors to a .etn file, graph-aware.
+
+   During capture, records a DiskWrite node. Outside capture, saves immediately.

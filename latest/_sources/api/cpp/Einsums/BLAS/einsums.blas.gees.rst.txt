@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gees:
+
+===================
+einsums::blas::gees
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *wr, T *wi, T *vs, int_t ldvs)
+
+   Computes the Schur decomposition of a matrix.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param jobvs: Whether to compute the unitary matrix for the decomposition.
+   :param n: The number of rows and columns of the input matrix.
+   :param a: The input matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
+   :param lda: The leading dimension of A.
+   :param sdim: The number of selected eigenvalues.
+   :param wr: The real components of the eigenvalues.
+   :param wi: The imaginary components of the eigenvaules.
+   :param vs: The Schur vector matrix.
+   :param ldvs: The leading dimension of the Schur vector matrix.
+   :returns: 0 on success. If negative, then one of the parameters had a bad value. The absolute value tells you which parameter it was. If positive and less than or equal to the number of rows in the matrix, the QR algorithm failed to converge. If one more than the number of rows in the matrix, the eigenvalues could not be reordered for some reason, usually due to eigenvalues being too close. If two more than the number of rows in the matrix, then roundoff changed some of the eigenvalues.
+
+
+.. cpp:function:: template <typename T> int_t gees(char jobvs, int_t n, T *a, int_t lda, int_t *sdim, T *w, T *vs, int_t ldvs)
+
+   Computes the Schur decomposition of a matrix.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The type this function handles.
+   :param jobvs: Whether to compute the unitary matrix for the decomposition.
+   :param n: The number of rows and columns of the input matrix.
+   :param a: The input matrix. On exit, it contains the pseudotriangular matrix from the decomposition.
+   :param lda: The leading dimension of A.
+   :param sdim: The number of selected eigenvalues.
+   :param w: The  eigenvalues.
+   :param vs: The Schur vector matrix.
+   :param ldvs: The leading dimension of the Schur vector matrix.
+   :returns: 0 on success. If negative, then one of the parameters had a bad value. The absolute value tells you which parameter it was. If positive and less than or equal to the number of rows in the matrix, the QR algorithm failed to converge. If one more than the number of rows in the matrix, the eigenvalues could not be reordered for some reason, usually due to eigenvalues being too close. If two more than the number of rows in the matrix, then roundoff changed some of the eigenvalues.

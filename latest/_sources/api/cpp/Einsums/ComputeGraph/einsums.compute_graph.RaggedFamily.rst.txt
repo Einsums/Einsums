@@ -1,0 +1,99 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.RaggedFamily:
+
+====================================
+einsums::compute_graph::RaggedFamily
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: RaggedFamily
+
+   One grouped node's members, raised as a batched axis of the algebra.
+
+   A grouped node is one operation applied to a family of members whose extents
+   differ, which is a contraction with one more free letter. The letter is the
+   MEMBER letter, spelled ``#m<n>`` so it cannot collide with an author's, and
+   this is what it ranges over.
+
+   **Ragged extents**
+
+   Every letter but the member one has a different extent per member, so a
+   single number cannot describe it. ``extents`` is the per-instance table
+   Part 3.7 of the design gives such a family, one row per letter the family
+   introduces and one column per member. The cost model reads a TYPICAL extent
+   off it, which sits below the scale rung of the comparison, so a ragged letter
+   is ranked the way an ordinary bound one is and never decides an asymptotic
+   question on one member's numbers.
+
+   **Identity**
+
+   A ragged tensor's identity is its MEMBER LIST, not any one member's buffer:
+   two statements read the same ragged value exactly when they name the same
+   ordered list. ``ExprTerm::members`` carries it and ``raise_region`` interns
+   one leaf per distinct list, which is what lets a rewrite recognize that two
+   grouped statements read one value.
+
+   **The descriptor is carried**
+
+   ``descriptor`` holds the grouped node's own descriptor, for the same reason
+   an elementwise term carries one: the per-member prefactors and the
+   conjugation are data a rewrite may move but must not reinterpret. The SHAPE
+   parameters of a grouped GEMM are deliberately NOT trusted from it - the
+   lowering re-derives every group from the algebra and the live operands, so a
+   rewrite that changed a member's extents cannot leave a stale group behind.
+
+
+   .. cpp:function:: std::size_t typical_extent(std::string_view letter) const
+
+      The typical extent of ``letter`` over the members.
+
+      The MEAN rather than the maximum or the first member's: a bound extent
+      is what settles a comparison the scale order left tied, and a family's
+      arithmetic is the sum over its members, so the average member is the one
+      whose size that sum is proportional to.
+
+      :param letter: The letter to look up.
+      :returns: The arithmetic mean, rounded to nearest, or 0 when this family does not introduce that letter.
+
+
+   .. cpp:member:: std::string letter
+
+      The member letter, ``#m<n>``.
+
+
+   .. cpp:member:: SpaceId space
+
+      The space the member letter ranges over, registered at raise time.
+
+
+   .. cpp:member:: std::size_t members
+
+      How many members the family holds.
+
+
+   .. cpp:member:: OpKind kind
+
+      The grouped node kind this family was raised from.
+
+
+   .. cpp:member:: OpData descriptor
+
+      The grouped node's descriptor, carried rather than interpreted.
+
+
+   .. cpp:member:: std::vector<std::pair<std::string, std::vector<std::size_t>>> extents
+
+      Per-letter, per-member extents. One entry per letter the family
+      introduces; each holds one extent per member, in member order.

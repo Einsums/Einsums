@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sealed.config_fingerprint:
+
+===================================
+einsums::sealed::config_fingerprint
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Config/ABI.hpp``.
+
+.. cpp:namespace:: einsums::sealed
+
+.. cpp:function:: constexpr std::uint64_t config_fingerprint() noexcept
+
+   Fold of every build setting reachable from <Einsums/Config.hpp>.
+
+   Computed in the header, so a stage module and the library each fold what they were compiled
+   with; a difference means stale headers. Type layouts are in layout_fingerprint(), higher up.

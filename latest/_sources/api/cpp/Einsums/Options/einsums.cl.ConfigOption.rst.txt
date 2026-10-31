@@ -1,0 +1,80 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.ConfigOption:
+
+=========================
+einsums::cl::ConfigOption
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: template <typename T> ConfigOption
+
+   An option declared completely, in one place.
+
+   Constant-initialized, so a read before registration sees ``default_value``.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The option's value type: `bool`, `std::int64_t`, `double`, or `std::string`.
+
+
+   .. cpp:member:: std::string_view name
+
+      The command-line long name, e.g. `einsums:log:level`, from which every other spelling derives.
+
+
+   .. cpp:member:: std::string_view help
+
+      The `--help` description.
+
+
+   .. cpp:member:: std::string_view category
+
+      The `--help` heading this option groups under.
+
+
+   .. cpp:member:: storage_type default_value
+
+      The value in effect when nothing else supplies one.
+
+
+   .. cpp:member:: OptionKind kind
+
+      Flag or value option.
+
+
+   .. cpp:member:: std::string_view value_name
+
+      The placeholder shown in help for a value option, e.g. `N`.
+
+
+   .. cpp:member:: std::optional<Range> range
+
+      Inclusive bounds enforced after parsing, for numeric options.
+
+
+   .. cpp:member:: bool hidden
+
+      Keep the option out of `--help`.
+
+
+   .. cpp:member:: value_type (*default_provider)()
+
+      A default known only at run time. Wins over ``default_value``, which serves reads before registration.
+
+
+   .. cpp:member:: std::atomic<const detail::OptionEntry *> entry
+
+      A cache of the registry entry. Each binary has its own copy of the descriptor, which
+      registration never fills, so a null entry is looked up by key and cached here.

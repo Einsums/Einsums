@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.as:
+
+==========================
+einsums::compute_graph::as
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Prefactor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T> T as(const PrefactorScalar &v)
+
+   Convert a PrefactorScalar to a concrete typed scalar.
+
+   Real → real and real → complex are exact. Complex → real throws when the
+   imaginary part is non-zero (loud failure for type confusion); use
+   ``as_real`` to take ``.real()`` lossily on purpose.
+
+   The body branches on ``T`` first so that ``typename T::value_type`` is
+   only ever named inside a branch where ``T`` is known to be a complex
+   type. Substitution-time well-formedness checking in some clang versions
+   otherwise rejects the discarded branch.

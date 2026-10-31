@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SliceRequest:
+
+====================================
+einsums::compute_graph::SliceRequest
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SliceRequest
+
+   Which axes of a node's operands one slice drops, and where the index of each is.
+
+   Indexed [operand][axis], the output first and then each input in the node's order. An entry
+   names the ``ParamTable`` entry holding the dropped axis's index on this iteration; an empty
+   entry is an axis the slice keeps whole. A sliced node reads that parameter, so its descriptor's
+   ``accesses`` hook must declare it.
+
+
+   .. cpp:member:: std::vector<std::vector<std::optional<std::string>>> dropped

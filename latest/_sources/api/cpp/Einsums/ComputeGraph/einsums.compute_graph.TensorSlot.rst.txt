@@ -1,0 +1,108 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorSlot:
+
+==================================
+einsums::compute_graph::TensorSlot
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorSlot
+
+   A rebindable tensor reference.
+
+   Holds a void pointer to the current tensor object. The pointer can be
+   updated via Graph::rebind() without re-capturing the graph.
+
+
+   .. cpp:member:: void *ptr
+
+      Current pointer to the Tensor object
+
+
+   .. cpp:member:: TensorId tensor_id
+
+      Associated TensorId in the graph
+
+
+   .. cpp:member:: std::string name
+
+      Tensor name for error messages
+
+
+   .. cpp:member:: size_t rank
+
+      Expected rank (for validation on rebind)
+
+
+   .. cpp:member:: size_t element_size
+
+      Expected element size (for validation)
+
+
+   .. cpp:member:: std::vector<size_t> dims
+
+      Expected dimensions (for validation on rebind)
+
+
+   .. cpp:member:: SlotImplAccessor impl_of
+
+      Rank-erased geometry accessor for whatever ``ptr`` currently addresses.
+
+      Given ``ptr``, returns that tensor object's
+      ``einsums::detail::TensorImpl<T> *``, type-erased to ``void *``. Cast it
+      to ``TensorImpl<T> *`` once the element type is known (from
+      ``TensorHandle::dtype``).
+
+      This is how a data-built executor (``build_executor``) reaches the LIVE
+      data pointer, dims and strides of an operand. Going through the slot
+      rather than through ``TensorHandle::impl_fn`` is what makes such an
+      executor follow ``Graph::rebind`` and ``Graph::redirect_slot``, which is
+      the same guarantee a capture-baked lambda gets from casting ``ptr`` to
+      its capture-time static type.
+
+      A plain function pointer rather than a ``std::function``: it is
+      stateless, since the object arrives as the argument, so it costs the
+      slot one word and costs a replay one indirect call - no allocation, no
+      lookup.
+
+      Null for tile-wise sparse tensors, which have no single impl, and for
+      slots created before the accessor existed. Gate on it.
+
+
+   .. cpp:member:: SlotResyncAccessor resync_of
+
+      Re-seats ``ptr``'s cached data pointer on its storage block's current buffer, or null for a type that caches nothing.
+
+      A slot whose ``owner`` is a stand-in adopted by ``Graph::adopt_operand``
+      SHARES the caller's storage block but holds its own cached address, and
+      a Free or Materialize relocates the block under it. ``Graph::execute``
+      runs this over its slots before the first node, which is what keeps a
+      sub-graph body reading the buffer its operand has NOW rather than the
+      one it had when the body was captured.
+
+      A plain function pointer for the same reason ``impl_of`` is one: it is
+      stateless, so it costs the slot one word and a replay one indirect call.
+
+
+   .. cpp:member:: std::shared_ptr<void> owner
+
+      Keeps whatever ``ptr`` addresses alive for as long as the slot exists.
+
+      Set to the graph's stand-in for a captured operand (see
+      ``Graph::adopt_operand``), which is what makes it safe for the caller's
+      own wrapper to be destroyed between capture and ``execute()``. Empty
+      when the graph did not adopt the operand -- a tensor the graph already
+      owns, or a type with no storage block to share -- in which case ``ptr``
+      keeps the older "must outlive the graph" contract.

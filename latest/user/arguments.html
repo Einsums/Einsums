@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Command Line Arguments &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/arguments';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/arguments.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Architecture Overview" href="architecture.html" />
+    <link rel="prev" title="Einsums in Python" href="python.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Command Line Arguments</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="command-line-arguments">
+<span id="arguments"></span><h1>Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Link to this heading">#</a></h1>
+<p>There are several command line arguments that can control the behavior of Einsums. This is the documentation
+for these arguments.</p>
+<p>Run any Einsums program with <code class="docutils literal notranslate"><span class="pre">--help</span></code> to get the same list from the program itself, including the default
+in effect for your build and the environment variable each option reads.</p>
+<section id="how-options-reach">
+<h2>How Options Reach<a class="headerlink" href="#how-options-reach" title="Link to this heading">#</a></h2>
+<p>Every option below resolves through three sources. Each is free to overwrite the one before it:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1. the default compiled into the option
+2. an environment variable
+3. the command line
+</pre></div>
+</div>
+<section id="environment-variables">
+<h3>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h3>
+<p>Every option is readable from the environment under a name derived from its own: upper-case the long name
+and turn each run of separators into a single underscore. So <a class="reference internal" href="#cmdoption-einsums-log-level"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:level</span></code></a> reads
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_LOG_LEVEL</span></code> and <a class="reference internal" href="#cmdoption-einsums-profile-wait-for-viewer"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:wait-for-viewer</span></code></a> reads
+<code class="docutils literal notranslate"><span class="pre">EINSUMS_PROFILE_WAIT_FOR_VIEWER</span></code>.</p>
+<p>This is what lets an inherited variable configure a job without editing its command line, while the command
+line still wins when it says so. An unset <strong>or empty</strong> variable counts as not specified, so <code class="docutils literal notranslate"><span class="pre">FOO=</span></code> leaves
+the default in place.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</section>
+<section id="flags-and-their-negations">
+<h3>Flags and their negations<a class="headerlink" href="#flags-and-their-negations" title="Link to this heading">#</a></h3>
+<p>Every flag is declared once, in the positive, and Einsums generates the <code class="docutils literal notranslate"><span class="pre">no-</span></code> spelling for it. So
+<a class="reference internal" href="#cmdoption-einsums-profile-report"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:report</span></code></a> is turned off with <code class="docutils literal notranslate"><span class="pre">--einsums:profile:no-report</span></code>, and a flag that is
+off by default is turned on by naming it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--help</span></code> lists the positive spelling and names the negation beside it rather than listing both.</p>
+<p>From the environment a flag can only be switched on: a false value counts as not specified. To turn
+off a flag that is on by default, set the negation’s variable, such as <code class="docutils literal notranslate"><span class="pre">EINSUMS_PROFILE_NO_REPORT=1</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0: </span>Flags used to be declared in whichever polarity was not the default, which is why several of the
+options below changed name in this release. The old <code class="docutils literal notranslate"><span class="pre">no-</span></code> spellings all still parse.</p>
+</div>
+</section>
+</section>
+<section id="basic-arguments">
+<h2>Basic Arguments<a class="headerlink" href="#basic-arguments" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-max-memory">
+<span class="sig-name descname"><span class="pre">--einsums:max-memory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;size&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-max-memory" title="Link to this definition">#</a></dt>
+<dd><p>Ceiling on the memory Einsums plans against. It takes a string containing a number and
+units; see <a class="reference internal" href="../api/cpp/Einsums/StringUtil/einsums.string_util.memory_string.html#_CPPv4N7einsums11string_util13memory_stringERKNSt6stringE" title="einsums::string_util::memory_string"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::string_util::memory_string</span></code></a>. Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p>
+<p>Defaults to 80% of the machine’s physical RAM.</p>
+<p>This is a planning ceiling, not an allocator meter: chunked algorithms size their working
+sets to it, and <a class="reference internal" href="../api/cpp/Einsums/BufferAllocator/einsums.MemoryPool.html#_CPPv4N7einsums10MemoryPoolE" title="einsums::MemoryPool"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::MemoryPool</span></code></a> refuses a reservation that would push the
+process’s total pooled bytes past it - at the reserve site, on the pool’s owning thread,
+before the OS is asked for anything. Ordinary tensor allocations are not checked against
+it, which is what keeps the check from ever throwing inside a kernel.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-buffer-size">
+<span class="sig-name descname"><span class="pre">--einsums:buffer-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;size&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-buffer-size" title="Link to this definition">#</a></dt>
+<dd><p>The ceiling on contraction workspace drawn from Einsums’ buffer allocator: buffer tensors and
+LAPACK work arrays. Ordinary tensors are not counted; see <a class="reference internal" href="#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> for the
+planning ceiling. It takes a string containing a number and units.
+The units are either bytes or words. See <a class="reference internal" href="../api/cpp/Einsums/StringUtil/einsums.string_util.memory_string.html#_CPPv4N7einsums11string_util13memory_stringERKNSt6stringE" title="einsums::string_util::memory_string"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::string_util::memory_string</span></code></a> for more information.</p>
+<p>Defaults to <code class="docutils literal notranslate"><span class="pre">64MB</span></code>.
+The ceiling exists to catch a runaway temporary with a named error, not to ration legitimate
+workspace; the default is sized so a wide machine’s worth of concurrent contractions fits
+under it with room to spare.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-work-buffer-size">
+<span class="sig-name descname"><span class="pre">--einsums:work-buffer-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;size&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-work-buffer-size" title="Link to this definition">#</a></dt>
+<dd><p>The largest piece of a disk-backed tensor that a contraction reads into memory at once. The
+pieces count against <a class="reference internal" href="#cmdoption-einsums-buffer-size"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:buffer-size</span></code></a>, along with the other workspace drawn from
+the buffer allocator, so keep it well below that. Zero, the default, means an eighth of
+<a class="reference internal" href="#cmdoption-einsums-buffer-size"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:buffer-size</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-log-level">
+<span class="sig-name descname"><span class="pre">--einsums:log:level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;level&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-log-level" title="Link to this definition">#</a></dt>
+<dd><p>Set the level to see in the logger. Lower values provide more information: 0 is trace, 1 debug,
+2 info, 3 warning, 4 error. A release build defaults to 4, so it reports only errors, and a
+debug build to 1.</p>
+<ul class="simple">
+<li><p>0: Tracing messages. Very verbose.</p></li>
+<li><p>1: Debugging messages.</p></li>
+<li><p>2: Information messages</p></li>
+<li><p>3: Warnings.</p></li>
+<li><p>4: Errors.</p></li>
+</ul>
+<p>Values outside 0-4 are rejected.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.1.0: </span>This option now also sets the HIP log level if Einsums was built with GPU support.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option no longer sets the HIP log level. Use the <code class="code docutils literal notranslate"><span class="pre">AMD_LOG_LEVEL</span></code> environment variable.
+This option’s name has also been changed.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-log-destination">
+<span class="sig-name descname"><span class="pre">--einsums:log:destination</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;cerr|cout|file&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-log-destination" title="Link to this definition">#</a></dt>
+<dd><p>Where log records go: <code class="docutils literal notranslate"><span class="pre">cerr</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">cout</span></code>, or any other value, which is taken as
+the name of a file to log to.</p>
+<p>The optimization passes’ narration (<a class="reference internal" href="#cmdoption-einsums-pass-verbosity"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:pass:verbosity</span></code></a>) goes to the same place.
+On the console it carries a time and thread prefix of its own; in a file it shares the log’s
+format.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-log-format">
+<span class="sig-name descname"><span class="pre">--einsums:log:format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-log-format" title="Link to this definition">#</a></dt>
+<dd><p>A format string used for the logger output.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-disable">
+<span class="sig-name descname"><span class="pre">--einsums:profile:disable</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-disable" title="Link to this definition">#</a></dt>
+<dd><p>Do not record profiling zones or annotations at all. This is a large speedup for workloads made of
+many small operations, where the bookkeeping can cost more than the work being measured.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-report">
+<span class="sig-name descname"><span class="pre">--einsums:profile:report</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-report" title="Link to this definition">#</a></dt>
+<dd><p>Write the profiling report when the program exits. On by default; turn it off with
+<code class="docutils literal notranslate"><span class="pre">--einsums:profile:no-report</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed, and again later in the 2.0.0 cycle to its positive spelling.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-filename">
+<span class="sig-name descname"><span class="pre">--einsums:profile:filename</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;filename&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-filename" title="Link to this definition">#</a></dt>
+<dd><p>The name of the file for the profiler output. Defaults to <code class="docutils literal notranslate"><span class="pre">profile.txt</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-append">
+<span class="sig-name descname"><span class="pre">--einsums:profile:append</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-append" title="Link to this definition">#</a></dt>
+<dd><p>Append the profiling information to the profiling file rather than replacing it. Off by default,
+so each run leaves one report.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed to its positive spelling. It was previously documented as
+<code class="docutils literal notranslate"><span class="pre">--einsums:profiler:no-append</span></code>, which never parsed.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>Off by default. It was documented as on by default, but every report replaced the file
+regardless, so it now appends when given and the default keeps the behavior every run had.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-detailed">
+<span class="sig-name descname"><span class="pre">--einsums:profile:detailed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-detailed" title="Link to this definition">#</a></dt>
+<dd><p>Print a detailed profile report rather than the summary.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-save">
+<span class="sig-name descname"><span class="pre">--einsums:profile:save</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;filename&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-save" title="Link to this definition">#</a></dt>
+<dd><p>Save the profile session as JSON, which <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">profiler</span> <span class="pre">--load</span></code> opens. Empty, the default, means do not save one.</p>
+<p>Requires <a class="reference internal" href="#cmdoption-einsums-profile-server"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code></a>, since the session is exported through the server;
+without it no file is written and the run logs an error saying so.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-server">
+<span class="sig-name descname"><span class="pre">--einsums:profile:server</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-server" title="Link to this definition">#</a></dt>
+<dd><p>Run the profile server, so a viewer can attach and stream this process’s profiling data.</p>
+<p>Off by default. The server is a cost a run should opt into rather than one it pays for having
+been built with profiling: it holds a listening socket for the life of the process and is
+driven by the consumer thread, which services it on the same periodic tick that drains the
+event buffers.</p>
+<p>It streams JSON Lines over TCP, binds to <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, and accepts up to four simultaneous
+clients. There is no authentication and no transport security of any kind, so the loopback
+bind is what keeps it private and is not something to work around. On macOS it also advertises
+itself over Bonjour as <code class="docutils literal notranslate"><span class="pre">_waggle._tcp</span></code>.</p>
+<p>See <a class="reference internal" href="#cmdoption-einsums-profile-port"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:port</span></code></a> for the port it listens on, and
+<a class="reference internal" href="#cmdoption-einsums-profile-wait-for-viewer"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:wait-for-viewer</span></code></a> to hold a short run open until a viewer has
+attached.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-port">
+<span class="sig-name descname"><span class="pre">--einsums:profile:port</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PORT&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-port" title="Link to this definition">#</a></dt>
+<dd><p>The port the profile server listens on. Defaults to <code class="docutils literal notranslate"><span class="pre">19216</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-wait-for-viewer">
+<span class="sig-name descname"><span class="pre">--einsums:profile:wait-for-viewer</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-profile-wait-for-viewer" title="Link to this definition">#</a></dt>
+<dd><p>Block at startup until a profiler viewer connects, so that a short run cannot finish before the
+viewer has attached.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-max-distinct-children">
+<span class="sig-name descname"><span class="pre">--einsums:profile:max-distinct-children</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;N&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-max-distinct-children" title="Link to this definition">#</a></dt>
+<dd><p>How many distinct zone names one parent zone keeps as separate entries in the profile. Defaults
+to <code class="docutils literal notranslate"><span class="pre">256</span></code>; zero means no limit.</p>
+<p>Some zone names are built at run time from a graph’s or a loop’s name, so a program that names
+each graph after its iteration adds a new entry, and every zone beneath it, for as long as it
+runs. Once a parent holds this many named children, each further name is timed under that
+parent’s <code class="docutils literal notranslate"><span class="pre">(other)</span></code> entry instead, whose <code class="docutils literal notranslate"><span class="pre">distinct</span></code> annotation counts the names it holds. The
+names that appeared first keep their own entries.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-sources">
+<span class="sig-name descname"><span class="pre">--einsums:profile:sources</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;LIST&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-sources" title="Link to this definition">#</a></dt>
+<dd><p>The profiler’s optional instruments to turn on, comma-separated; each is off unless named here.
+The profile report and the viewer say why one that was asked for records nothing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">counters</span></code> records each zone’s hardware counters: cycles, instructions, cache and branch
+misses through Linux perf (<code class="docutils literal notranslate"><span class="pre">kernel.perf_event_paranoid</span></code> must be 2 or less, and a virtual
+machine often has no hardware counters), and cycles and instructions, with the efficiency
+cores’ share, on macOS, where no root is needed. Reading them costs a few hundred nanoseconds
+as each zone opens and closes, so it suits coarse zones. A thread counts if the source was
+asked for when it first recorded.</p>
+<p><code class="docutils literal notranslate"><span class="pre">energy</span></code> records the energy each zone used, and the share of it on the efficiency cores, on
+macOS. The figure is the kernel’s per-thread estimate from the CPU’s power model, which it
+updates every few milliseconds, so the profiler samples it as it collects events rather than
+reading it at each zone: a zone pays nothing, a zone of about 100 ms or more gets its own
+figure, and shorter ones get theirs on average over many calls. Linux has no per-thread energy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">signposts</span></code> also emits every zone as an <code class="docutils literal notranslate"><span class="pre">os_signpost</span></code> interval on macOS, under the subsystem
+<code class="docutils literal notranslate"><span class="pre">waggle</span></code> with a category per library, so Instruments shows Einsums’ zones beside its own CPU,
+GPU, Metal and memory tracks. Record with Instruments’ Logging template, or
+<code class="docutils literal notranslate"><span class="pre">xcrun</span> <span class="pre">xctrace</span> <span class="pre">record</span> <span class="pre">--template</span> <span class="pre">Logging</span> <span class="pre">--launch</span> <span class="pre">--</span> <span class="pre">./program</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">openmp</span></code> records each OpenMP parallel region, named after the function it is in, each
+thread’s share of the region, and the barrier waits inside, through the runtime’s OMPT
+interface. The OpenMP runtime must support OMPT: LLVM’s libomp does, and runs GCC-compiled code
+too; GCC’s own libgomp does not. The runtime looks for a tool once, when it starts, so the
+option must be given before the program’s first OpenMP call, as it is on the command line or in
+the environment.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-profile-trace">
+<span class="sig-name descname"><span class="pre">--einsums:profile:trace</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PATH&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-profile-trace" title="Link to this definition">#</a></dt>
+<dd><p>Write every zone to a Perfetto trace at this path, to see each call on its thread’s timeline at
+<a class="reference external" href="https://ui.perfetto.dev">ui.perfetto.dev</a>, beside device work, the live-bytes curve and, with
+the <code class="docutils literal notranslate"><span class="pre">energy</span></code> source, each thread’s energy. <code class="docutils literal notranslate"><span class="pre">{pid}</span></code> in the path becomes the process id, so
+the ranks of an MPI run each write their own. A zone costs about 32 bytes of trace, written by
+the profiler’s own thread.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="computegraph-pass-options">
+<h2>ComputeGraph Pass Options<a class="headerlink" href="#computegraph-pass-options" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-pass-disable">
+<span class="sig-name descname"><span class="pre">--einsums:pass:disable</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PASSES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-pass-disable" title="Link to this definition">#</a></dt>
+<dd><p>Comma-separated list of optimization pass names to skip when <code class="docutils literal notranslate"><span class="pre">PassManager::run()</span></code>
+is called. Use this to A/B test whether a specific pass helps or hurts performance.</p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">--einsums:pass:disable</span> <span class="pre">CSE,Reorder</span></code></p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-pass-analyze">
+<span class="sig-name descname"><span class="pre">--einsums:pass:analyze</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-pass-analyze" title="Link to this definition">#</a></dt>
+<dd><p>Run all passes in analysis-only mode. Each pass executes normally and reports what
+it found, but the graph is restored to its original state afterward. No modifications
+persist.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-pass-verbose">
+<span class="sig-name descname"><span class="pre">--einsums:pass:verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-pass-verbose" title="Link to this definition">#</a></dt>
+<dd><p>Log node count and wall-clock time before and after each optimization pass, even for
+passes that don’t modify the graph.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-pass-verify">
+<span class="sig-name descname"><span class="pre">--einsums:pass:verify</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-pass-verify" title="Link to this definition">#</a></dt>
+<dd><p>After every optimization pass, check the graph’s structural invariants and fail with the name of
+the pass that broke one: every node id unique within its graph, every operand a registered
+tensor, every lifecycle node naming the tensor it manages, and every contraction and permutation
+carrying the index lists its operands’ ranks call for.</p>
+<p>A pass that leaves a graph malformed usually still produces a graph that runs, so the damage
+otherwise surfaces far from its cause. The test suite turns this on; a program that suspects a
+pass can too. It costs one walk over the graph per pass.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-pass-verbosity">
+<span class="sig-name descname"><span class="pre">--einsums:pass:verbosity</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;LEVEL&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-pass-verbosity" title="Link to this definition">#</a></dt>
+<dd><p>How much the optimization passes narrate: <code class="docutils literal notranslate"><span class="pre">0</span></code> silent, <code class="docutils literal notranslate"><span class="pre">1</span></code> a summary line per pass, <code class="docutils literal notranslate"><span class="pre">2</span></code> each
+modification and each declined candidate, <code class="docutils literal notranslate"><span class="pre">3</span></code> the per-candidate detail behind a decline.</p>
+<p>A program that calls <code class="docutils literal notranslate"><span class="pre">PassManager.set_verbosity</span></code> chooses its own level and this leaves it alone;
+the option supplies a level only where nothing else did.</p>
+<p>The narration goes where <a class="reference internal" href="#cmdoption-einsums-log-destination"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:destination</span></code></a> says, and is printed whatever
+<a class="reference internal" href="#cmdoption-einsums-log-level"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:level</span></code></a> is: that level governs the library’s log, and a program that asked
+the passes to explain themselves is not also asked to lower it.</p>
+<p>This is the only way to observe a <strong>thread plan</strong>. <code class="docutils literal notranslate"><span class="pre">Graph.plan_threads()</span></code> builds its planner
+directly rather than through a pass manager, so at level <code class="docutils literal notranslate"><span class="pre">0</span></code> it reports nothing and whether it
+widened any node, or declined and at which gate, cannot be seen from the outside. At <code class="docutils literal notranslate"><span class="pre">1</span></code> it
+says how many nodes it widened, to what width, and the makespan it expected; at <code class="docutils literal notranslate"><span class="pre">2</span></code> it names
+every node and its width.</p>
+<p>Distinct from <a class="reference internal" href="#cmdoption-einsums-pass-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:pass:verbose</span></code></a>, which logs node count and timing around each pass
+and says nothing about what a pass decided.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-dump-regions">
+<span class="sig-name descname"><span class="pre">--einsums:graph:dump-regions</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-graph-dump-regions" title="Link to this definition">#</a></dt>
+<dd><p>Dump the algebra each region rewrite raised, before and after it rewrote, in the algebraic
+form rather than as a node list.</p>
+<p>This is the first thing to turn on when an optimized graph produces a wrong number. A diff of
+two node-list dumps tells you which nodes changed; a diff of the algebra tells you what the
+rewrite <em>claimed</em>, which is where the mistake actually is. Output goes to stderr at pass
+verbosity 2 and above, and is also kept on the pass so a test can read it.</p>
+<p>Costs one rendering per region, so it is off by default.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-structural-search">
+<span class="sig-name descname"><span class="pre">--einsums:graph:structural-search</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-graph-structural-search" title="Link to this definition">#</a></dt>
+<dd><p>Let the structural-algebraic phase run its <strong>search</strong> passes, which is
+<code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> today.</p>
+<p>Off by default, and the default is the point rather than caution. Every other pass in that
+phase is a recognizer: it walks the graph once and its runtime is a function of the node
+count. A search pass’s runtime is a function of how many candidates the graph offers, which
+nobody can predict from outside, and the saved graph IR exists precisely so that a search runs
+ONCE and a replay does not.</p>
+<p>So the interactive default is off, and the capture-optimize-save workflow turns it on
+deliberately. A caller who wants it for one pipeline can switch it on there instead:
+<code class="docutils literal notranslate"><span class="pre">MultiTermFactorization::set_search_enabled</span></code> overrides this option in both directions, which
+is also what makes two pipelines with different settings runnable at the same time.</p>
+<p>See also <a class="reference internal" href="#cmdoption-einsums-graph-optimizer-budget"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:optimizer-budget</span></code></a>, which bounds how long the search may run.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-factorization-cache">
+<span class="sig-name descname"><span class="pre">--einsums:graph:factorization-cache</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-graph-factorization-cache" title="Link to this definition">#</a></dt>
+<dd><p>Keep each search pass’s chosen plan in memory and replay it when a structurally identical
+graph comes back. On by default.</p>
+<p>The search <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> runs is a pure function of the region’s structure, so
+its answer is worth keeping. An entry is keyed on <a class="reference internal" href="../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Graph.html#_CPPv4NK7einsums13compute_graph5Graph12content_hashEv" title="einsums::compute_graph::Graph::content_hash"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::compute_graph::Graph::content_hash</span></code></a> together
+with the region’s node span and the factor cap, and it holds a <em>plan</em> rather than a graph: the
+shared pairs that were committed, in order, and the contraction tree chosen for each term,
+written as positions rather than as tensor identities so a plan found on one graph applies to
+another that hashes the same.</p>
+<p>The case it pays for is a pipeline whose stages present the same program under the same name:
+the first stage searches and the rest replay. It does not pay for re-running a script, which
+is a new process with an empty cache; that case is what saving the optimized graph IR is for.
+A search that ran out of its budget is never kept, so a plan that comes back out is one an
+unbounded search would have found.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiTermFactorization::set_cache_enabled</span></code> overrides this for one pipeline and
+<code class="docutils literal notranslate"><span class="pre">clear_cache</span></code> empties it. Switch it off when bisecting a wrong number: two supposedly
+identical graphs getting one plan is the first thing to rule out.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-factorization-max-factors">
+<span class="sig-name descname"><span class="pre">--einsums:graph:factorization-max-factors</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;COUNT&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-factorization-max-factors" title="Link to this definition">#</a></dt>
+<dd><p>The largest number of factors a term may have before <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> declines it
+instead of searching it.</p>
+<p>The cap is a property of the <em>program</em> a caller brings rather than of the pass, which is why
+it is an option. A density-fitted opposite-spin correlation energy, flattened through its
+direct product and its dot, is nine leaves; the same energy through a grid fit is fourteen;
+an amplitude residual term is more. A cap chosen for the first of those declines the other
+two silently, and a caller has no way to lift it without editing the pass.</p>
+<p>The cost is stated rather than hidden. The per-term program is <code class="docutils literal notranslate"><span class="pre">3^N</span></code> in the factor count, so
+fourteen leaves is a few million subset splits and runs in seconds, and twenty is over three
+billion and does not finish unaided. A value in the twenties is therefore a request to run
+under <a class="reference internal" href="#cmdoption-einsums-graph-optimizer-budget"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:optimizer-budget</span></code></a> and keep the best tree found when it expires,
+which is what that budget was built to do. Raising this changes what the search is <em>offered</em>
+and never how the search itself scales.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiTermFactorization::set_max_factors</span></code> overrides this for one pipeline, in both
+directions. A pass that builds its own cone out of a provider’s factors, which
+<code class="docutils literal notranslate"><span class="pre">FactorizationPass</span></code> does, knows how many leaves it is about to hand over and takes this as a
+floor rather than a ceiling.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-factorization-max-readers">
+<span class="sig-name descname"><span class="pre">--einsums:graph:factorization-max-readers</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;COUNT&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-factorization-max-readers" title="Link to this definition">#</a></dt>
+<dd><p>How many consumers a definition may be inlined into before <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> leaves
+it whole.</p>
+<p>An author-named intermediate several statements read is inlined into each of them whose
+bracketing it improves and kept for the rest, so a value two consumers want no longer pins the
+algebra around it. Every copy is a term of its own, which is the growth this bounds: the search
+sees as many terms as the copies it made, and each of them is capped by
+<a class="reference internal" href="#cmdoption-einsums-graph-factorization-max-factors"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:factorization-max-factors</span></code></a> separately. Raising this costs search time
+linearly where raising the factor cap costs it exponentially.</p>
+<p>Four is the default because the shapes that ask for this have two or three consumers, a
+correlation energy split into its spin halves and an integral a residual reads from two routes,
+and because a value more consumers than that read is far more likely to be a quantity the
+program genuinely shares than an artifact of how the author bracketed it. A definition past the
+cap is reported through the pass’s skip tally rather than dropped silently.</p>
+<p>A copy is never emitted for its own sake: a consumer that gains nothing from the inlining reads
+the definition instead, and the whole rewrite is still measured against the captured bracketing
+before anything is emitted.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiTermFactorization::set_max_readers</span></code> overrides this for one pipeline, in both directions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-laplace-epsilon">
+<span class="sig-name descname"><span class="pre">--einsums:graph:laplace-epsilon</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;EPS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-laplace-epsilon" title="Link to this definition">#</a></dt>
+<dd><p>Target relative accuracy for the quadrature <code class="docutils literal notranslate"><span class="pre">LaplaceTransform</span></code> substitutes for a tagged
+energy denominator.</p>
+<p>A <em>tolerance</em> rather than a point count, deliberately. A tolerance composes with the accuracy
+budget and is what an approximation record can state; a count is a means, and the same count
+over a wider spectral range is a different approximation that says nothing about what the
+result is worth. The count is derived from this option together with the range of the signed
+energy sum the bound orbital energies form, and it reaches the setup node’s descriptor, so a
+graph saved here means the same thing wherever it is loaded.</p>
+<p>The rule is the truncated trapezoidal sum of the exponential integral on a logarithmic grid.
+Its three error terms, the discretization and the two truncations, are each bounded
+analytically and are given half, a quarter and a quarter of the target between them, which
+is what fixes the grid. Tightening the tolerance shrinks the step, so the point count and the
+arithmetic the rewrite emits both grow roughly with the logarithm of the reciprocal
+tolerance; on a typical orbital-energy range, <code class="docutils literal notranslate"><span class="pre">1e-4</span></code> needs around twenty points and
+<code class="docutils literal notranslate"><span class="pre">1e-6</span></code> around forty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LaplaceTransform::set_epsilon</span></code> overrides this for one pipeline, and
+<code class="docutils literal notranslate"><span class="pre">LaplaceTransform::set_points</span></code> overrides the derived count outright, which exists for
+reproducing a published number rather than for ordinary use. The error the rule actually
+reaches is measured rather than assumed: it is recorded on the graph as an approximation
+record, and it is measured again on every bind into the tensor
+<code class="docutils literal notranslate"><span class="pre">LaplaceTransform::error_tensor_name</span></code> names.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-thc-epsilon">
+<span class="sig-name descname"><span class="pre">--einsums:graph:thc-epsilon</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;EPS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-thc-epsilon" title="Link to this definition">#</a></dt>
+<dd><p>Relative error a <code class="docutils literal notranslate"><span class="pre">ThcFactorization</span></code> asserts for the grid fit it substitutes for a tagged
+four-index tensor, when the caller states none of its own.</p>
+<p>A <em>tolerance</em>, spelled the way every per-lossy-pass knob is, and it reaches the PROVIDER
+rather than living in a pass, so a graph saved after a grid fit means one thing wherever it
+is loaded.</p>
+<p>What it is not is a measurement. The error of a tensor-hypercontraction fit against the
+exact four-index tensor cannot be computed without forming the tensor the fit exists to
+avoid, so the number in the approximation record is the caller’s assertion, exactly as the
+density fit’s is. What IS measured, on every bind, is the least-squares residual of the grid
+fit against the three-index tensor it was fitted from: two parameters named by
+<code class="docutils literal notranslate"><span class="pre">ThcFactorization.residual_param_name</span></code> and <code class="docutils literal notranslate"><span class="pre">ThcFactorization.reference_param_name</span></code>,
+whose ratio’s square root is the relative residual. A residual far above this option is the
+signal that the grid was too coarse for the accuracy the record claims.</p>
+<p>The grid itself is not chosen here. The pass takes the collocation matrix it is handed, and
+pruning a grid is a setup the caller performs; this option says what the result is asserted
+to be worth and the measured residual says whether the grid delivered it.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-naf-threshold">
+<span class="sig-name descname"><span class="pre">--einsums:graph:naf-threshold</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;FRACTION&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-naf-threshold" title="Link to this definition">#</a></dt>
+<dd><p>Fraction of the largest singular value below which a <code class="docutils literal notranslate"><span class="pre">NaturalAuxiliaryFactorization</span></code> drops
+an auxiliary direction, when the caller states no threshold of its own.</p>
+<p>A <em>tolerance</em>, spelled the way every per-lossy-pass knob is, and it reaches the PROVIDER
+rather than living in a pass, so a graph saved after a truncation means one thing wherever it
+is loaded. Loosening it shrinks the auxiliary index and grows the error; at water/cc-pVDZ a
+threshold of <code class="docutils literal notranslate"><span class="pre">1e-1</span></code> keeps 39 of 84 auxiliary functions and <code class="docutils literal notranslate"><span class="pre">1e-2</span></code> keeps 61.</p>
+<p>RELATIVE, where the drop threshold of a metric fit is absolute, and the difference is where
+the two guards run. A metric fit’s is a captured element operation whose policy number is
+bound when its executor is built, so a relative cutoff there needs a reduction feeding a value
+into a guard. This one runs in ordinary code at optimize time over eigenvalues held in a local
+buffer, where comparing against the largest of them costs nothing.</p>
+<p>What the record carries is not this number. The exact tensor is the one being truncated and
+the truncation reads it, so the error is measured rather than claimed: the norm of the dropped
+singular values against the norm of all of them. That number is a bound on the tensor and
+therefore a loose one on any energy computed from it.</p>
+<p>The spectrum is read off the eigenvalues of the Gram matrix, which are the squares of the
+singular values, so a singular value is resolved to about the square root of machine epsilon.
+A threshold below <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> is asking the fit to distinguish a numerically absent direction
+from a genuinely small one, which it cannot.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-fno-occupation">
+<span class="sig-name descname"><span class="pre">--einsums:graph:fno-occupation</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;OCCUPATION&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-fno-occupation" title="Link to this definition">#</a></dt>
+<dd><p>Occupation below which <code class="docutils literal notranslate"><span class="pre">BasisTruncation</span></code> drops a natural orbital from the correlated
+space, when the caller states no cutoff of its own.</p>
+<p>A <em>tolerance</em>, spelled the way every per-lossy-pass knob is, and ABSOLUTE where the auxiliary
+truncation’s threshold is relative: an occupation number already is a fraction, since it says
+how much of an electron a virtual orbital carries, and the conventional cutoffs are quoted as
+such rather than against whichever orbital happens to be the most occupied.</p>
+<p>It reaches the PASS rather than a provider, because a basis truncation factors nothing: it
+replaces one index space by a contained subspace and projects every tensor that runs over the
+space it replaced.</p>
+<p>What the approximation record carries is not this number. It is the MP2 correlation energy the
+truncation removed, measured at optimize time from the amplitudes the pass was handed, which is
+an absolute energy-like effect rather than a relative one.</p>
+<p>Loosening it shrinks the virtual index and removes more correlation energy. At water/cc-pVDZ
+the natural occupations run from <code class="docutils literal notranslate"><span class="pre">2.3e-2</span></code> down to <code class="docutils literal notranslate"><span class="pre">4.7e-5</span></code> over 19 virtual orbitals, so a
+cutoff of <code class="docutils literal notranslate"><span class="pre">1e-3</span></code> keeps 9 of them and one of <code class="docutils literal notranslate"><span class="pre">1e-4</span></code> keeps 17; there is no cutoff that halves
+that molecule’s virtual space cheaply, which is a property of a small basis rather than of the
+method.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-tiling-memory-cap">
+<span class="sig-name descname"><span class="pre">--einsums:graph:tiling-memory-cap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;BYTES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-tiling-memory-cap" title="Link to this definition">#</a></dt>
+<dd><p>Largest a single live intermediate may be, in bytes, before <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> rewrites the program
+as a loop over slices of its free axes.</p>
+<p>This is a resource knob and not a tolerance. Nothing about tiling trades accuracy: the algebra
+at one slice is the algebra the capture wrote, and the only thing that moves is which axes are
+loop variables and which are tensor axes. What the pass does owe is the summation order of the
+reduction it turns into an accumulation across iterations, which is why it declares the
+re-associating tier.</p>
+<p>The number is read three times. It decides <em>whether</em> to tile, since a program whose largest
+intermediate already fits is declined and left alone. It decides <em>which</em> axes and blocks, since
+the pass keeps the candidate the cost model predicts fastest among those that bring the
+footprint under the cap. And it decides <em>how deep</em>, since the chunk is the largest number of
+slices whose intermediates still fit.</p>
+<p>Zero disables the pass. A negative value, the default, derives the cap from the machine: an
+intermediate may take whatever <a class="reference internal" href="#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> leaves after every other tensor
+alive beside it. The caller’s tensors are alive throughout, an intermediate of the graph from
+its first writer to its last reader, and a tensor only a body that runs before or after the
+one being tiled uses is not alive beside it at all. In a program whose peak fits the budget,
+an intermediate also takes no more than <a class="reference internal" href="#cmdoption-einsums-graph-tiling-budget-share"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-budget-share</span></code></a> of the
+budget; in one over its budget, a loop may take all that the budget leaves. The pass
+therefore fires when the program would not fit and when one of its intermediates is over its
+share, and leaves every other program as captured, which is what makes it a member of the
+default pipeline. A positive value caps each intermediate on its own, for a caller who wants a
+smaller footprint than the machine allows.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-tiling-budget-share">
+<span class="sig-name descname"><span class="pre">--einsums:graph:tiling-budget-share</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;FRACTION&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-tiling-budget-share" title="Link to this definition">#</a></dt>
+<dd><p>Largest fraction of <a class="reference internal" href="#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> one intermediate may hold before
+<code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> streams it, in a program that fits the budget as well as in one that does not.</p>
+<p>Fitting is not the only reason to stream. An intermediate that takes a large part of the
+machine is written and read back at memory bandwidth, and the kernels around it work on panels
+far larger than they need, so a program that holds it whole can be slower than the same program
+streaming it in blocks. The share bounds the result as well as the trigger: a tiled region’s
+buffers, remainder loops included, are held to the same share together.</p>
+<p>The same share decides when <code class="docutils literal notranslate"><span class="pre">SlabStreaming</span></code> reads a backed tensor (one annotated with a
+backing, read from storage at every replay) a slab at a time instead of loading it whole, and
+bounds each slab it reads.</p>
+<p><code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> reads it only when <a class="reference internal" href="#cmdoption-einsums-graph-tiling-memory-cap"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-memory-cap</span></code></a> is derived, the
+default. A positive cap is the caller’s own bound and is taken as given. Zero or one turns the
+rule off, leaving the budget as the only bound.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-storage-byte-weight">
+<span class="sig-name descname"><span class="pre">--einsums:graph:storage-byte-weight</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;WEIGHT&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-storage-byte-weight" title="Link to this definition">#</a></dt>
+<dd><p>Bytes of memory traffic one byte moved to or from storage counts as, when <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> chooses
+the loop over a region that reads or writes a backed tensor (one annotated with a backing, held
+in storage rather than memory).</p>
+<p>The pass prices the bytes a loop moves at memory bandwidth beside its contractions’ time, and a
+byte that comes from a file costs more than one that comes from memory. The default of 20 is measured: on an M4 laptop memory
+reads at 66.6 GB/s and an <code class="docutils literal notranslate"><span class="pre">.etn</span></code> entry read from the drive at 3.26 GB/s. A file the page cache
+still holds reads at 16.6 GB/s there, a weight of 4; the default takes the drive’s figure,
+since a tensor is streamed because it does not fit, and a tensor that does not fit is not
+cached.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-storage-run-bytes">
+<span class="sig-name descname"><span class="pre">--einsums:graph:storage-run-bytes</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;BYTES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-storage-run-bytes" title="Link to this definition">#</a></dt>
+<dd><p>Bytes of memory traffic one contiguous run of storage costs beyond the bytes it moves, when
+<code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> chooses the loop over a region that reads or writes a backed tensor.</p>
+<p>A block of a stored tensor is one run when it covers every axis stored before its first partial
+one, and many short runs otherwise, each a system call. The default of 512 KiB is measured on
+the same machine: a short run read from the drive takes 8.1 microseconds, as long as reading
+about 512 KiB from memory. From the page cache it takes 0.3 microseconds, about 22 KiB.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-optimizer-budget">
+<span class="sig-name descname"><span class="pre">--einsums:graph:optimizer-budget</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;value&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-graph-optimizer-budget" title="Link to this definition">#</a></dt>
+<dd><p>Wall-clock allowance in milliseconds for each search pass. Zero means unlimited.</p>
+<p>A pass that exhausts its allowance keeps the best candidate it had found, applies it, and
+reports that it was cut off, so running out of time costs optimization rather than correctness
+or determinism. <code class="docutils literal notranslate"><span class="pre">PassManager.explain()</span></code> says which happened, because a report that could not
+tell “this graph was already optimal” from “I ran out of time on the first candidate” would be
+silent in exactly the case a budget exists for.</p>
+<p>The default is a starting point rather than a measurement, which is what an option is for.
+<code class="docutils literal notranslate"><span class="pre">PassManager::set_optimizer_budget</span></code> overrides it for one pipeline.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-profile-groups">
+<span class="sig-name descname"><span class="pre">--einsums:graph:profile-groups</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-graph-profile-groups" title="Link to this definition">#</a></dt>
+<dd><p>Break a grouped batched GEMM into one profiler zone per shape class.</p>
+<p>This deliberately changes how the contraction runs: it takes the slower unfused form, because a
+per-group breakdown of one parallel loop is not obtainable any other way. Read it for where the
+arithmetic is, not for what the node costs.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-graph-verify-levels">
+<span class="sig-name descname"><span class="pre">--einsums:graph:verify-levels</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-graph-verify-levels" title="Link to this definition">#</a></dt>
+<dd><p>Before each level-scheduled replay, check that no execution level holds two nodes touching
+overlapping storage.</p>
+<p>On by default in debug builds. This option is how a release build turns it on, which is what a
+nondeterministic result wants. It costs a second pass over every operand and can report a conflict
+it cannot disprove.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="hardware-profile">
+<h2>Hardware Profile<a class="headerlink" href="#hardware-profile" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-l1-cache-size">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:l1-cache-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;BYTES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-l1-cache-size" title="Link to this definition">#</a></dt>
+<dd><p>The L1 data cache size, in bytes, that einsums assumes in place of the detected one. Zero, the
+default, detects it.</p>
+<p>The cache sizes decide how the packed contraction engine blocks its operands, so a wrong value
+changes speed, never the result. Set the three cache sizes to compare blockings from one binary,
+or to model another machine’s caches on this one.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-l2-cache-size">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:l2-cache-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;BYTES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-l2-cache-size" title="Link to this definition">#</a></dt>
+<dd><p>The L2 cache size, in bytes, that einsums assumes in place of the detected one. Zero, the
+default, detects it. See <a class="reference internal" href="#cmdoption-einsums-hardware-l1-cache-size"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:hardware:l1-cache-size</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-l3-cache-size">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:l3-cache-size</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;BYTES&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-l3-cache-size" title="Link to this definition">#</a></dt>
+<dd><p>The L3 cache size, in bytes, that einsums assumes in place of the detected one. Zero, the
+default, detects it. See <a class="reference internal" href="#cmdoption-einsums-hardware-l1-cache-size"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:hardware:l1-cache-size</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-cache-dir">
+<span class="sig-name descname"><span class="pre">--einsums:cache-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PATH&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-cache-dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory where einsums looks for measurements kept between runs. Empty, the default, uses
+the platform’s cache location: an <code class="docutils literal notranslate"><span class="pre">einsums</span></code> directory under <code class="docutils literal notranslate"><span class="pre">%LOCALAPPDATA%</span></code> on Windows, and
+under <code class="docutils literal notranslate"><span class="pre">$XDG_CACHE_HOME</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.cache</span></code> elsewhere.</p>
+<p>Today that is this machine’s hardware profile, in <code class="docutils literal notranslate"><span class="pre">profiles/&lt;fingerprint&gt;.json</span></code>, see
+<a class="reference internal" href="#cmdoption-einsums-hardware-profile"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:hardware:profile</span></code></a>. Point this somewhere disposable to keep a test or a CI job
+from reading the machine’s own profile.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-profile">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:profile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PATH&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-profile" title="Link to this definition">#</a></dt>
+<dd><p>Use this hardware profile instead of searching for one.</p>
+<p>A hardware profile is one JSON file holding everything <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measured on a machine:
+the GEMM efficiency curve and bandwidths the cost model prices its candidates against
+(<code class="docutils literal notranslate"><span class="pre">ContractionPlanning</span></code>’s chain ordering, <code class="docutils literal notranslate"><span class="pre">GEMMBatching</span></code>’s profitability gate,
+<code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code>), the cost of an OpenMP parallel region at each team size, which sets when
+kernels go parallel, and tuned values of performance options, applied below the environment
+and the command line. Left empty, the default, einsums looks for this machine’s profile under
+<a class="reference internal" href="#cmdoption-einsums-cache-dir"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:cache-dir</span></code></a> and then under <a class="reference internal" href="#cmdoption-einsums-hardware-site-profiles"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:hardware:site-profiles</span></code></a>, by a
+fingerprint of the hardware, and uses the first that applies. Without one, the cost model comes
+from a table of known devices and the region cost is measured in each process.</p>
+<p>A file applies when it describes this machine, the BLAS in use, and an Einsums version that
+differs from this one at most in the patch number. A named file is used even when another
+machine measured it, with a warning, since naming a file says you mean it; another Einsums
+minor version or BLAS still makes it stale. A file that does not apply, or will not load, is
+reported at <a class="reference internal" href="#cmdoption-einsums-log-level"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:level</span></code></a> 3 or lower and never an error: the profile shapes
+which optimization is chosen, never whether the answer is right.</p>
+<p>Sharing a profile between machines of the same kind is copying this file.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-site-profiles">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:site-profiles</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;PATH&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-site-profiles" title="Link to this definition">#</a></dt>
+<dd><p>A directory of hardware profiles searched after the user’s own cache directory. Empty, the
+default, is the installation’s <code class="docutils literal notranslate"><span class="pre">share/einsums/profiles</span></code>.</p>
+<p>An administrator runs <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span> <span class="pre">--output</span></code> once per kind of node and installs the files
+here, and every user without a profile of their own gets the measured numbers. Files are named
+by the machine’s fingerprint, so one directory serves a cluster with several kinds of node.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-omp-region-cost-ns">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:omp-region-cost-ns</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;NS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-omp-region-cost-ns" title="Link to this definition">#</a></dt>
+<dd><p>Pin the cost of entering an OpenMP parallel region, in nanoseconds. Negative, the default, takes
+the hardware profile’s value when there is one and measures otherwise.</p>
+<p>The thresholds that decide whether a loop or a contraction is worth a team are derived from
+this cost. A pin holds them fixed across machines and runs without touching any file.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-omp-break-even-flops-per-ns">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:omp-break-even-flops-per-ns</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;RATE&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-omp-break-even-flops-per-ns" title="Link to this definition">#</a></dt>
+<dd><p>The rate that turns the cost of an OpenMP region into the work at which a contraction goes
+parallel: the threshold is the region cost in nanoseconds times this. A calibration, not a flop
+rate. The default, 12, landed on the measured optimum across two tiled CCSD residuals on an
+Apple M4 Pro; <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures it on the machine at hand, as the work at which a packed
+contraction on a team overtakes the same contraction on one thread, and writes it to the
+hardware profile. <a class="reference internal" href="#cmdoption-einsums-hardware-omp-min-parallel-flops"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:hardware:omp-min-parallel-flops</span></code></a> pins the threshold itself
+instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-omp-min-parallel-elements">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:omp-min-parallel-elements</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;N&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-omp-min-parallel-elements" title="Link to this definition">#</a></dt>
+<dd><p>Pin the element count at which an elementwise kernel opens a parallel region. Negative, the
+default, derives it from the region cost. Zero parallelizes every loop.</p>
+<p>This is for comparing thresholds from one binary, since rebuilds move timings for unrelated
+reasons. Any value gives the same results.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hardware-omp-min-parallel-flops">
+<span class="sig-name descname"><span class="pre">--einsums:hardware:omp-min-parallel-flops</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;N&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hardware-omp-min-parallel-flops" title="Link to this definition">#</a></dt>
+<dd><p>Pin the work, in flops, at which a contraction opens a parallel region. Negative, the default,
+derives it from the region cost. Zero parallelizes every contraction.</p>
+<p>This is for comparing thresholds from one binary, since rebuilds move timings for unrelated
+reasons. Any value gives the same results.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="gpu">
+<h2>GPU<a class="headerlink" href="#gpu" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-gpu-disable">
+<span class="sig-name descname"><span class="pre">--einsums:gpu:disable</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-gpu-disable" title="Link to this definition">#</a></dt>
+<dd><p>Keep every node on the host, making the GPU placement pass a no-op.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="hptt">
+<h2>HPTT<a class="headerlink" href="#hptt" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hptt-selection-method">
+<span class="sig-name descname"><span class="pre">--einsums:hptt:selection-method</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;METHOD&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hptt-selection-method" title="Link to this definition">#</a></dt>
+<dd><p>The plan selection method used by the tensor transpose backend: one of <code class="docutils literal notranslate"><span class="pre">estimate</span></code>, <code class="docutils literal notranslate"><span class="pre">measure</span></code>,
+<code class="docutils literal notranslate"><span class="pre">patient</span></code>, or <code class="docutils literal notranslate"><span class="pre">crazy</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">estimate</span></code>. The later methods spend more time choosing a
+plan in exchange for a faster transpose, which pays off when one plan is reused many times.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="tensor-storage">
+<h2>Tensor Storage<a class="headerlink" href="#tensor-storage" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-scratch-dir">
+<span class="sig-name descname"><span class="pre">--einsums:scratch-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;DIR&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-scratch-dir" title="Link to this definition">#</a></dt>
+<dd><p>The scratch directory for Einsums tensor files. Defaults to the system temporary directory.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-hdf5-file-name">
+<span class="sig-name descname"><span class="pre">--einsums:hdf5-file-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;filename&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-hdf5-file-name" title="Link to this definition">#</a></dt>
+<dd><p>The name of the HDF5 scratch file. The default carries the process id, so concurrent runs do not
+collide.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-delete-hdf5-files">
+<span class="sig-name descname"><span class="pre">--einsums:delete-hdf5-files</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-delete-hdf5-files" title="Link to this definition">#</a></dt>
+<dd><p>Clean up the HDF5 scratch file on exit. On by default; keep the file for inspection with
+<code class="docutils literal notranslate"><span class="pre">--einsums:no-delete-hdf5-files</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed to its positive spelling.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-tensor-huge-pages">
+<span class="sig-name descname"><span class="pre">--einsums:tensor:huge-pages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-tensor-huge-pages" title="Link to this definition">#</a></dt>
+<dd><p>Back large tensor buffers with transparent huge pages. Off by default. When set, on Linux, a
+tensor’s storage is advised with <code class="docutils literal notranslate"><span class="pre">madvise(MADV_HUGEPAGE)</span></code> before it is first touched, so buffers
+of a few megabytes or more fault in 2 MB pages instead of 4 KB ones; the option does nothing
+elsewhere, or when the kernel’s THP policy is <code class="docutils literal notranslate"><span class="pre">never</span></code>. It helps contractions whose inner walk
+through an operand spans many pages, which otherwise take a TLB miss on every step. It hurts
+operands whose strides are multiples of 32 KB or more: huge pages fix the low 21 address bits,
+so those strides alias on the same DRAM channel and cache sets that 4 KB page placement used to
+scatter. Measure before turning it on for a workload.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-row-major">
+<span class="sig-name descname"><span class="pre">--einsums:row-major</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-row-major" title="Link to this definition">#</a></dt>
+<dd><p>Construct tensors in row-major order rather than column-major.</p>
+<p>Off by default: Einsums tensors are column-major at construction, which is what the BLAS and LAPACK
+backends expect.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0: </span>The setting was read from the tensor constructors in earlier releases but no option ever set it.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="advanced-arguments">
+<h2>Advanced Arguments<a class="headerlink" href="#advanced-arguments" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-crash-handler">
+<span class="sig-name descname"><span class="pre">--einsums:debug:crash-handler</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-crash-handler" title="Link to this definition">#</a></dt>
+<dd><p>On Windows, install the crash handler that reports a fatal exception and writes a minidump. On
+by default; turn it off with <code class="docutils literal notranslate"><span class="pre">--einsums:debug:no-crash-handler</span></code>. Elsewhere it has no effect,
+and crashes are reported by the signal handlers.</p>
+<p>Deliberately separate from <a class="reference internal" href="#cmdoption-einsums-debug-install-signal-handlers"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:debug:install-signal-handlers</span></code></a>. On Windows the two
+are different mechanisms, since signals never see a memory fault there, so a Python process can
+keep its own faulthandler on the signals and still get a report out of a hard crash.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-crash-dump-dir">
+<span class="sig-name descname"><span class="pre">--einsums:debug:crash-dump-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;DIR&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-debug-crash-dump-dir" title="Link to this definition">#</a></dt>
+<dd><p>Directory for crash minidumps, on Windows. Empty, the default, means the working directory.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-install-signal-handlers">
+<span class="sig-name descname"><span class="pre">--einsums:debug:install-signal-handlers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-install-signal-handlers" title="Link to this definition">#</a></dt>
+<dd><p>Install Einsums’ custom signal handlers. On by default; turn them off with
+<code class="docutils literal notranslate"><span class="pre">--einsums:debug:no-install-signal-handlers</span></code>, which is what a host process that installs its own
+handlers wants.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed, and again later in the 2.0.0 cycle to its positive spelling.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-attach-debugger">
+<span class="sig-name descname"><span class="pre">--einsums:debug:attach-debugger</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-attach-debugger" title="Link to this definition">#</a></dt>
+<dd><p>Offer the chance to attach a debugger when an error is detected.</p>
+<p>Off by default, because the offer BLOCKS: a process that hits an error waits for a human who,
+in a test harness or a batch job, is not there. Turn it on with
+<code class="docutils literal notranslate"><span class="pre">--einsums:debug:attach-debugger</span></code> when you are at the keyboard and want the process held open
+at the point of failure.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed, and again later in the 2.0.0 cycle to its positive spelling.
+Its default has also changed from on to off.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-debug-diagnostics-on-terminate">
+<span class="sig-name descname"><span class="pre">--einsums:debug:diagnostics-on-terminate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-debug-diagnostics-on-terminate" title="Link to this definition">#</a></dt>
+<dd><p>Print extra diagnostics on termination. On by default; turn it off with
+<code class="docutils literal notranslate"><span class="pre">--einsums:debug:no-diagnostics-on-terminate</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.0.0: </span>This option’s name has been changed, and again later in the 2.0.0 cycle to its positive spelling.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="packedgemm">
+<h2>PackedGemm<a class="headerlink" href="#packedgemm" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-flatten-budget">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:flatten-budget</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;MIB&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-flatten-budget" title="Link to this definition">#</a></dt>
+<dd><p>Cap the temporary buffers the multi-K flatten route allocates, in MiB. Zero, the default, means
+no cap.</p>
+<p>A contraction that sums over several indices has to make one index of each operand contiguous
+before a single GEMM can span them, and the flatten route does that by transposing whole
+operands. On the largest case in the head-to-head suite that is 448 MiB, both sides, held in
+thread-local buffers that only ever grow. With a cap it transposes a chunk of the summed index
+at a time instead, and the contraction becomes a short chain of large GEMMs over buffers that
+fit the budget.</p>
+<p>Chunking is not free, which is why it is off unless asked for. It slices one summed index, and
+what that costs depends on where that index sits in each operand: the one whose slowest axis it
+is reads its chunk contiguously, while the one whose fastest axis it is reads a fraction of
+every cache line it touches. Both happen at once on the contraction above, where the cost
+against the uncapped route is about 4% in single precision and 2% in double at a 64 MiB budget,
+rising as the budget falls.</p>
+<p>Only contractions that reach this route are affected, which is a small minority: most take the
+packed loops instead, and those block their own buffers against the cache.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-complex-1m">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:complex-1m</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-complex-1m" title="Link to this definition">#</a></dt>
+<dd><p>Run complex contractions on x86 through the real vector tile kernel, using the 1m method. Off
+by default.</p>
+<p>The vector tile kernel exists only for real types. Without this flag a complex contraction that
+reaches the packed loops calls one vendor GEMM per cache block when its output must be
+scattered, and runs a portable complex tile otherwise. With it, both pack the complex operands
+into the expanded real form of the 1m method, and the real tile of the underlying type computes
+the complex result directly.</p>
+<p>Only the kernel changes. Which contractions reach the packed loops is decided exactly as before.
+The flag has no effect below x86-64-v2 or on other architectures, and the SME rung always uses
+the 1m method for complex types.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-cores-per-l3">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:cores-per-l3</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;N&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-cores-per-l3" title="Link to this definition">#</a></dt>
+<dd><p>The number of physical cores the packed engine assumes share one L3 cache. Zero, the default,
+detects it.</p>
+<p>On Linux the count is read from sysfs as the CPUs sharing CPU 0’s L3 divided by its SMT
+siblings. Where that cannot be read, macOS included, the engine assumes 1.</p>
+<p>The count decides whether a threaded contraction splits its threads into teams, one per L3, that
+each share a packed panel of the right-hand operand. A wrong value changes how the work is
+divided and how fast it runs, never the result. Set it when detection gets a machine wrong, or
+to model a particular part on another machine.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-c-temp-budget">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:c-temp-budget</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;KIB&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-c-temp-budget" title="Link to this definition">#</a></dt>
+<dd><p>The budget, in KiB, for the temporary block of the output that the block-GEMM strategy computes
+into before scattering it. Zero, the default, derives it as four times the L1 cache, and never
+less than 512 KiB.</p>
+<p>The budget bounds the blocks that strategy works in, so it trades memory against speed and never
+changes a result. It exists for sweeps.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-outer-product-floor">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:outer-product-floor</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ELEMENTS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-outer-product-floor" title="Link to this definition">#</a></dt>
+<dd><p>Output elements below which an outer product of rank three or more is left to the generic loop
+rather than the packed passes, whose fixed setup a small product does not repay. The default,
+768, was measured on an Apple M4, and where the generic loop stops winning moves with the
+machine and with that loop; <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures it and writes it to the hardware profile.
+From 4096 elements a matrix-shaped outer product takes the direct BLAS paths instead, so the
+floor matters only below that.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-outer-gemm-max">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:outer-gemm-max</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ELEMENTS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-outer-gemm-max" title="Link to this definition">#</a></dt>
+<dd><p>Output elements from which a contiguous outer product with a prefactor on its output takes
+<code class="docutils literal notranslate"><span class="pre">ger</span></code> and a separate scaling pass rather than a GEMM of inner extent one. <code class="docutils literal notranslate"><span class="pre">ger</span></code> has no
+beta, so the prefactor costs a pass over the output; the GEMM folds it in and wins until its
+blocking overhead outgrows that pass. Measured between 65k and 332k elements on an Apple M4,
+with a default of 131072; <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures it.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-stream-min-elems">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:stream-min-elems</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ELEMENTS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-stream-min-elems" title="Link to this definition">#</a></dt>
+<dd><p>Elements of the supplying operand below which a contraction shaped like a matrix-vector product
+whose axes do not form a matrix (the exchange <code class="docutils literal notranslate"><span class="pre">K(i,j)</span> <span class="pre">=</span> <span class="pre">A(i,k,j,l)</span> <span class="pre">B(k,l)</span></code>) is not streamed
+but left to the packed engine. Below the default, 4096, the call takes a few microseconds
+either way; <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> measures where the stream starts to win.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-stream-elems-per-thread">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:stream-elems-per-thread</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ELEMENTS&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-stream-elems-per-thread" title="Link to this definition">#</a></dt>
+<dd><p>Elements of the streamed operand each thread must have before the stream forks another. Below
+it the region’s fork and the per-thread buffers cost more than the elements they would share.
+The default, 65536, was measured on an Apple M4, where 16384 forked too early and was slower at
+every mid size. A matrix-vector product the vendor’s BLAS cannot thread is streamed from two
+threads’ worth. <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> picks the value closest to the best across a range of sizes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-packed-gemm-dump-plan">
+<span class="sig-name descname"><span class="pre">--einsums:packed-gemm:dump-plan</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-packed-gemm-dump-plan" title="Link to this definition">#</a></dt>
+<dd><p>Print the resolved plan and blocking of every packed contraction to standard error: the
+dimensions and strides of each operand group, the register and cache blocks, and how the result
+is written back. Off by default, and meant for diagnosis.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="simd">
+<h2>SIMD<a class="headerlink" href="#simd" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-simd-arch">
+<span class="sig-name descname"><span class="pre">--einsums:simd:arch</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;RUNG&gt;</span></span><a class="headerlink" href="#cmdoption-einsums-simd-arch" title="Link to this definition">#</a></dt>
+<dd><p>Cap the SIMD rung that runtime-dispatched kernels run at. Empty, the default, leaves the choice
+to Stripes, the SIMD library: its <code class="docutils literal notranslate"><span class="pre">STRIPES_ARCH</span></code> environment variable if set, and otherwise
+the highest rung the CPU and operating system support. Accepted rungs are <code class="docutils literal notranslate"><span class="pre">baseline</span></code>, <code class="docutils literal notranslate"><span class="pre">v2</span></code>, <code class="docutils literal notranslate"><span class="pre">v3</span></code>,
+<code class="docutils literal notranslate"><span class="pre">v4</span></code> and <code class="docutils literal notranslate"><span class="pre">sme</span></code>, and the aliases <code class="docutils literal notranslate"><span class="pre">sse2</span></code>, <code class="docutils literal notranslate"><span class="pre">sse4.2</span></code>, <code class="docutils literal notranslate"><span class="pre">avx2</span></code>, <code class="docutils literal notranslate"><span class="pre">avx512</span></code> and <code class="docutils literal notranslate"><span class="pre">sme2</span></code>.</p>
+<p>This can only lower the rung. A rung the machine cannot run is replaced, with a warning shown at
+<a class="reference internal" href="#cmdoption-einsums-log-level"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:level</span></code></a> 3 or lower, by the
+next one below it that it can, and a rung of another architecture is ignored. It is how a test
+runs every rung of a dispatch ladder on one machine.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="tensorio">
+<h2>TensorIO<a class="headerlink" href="#tensorio" title="Link to this heading">#</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-einsums-io-sync">
+<span class="sig-name descname"><span class="pre">--einsums:io:sync</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-einsums-io-sync" title="Link to this definition">#</a></dt>
+<dd><p>Sync an <code class="docutils literal notranslate"><span class="pre">.etn</span></code> file to disk before and after each commit rewrites its header. A commit puts
+new data and a new entry table where the file’s last commit does not reach and only then
+rewrites the header, so a process killed at any point leaves the file as its last commit left
+it whether or not this is on. With it on, the default, a power loss or a crash of the machine
+does too, at the cost of two syncs per commit. A commit happens when a handle closes or is
+flushed and at each copy, rename, swap, removal, restage or compaction of an entry.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.0.</span></p>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="python.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Einsums in Python</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="architecture.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Architecture Overview</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-options-reach">How Options Reach</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#environment-variables">Environment variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flags-and-their-negations">Flags and their negations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-arguments">Basic Arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging">Logging</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling">Profiling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computegraph-pass-options">ComputeGraph Pass Options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-profile">Hardware Profile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu">GPU</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hptt">HPTT</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-storage">Tensor Storage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-arguments">Advanced Arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packedgemm">PackedGemm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simd">SIMD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorio">TensorIO</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

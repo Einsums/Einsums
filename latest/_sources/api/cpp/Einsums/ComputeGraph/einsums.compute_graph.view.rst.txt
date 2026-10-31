@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.view:
+
+============================
+einsums::compute_graph::view
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T, size_t Rank, CoreBasicTensorConcept ParentT, typename... Axes> TensorView<T, Rank> & view(ParentT &parent, Axes &&... axes)
+
+   Record a non-owning slice of a tensor.
+
+   Records a ``OpKind::View`` node and returns a graph-owned slice that
+   downstream operations can consume. ``parent`` must outlive the graph.
+
+   :tparam T: Element type.
+   :tparam Rank: Rank of the resulting view (currently must match parent's rank).
+   :tparam ParentT: Parent tensor type (any ``CoreBasicTensorConcept`` value).
+   :tparam Axes: Pack of ``ViewAxis``. Use ``ViewAxis::full()`` and ``ViewAxis::range(lo, hi)`` to construct.
+   :param parent: The tensor being sliced.
+   :param axes: One ViewAxis per parent rank.
+   :returns: Reference to a graph-owned ``TensorView<T, Rank>`` that subsequent ``cg::*`` calls (einsum, gemm, …) can consume by value/reference.
+
+
+.. cpp:function:: template <CoreBasicTensorConcept ParentT, typename... Axes> requires HasCompileTimeRank<ParentT> TensorView<typename std::remove_cvref_t<ParentT>::ValueType, std::remove_cvref_t<ParentT>::Rank> & view(ParentT &parent, Axes &&... axes)
+
+   Type-deducing overload that infers ``T`` and ``Rank`` from ``parent``. The
+   codegen path emits this form so it doesn't have to spell out
+   ``view<typename T::ValueType, T::Rank>(...)`` boilerplate.

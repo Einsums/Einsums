@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ElementTransformDescriptor:
+
+==================================================
+einsums::compute_graph::ElementTransformDescriptor
+==================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ElementTransformDescriptor
+
+   Metadata for ``OpKind::ElementTransform`` nodes whose kernel is NAMED.
+
+   Applies the kernel registered under ``op_name`` to every element of the node's one output (also
+   its one input). Lambda overloads record the kind with no descriptor, which cannot be saved;
+   ``Graph::serializability_report`` names them.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::string op_name
+
+      Name of the kernel in the process's element-op registry.
+
+
+   .. cpp:member:: std::optional<double> param
+
+      The parameter of a parameterized kernel (e.g. a drop threshold). Empty means the default its
+      registration documents, so files without the field still read.

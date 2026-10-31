@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.measure_thread_efficiency:
+
+=================================================
+einsums::compute_graph::measure_thread_efficiency
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<EfficiencyCurve> measure_thread_efficiency(const DeviceProfile &profile, const ThreadSweepOptions &options)
+
+   Measure `e(w)` for every kernel family at every size class it is defined at, on this machine.
+
+   Size-class working sets come from ``profile's`` cache levels, so the sweep
+   measures the same boundaries ``DeviceProfile::size_class_for_bytes`` reads
+   back. Each cell is timed at every rung of ``width_rungs_for`` with the same
+   warmup-and-median discipline the rest of the calibration uses, and the point
+   is recorded as `t(1)/t(w)`.
+
+   Not every family is measured at every size class: a small-GEMM cell at a
+   streaming working set is not a small GEMM, and a large-GEMM cell that fits in
+   L1 is not a large one. Cells that are not measured resolve through the
+   nearest measured size class in the same family, and then through the default
+   curve.
+
+   Returns an empty vector when the machine has one thread, since every curve
+   would be the single point `s(1) = 1`.

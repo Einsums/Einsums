@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.HelpEntry:
+
+======================
+einsums::cl::HelpEntry
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: HelpEntry
+
+   One option's contribution to `--help`, before layout.
+
+   ``print_help`` owns the layout.
+
+
+   .. cpp:member:: std::string invocation
+
+      e.g. `--threads <N>`
+
+
+   .. cpp:member:: std::string shorts
+
+      e.g. `-t, -T`
+
+
+   .. cpp:member:: std::string description
+
+      The help text.
+
+
+   .. cpp:member:: std::vector<std::string> annotations
+
+      Trailing notes, e.g. `(default: 4)` and `[env: EINSUMS_THREADS]`. Each
+      is laid out as a unit so a variable name never breaks across lines.

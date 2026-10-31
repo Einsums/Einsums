@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sdot:
+
+===========================
+einsums::blas::vendor::sdot
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: float sdot(int_t n, const float *x, int_t incx, const float *y, int_t incy)
+
+   Compute the dot product between two vectors.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vectors.
+   :param x: The left vector.
+   :param incx: The skip value for the left vector. If it is negative, the vector is traversed backwards.
+   :param y: The right vector.
+   :param incy: The skip value for the right vector. If it is negative, the vector is traversed backwards.
+   :returns: The dot product between two vectors.

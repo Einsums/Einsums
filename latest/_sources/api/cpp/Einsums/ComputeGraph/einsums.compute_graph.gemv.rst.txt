@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.gemv:
+
+============================
+einsums::compute_graph::gemv
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <bool TransA, MatrixOperand AType, VectorOperand XType, VectorOperand YType, typename U> requires (SameUnderlying<AType, XType, YType> && std::convertible_to<U, typename AType::ValueType>) void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y)
+
+   Graph-aware GEMV: ``y = alpha * op(A) * z + beta * y``.
+
+   ``trans_a`` (Python kwarg, default ``False``) transposes A. A must be
+   rank 2 and z, y must be rank 1; a ``RankError`` is raised otherwise.
+
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType, RuntimeRankTensorConcept XType, RuntimeRankTensorConcept YType, typename U> requires (SameUnderlying<AType, XType, YType> && std::convertible_to<U, typename AType::ValueType>) void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y, linear_algebra::Transpose trans_a)
+
+   Graph-aware GEMV with a runtime ``Transpose`` op flag (N / T / C).
+
+   The companion of the bool ``trans_a`` overload above; adds conjugate-transpose
+   (``Transpose::C``) for complex A via the runtime-char ``linear_algebra::gemv``.
+   The bool overload still resolves ``trans_a=True/False``; pass
+   ``trans_a=Transpose.C`` to reach this one. Default ``Transpose::N``.

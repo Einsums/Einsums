@@ -1,0 +1,182 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SpaceRegistry:
+
+=====================================
+einsums::compute_graph::SpaceRegistry
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SpaceRegistry
+
+   Spaces, the relations declared between them, and the policy table keyed by their names.
+
+   **Declared versus derived**
+
+   A declaration is a fact the caller asserts and the registry stores. A query answers from the
+   closure of those facts, and NOTHING is inferred at declaration time:
+
+   - Scale order is stored as declared edges and queried through their transitive closure, so ``o`` < v and ``v`` < x answer ``o`` < x.
+   - Containment is stored as declared edges and queried through their transitive closure, extended with the reflexive case: a space is contained in itself.
+   - Disjointness is stored symmetrically as declared, and queries additionally derive it through containment on either side: if ``a`` is inside ``b`` and ``b`` is disjoint from ``c``, then ``a`` is disjoint from ``c``, and so is everything inside ``c``.
+
+   Containment does not imply scale order; declare it if wanted.
+
+   **Consistency**
+
+   An inconsistent declaration throws ``std::invalid_argument``, in either order: no space may lie
+   in two disjoint spaces, scale order may not cycle, and self-relations are rejected.
+
+   **Thread safety**
+
+   One mutex guards everything; not a hot path. References from ``space`` live as long as the registry.
+
+
+   .. cpp:function:: SpaceRegistry() = default
+
+      Construct an empty registry.
+
+
+   .. cpp:function:: SpaceRegistry(const SpaceRegistry &) = delete
+
+      The mutex makes a registry neither copyable nor movable. Pass it by reference.
+
+
+   .. cpp:function:: SpaceRegistry & operator=(const SpaceRegistry &) = delete
+
+   .. cpp:function:: SpaceId register_space(IndexSpace space)
+
+      Register a space, or recover the id of an identical one already registered.
+
+      Never overwrites. Callers meaning different spaces need separate registries
+      (``Graph::set_space_registry``).
+
+      :param space: The space to register. Its name must not be empty.
+      :throws std::invalid_argument: if the name is empty, or if a space of that name is already registered with different content. The message names every field the two declarations disagree on and both values, through ``describe_space_conflict``.
+      :returns: The id of the registered space.
+
+
+   .. cpp:function:: std::optional<SpaceId> find(std::string_view name) const
+
+      Look a space up by name.
+
+      :param name: The name to look for.
+      :returns: The id, or an empty optional when no space of that name is registered.
+
+
+   .. cpp:function:: const IndexSpace & space(SpaceId id) const
+
+      The space an id names.
+
+      :param id: The id to resolve. Must be valid and must come from this registry.
+      :throws std::invalid_argument: if the id is invalid or out of range.
+      :returns: The registered space. The reference stays valid for the life of the registry.
+
+
+   .. cpp:function:: std::string name_of(SpaceId id) const
+
+      The name an id resolves to, or the empty string when it names nothing.
+
+      The tolerant sibling of ``space``, for partial annotations whose unnamed axes hold invalid ids.
+
+      :param id: The id to resolve.
+      :returns: The registered space's name, or "" for an invalid or out-of-range id.
+
+
+   .. cpp:function:: std::size_t size() const
+
+      Number of registered spaces.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::vector<SpaceId> ids() const
+
+      Every registered id, in registration order.
+
+      :returns: The ids.
+
+
+   .. cpp:function:: void declare_less(SpaceId smaller, SpaceId larger)
+
+      Declare that the extent of ``smaller`` is below the extent of ``larger``.
+
+      :param smaller: The space with the smaller scale.
+      :param larger: The space with the larger scale.
+      :throws std::invalid_argument: if either id is invalid, if the two are the same space, or if the ordering would close a cycle with what is already declared.
+
+
+   .. cpp:function:: void declare_disjoint(SpaceId first, SpaceId second)
+
+      Declare that two spaces share no element.
+
+      :param first: One space.
+      :param second: The other space. The relation is symmetric.
+      :throws std::invalid_argument: if either id is invalid, if the two are the same space, or if some space is already known to sit inside both of them (which includes one of them sitting inside the other).
+
+
+   .. cpp:function:: void declare_contained(SpaceId inner, SpaceId outer)
+
+      Declare that every element of ``inner`` is an element of ``outer``.
+
+      :param inner: The contained space.
+      :param outer: The containing space.
+      :throws std::invalid_argument: if either id is invalid, if the two are the same space (self-containment is trivially true and asserting it signals a mistake), if the reverse containment is already declared, or if the containment would place some space inside two spaces declared disjoint.
+
+
+   .. cpp:function:: Tristate is_less(SpaceId smaller, SpaceId larger) const
+
+      Whether ``smaller`` has a smaller scale than ``larger``.
+
+      :param smaller: The candidate smaller space.
+      :param larger: The candidate larger space.
+      :throws std::invalid_argument: if either id is invalid.
+      :returns: Yes when the closure of the declared orderings puts ``smaller`` below ``larger``, No when it puts ``larger`` below ``smaller`` or the two are the same space, Unknown when no declared ordering relates them.
+
+
+   .. cpp:function:: Tristate is_disjoint(SpaceId first, SpaceId second) const
+
+      Whether two spaces share no element.
+
+      :param first: One space.
+      :param second: The other space.
+      :throws std::invalid_argument: if either id is invalid.
+      :returns: Yes when disjointness was declared for the pair or follows from containment on either side, No when the two are the same space or one is known to contain the other, Unknown otherwise.
+
+
+   .. cpp:function:: Tristate is_contained(SpaceId inner, SpaceId outer) const
+
+      Whether every element of ``inner`` is an element of ``outer``.
+
+      :param inner: The candidate contained space.
+      :param outer: The candidate containing space.
+      :throws std::invalid_argument: if either id is invalid.
+      :returns: Yes when the two are the same space or the closure of the declared containments relates them, No when ``outer`` is instead contained in ``inner`` or the two are known disjoint, Unknown otherwise.
+
+
+   .. cpp:function:: void set_policy(std::string_view name, SpacePolicy policy)
+
+      Attach machine policy to a space name.
+
+      :param name: The space name. It need not be registered: policy is configuration and may be set before the graph that names the space is built.
+      :param policy: The policy to store, replacing any previous entry.
+      :throws std::invalid_argument: if the name is empty.
+
+
+   .. cpp:function:: SpacePolicy policy(std::string_view name) const
+
+      The policy attached to a space name.
+
+      :param name: The space name.
+      :returns: The stored policy, or a default-constructed one (both hints undecided) when none was set.

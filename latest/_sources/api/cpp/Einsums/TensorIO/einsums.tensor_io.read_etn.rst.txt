@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.read_etn:
+
+============================
+einsums::tensor_io::read_etn
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/GraphIO.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> void read_etn(std::string file_path, std::string tensor_name, TensorType *output)
+
+   Read a tensor from a .etn file, graph-aware.
+
+   During graph capture, records a DiskRead node. Outside capture, reads immediately.
+   Works with IOPrefetch for async overlap when using DataflowExecutor.

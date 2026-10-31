@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ComparisonContext:
+
+=========================================
+einsums::compute_graph::ComparisonContext
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ComparisonContext
+
+   Everything ``compare`` is allowed to consult.
+
+   An aggregate on purpose, so a caller writes only the rungs it can feed.
+
+
+   .. cpp:member:: const SpaceRegistry *registry
+
+      Registry backing the scale-order and typical-extent rungs. Null disables both.
+
+
+   .. cpp:member:: ExtentLookup bound_extent
+
+      Per-variable bound extents for the third rung. Empty disables it. It is consulted only when
+      it resolves EVERY variable of both polynomials.
+
+
+   .. cpp:member:: double relative_tolerance
+
+      Relative tolerance below which two substituted values count as equal, which makes the numeric
+      rung indecisive rather than deciding. Two values are equal when the magnitude of their
+      difference is at most this tolerance times the largest of their two magnitudes and one.

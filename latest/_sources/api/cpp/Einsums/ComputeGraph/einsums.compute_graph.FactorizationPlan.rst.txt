@@ -1,0 +1,96 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.FactorizationPlan:
+
+=========================================
+einsums::compute_graph::FactorizationPlan
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Factorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: FactorizationPlan
+
+   A provider's offer for one tagged tensor.
+
+   .. seealso::
+
+      FactorizationProvider::propose
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string provider
+
+      Who proposed it, for the report and for ``ApproximationRecord::pass_name``.
+
+
+   .. cpp:member:: std::vector<std::string> tagged_letters
+
+      The tagged tensor's axes, in order, named in the provider's alphabet. Its length must
+      equal the tensor's rank.
+
+
+   .. cpp:member:: std::vector<FactorTensor> factors
+
+      The factors, at least two, whose letters taken together are ``tagged_letters`` plus
+      the new letters this provider introduces. Two or more of them may share a @ref
+      FactorTensor::name, and then they are ONE tensor mentioned several times, which is what
+      keeps a fit from being computed and stored once per mention.
+
+
+   .. cpp:member:: PrefactorScalar factor
+
+      A scalar on the product, for a provider whose identity carries one.
+
+
+   .. cpp:member:: ApproximationRecord accuracy
+
+      What the substitution costs in accuracy. ``ApproximationRecord::pass_name`` is filled
+      in by the pass; everything else is the provider's statement. A bound of exactly zero
+      is a provider claiming an EXACT factorization, and is recorded like any other so that
+      "this result is a Cholesky decomposition of the integrals" survives a save.
+
+
+   .. cpp:member:: std::function<void (Graph &, Graph &, const std::vector<TensorId> &)> emit_setup
+
+      Capture the fitting into a setup body.
+
+      Called with the PARENT graph, the body to capture into, and the ids of the created
+      factors in ``factors`` order. Under no capture guard: the callback opens its own,
+      exactly as any other code that captures does. Whatever it records runs once per bound
+      problem and is skipped by every replay after, which is the whole reason a factorization
+      is affordable at all.
+
+      The parent is passed because the factors are ITS tensors and a plan holds only their
+      ids; capture takes tensor references, so a callback writing into a factor has to reach
+      the object through the parent's handle for it, which carries the address. Handing over
+      the id alone would make the one thing every provider must do the one thing it cannot.
+
+      (Prose, not a call expression: a reference followed by a parameter list breaks the nitpicky docs build.)
+
+
+   .. cpp:member:: bool fits_from_tagged
+
+      Whether ``emit_setup`` reads the TAGGED tensor rather than some other tensor the
+      provider holds.
+
+      False for a fit of a fixed quantity: a density fit reads a three-index tensor the caller
+      handed the provider, and the tagged four-index tensor is only what the fit is claimed to
+      approximate. True for a fit OF the tagged tensor itself, which an amplitude fit is.
+
+      It is what decides whether a tagged tensor a loop body rewrites every iteration may be
+      factorized at all. A fit that does not read the tagged tensor is the same factors however
+      often the tensor moves, so substituting it for a moving tensor is simply wrong; a fit that
+      does read it can be re-fitted at each update, and the pass emits the fitting in the body
+      instead of once per bind. A provider that says nothing gets the fixed-quantity answer,
+      which declines rather than guesses.

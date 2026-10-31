@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NodeEffects:
+
+===================================
+einsums::compute_graph::NodeEffects
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NodeEffects
+
+   What a node does that its tensor lists do not show.
+
+   Hoisting, merging and dead-node elimination reason from a node's inputs and outputs. A
+   library operation declares every tensor it touches, so the defaults describe it. A
+   closure supplied by the caller can do anything: read a variable captured by reference,
+   read a loop parameter through the graph's ``ParamTable``, print, or write a file.
+   ``cg::custom`` therefore records ``opaque_effects`` unless the caller declares the
+   operation pure.
+
+
+   .. cpp:member:: bool deterministic
+
+      The outputs are a function of the inputs and the descriptor alone, so running the
+      node once in place of many, or once for two identical nodes, gives the same result.
+
+
+   .. cpp:member:: bool external_effects
+
+      The node acts outside its declared outputs, so it may not be removed when nothing
+      reads them. Such a node writes ``any_named_key``, and one that is not deterministic
+      reads it (see ``named_writes``).

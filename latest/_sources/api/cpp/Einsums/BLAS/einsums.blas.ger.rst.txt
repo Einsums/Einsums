@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.ger:
+
+==================
+einsums::blas::ger
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void ger(int_t m, int_t n, T alpha, const T *x, int_t inc_x, const T *y, int_t inc_y, T *a, int_t lda)
+
+   Performs a rank-1 update of a general matrix.
+
+   The ?ger routines perform a matrix-vector operator defined as
+
+   .. math::
+
+      \mathbf{A} := \alpha\mathbf{x}\mathbf{y}^T + \mathbf{A}
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param m: The number of entries in ``x``.
+   :param n: The number of entries in ``y``.
+   :param alpha: The scale factor for the outer product.
+   :param x: The left input vector.
+   :param inc_x: The skip value for the left input. May be negative to go in reverse.
+   :param y: The right input vector.
+   :param inc_y: The skip value for the right input. May be negative to go in reverse.
+   :param a: The output matrix.
+   :param lda: The leading dimension of ``a``.
+   :throws std::domain_error: If either of the dimension parameters are negative or the leading dimension of the matrix is less than the number of columns.
+   :throws std::invalid_argument: If either of the vector increments are zero.

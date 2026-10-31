@@ -1,0 +1,160 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EscapeAnalysis:
+
+======================================
+einsums::compute_graph::EscapeAnalysis
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EscapeAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EscapeAnalysis
+
+   Writers, readers and sub-graph reach for every tensor of one graph.
+
+   Built once per graph with ``EscapeAnalysis::over``, then queried. See the
+   file comment for what it is for and how long it stays valid.
+
+
+   .. cpp:function:: static EscapeAnalysis over(const Graph &graph)
+
+      Analyse ``graph``.
+
+      :param graph: The graph to walk. Must outlive the returned analysis, and must not have its node set changed while it is held.
+      :returns: The analysis.
+
+
+   .. cpp:function:: const Graph & graph() const
+
+      The graph this was built over.
+
+      :returns: The graph.
+
+
+   .. cpp:function:: int writer_count(TensorId id) const
+
+      How many nodes of THIS graph write a value into ``id's`` buffer.
+
+      Lifecycle nodes (Alloc, Free, Materialize, Initialize) do not count: they
+      list the tensor as an output without writing a value that could invalidate
+      anything inferred about it, and a freshly created or zeroed tensor is then
+      filled by exactly one real op. Descendant sub-graphs are not counted here;
+      see ``subtree_writer_count``.
+
+      A ``View`` node DOES count, and that is a known conservatism rather than an
+      oversight. It lists its slice as an output, which resolves onto the
+      parent's buffer, so a tensor with two views of it reports three writers
+      where a person would say one. The effect is to decline: a symmetry tag is
+      not applied, a hoist is refused. Both passes this component was factored
+      out of already behaved this way, and the factoring's job was to keep their
+      behaviour rather than to improve it in the same step, so changing it is a
+      separate change with its own numeric tests.
+
+      :param id: The tensor. Resolved through its alias chain first.
+      :returns: The count, zero for a tensor nothing writes.
+
+
+   .. cpp:function:: int subtree_writer_count(TensorId id) const
+
+      How many nodes write a value into ``id's`` buffer, in this graph and every descendant sub-graph.
+
+      Keyed by the underlying tensor POINTER, which is what stays stable across
+      graphs: a loop body has its own tensor table and its own ids for the same
+      buffers. A tensor with no pointer (a deferred shell whose storage is not
+      attached yet) is not counted, which makes the answer conservative in the
+      direction that declines.
+
+      :param id: The tensor. Resolved through its alias chain first.
+      :returns: The count.
+
+
+   .. cpp:function:: bool touched_by_subtree(TensorId id) const
+
+      Does any descendant sub-graph reference ``id's`` buffer at all?
+
+      A ``Loop`` node does not list its body's writes, so a tensor a body touches
+      looks untouched from the parent's node list. Anything that reasons from
+      that list has to ask this before concluding it knows every access.
+
+      :param id: The tensor.
+      :returns: True when a descendant references the buffer, and true for a tensor with no pointer to compare (nothing can be proved about it).
+
+
+   .. cpp:function:: bool subtree_refs_unresolved() const
+
+      Whether some sub-graph reference could not be resolved to a pointer.
+
+      ``touched_by_subtree`` answers from a set of pointers collected out of the
+      sub-graphs. A reference the sub-graph's own map cannot resolve, or one whose
+      handle is an unattached shell, contributes no pointer, so it comes back
+      "untouched" and is indistinguishable from a tensor no body mentions.
+
+      A caller that only loses a rewrite by believing "untouched" can ignore this.
+      A caller that would let two live buffers share storage must not: it should
+      treat a true here as "cannot prove anything about this subtree" and decline.
+
+
+   .. cpp:function:: bool stable(TensorId id) const
+
+      Exactly one value-writer here, and no descendant touches it.
+
+      The soundness guard `SymmetryPropagation` needs, in one call: an inferred
+      property of a tensor stays true only while nothing else can write it.
+
+      :param id: The tensor.
+      :returns: True when the tensor's contents are settled by one node of this graph.
+
+
+   .. cpp:function:: Escape classify(TensorId id, const std::unordered_set<NodeId> &region) const
+
+      Can ``id`` be dissolved into a rewrite of ``region``, and if not, why?
+
+      Checks run in a fixed order so a tensor failing
+      two of them always reports the first:
+
+      1. Does the graph know it? Otherwise ``Escape::Unknown``.
+      2. Is it an intermediate? Otherwise ``Escape::UserOwned``.
+      3. Is any tensor over the same buffer user-owned? ``Escape::AliasedFromOutside``.
+      4. Does a node outside the region write a VALUE into the buffer? ``Escape::WrittenOutside``.
+      5. Does a node outside the region read its value? ``Escape::ReadOutside``.
+      6. Does a descendant sub-graph touch it? ``Escape::TouchedBySubgraph``.
+
+      Writes are checked before reads deliberately. Both decline, but the two
+      call for different responses from whoever reads the tally: an outside
+      writer means the region does not own the value at all, while an outside
+      reader often means the region simply needs to grow.
+
+      Lifecycle mentions do NOT count on either side. `create_*` and `declare_*`
+      put an Alloc ahead of the first real write, Alloc is not raisable and so is
+      never inside a region, and counting its mention would make every
+      graph-owned intermediate undissolvable - which is every intermediate a
+      rewrite exists to dissolve. The caller carries the consequence: dissolving
+      an intermediate leaves its Alloc and Free naming a tensor nothing writes
+      any more, which is dead rather than wrong and is what
+      `DeadNodeElimination` is for.
+
+      :param id: The tensor to classify.
+      :param region: The node ids the rewrite covers.
+      :returns: The verdict.
+
+
+   .. cpp:function:: std::vector<TensorId> aliases_of(TensorId id) const
+
+      Every tensor id of this graph that resolves to the same buffer as ``id``.
+
+      Includes ``id`` itself. This is the set a buffer question has to range over:
+      asking about one view and not its siblings is how a region convinces itself
+      a buffer is private while a sibling view of it is read three nodes later.
+
+      :param id: The tensor.
+      :returns: The ids sharing its buffer, sorted so the result does not vary between runs.

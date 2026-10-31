@@ -1,0 +1,53 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.einsum_python:
+
+=====================================
+einsums::compute_graph::einsum_python
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType> requires (std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>) void einsum_python(const std::string &spec, CType *C, const AType &A, const BType &B, typename CType::ValueType c_pf, typename AType::ValueType ab_pf, bool conj_a, bool conj_b)
+
+   Graph-aware einsum: contract A and B according to ``spec``.
+
+   ``spec`` is a string of the form ``"<output> <- <a> ; <b>"``; e.g.
+   ``"ij <- ik ; kj"`` (matrix multiply), ``"i <- ij ; j"`` (matrix-
+   vector), ``" <- i ; i"`` (dot product). ``c_pf`` and ``ab_pf``
+   default to 0 and 1, giving ``C = A op B``, but can be set to
+   accumulate (``c_pf=1``) or scale.
+
+   Complex prefactors are fully supported for complex dtypes:
+   the einsum node's live params and its descriptor store PrefactorScalar (a
+   variant covering float/double/complex<float>/complex<double>), so a
+   complex ``c_pf``/``ab_pf`` round-trips through capture and replay
+   without narrowing.
+
+   ``conj_a`` / ``conj_b`` conjugate A / B inside the contraction for complex
+   dtypes, and are a no-op for real. They conjugate only the elements. A
+   conjugate-transpose is the conj flag combined with transposed index placement
+   in the spec, just like any transpose in einsum. To compute ``C = A^H @ B``,
+   store A as ``(k, i)`` so its row index k is the one contracted:
+
+   .. code-block:: text
+
+      // (A^H @ B)[i,j] = sum_k conj(A[k,i]) * B[k,j]
+      einsum("ij <- ki ; kj", C, A, B, conj_a=True);   // A^H @ B
+      einsum("ij <- ik ; jk", C, A, B, conj_b=True);   // A @ B^H
+      einsum("ij <- ik ; kj", C, A, B, conj_a=True);   // conj(A) @ B  (no transpose)
+
+   Equivalently, wrap an operand in ``conj(...)`` directly in the spec; it ORs
+   with the kwargs, so ``einsum("ij <- conj(ki) ; kj", C, A, B)`` is also A^H @ B.
+   Native for GEMM-shaped contractions via PackedGemm, with no operand copy. The
+   generic loop conjugates per element otherwise. Not supported for tiled operands.

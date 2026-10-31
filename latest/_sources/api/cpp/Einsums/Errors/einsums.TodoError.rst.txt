@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TodoError:
+
+==================
+einsums::TodoError
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: TodoError : public std::logic_error
+
+   Indicates that a certain code path is not yet finished.
+
+   This exception, along with
+   NotImplemented , indicates that the action you requested is not yet implemented. If you get
+   this error, come tell us `on our issue tracker <https://github.com/Einsums/Einsums/issues>`_
+   or `our Discord server <https://discord.gg/8GvtkyWZUv>`_, and we will try to focus some energy
+   to filling it out. If you are an experienced C++ programmer, we would appreciate your
+   assistance if you think you have a solution.
+
+   .. versionadded:: 1.0.0

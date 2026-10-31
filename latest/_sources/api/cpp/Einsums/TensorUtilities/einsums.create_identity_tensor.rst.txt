@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_identity_tensor:
+
+===============================
+einsums::create_identity_tensor
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/CreateIdentity.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T = double, typename... MultiIndex> Tensor<T, sizeof...(MultiIndex)> create_identity_tensor(const std::string &name, MultiIndex... index)
+
+   Create a new tensor with ``name`` and ``index`` with ones on the diagonal. Defaults to using double for the underlying data and automatically determines the rank of the tensor from ``index`` .
+
+   A ``name`` is required for the tensor. ``name`` is used when printing and performing disk operations.
+
+   .. code-block:: text
+
+      auto a = create_identity_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+      auto b = create_identity_tensor<float>("b", 4, 5, 6); // auto -> Tensor<float, 3>
+
+      // Ones sit where every index agrees, so the diagonal is as long as the shortest axis.
+      auto c = create_identity_tensor("c", 6, 3);          // ones at (0,0), (1,1), (2,2)
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The datatype of the underlying tensor. Defaults to double.
+   :tparam MultiIndex: The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+   :param name: The name of the new tensor.
+   :param index: The arguments needed to construct the tensor.
+   :returns: A new tensor filled with random data
+
+
+.. cpp:function:: template <typename T = double> RuntimeTensor<T> create_identity_tensor(const std::string &name, const std::vector<size_t> &dims)
+
+   Create a runtime-rank identity tensor from a runtime shape vector.
+
+   The runtime-rank form. The diagonal is as long as the shortest axis.
+
+   .. code-block:: text
+
+      auto a = create_identity_tensor<double>("a", {3, 3});     // 3x3 identity
+      auto b = create_identity_tensor<double>("b", {6, 3});     // ones at (0,0), (1,1), (2,2)
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The datatype of the underlying tensor. Defaults to double.
+   :param name: The name of the new tensor.
+   :param dims: The extent of each dimension.
+   :returns: A new tensor with ones along its diagonal and zeros elsewhere.

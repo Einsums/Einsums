@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.RangeBetween:
+
+=========================
+einsums::cl::RangeBetween
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Source.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: template <std::integral T> constexpr Range RangeBetween(T min_v, T max_v)
+
+   Bounds for an integral option, e.g. `RangeBetween(1, 256)`.
+
+
+.. cpp:function:: template <std::floating_point T> constexpr Range RangeBetween(T min_v, T max_v)
+
+   Bounds for a floating point option, e.g. `RangeBetween(0.0, 1.0)`.

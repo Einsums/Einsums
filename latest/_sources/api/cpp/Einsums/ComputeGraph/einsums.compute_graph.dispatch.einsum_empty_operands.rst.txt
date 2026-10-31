@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.einsum_empty_operands:
+
+=======================================================
+einsums::compute_graph::dispatch::einsum_empty_operands
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename CType, typename AType, typename BType> bool einsum_empty_operands(typename CType::ValueType c_pf, CType *C, const AType &A, const BType &B)
+
+   Zero-extent operands: nothing to contract, but BLAS-style semantics still apply the output
+   prefactor. An empty C is a pure no-op; an empty input with a non-empty C (zero-extent link or
+   trace letter) means C = c_pf * C, with c_pf == 0 assigning zero rather than multiplying so stale
+   NaNs never survive. Handled once, before any kernel, so no fast path (BLAS wrappers, PackedGemm
+   tiling, generic loop) needs its own empty-tensor bookkeeping. Returns true when it handled the
+   call.

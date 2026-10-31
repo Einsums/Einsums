@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.LetterVars:
+
+==================================
+einsums::compute_graph::LetterVars
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: LetterVars
+
+   Resolves an index letter of one contraction to the variable standing for its extent.
+
+   Built from a node's ``EinsumDescriptor::letter_spaces``, which is the per-node resolution of
+   letters to spaces, and which is partial or empty for a partially annotated or unannotated program.
+   An annotated letter yields its space variable; any other letter yields
+   ``SymbolicVar::anonymous`` of the letter itself, with the scoping documented on ``SymbolicVar``.
+
+
+   .. cpp:function:: LetterVars() = default
+
+      Construct a lookup that annotates nothing, so every letter is anonymous.
+
+
+   .. cpp:function:: explicit LetterVars(const std::vector<std::pair<std::string, SpaceId>> &letter_spaces)
+
+      Construct from a node's letter-to-space map.
+
+      :param letter_spaces: The map, in any order. Stored sorted by letter, so lookup is a binary search and the result does not depend on the input order.
+
+
+   .. cpp:function:: SymbolicVar var_for(std::string_view letter) const
+
+      The variable standing for one letter's extent.
+
+      :param letter: The index letter.
+      :returns: The letter's space variable when it is annotated, its anonymous variable otherwise.
+
+
+   .. cpp:function:: std::size_t annotated_count() const noexcept
+
+      How many letters carry an annotation.
+
+      :returns: The number of annotated letters.

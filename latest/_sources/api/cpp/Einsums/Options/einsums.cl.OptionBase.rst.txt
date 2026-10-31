@@ -1,0 +1,98 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.OptionBase:
+
+=======================
+einsums::cl::OptionBase
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: OptionBase
+
+   The behaviour every option shares, whatever its value type.
+
+   Names, help, grouping, and what a parse leaves (occurrences, the value's ``Source``). Derived
+   types hold the value and parse tokens. Registers itself for its lifetime.
+
+
+   .. cpp:function:: OptionBase(std::string_view longName, std::initializer_list<char> shorts, std::string_view helpText, OptionCategory *cat)
+
+   .. cpp:function:: OptionBase(std::string_view positional_name, Positional, std::string_view helpText)
+
+   .. cpp:function:: OptionBase(const OptionBase &) = delete
+
+   .. cpp:function:: OptionBase & operator=(const OptionBase &) = delete
+
+   .. cpp:function:: virtual ~OptionBase()
+
+   .. cpp:function:: virtual bool parse_token(std::string_view key, std::optional<std::string_view> val, std::string &error, Source src) = 0
+
+   .. cpp:function:: virtual HelpEntry help_entry() const = 0
+
+   .. cpp:function:: virtual bool validate(std::string &error) const
+
+   .. cpp:function:: virtual void finalize_default()
+
+   .. cpp:function:: virtual void reset()
+
+      Forget everything a previous parse recorded.
+
+      So a second ``parse`` in one process starts clean.
+
+
+   .. cpp:function:: bool was_specified() const noexcept
+
+      True when something other than the programmer's default supplied the value.
+
+
+   .. cpp:function:: virtual std::string effective_env_name() const
+
+      The environment variable this option reads, or empty for none.
+
+      Resolved lazily, as the prefix policy is usually set after options are declared.
+
+
+   .. cpp:member:: std::string long_name
+
+   .. cpp:member:: std::vector<char> short_names
+
+   .. cpp:member:: std::string help
+
+   .. cpp:member:: OptionCategory *category
+
+   .. cpp:member:: ExclusiveCategory *exclusions
+
+   .. cpp:member:: Visibility visibility
+
+   .. cpp:member:: Occurrence occurrence
+
+   .. cpp:member:: ValueExpected value_expected
+
+   .. cpp:member:: bool is_positional
+
+   .. cpp:member:: Source value_source
+
+   .. cpp:member:: int occurrences
+
+   .. cpp:member:: std::string env_name
+
+      Explicit environment variable name from Env(...); empty if unset.
+
+
+   .. cpp:member:: bool env_opt_out
+
+      True when NoEnv was passed, which suppresses derivation from the prefix.
+
+
+   .. cpp:member:: std::function<void ()> on_seen

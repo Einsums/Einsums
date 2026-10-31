@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TransferDescriptor:
+
+==========================================
+einsums::compute_graph::TransferDescriptor
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TransferDescriptor
+
+   Metadata for GPU memory transfer nodes (HostToDevice / DeviceToHost).
+
+   Inserted by TransferInsertion and pruned by TransferElimination.
+   The executor lambda performs the actual gpu::memcpy_* call.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: TensorId tensor_id
+
+      Which tensor is being transferred
+
+
+   .. cpp:member:: size_t size_bytes
+
+      Number of bytes to transfer

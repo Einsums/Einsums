@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.swap_entries:
+
+================================
+einsums::tensor_io::swap_entries
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void swap_entries(std::string path, std::string first, std::string second)
+
+   Exchange the names of the entries ``first`` and ``second`` of ``path``.
+
+   Only the file's entry table changes. A program that reads one entry and writes the next value
+   beside it swaps the two after each step, so the same entry always holds the current value and
+   one graph serves every step. See ``TensorFile::swap``.
+
+   .. versionadded:: 2.0.0
+
+   :throws std::runtime_error: when the file or either entry is missing.

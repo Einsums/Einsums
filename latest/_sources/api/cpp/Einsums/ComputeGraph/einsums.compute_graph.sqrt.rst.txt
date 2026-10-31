@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.sqrt:
+
+============================
+einsums::compute_graph::sqrt
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> void sqrt(ResultType *out, const AType &A)
+
+   Graph-aware element-wise square root: ``out := sqrt(A)``.
+
+   Distinct from ``pow``, which is a MATRIX power computed by
+   eigendecomposition (that is what its cutoff argument discards) and is a
+   returning form that rejects capture. This is the element-wise partner to
+   ``abs``, and the two together are what a numerical `sqrt(abs(X))` needs
+   without dropping to the host between them.
+
+   Real dtypes only: the square root of a negative real is where a caller
+   wants to decide, not have the library pick a branch. Negative inputs throw.

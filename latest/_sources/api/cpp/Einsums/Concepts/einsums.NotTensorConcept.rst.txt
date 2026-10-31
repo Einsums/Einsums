@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.NotTensorConcept:
+
+=========================
+einsums::NotTensorConcept
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D> NotTensorConcept
+
+   Tests whether the given type is a tensor or not.
+
+   Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The type to check.

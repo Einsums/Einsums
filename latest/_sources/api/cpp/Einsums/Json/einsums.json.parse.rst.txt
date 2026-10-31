@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.parse:
+
+====================
+einsums::json::parse
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:function:: expected<Value, ParseError> parse(std::string_view text, ParseOptions options)
+
+   Parse ``text`` as a strict JSON document.
+
+   Strict means: no comments, no trailing commas, no unquoted keys, no
+   duplicate keys, no ``NaN``/``Infinity`` literals, no leading ``+``, no
+   leading zeros, no unescaped control characters, no lone surrogates, and no
+   trailing content after the top-level value. Every one of those is a place a
+   lenient reader would guess, and guessing is what this model exists to stop.
+
+   A number is ``Value::Type::Int`` when it is written with no fraction and no
+   exponent AND fits in ``std::int64_t``; one that is written as an integer but
+   does not fit is an error rather than a silent widening to double.
+
+   .. versionadded:: 2.0.0
+
+   :param text: The whole document.
+   :param options: Depth limit; see ``ParseOptions``.
+   :returns: The value, or the first error with its position.

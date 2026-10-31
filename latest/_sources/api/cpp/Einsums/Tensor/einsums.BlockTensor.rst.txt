@@ -1,0 +1,121 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.BlockTensor:
+
+====================
+einsums::BlockTensor
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/BlockTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t Rank> BlockTensor : public tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, public tensor_base::CoreTensor
+
+   Represents a block-diagonal tensor in core memory.
+
+   The blocks are square and lie along the main diagonal. The rank must be at least 2, since rank-1 and rank-0
+   tensors do not have diagonals.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type of data stored in the tensor.
+   :tparam Rank: The rank of the tensor.
+
+
+   .. cpp:function:: BlockTensor() = default
+
+      Construct a new BlockTensor object. Default constructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: BlockTensor(const BlockTensor<T, Rank> &) = default
+
+      Construct a new BlockTensor object. Default copy constructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <typename... Dims> explicit BlockTensor(std::string name, Dims... block_dims)
+
+      Construct a new BlockTensor object with the given name and dimensions.
+
+      Constructs a new BlockTensor object using the information provided in ``name`` and ``block_dims`` .
+
+      .. code-block:: text
+
+         // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+         auto A = BlockTensor<double, 4>("A", 2, 3);
+
+      The newly constructed BlockTensor is NOT zeroed out for you. If you start having NaN issues
+      in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+
+      .. versionadded:: 1.0.0
+
+      :tparam Dims: Variadic template arguments for the dimensions. Must be castable to size_t.
+      :param name: Name of the new tensor.
+      :param block_dims: The size of each block.
+
+
+   .. cpp:function:: template <typename ArrayArg> explicit BlockTensor(std::string name, const ArrayArg &block_dims)
+
+      Construct a new BlockTensor object with the given name and dimensions.
+
+      Constructs a new BlockTensor object using the information provided in ``name`` and ``block_dims`` .
+
+      .. code-block:: text
+
+         // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+         auto A = BlockTensor<double, 4>("A", std::array<int, 2>{2, 3});
+
+      The newly constructed BlockTensor is NOT zeroed out for you. If you start having NaN issues
+      in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+
+      .. versionadded:: 1.0.0
+
+      :tparam ArrayArg: A container type that stores the block sizes. For instance, std::array or einsums::Dim.
+      :param name: Name of the new tensor.
+      :param block_dims: The size of each block.
+
+
+   .. cpp:function:: template <size_t Dims> explicit BlockTensor(Dim<Dims> block_dims)
+
+      Construct a new BlockTensor object using the dimensions given by Dim object.
+
+      .. versionadded:: 1.0.0
+
+      :param block_dims: The dimensions of the new tensor in Dim form.
+
+
+   .. cpp:function:: ~BlockTensor() = default
+
+      Destroy the BlockTensor object.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: operator TiledTensorView<T, Rank>()
+
+      Convert the block tensor into a tiled tensor view.
+
+      .. versionadded:: 1.1.0
+
+      :returns: A tiled tensor view whose diagonal blocks view the blocks of this tensor.
+
+
+   .. cpp:function:: operator const TiledTensorView<T, Rank>() const &
+
+      Convert the block tensor into a tiled tensor view.
+
+      .. versionadded:: 1.1.0
+
+      :returns: A tiled tensor view whose diagonal blocks view the blocks of this tensor.

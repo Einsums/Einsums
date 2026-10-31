@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Detail/CommonTensorTypes.hpp``.
+
+.. c:macro:: EINSUMS_CG_COMMON_TENSOR_TYPES_FOR(X, T)
+
+   The tensor types the library precompiles ComputeGraph's per-tensor-type
+   templates for: dense tensors and views of rank 1 to 4 and the runtime-rank
+   tensor and view, over the four element types. Each header that declares such a
+   template ``extern`` for these types, and the source that instantiates it, applies
+   ``X`` to each type through this one list, so the two cannot drift apart. Any other
+   type instantiates the template where it is used.
+
+
+.. c:macro:: EINSUMS_CG_ELEMENT_TYPES(X)
+
+   The element types the library precompiles ComputeGraph's per-element-type
+   templates for, such as ``Graph``'s tensor factories. ``X`` is applied to each.
+
+
+.. c:macro:: EINSUMS_CG_REAL_ELEMENT_TYPES(X)
+
+   The real element types, for the operations that have no complex form (sqrt, max, the sandwich
+   kernels). ``X`` is applied to each.

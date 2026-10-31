@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.ssyr2k:
+
+=============================
+einsums::blas::vendor::ssyr2k
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void ssyr2k(char uplo, char trans, int_t n, int_t k, float alpha, const float *a, int_t lda, const float *b, int_t ldb, float beta, float *c, int_t ldc)
+
+   Symmetric rank-2k update: C := alpha*A*B^T + alpha*B*A^T + beta*C.

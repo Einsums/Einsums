@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.pool_zeros:
+
+===================
+einsums::pool_zeros
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/PooledTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename Alloc = std::allocator<T>> GeneralRuntimeTensor<T, Alloc> pool_zeros(MemoryPool &pool, std::string name, const std::vector<size_t> &dims)
+
+   Runtime-rank tensor carved from ``pool`` and zeroed.
+
+   .. versionadded:: 2.0.0

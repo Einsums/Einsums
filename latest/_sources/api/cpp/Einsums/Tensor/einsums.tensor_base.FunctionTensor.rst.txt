@@ -1,0 +1,156 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_base.FunctionTensor:
+
+====================================
+einsums::tensor_base::FunctionTensor
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/FunctionTensor.hpp``.
+
+.. cpp:namespace:: einsums::tensor_base
+
+.. cpp:class:: template <typename T, size_t rank> FunctionTensor : public CoreTensor
+
+   Optional base class for function tensors. This class provides some useful functionality.
+
+   A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to
+   call a function. An example of this might be the Kronecker delta, which has such simple structure that creating
+   a whole new tensor object for it would be wasteful. This class does not define all function tensors. Instead,
+   it provides some useful behavior so that users can create their own with minimal effort. The only thing that
+   is required of function tensors is that they follow TensorConcept and they provide a function call operator
+   that can take as many arguments as the rank of the tensor. This does mean that other tensor classes, like
+   Tensor and BlockTensor, are also function tensors, though they do not inherit this class.
+
+
+   .. cpp:function:: template <typename... Args> requires ((!std::is_same_v<Args, Dim<Rank>> || ...) && sizeof...(Args) == Rank) FunctionTensor(std::string name, Args... dims)
+
+      Create a new function tensor with the given name and dimensions.
+
+      :param name: The name of the tensor.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: FunctionTensor(std::string name, Dim<Rank> dims)
+
+      Create a new function tensor with the given name and dimensions.
+
+      :param name: The name of the tensor.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: FunctionTensor(Dim<Rank> dims)
+
+      Create a new function tensor with the given dimensions.
+
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: virtual ~FunctionTensor() = default
+
+   .. cpp:function:: virtual T call(const std::array<ptrdiff_t, Rank> &inds) const = 0
+
+      Call the function.
+
+      This is the method that should be overloaded in child classes to perform the actual
+      function call. Due to the inability to override methods with variable parameters,
+      this method with a set input type is the workaround.
+
+      :param inds: The index for the function.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires ((sizeof...(MultiIndex) == Rank) && (std::is_integral_v<MultiIndex> && ...)) T operator()(MultiIndex... inds) const
+
+      Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+
+      :param inds: The index to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires ((sizeof...(MultiIndex) == Rank) && (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...)) T subscript(MultiIndex... inds) const
+
+      Subscript into the function tensor without checking for negative indices or bounds.
+
+      :param inds: The index to use for the subscript.
+
+
+   .. cpp:function:: template <typename int_type> requires ((std::is_integral_v<int_type>)) T subscript(const std::array<int_type, Rank> &inds) const
+
+      Subscript into the function tensor without checking for negative indices or bounds.
+
+      :param inds: The index to use for the subscript.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::is_integral_v<Storage> && !std::is_same_v<Storage, AllT> && !std::is_same_v<Storage, Range> && !std::is_same_v<Storage, std::array<int, Rank>>) T operator()(const Storage &inds) const
+
+      Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+
+      :param inds: The index to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires ((sizeof...(MultiIndex) == Rank) && (AtLeastOneOfType<AllT, MultiIndex...>) && (NoneOfType<std::array<int, Rank>, MultiIndex...>)) FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> operator()(MultiIndex... inds) const
+
+      Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+
+      Creates a view when one of the indices is All.
+
+      :param inds: The index to use for the subscript.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires NumOfType<Range, Rank, MultiIndex...> FunctionTensorView<T, Rank, Rank> operator()(MultiIndex... index) const
+
+      Subscript into the function tensor, wrapping negative indices and performing bounds checks.
+
+      Creates a view based on the indices, which can be ranges or single values.
+
+      :param index: The index to use for the subscript.
+
+
+   .. cpp:function:: virtual Dim<Rank> dims() const
+
+      Get the dimensions of the tensor.
+
+
+   .. cpp:function:: virtual size_t dim(int d) const
+
+      Get the dimension of the tensor along a given axis.
+
+      :param d: The axis to query.
+
+
+   .. cpp:function:: virtual const std::string & name() const
+
+      Get the name of the tensor.
+
+
+   .. cpp:function:: virtual void set_name(const std::string &str)
+
+      Set the name of the tensor.
+
+      :param str: The new name.
+
+
+   .. cpp:function:: virtual BufferTensor<T, Rank> get() const
+
+      Convert the function tensor into a regular tensor.
+
+
+   .. cpp:function:: operator BufferTensor<T, Rank>() const
+
+   .. cpp:function:: virtual bool full_view_of_underlying() const
+
+      Returns whether the tensor contains all elements or only some subset of a whole.
+
+      :returns: False if the tensor is a view of a larger tensor. True if this is the entire tensor.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor.

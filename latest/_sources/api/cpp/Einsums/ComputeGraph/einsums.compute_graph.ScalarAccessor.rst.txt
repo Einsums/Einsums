@@ -1,0 +1,67 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ScalarAccessor:
+
+======================================
+einsums::compute_graph::ScalarAccessor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ScalarAccessor
+
+   One SCALAR operand's live address, resolved once when an executor is built.
+
+   The scalar counterpart of ``OperandAccessor``, and it exists because the two
+   things a graph calls a scalar are not the same object. ``cg::dot(&e, A, B)``
+   registers a bare ``double *``: a rank-0 ``TensorHandle`` with no
+   ``TensorImpl``, no dims and no slot. ``cg::dot_python`` instead hands the
+   graph a rank-1 tensor, because a Python caller needs a scalar it can then
+   scale and add like any other operand, and that one has a slot like any other
+   tensor. Both name one address; neither shape can be read through the other's
+   accessor.
+
+   Resolution prefers the tensor route, so a destination that HAS a slot follows
+   ``Graph::rebind`` and ``Graph::redirect_slot``. The raw-scalar route reads
+   ``TensorHandle::tensor_ptr`` on every call, so repointing the handle moves
+   the write.
+
+   Neither path allocates: a handle's address is stable for the graph's lifetime
+   (the tensor table is a node-based map), and the tensor route is one
+   ``OperandAccessor`` read.
+
+   .. seealso::
+
+      resolve_scalar_operand
+
+
+   .. cpp:function:: ScalarAccessor() = default
+
+   .. cpp:function:: explicit ScalarAccessor(OperandAccessor tensor)
+
+      Read element 0 of a tensor destination, through its slot when it has one.
+
+
+   .. cpp:function:: explicit ScalarAccessor(const TensorHandle *handle)
+
+      Read a registered raw scalar through ``handle``, which must outlive the executor.
+
+
+   .. cpp:function:: bool valid() const noexcept
+
+      Whether this accessor was bound to anything.
+
+
+   .. cpp:function:: template <typename T> T * address() const
+
+      The destination's CURRENT address.

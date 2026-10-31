@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_permute.compile_permute:
+
+========================================
+einsums::tensor_permute::compile_permute
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorPermute/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_permute
+
+.. cpp:function:: template <bool ConjA = false, typename T> std::shared_ptr<hptt::Transpose<T>> compile_permute(std::string_view spec, T beta, detail::TensorImpl<T> *C, T alpha, const detail::TensorImpl<T> &A, hptt::SelectionMethod method)
+
+   Build the HPTT plan for :math:`C = \beta C + \alpha\,\mathrm{permute}(A)` without running it.
+
+   The spec names each operand's axes, output first: ``"ji <- ij"`` (or ``"ij -> ji"``) transposes a
+   matrix. The same letters must appear on both sides. The plan comes from a per-thread cache keyed
+   on the shapes, so building the same permutation again is cheap. Run it with the plan's own
+   ``execute()``, or rebind it to new data of the same shapes with the three-argument ``permute``.
+
+   .. versionadded:: 2.0.0
+
+   :tparam ConjA: If true, conjugate the elements of ``A`` as they are permuted.
+   :tparam T: The element type of both tensors.
+   :param spec: The axes of ``C`` and of ``A``.
+   :param beta: The scale applied to the existing contents of ``C``.
+   :param C: The output tensor.
+   :param alpha: The scale applied to the permuted ``A``.
+   :param A: The input tensor. It must not share storage with ``C``.
+   :param method: How hard HPTT searches for a fast plan.
+   :throws RankError: when a side does not have one letter per axis of its operand, or the two sides do not name the same axes.
+   :throws DimensionError: when an axis of ``C`` does not have the extent of the axis of ``A`` it takes.
+   :returns: The plan, or null when either operand is empty: there is nothing to permute, and running the null plan through the three-argument ``permute`` does nothing.

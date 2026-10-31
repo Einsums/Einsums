@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.get_num_threads_this_thread:
+
+==========================================
+einsums::blas::get_num_threads_this_thread
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: int get_num_threads_this_thread()
+
+   Threads the linked BLAS would currently use on the calling thread.
+
+   So ``set_num_threads_this_thread`` can be verified. 0 when the vendor cannot be asked.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The vendor's thread count for this thread, or 0 if unknown.

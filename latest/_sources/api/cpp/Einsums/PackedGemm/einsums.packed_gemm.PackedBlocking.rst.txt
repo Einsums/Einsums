@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.PackedBlocking:
+
+====================================
+einsums::packed_gemm::PackedBlocking
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: PackedBlocking
+
+   The cache blocks a packed contraction ran with: MC rows of A, NC columns of B, KC of the
+   contracted extent, after the C-temporary budget and the thread grid have had their say.
+
+
+   .. cpp:member:: int64_t mc
+
+   .. cpp:member:: int64_t nc
+
+   .. cpp:member:: int64_t kc
+
+   .. cpp:member:: int64_t nr
+
+      The kernel tile's N width, the narrowest NC a budget can cut to.
+
+
+   .. cpp:member:: bool c_scattered
+
+      True when C was built in a scratch block and scattered into place, false when the tile
+      kernel wrote C directly.

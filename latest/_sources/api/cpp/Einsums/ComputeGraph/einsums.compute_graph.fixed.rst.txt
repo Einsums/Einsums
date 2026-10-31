@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.fixed:
+
+=============================
+einsums::compute_graph::fixed
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr SpaceDim fixed(std::size_t extent) noexcept
+
+   An axis whose size is a number and whose meaning is nothing.
+
+   A DIIS history depth or a fixed block count is a real thing to want in a shape that
+   otherwise names spaces, and it must NOT pick up a dim symbol: a literal axis is one a
+   bind may not move, which is exactly what "fixed" says.
+
+   .. versionadded:: 2.0.0
+
+   :param extent: The size.
+   :returns: The dimension.

@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.manifest_direction_name:
+
+===============================================
+einsums::compute_graph::manifest_direction_name
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view manifest_direction_name(ManifestDirection direction) noexcept
+
+   The name of a direction, for diagnostics and for the saved form.
+
+   .. versionadded:: 2.0.0
+
+   :param direction: The direction to name.
+   :returns: A stable spelling. Written by NAME into any saved artifact, never by numeric value, per the compatibility policy.

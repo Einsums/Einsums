@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.subscript_tensor:
+
+=========================
+einsums::subscript_tensor
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/SubscriptChooser.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <RankTensorConcept TensorType, typename... MultiArgs> requires (std::remove_cvref_t<TensorType>::Rank == sizeof...(MultiArgs) && (std::is_integral_v<std::remove_cvref_t<MultiArgs>> && ...) && FastSubscriptableConcept<TensorType>) decltype(tensor.subscript(std::forward<MultiArgs>(args)...)) subscript_tensor(TensorType &&tensor, MultiArgs &&... args)
+
+   Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The type of tensor that will be subscripted.
+   :tparam MultiArgs: The data types for the indices.
+   :param tensor: The tensor to subscript.
+   :param args: The indices.
+   :returns: The value at the location specified by the subscript, or a reference to that value.
+
+
+.. cpp:function:: template <RankTensorConcept TensorType, typename... MultiArgs> requires (std::remove_cvref_t<TensorType>::Rank == sizeof...(MultiArgs) && (std::is_integral_v<std::remove_cvref_t<MultiArgs>> && ...) && !FastSubscriptableConcept<TensorType> && FunctionTensorConcept<TensorType>) decltype(tensor(std::forward<MultiArgs>(args)...)) subscript_tensor(TensorType &&tensor, MultiArgs &&... args)
+
+   Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The type of tensor that will be subscripted.
+   :tparam MultiArgs: The data types for the indices.
+   :param tensor: The tensor to subscript.
+   :param args: The indices.
+   :returns: The value at the location specified by the subscript, or a reference to that value.
+
+
+.. cpp:function:: template <RankTensorConcept TensorType, typename ContainerType> requires (!std::is_integral_v<ContainerType> && FastSubscriptableConcept<TensorType>) decltype(tensor.subscript(args)) subscript_tensor(TensorType &&tensor, const ContainerType &args)
+
+   Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The type of tensor that will be subscripted.
+   :tparam ContainerType: The data type for the index container.
+   :param tensor: The tensor to subscript.
+   :param args: The indices.
+   :returns: The value at the location specified by the subscript, or a reference to that value.
+
+
+.. cpp:function:: template <RankTensorConcept TensorType, typename ContainerType> requires (!std::is_integral_v<ContainerType> && !FastSubscriptableConcept<TensorType> && FunctionTensorConcept<TensorType>) decltype(tensor(args)) subscript_tensor(TensorType &&tensor, const ContainerType &args)
+
+   Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The type of tensor that will be subscripted.
+   :tparam ContainerType: The data type for the index container.
+   :param tensor: The tensor to subscript.
+   :param args: The indices.
+   :returns: The value at the location specified by the subscript, or a reference to that value.

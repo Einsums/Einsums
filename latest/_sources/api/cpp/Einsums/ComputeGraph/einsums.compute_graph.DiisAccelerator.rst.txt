@@ -1,0 +1,133 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DiisAccelerator:
+
+=======================================
+einsums::compute_graph::DiisAccelerator
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Diis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: template <typename T> DiisAccelerator
+
+   Pulay DIIS extrapolation over a set of (amplitude, step) tensor pairs.
+
+   Accelerates the ``t <- t + step`` update a fixed-point iteration performs by keeping a short history of (amplitude, step) snapshots
+   and replacing the amplitudes with the least-squares extrapolant. The error vector is the update step itself, the standard
+   coupled-cluster choice, so an iteration whose step the body computes anyway gets DIIS for the cost of a K-sized host-side solve.
+
+   One ``step`` call does the whole update: the snapshot copies, the one new row of the B matrix, the normalized bordered solve, and the
+   extrapolation. The amplitudes update IN PLACE, so pointers a graph captured stay valid; the B entries are conjugated inner products,
+   so complex dtypes are exact and the coefficients are real; and the (K+1)-sized system solves with ``gesv``.
+
+   **Why the interior is BLAS and memcpy rather than tensor operations**
+
+   A DLPNO-(T) step is near ten thousand operations on operands of a few thousand elements, where the eager layer's per-call overhead
+   (profiling, shape checks, dispatch) costs more than the arithmetic. So contiguous operands go straight to the same BLAS calls the eager
+   layer would reach (``scal`` + ``axpy``, ``dot`` / ``dotc``), keeping results bitwise identical; a strided view keeps the eager path.
+
+   The B entries are CACHED across steps, keyed by snapshot identity: a step adds one snapshot, so only one row is new. Each entry sums
+   its components in registration order, one ``dot`` per component, which is what the cross-implementation bit-identity gate rests on: one
+   dot over the concatenated components would reduce in a different order. The per-solve copy of B is normalized by its largest element
+   before the solve, and a singular B drops the oldest history pair and retries.
+
+   **Operand binding**
+
+   ``add_pair`` binds to the storage the operand holds AT THAT MOMENT, the way a view does. Rebinding or resizing an amplitude or a step
+   tensor afterwards leaves the accelerator reading the old buffer; the caller must add pairs whose storage outlives the accelerator.
+   Adding a pair once a history exists is rejected, because the existing snapshots are shaped for the old pair list.
+
+   :tparam T: Element type of the amplitudes. The coefficients are real regardless.
+
+
+   .. cpp:function:: explicit DiisAccelerator(int k)
+
+      A history of at least 2 is required: one snapshot has nothing to extrapolate between.
+
+
+   .. cpp:function:: DiisAccelerator(const DiisAccelerator<T> &) = delete
+
+   .. cpp:function:: DiisAccelerator<T> & operator=(const DiisAccelerator<T> &) = delete
+
+   .. cpp:function:: void add_pair(RuntimeTensorView<T> amplitude, RuntimeTensorView<T> step, std::function<TensorId ()> amp_id, std::function<TensorId ()> step_id)
+
+      Register one ``(amplitude, step)`` pair.
+
+      :param amplitude: The tensor the iteration updates, written in place by ``step``.
+      :param step: The update the body computed, which is also the error vector.
+      :param amp_id: Capture-time registrar returning the amplitude's TensorId, for ``diis_step`` to order its node on.
+      :param step_id: Capture-time registrar for the step tensor's TensorId.
+
+
+   .. cpp:function:: void step()
+
+      Push the current (amplitudes, steps) onto the history and extrapolate the amplitudes in place.
+
+
+   .. cpp:function:: size_t history_size() const
+
+      Snapshots currently held, which ramps to ``max_history`` and can drop on a singular subspace.
+
+
+   .. cpp:function:: size_t max_history() const
+
+      The history depth the accelerator was constructed with.
+
+
+   .. cpp:function:: size_t num_pairs() const
+
+      The number of registered ``(amplitude, step)`` pairs.
+
+
+   .. cpp:function:: void reset()
+
+      Forget every snapshot, keeping the registered pairs. The next step starts the history over.
+
+
+   .. cpp:function:: const std::vector<std::function<TensorId ()>> & amplitude_ids() const
+
+      Capture-time registrars for the amplitudes, in registration order.
+
+
+   .. cpp:function:: const std::vector<std::function<TensorId ()>> & step_ids() const
+
+      Capture-time registrars for the step tensors, in registration order.
+
+
+   .. cpp:class:: Operand
+
+      What the hot path needs to reach a registered operand without asking the tensor layer again.
+
+      ``flat`` means the whole tensor is one unit-stride run, which is what lets a BLAS call or a ``memcpy`` stand in for a tensor
+      operation; a strided view is not flat and keeps the eager path, for which the parallel view vectors hold the tensor object. This
+      is deliberately trivial: it is copied whenever its vector grows, and a tensor view inside it would make that copy a throwing one.
+      ``data`` points into the operand's STORAGE, so it survives the view vectors reallocating.
+
+
+      .. cpp:member:: T *data
+
+      .. cpp:member:: size_t size
+
+      .. cpp:member:: bool flat
+
+
+   .. cpp:class:: Snapshot
+
+      One history entry: a copy of every pair's amplitude and step, plus the identity the B cache keys on.
+
+
+      .. cpp:member:: std::vector<std::unique_ptr<RuntimeTensor<T>>> t
+
+      .. cpp:member:: std::vector<std::unique_ptr<RuntimeTensor<T>>> e
+
+      .. cpp:member:: uint64_t id

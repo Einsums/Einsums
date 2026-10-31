@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_batched_gemm_blocked:
+
+====================================================
+einsums::compute_graph::grouped_batched_gemm_blocked
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType> requires (std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>) void grouped_batched_gemm_blocked(double alpha, std::vector<const AType *> a_list, std::vector<const BType *> b_list, double beta, const std::vector<CType *> &c_bases, const std::vector<size_t> &c_offsets, bool trans_a, bool trans_b)
+
+   ``grouped_batched_gemm`` where the destinations are blocks of existing
+   tensors, described by a base and an offset rather than enumerated as views.
+
+   The blocked form of ``batched_gemm`` exists because materializing one view
+   per destination is tens of thousands of pybind round trips in a local
+   correlation method. The grouped form exists because one OpenMP region per
+   shape class costs more than the arithmetic. A caller whose destinations are
+   blocks AND whose shapes differ between classes needs both, and the DLPNO
+   overlap build is exactly that caller: one destination tensor per shape
+   class, every coupling a column range of its class's tensor.
+
+   So ``c_bases`` is parallel to the members, not to the groups. Repeating a
+   base pointer across a class's members is a pointer copy; it is constructing
+   the views that is expensive, and none are constructed. Each block's shape is
+   derived from its own A and B rather than passed, and its leading dimension
+   from its base, which is what makes a column range expressible this way.
+
+   The node declares each DISTINCT base as an output, so a later read of a
+   whole base is ordered against this write. The list form declares the views,
+   and the graph does not know a view write touches its parent.
+
+   :param alpha: Prefactor on op(A_i) op(B_i), shared by the whole call.
+   :param a_list: Left operands, all rank 2. Shapes may differ between members.
+   :param b_list: Right operands, same length as ``a_list``.
+   :param beta: Prefactor on C_i. Non-zero means every block is read as well as written, which the node records as a dependency.
+   :param c_bases: Per member, the tensor its block lives in.
+   :param c_offsets: Per member, the block's first element as an offset into its base, in elements.
+   :param trans_a: Transpose each A_i.
+   :param trans_b: Transpose each B_i.

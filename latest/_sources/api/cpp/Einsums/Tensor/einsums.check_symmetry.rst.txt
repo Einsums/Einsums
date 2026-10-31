@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.check_symmetry:
+
+=======================
+einsums::check_symmetry
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/SymmetryOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, size_t Rank, typename Alloc> bool check_symmetry(const GeneralTensor<T, Rank, Alloc> &tensor, double tolerance)
+
+   Verify that ``tensor`` satisfies its declared symmetry to within
+   ``tolerance`` (or the descriptor's own tolerance if the argument is
+   negative). Returns true when every pair agrees; false on first
+   violation.
+
+
+.. cpp:function:: template <RuntimeRankWalkable TensorType> bool check_symmetry(const TensorType &tensor, const SymmetryDescriptor &desc, double tolerance)
+
+   Verify that ``tensor`` satisfies ``desc`` to within ``tolerance`` (or the
+   descriptor's own tolerance when the argument is negative).
+
+   For testing a candidate symmetry, as an optimizer does. False, not a throw, when the descriptor
+   cannot apply (rank past ``kMaxSymmetryRank``, or unequal permuted axes).
+
+
+.. cpp:function:: template <RuntimeRankSymmetryTensor TensorType> bool check_symmetry(const TensorType &tensor, double tolerance)
+
+   Verify that ``tensor`` satisfies its OWN declared symmetry.
+
+   .. seealso::
+
+      check_symmetry(TensorType const &, SymmetryDescriptor const &, double)

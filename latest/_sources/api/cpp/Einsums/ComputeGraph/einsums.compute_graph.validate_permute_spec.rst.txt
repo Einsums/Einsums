@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.validate_permute_spec:
+
+=============================================
+einsums::compute_graph::validate_permute_spec
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr bool validate_permute_spec(std::string_view spec)
+
+   Validate a permute specification string at compile time.
+
+   Checks structural validity: presence of exactly one arrow, no semicolons. Index names may use
+   ``_`` (``mu_1,nu_1 <- nu_1,mu_1``), as tensor_permute's own specs may.

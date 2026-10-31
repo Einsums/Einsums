@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_direct_product:
+
+==============================================
+einsums::compute_graph::grouped_direct_product
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename T, CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, T> && std::is_same_v<typename BType::ValueType, T> && std::is_same_v<typename CType::ValueType, T> void grouped_direct_product(std::vector<T> alphas, std::vector<const AType *> a_list, std::vector<const BType *> b_list, std::vector<T> betas, std::vector<CType *> c_list)
+
+   One node holding many independent element-wise products: ``C_i = alphas[i] * (A_i ⊙ B_i) + betas[i] * C_i`` for every member.
+
+   The grouped counterpart of ``direct_product``, and the shape a
+   local-correlation residual reaches it in: one Hadamard product per entity
+   against that entity's own denominator or weight block, hundreds of them.
+
+   Members run CONCURRENTLY, which an element-wise kernel can afford: no
+   member's result depends on how the run was divided, so every member writes
+   the bits the single call would have written whatever the schedule. Each
+   member calls the same ``linear_algebra::direct_product`` a single
+   ``direct_product`` node calls, so the grouped form adds a loop and nothing
+   else. Destinations must be distinct.
+
+   Outside capture this executes immediately, so the same call works eagerly.

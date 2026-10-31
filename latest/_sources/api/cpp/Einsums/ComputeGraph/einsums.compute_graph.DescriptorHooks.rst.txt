@@ -1,0 +1,103 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DescriptorHooks:
+
+=======================================
+einsums::compute_graph::DescriptorHooks
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DescriptorHooks
+
+   The optional answers a registered descriptor gives about its node.
+
+   Every member may be empty. Members are only ever appended, since a ``DescriptorCodec`` is
+   passed by value across the library boundary.
+
+
+   .. cpp:member:: std::function<NamedAccesses (const OpData &, const Node &)> accesses
+
+      The parameters and named resources the node touches; see ``NamedAccesses``. Without it the
+      node touches none.
+
+
+   .. cpp:member:: std::function<NodeEffects (const OpData &)> effects
+
+      What the node does beyond its tensors. Without it a registered descriptor counts as pure,
+      since its codec's ``build`` is a function of the descriptor and operands.
+
+
+   .. cpp:member:: std::function<DestinationUse (const OpData &, const Node &)> destination
+
+      Whether the node reads its destination; see ``DestinationUse``. Without it the node does
+      not, and stays outside the destination rule.
+
+
+   .. cpp:member:: std::function<Threading (const OpData &)> threading
+
+      How the executor uses threads. Without it the node is ``Threading::Moldable``.
+
+
+   .. cpp:member:: std::function<std::optional<ExtentList> (const OpData &, const Node &, const ExtentQuery &)> output_extents
+
+      The extents the node's outputs take for the inputs in ``query``, one list per output, or
+      empty when the descriptor cannot say. A rebind re-derives a graph-owned output from it, and
+      validation reports an output whose declared extents differ. Without it a rebind leaves the
+      outputs as they were captured.
+
+
+   .. cpp:member:: std::function<std::optional<CostEstimate> (const OpData &, const CostQuery &)> cost
+
+      What the node costs; see ``CostEstimate``. Without it, or when it returns empty, the node
+      is priced as the memory traffic of its tensors, as any Custom node is.
+
+
+   .. cpp:member:: std::function<bool (const OpData &, const OpData &)> equal
+
+      Whether two of this descriptor compute the same result from the same inputs. CSE merges two
+      such nodes reading the same inputs when this says so, the node is deterministic without
+      external effects (``effects``), and its ``destination`` says it overwrites all of its
+      destination without reading it, since the survivor's output stands in for the duplicate's.
+      Without it two nodes of the descriptor are never merged.
+
+
+   .. cpp:member:: std::function<std::optional<std::vector<TileCoord>> (const OpData &, const Node &, const TileQuery &)> tiles
+
+      The tiles of its tiled output the node writes, every other tile being zero; empty when the
+      descriptor cannot say. With ``tile``, it lets TiledExpansion replace the node with one node
+      per tile it writes, so the tiles flow into the per-tile contractions that read them. Only a
+      node that writes one tiled tensor, reads only dense ones, and overwrites what it writes
+      (``destination``) is expanded.
+
+
+   .. cpp:member:: std::function<std::optional<OpData> (const OpData &, const TileCoord &)> tile
+
+      The descriptor of a node that writes tile ``coord`` alone, as a dense tensor, from the same
+      inputs; empty when the descriptor cannot. It may be a different registered descriptor, so
+      the whole-tensor executor and the one-tile executor can be separate codecs.
+
+
+   .. cpp:member:: std::function<std::optional<std::vector<std::vector<std::string>>> (const OpData &, const Node &)> axes
+
+      One list of index letters per operand, the output first and then each input in the node's
+      order, one letter per axis; empty when the descriptor cannot say. A letter two operands
+      share is one index. A letter an input has and the output lacks is summed inside the node,
+      so it is never sliced; a letter only the output has is an axis the node generates. With
+      ``slice``, it lets AxisTiling take the node into a loop over slices of its free axes.
+
+
+   .. cpp:member:: std::function<std::optional<OpData> (const OpData &, const SliceRequest &)> slice
+
+      The descriptor of the node at one slice, reading the inputs' slices and writing the output's
+      as tensors without the dropped axes; empty when it cannot be sliced so.

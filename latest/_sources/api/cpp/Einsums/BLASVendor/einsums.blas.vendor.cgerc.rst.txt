@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cgerc:
+
+============================
+einsums::blas::vendor::cgerc
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void cgerc(int_t m, int_t n, std::complex<float> alpha, const std::complex<float> *x, int_t inc_x, const std::complex<float> *y, int_t inc_y, std::complex<float> *a, int_t lda)
+
+   Performs a rank-1 update of a general matrix.
+
+   The ?ger routines perform a matrix-vector operator defined as
+
+   .. math::
+
+      \mathbf{A} := \alpha\mathbf{xy}^H + \mathbf{A}
+
+   .. versionadded:: 2.0.0
+
+   :param m: The number of elements in the left vector.
+   :param n: The number of elements in the right vector.
+   :param alpha: The scale factor for the product.
+   :param x: The left vector.
+   :param inc_x: The skip value for the left vector.
+   :param y: The right vector.
+   :param inc_y: The skip value for the right vector.
+   :param a: The matrix to update.
+   :param lda: The leading dimension of the matrix.
+   :throws std::domain_error: If the dimensions are zero, or the leading dimension of the array is less than the number of columns.
+   :throws std::invalid_argument: If either of the increment values is zero.

@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.syev:
+
+===================
+einsums::blas::syev
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t syev(char job, char uplo, int_t n, T *a, int_t lda, T *w, T *work, int_t lwork)
+
+   Performs diagonalization of a symmetrix matrix.
+
+   The syev routine finds the matrices that satisfy the following equation.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{P} \mathbf{\Lambda} \mathbf{P}^T
+
+   In the above equation, :math:`\mathbf{A}` is a real symmetric matrix, :math:`\mathbf{P}` is a real orthogonal matrix whose columns are
+   the eigenvectors of :math:`\mathbf{A}`, and :math:`\mathbf{\Lambda}` is a diagonal matrix, whose elements are the eigenvalues of :math:`\mathbf{A}`. The eigenvalues are stored in a vector form on exit.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type the function will handle.
+   :param job: Whether to compute the eigenvectors. Can be either 'n' or 'v', case insensitive.
+   :param uplo: Whether the matrix data is stored in the upper or lower triangle. Can be either 'u' or 'l', case insensitive.
+   :param n: The number of rows/columns of the input matrix.
+   :param a: The input matrix. On output, it will be changed. If the eigenvectors are requested, then they will be placed in the columns of ``a`` on exit.
+   :param lda: The leading dimension of the input matrix.
+   :param w: The output vector for the eigenvalues.
+   :param work: A work array. If ``lwork`` is -1, then no operations are performed and the first value in the work array is the optimal work buffer size.
+   :param lwork: The size of the work array. If ``lwork`` is -1, then a workspace query is assumed. No operations will be performed and the optimal workspace size will be put into the first element of ``work``.
+   :returns: 0 on success. If positive, this means that the algorithm did not converge. The return value indicates the number of eigenvalues that were able to be computed. If negative, this means that one of the parameters was invalid. The absolute value indicates which parameter was bad.

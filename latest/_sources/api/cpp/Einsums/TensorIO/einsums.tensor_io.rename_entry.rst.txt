@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.rename_entry:
+
+================================
+einsums::tensor_io::rename_entry
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Entries.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: void rename_entry(std::string path, std::string old_name, std::string new_name)
+
+   Give the entry ``old_name`` of ``path`` the name ``new_name``.
+
+   Only the file's entry table changes, so a rename costs the same whatever the entry holds. See
+   ``TensorFile::rename``.
+
+   .. versionadded:: 2.0.0
+
+   :throws std::runtime_error: when the file or the entry is missing.
+   :throws std::invalid_argument: when an entry is already named ``new_name``, or no entry can hold it.

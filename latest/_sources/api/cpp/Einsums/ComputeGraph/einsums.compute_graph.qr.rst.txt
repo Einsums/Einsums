@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.qr:
+
+==========================
+einsums::compute_graph::qr
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType> std::tuple<GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>, GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>> qr(const AType &A)
+
+   QR decomposition (returning): ``A = Q * R``.
+
+   Returns the tuple ``(Q, R)`` where ``Q`` is orthogonal (or unitary
+   for complex inputs) and ``R`` is upper-triangular. Cannot be used
+   during graph capture; ``A`` is left unmodified.

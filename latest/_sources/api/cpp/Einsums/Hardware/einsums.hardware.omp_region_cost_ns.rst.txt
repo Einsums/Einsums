@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.omp_region_cost_ns:
+
+=====================================
+einsums::hardware::omp_region_cost_ns
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/CpuInfo.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: double omp_region_cost_ns()
+
+   Cost in nanoseconds of entering and leaving an OpenMP parallel region.
+
+   An empty region at the current team size, warm team, best of several trials: around 20 us on
+   a 10-thread machine. Read from the hardware profile (written only by ``einsums-tune``) when it
+   has an entry for the current team size, otherwise measured, which drifts by tens of percent
+   per process.
+   ``--einsums:hardware:omp-region-cost-ns`` pins it.

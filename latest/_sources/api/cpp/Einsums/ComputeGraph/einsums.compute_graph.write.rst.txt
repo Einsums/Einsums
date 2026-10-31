@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.write:
+
+=============================
+einsums::compute_graph::write
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType, typename F> void write(std::string label, std::string file_path, std::string dataset, const TensorType *input, F &&executor)
+
+   Record a disk write operation: save tensor data to a file.
+
+   The executor should write the tensor data to the specified file.
+   The graph tracks the input dependency so the write waits for the
+   tensor to be computed.
+
+   .. code-block:: text
+
+      cg::write("checkpoint F", "checkpoint.h5", "/fock", &F, [&]() {
+          h5file.write("/fock", F);
+      });
+
+   :param label: Human-readable name.
+   :param file_path: Path to the file.
+   :param dataset: Dataset/key name within the file (for HDF5).
+   :param input: Tensor to write to disk.
+   :param executor: Lambda that performs the actual write.

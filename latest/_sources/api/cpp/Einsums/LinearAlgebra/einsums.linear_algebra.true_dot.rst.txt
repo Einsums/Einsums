@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.true_dot:
+
+=================================
+einsums::linear_algebra::true_dot
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType> requires (SameRank<AType, BType> && InSamePlace<AType, BType>) BiggestTypeT<typename AType::ValueType, typename BType::ValueType> true_dot(const AType &A, const BType &B)
+
+   Performs the true dot product between two tensors.
+
+   This performs :math:`\sum_{ijk\cdots} A_{ijk\cdots}^* B_{ijk\cdots}`, where the asterisk indicates the complex conjugate.
+   If the tensors are real-valued, then this is equivalent to dot.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType,BType: The tensor types.
+   :param A: One of the tensors. The complex conjugate is taken of this.
+   :param B: The other tensor.
+   :throws RankError: If the input tensors do not have the same rank.
+   :throws DimensionError: If the input tensors do not have the same shape.
+   :returns: The dot product between two tensors.

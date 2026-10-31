@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphTensorData:
+
+=======================================
+einsums::compute_graph::GraphTensorData
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/GraphData.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GraphTensorData
+
+   Serialized representation of a tensor in a compute graph snapshot.
+
+   Used for profiling, visualization, and inter-process communication.
+
+
+   .. cpp:member:: uint64_t id
+
+   .. cpp:member:: std::string name
+
+   .. cpp:member:: size_t rank
+
+   .. cpp:member:: std::vector<size_t> dims
+
+   .. cpp:member:: std::vector<std::string> dim_names
+
+      Symbolic dim names for code gen (e.g. "N", "nao"). Empty = use numeric dims.
+
+
+   .. cpp:member:: size_t element_size
+
+   .. cpp:member:: std::string dtype
+
+   .. cpp:member:: bool is_intermediate
+
+   .. cpp:member:: bool infer_dims
+
+      If true, dimensions are auto-inferred from contraction patterns
+
+
+   .. cpp:member:: TensorOwnership ownership
+
+      Ownership level for code gen and visual placement

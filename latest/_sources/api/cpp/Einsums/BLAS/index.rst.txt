@@ -1,0 +1,176 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BLAS_api:
+
+============
+BLAS C++ API
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_BLAS>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::blas::IsBlasable` - Determines whether a type can be used in a BLAS call.
+- :cpp:any:`~einsums::blas::SerialVendorScope` - Present ONE thread to the vendor, and to anything einsums forks from the OpenMP ICV, for as long as it exists.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::blas::Blasable` - Concept version of IsBlasableV<T>.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::blas::asum` - Computes the sum of the absolute values of the input vector. If the vector is complex, then it is the sum of the absolute values of the components, not the magnitudes.
+- :cpp:any:`~einsums::blas::axpby` - Adds two vectors together with a scale factor.
+- :cpp:any:`~einsums::blas::axpy` - Adds two vectors together with a scale factor.
+- :cpp:any:`~einsums::blas::copy` - Copy data from one vector to another.
+- :cpp:any:`~einsums::blas::dirprod` - Computes the direct product between two vectors, scaling the vector it is added to.
+- :cpp:any:`~einsums::blas::dot` - Computes the dot product of two vectors. For complex vectors it is the non-conjugated dot product; (c|z)dotu in BLAS nomenclature.
+- :cpp:any:`~einsums::blas::dotc` - Computes the dot product of two vectors. For complex vector it is the conjugated dot product; (c|z)dotc in BLAS nomenclature.
+- :cpp:any:`~einsums::blas::gees` - Computes the Schur decomposition of a matrix.
+- :cpp:any:`~einsums::blas::geev` - Performs diagonalization of a matrix.
+- :cpp:any:`~einsums::blas::gelqf` - Set up for computing the LQ decomposition of a matrix.
+- :cpp:any:`~einsums::blas::gels` - Least-squares or minimum-norm solve via QR or LQ factorization.
+- :cpp:any:`~einsums::blas::gemm` - Perform a General Matrix Multiply (GEMM) operation.
+- :cpp:any:`~einsums::blas::gemm_batch` - Perform a batch of independent GEMMs with uniform parameters.
+- :cpp:any:`~einsums::blas::gemm_batch_grouped` - Perform a batch of independent GEMMs whose shapes need not agree.
+- :cpp:any:`~einsums::blas::gemv` - Computes a matrix-vector product using a general matrix.
+- :cpp:any:`~einsums::blas::geqrf` - Set up for computing the QR decomposition of a matrix.
+- :cpp:any:`~einsums::blas::ger` - Performs a rank-1 update of a general matrix.
+- :cpp:any:`~einsums::blas::gerc` - Performs a rank-1 update of a general matrix.
+- :cpp:any:`~einsums::blas::gesdd` - Performs singular value decomposition for a matrix using the divide and conquer algorithm.
+- :cpp:any:`~einsums::blas::gesv` - Solve a system of linear equations.
+- :cpp:any:`~einsums::blas::gesvd` - Performs singular value decomposition for a matrix using the QR algorithm.
+- :cpp:any:`~einsums::blas::get_num_threads_this_thread` - Threads the linked BLAS would currently use on the calling thread.
+- :cpp:any:`~einsums::blas::getrf` - Computes the LU factorization of a general M-by-N matrix A using partial pivoting with row int_terchanges.
+- :cpp:any:`~einsums::blas::getri` - Computes the inverse of a matrix using the LU factorization computed by getrf.
+- :cpp:any:`~einsums::blas::getrs` - Solve a linear system from an LU factorization.
+- :cpp:any:`~einsums::blas::has_per_thread_control` - Whether the linked BLAS exposes the per-thread control above.
+- :cpp:any:`~einsums::blas::heev` - Performs diagonalization of a Hermitian matrix.
+- :cpp:any:`~einsums::blas::hemm` - Matrix multiplication where one operand is Hermitian.
+- :cpp:any:`~einsums::blas::herk` - Hermitian rank-k update.
+- :cpp:any:`~einsums::blas::iamax` - Index of the element with the largest absolute value.
+- :cpp:any:`~einsums::blas::lacgv` - Take the conjugate of a vector. Does nothing if the vector is real.
+- :cpp:any:`~einsums::blas::lange` - Computes various matrix norms. The available norms are the 1-norm, Frobenius norm, Max-abs norm, and the infinity norm.
+- :cpp:any:`~einsums::blas::lascl` - Scales a general matrix. The scale factor is ``cto / cfrom``, but the scale is performed without overflow/underflow.
+- :cpp:any:`~einsums::blas::lassq` - Compute the sum of the squares of the input vector without roundoff error.
+- :cpp:any:`~einsums::blas::moldable_width_scope` - Whether the calling thread currently holds a node-scoped OpenMP width.
+- :cpp:any:`~einsums::blas::nrm2` - Compute the Euclidean norm of a vector.
+- :cpp:any:`~einsums::blas::orglq` - Extract the Q matrix after a call to gelqf.
+- :cpp:any:`~einsums::blas::orgqr` - Extract the Q matrix after a call to geqrf.
+- :cpp:any:`~einsums::blas::ormqr` - Multiply a matrix by the orthogonal/unitary Q from geqrf without forming Q explicitly.
+- :cpp:any:`~einsums::blas::potrf` - Cholesky factorization of a symmetric (Hermitian) positive-definite matrix.
+- :cpp:any:`~einsums::blas::potri` - Invert a symmetric (Hermitian) positive-definite matrix from its Cholesky factor.
+- :cpp:any:`~einsums::blas::potrs` - Solve a linear system from a Cholesky factorization.
+- :cpp:any:`~einsums::blas::rscl` - Scales a vector by the reciprocal of a value.
+- :cpp:any:`~einsums::blas::scal` - Scales a vector by a value.
+- :cpp:any:`~einsums::blas::set_moldable_width_scope` - Mark the calling thread as holding a node-scoped OpenMP width.
+- :cpp:any:`~einsums::blas::set_num_threads_this_thread` - Limit the calling thread to ``nthreads`` BLAS threads, where the vendor allows it.
+- :cpp:any:`~einsums::blas::sterf` - Computes the eigenvalues of a symmetric tridiagonal matrix.
+- :cpp:any:`~einsums::blas::sum1` - Computes the sum of the absolute values of the input vector. If the vector is complex, then it is the sum of the magnitudes.
+- :cpp:any:`~einsums::blas::swap` - Swap the contents of two vectors.
+- :cpp:any:`~einsums::blas::syev` - Performs diagonalization of a symmetrix matrix.
+- :cpp:any:`~einsums::blas::syevd` - Symmetric eigendecomposition via divide-and-conquer.
+- :cpp:any:`~einsums::blas::sygv` - Generalized symmetric-definite eigenvalue problem.
+- :cpp:any:`~einsums::blas::symm` - Matrix multiplication where one operand is symmetric.
+- :cpp:any:`~einsums::blas::syr2k` - Symmetric rank-2k update.
+- :cpp:any:`~einsums::blas::syrk` - Symmetric rank-k update.
+- :cpp:any:`~einsums::blas::threads_with_openmp` - Whether the linked BLAS threads through our own OpenMP runtime.
+- :cpp:any:`~einsums::blas::trsm` - Solve a triangular matrix equation.
+- :cpp:any:`~einsums::blas::trsv` - Solve a triangular system with a single right-hand side.
+- :cpp:any:`~einsums::blas::trsyl` - Solves a Sylvester equation. These equations look like the following.
+- :cpp:any:`~einsums::blas::trtri` - Invert a triangular matrix in place.
+- :cpp:any:`~einsums::blas::trtrs` - Solve a triangular system with multiple right-hand sides, with a singularity check.
+- :cpp:any:`~einsums::blas::vendor_call_is_fenced` - Whether a vendor call made from this thread right now would be clamped to one thread.
+- :cpp:any:`~einsums::finalize_Einsums_BLAS` - Finalize the BLAS runtime.
+- :cpp:any:`~einsums::initialize_Einsums_BLAS` - Initialize the BLAS runtime.
+- :cpp:any:`~einsums::setup_Einsums_BLAS` - Registers the initialization and finalization functions with the runtime manager.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::blas::IsBlasableV` - Boolean wrapper of IsBlasable<T>.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.blas.asum
+   einsums.blas.axpby
+   einsums.blas.axpy
+   einsums.blas.Blasable
+   einsums.blas.copy
+   einsums.blas.dirprod
+   einsums.blas.dot
+   einsums.blas.dotc
+   einsums.blas.gees
+   einsums.blas.geev
+   einsums.blas.gelqf
+   einsums.blas.gels
+   einsums.blas.gemm
+   einsums.blas.gemm_batch
+   einsums.blas.gemm_batch_grouped
+   einsums.blas.gemv
+   einsums.blas.geqrf
+   einsums.blas.ger
+   einsums.blas.gerc
+   einsums.blas.gesdd
+   einsums.blas.gesv
+   einsums.blas.gesvd
+   einsums.blas.get_num_threads_this_thread
+   einsums.blas.getrf
+   einsums.blas.getri
+   einsums.blas.getrs
+   einsums.blas.has_per_thread_control
+   einsums.blas.heev
+   einsums.blas.hemm
+   einsums.blas.herk
+   einsums.blas.iamax
+   einsums.blas.IsBlasable
+   einsums.blas.lacgv
+   einsums.blas.lange
+   einsums.blas.lascl
+   einsums.blas.lassq
+   einsums.blas.moldable_width_scope
+   einsums.blas.nrm2
+   einsums.blas.orglq
+   einsums.blas.orgqr
+   einsums.blas.ormqr
+   einsums.blas.potrf
+   einsums.blas.potri
+   einsums.blas.potrs
+   einsums.blas.rscl
+   einsums.blas.scal
+   einsums.blas.SerialVendorScope
+   einsums.blas.set_moldable_width_scope
+   einsums.blas.set_num_threads_this_thread
+   einsums.blas.sterf
+   einsums.blas.sum1
+   einsums.blas.swap
+   einsums.blas.syev
+   einsums.blas.syevd
+   einsums.blas.sygv
+   einsums.blas.symm
+   einsums.blas.syr2k
+   einsums.blas.syrk
+   einsums.blas.threads_with_openmp
+   einsums.blas.trsm
+   einsums.blas.trsv
+   einsums.blas.trsyl
+   einsums.blas.trtri
+   einsums.blas.trtrs
+   einsums.blas.vendor_call_is_fenced
+   einsums.finalize_Einsums_BLAS
+   einsums.initialize_Einsums_BLAS
+   einsums.setup_Einsums_BLAS
+   variables

@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.Intersect:
+
+==================================
+einsums::tensor_algebra::Intersect
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/Utilities.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:class:: template <typename S1, typename S2> Intersect
+
+   Find the intersection between two tuples.
+
+
+   .. cpp:function:: template <std::size_t... Indices> static auto make_intersection(std::index_sequence<Indices...>)
+
+      Make the compiler perform the difference operation. The return type of this function
+      is the desired result.

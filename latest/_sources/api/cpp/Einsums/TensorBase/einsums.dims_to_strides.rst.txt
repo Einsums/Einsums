@@ -1,0 +1,81 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.dims_to_strides:
+
+========================
+einsums::dims_to_strides
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename Alloc1, typename Alloc2> size_t dims_to_strides(const std::vector<size_t, Alloc1> &dims, std::vector<size_t, Alloc2> &out, bool row_major)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :param row_major: If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+   :returns: The size calculated from the dimensions. Can be safely ignored.
+
+
+.. cpp:function:: template <typename arr_type1, typename arr_type2, size_t Dims> requires (std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>) constexpr size_t dims_to_strides(const std::array<arr_type1, Dims> &dims, std::array<arr_type2, Dims> &out, bool row_major)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :param row_major: If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+   :returns: The size calculated from the dimensions. Can be safely ignored.
+
+
+.. cpp:function:: template <typename Alloc1, typename Alloc2> size_t dims_to_strides(const std::vector<size_t, Alloc1> &dims, std::vector<size_t, Alloc2> &out)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   The layout follows ``default_row_major()``: when it is true the first stride is the largest, otherwise the smallest.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :returns: The size calculated from the dimensions. Can be safely ignored.
+
+
+.. cpp:function:: template <typename arr_type1, typename arr_type2, size_t Dims> requires (std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>) constexpr size_t dims_to_strides(const std::array<arr_type1, Dims> &dims, std::array<arr_type2, Dims> &out)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   The layout follows ``default_row_major()``: when it is true the first stride is the largest, otherwise the smallest.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :returns: The size calculated from the dimensions. Can be safely ignored.
+
+
+.. cpp:function:: template <typename arr_type2, size_t Dims, typename... TupleDims> requires (sizeof...(TupleDims) == Dims && std::is_integral_v<arr_type2>) constexpr size_t dims_to_strides(const std::tuple<TupleDims...> &dims, std::array<arr_type2, Dims> &out, bool row_major)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :param row_major: If true, then the first stride will be the largest. If false, then the first stride will be the smallest.
+   :returns: The size calculated from the dimensions. Can be safely ignored.
+
+
+.. cpp:function:: template <typename arr_type2, size_t Dims, typename... TupleDims> requires (sizeof...(TupleDims) == Dims && std::is_integral_v<arr_type2>) constexpr size_t dims_to_strides(const std::tuple<TupleDims...> &dims, std::array<arr_type2, Dims> &out)
+
+   Compute the strides for turning a sentinel into a list of indices.
+
+   The layout follows ``default_row_major()``: when it is true the first stride is the largest, otherwise the smallest.
+
+   :param dims: The list of dimensions.
+   :param out: The calculated strides.
+   :returns: The size calculated from the dimensions. Can be safely ignored.

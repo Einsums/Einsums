@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.from_string:
+
+====================
+einsums::from_string
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/FromString.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename Char> T from_string(const std::basic_string<Char> &v)
+
+   Converts a string to a value.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to convert to.
+   :tparam Char: The kind of character.
+   :param v: The string to convert.
+   :throws bad_lexical_cast: Throws if the string could not be converted.
+   :returns: The value represented by the input string.
+
+
+.. cpp:function:: template <typename T, typename U, typename Char> T from_string(const std::basic_string<Char> &v, U &&default_value)
+
+   Converts a string to a value.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to convert to.
+   :tparam Char: The kind of character.
+   :tparam U: The type of the default value.
+   :param v: The string to convert.
+   :param default_value: The default value if the string could not be converted.
+   :returns: The value represented by the string, or the default value if the string could not be converted.

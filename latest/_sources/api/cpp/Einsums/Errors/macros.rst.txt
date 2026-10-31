@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Errors_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/ThrowException.hpp``.
+
+.. c:macro:: EINSUMS_THROW_CODED_EXCEPTION(except, code, ...)
+
+   Throws an exception with a code to distinguish between exceptions of the same type within the same function. It can also
+   have a custom error message, and it will report the location in the code.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_THROW_EXCEPTION(except, ...)
+
+   Throws an exception with a formatted error message. It will also report its location.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_THROW_NESTED(except, ...)
+
+   This will throw a nested exception.
+
+   .. versionadded:: 2.0.0
+
+
+.. c:macro:: EINSUMS_THROW_NOT_IMPLEMENTED
+
+   This will throw a NotImplemented exception.
+
+   .. versionadded:: 1.0.0
+
+
+.. c:macro:: EINSUMS_THROW_STD_EXCEPTION(except)
+
+   Throws an exception without a message string. Only reports its location.
+
+   .. versionadded:: 1.0.0

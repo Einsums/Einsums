@@ -1,0 +1,90 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BatchedGemmDescriptor:
+
+=============================================
+einsums::compute_graph::BatchedGemmDescriptor
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BatchedGemmDescriptor
+
+   Metadata for BatchedGemm nodes produced by the GEMMBatching pass.
+
+   N independent matrix-matrix Einsums agreeing on shape, prefactors, trans flags and type, as one
+   `blas::gemm_batch` call. The node holds the 2N inputs (A_0, B_0, A_1, ...) and N outputs in
+   order; this holds the shared parameters.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: int m
+
+      Rows of each C (and A if trans_a == 'N').
+
+
+   .. cpp:member:: int n
+
+      Cols of each C (and B if trans_b == 'N').
+
+
+   .. cpp:member:: int k
+
+      Link dimension.
+
+
+   .. cpp:member:: int lda
+
+      Leading dim of each A (row-major stride).
+
+
+   .. cpp:member:: int ldb
+
+      Leading dim of each B.
+
+
+   .. cpp:member:: int ldc
+
+      Leading dim of each C.
+
+
+   .. cpp:member:: char trans_a
+
+      BLAS transpose flag for A ('N' or 'T').
+
+
+   .. cpp:member:: char trans_b
+
+      BLAS transpose flag for B.
+
+
+   .. cpp:member:: std::complex<double> alpha
+
+      A*B prefactor (full complex; imag part used for complex tensors).
+
+
+   .. cpp:member:: std::complex<double> beta
+
+      C prefactor.
+
+
+   .. cpp:member:: int batch_count
+
+      Number of GEMMs fused into this call.
+
+
+   .. cpp:member:: BlasScalar scalar

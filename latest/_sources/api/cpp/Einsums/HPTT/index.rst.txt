@@ -1,0 +1,84 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_HPTT_api:
+
+============
+HPTT C++ API
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_HPTT>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::hptt::ComputeNode` - A ComputeNode encodes a loop.
+- :cpp:any:`~einsums::hptt::FileHeader` - File header specification for transpose files.
+- :cpp:any:`~einsums::hptt::Plan` - A plan encodes the execution of a tensor transposition.
+- :cpp:any:`~einsums::hptt::PlanTarget` - The machine geometry a plan was built for; follows the FileHeader from format version 1 on.
+- :cpp:any:`~einsums::hptt::Transpose` - Arch-neutral interface to a compiled tensor-transposition plan.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::hptt::account_for_row_major` - Reorders parameters to swap between row-major and column-major forms.
+- :cpp:any:`~einsums::hptt::conj` - Find the conjugate of the given type.
+- :cpp:any:`~einsums::hptt::create_plan` - Create a transposition plan (basic).
+- :cpp:any:`~einsums::hptt::factorial` - Calculate the factorial of a number. Can only take factorials of numbers up to but not including 21.
+- :cpp:any:`~einsums::hptt::find_pos` - Find where a value is in an array.
+- :cpp:any:`~einsums::hptt::get_prime_factors` - Gets the prime factors of a number. If zero or one is passed, the prime factors output will be empty.
+- :cpp:any:`~einsums::hptt::get_zero_threshold` - Get the value that we consider to be zero.
+- :cpp:any:`~einsums::hptt::has_item` - Check whether a vector contains an item.
+- :cpp:any:`~einsums::hptt::print_vector` - Log the contents of a vector.
+- :cpp:any:`~einsums::hptt::verify_file` - Check a transpose file's header and checksum.
+- :cpp:any:`~einsums::hptt_plan_selection` - How hard HPTT should search for a plan. Reads ``option::HpttSelectionMethod`` and maps it to HPTT's enum.
+- :cpp:any:`~einsums::register_Einsums_HPTT_options` - Give HPTT's option its command-line presence. Idempotent.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::hptt::SelectionMethod` - Determines the duration of the auto-tuning process.
+
+Types
+-----
+
+- :cpp:any:`~einsums::hptt::DoubleComplex` - Alias for std::complex<double>.
+- :cpp:any:`~einsums::hptt::FloatComplex` - Alias for std::complex<float>.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::hptt::plan_file_format` - Format version written to ``FileHeader::version[2]``.
+- :cpp:any:`~einsums::option::HpttSelectionMethod` - How hard HPTT looks for a good transpose plan: estimate, measure, patient, or crazy, in increasing order of search effort.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.hptt.account_for_row_major
+   einsums.hptt.ComputeNode
+   einsums.hptt.conj
+   einsums.hptt.create_plan
+   einsums.hptt.factorial
+   einsums.hptt.FileHeader
+   einsums.hptt.find_pos
+   einsums.hptt.get_prime_factors
+   einsums.hptt.get_zero_threshold
+   einsums.hptt.has_item
+   einsums.hptt.Plan
+   einsums.hptt.PlanTarget
+   einsums.hptt.print_vector
+   einsums.hptt.Transpose
+   einsums.hptt.verify_file
+   einsums.hptt_plan_selection
+   einsums.register_Einsums_HPTT_options
+   enums
+   types
+   variables

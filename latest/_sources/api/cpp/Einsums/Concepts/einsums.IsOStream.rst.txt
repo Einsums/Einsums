@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.IsOStream:
+
+==================
+einsums::IsOStream
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/File.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename T> IsOStream
+
+   Tests if the given type is a std::ostream.
+
+   Also works on types that inherit std::ostream.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to test.

@@ -1,0 +1,266 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.ScalingAnalysis:
+
+===============================================
+einsums::compute_graph::passes::ScalingAnalysis
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/ScalingAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: ScalingAnalysis : public OptimizerPass
+
+   Report how a program scales: every contraction's cost polynomial, and what limits it.
+
+   The user-facing face of the symbolic cost model. It walks the graph, asks
+   ``symbolic_cost_for`` for each contraction's cost, adds up the flops, sizes the intermediates,
+   and names the node whose polynomial dominates. Nothing is rewritten and nothing is decided; the
+   point is to answer "what is the rate-limiting term" beside the question "how fast is this", and
+   to be the first consumer that proves a program's space annotations are the ones its author
+   meant.
+
+   Three surfaces carry the same numbers:
+
+   - ``explain``, the two or three lines that join ``graph.explain()``,
+   - ``print_report``, the full per-node table,
+   - the accessors (``node_costs``, ``total_flops``, ``rate_limiting``, ...) for tests and tooling.
+
+   **What is analysed**
+
+   Contraction nodes only. Every other kind is counted in ``skip_reasons`` and contributes
+   nothing: inventing a cost formula for an op whose cost model has not been written would put
+   numbers in the report that no pass agrees with.
+
+   **Where the letters come from**
+
+   A node's cost is derived from the spaces its operands' handles carry AT THE TIME THE PASS RUNS,
+   not from the ``letter_spaces`` map frozen into the node at capture. That is what makes the
+   report reflect a declaration that arrived after capture, and everything ``SpacePropagation``
+   inferred immediately before this pass in the default pipeline. Letters that no annotated slot
+   reaches, and letters whose slots contradict each other, fall back to the node's captured map and
+   then to an anonymous per-letter variable, so an unannotated program still yields a complete
+   report, just one written in ``?i`` rather than in ``o``.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("scaling");
+      graph.set_space_registry(registry);
+      graph.annotate_spaces(T2, {occ, occ, virt, virt});
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("ijab <- ijcd ; cdab", &R2, T2, Vvvvv);
+      }
+      auto [modified, scaling] = graph.apply<cg::passes::ScalingAnalysis>();
+      // scaling.total_flops().to_string(&registry) == "2*o^2*v^4"
+      scaling.print_report(std::cout);
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      scaling = cg.ScalingAnalysis()
+      pm = cg.PassManager()
+      pm.add(scaling)
+      pm.run(g)
+      assert scaling.total_flops_str() == "2*o^2*v^4"
+      print(scaling.report_string())
+
+   Python sees the polynomials as their renderings rather than as ``SymbolicPoly`` objects; see
+   the rendered surface on this class.
+
+   **Limitations**
+
+   - Analysis only. ``run`` always reports "not modified".
+   - ``memory_bound`` is the SUM of the intermediate sizes, which is an upper bound on the high-water mark and not the high-water mark itself. A liveness-aware figure needs the interval analysis ``MemoryPlanning`` already does for bytes, applied to polynomials, and that is a later task. Read it as "no more than this", never as "this much".
+   - A loop body is analysed once, not once per iteration: a trip count is a runtime quantity and multiplying a polynomial by it would put a number in the report that the symbolic layer cannot defend. Node and tensor entries carry their graph's name so a body's contribution stays attributable.
+   - An intermediate is sized from the index letters of the contraction that writes it. An intermediate no contraction writes gets no entry, and is counted in ``skip_reasons``.
+   - The rate-limiting verdict ranks flops only, through the same total order the structural passes use. Two nodes tie only when their flop polynomials are literally identical, so a tie is a statement about the program rather than an artifact of the comparison.
+
+   **Future improvements**
+
+   - A liveness-aware memory high-water polynomial, once intervals and polynomials meet.
+   - Cost formulas for the non-contraction kinds that have one, starting with Gemm and the element-wise family.
+   - A Python surface for the polynomials themselves, once ``SymbolicPoly`` is worth binding as a type. Today Python reads their renderings.
+
+
+   .. cpp:function:: ScalingAnalysis() = default
+
+   .. cpp:function:: std::string name() const override
+
+      See ``OptimizerPass::name``.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      Every feature: an analysis pass annotates and never rewrites a node, which the pass manager enforces.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      See ``OptimizerPass::reset_stats``.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Recurse into loop bodies and conditional branches.
+
+      Safe: the pass reads op structure and writes nothing, so visiting a body costs a body's
+      worth of analysis and changes nothing at any level. See the class documentation for what a
+      body's cost means once it is in the totals.
+
+
+   .. cpp:function:: void print_report(std::ostream &os) const
+
+      Write the full per-node report to a stream.
+
+      Renders every node's three polynomials, every intermediate's size, the totals and the
+      rate-limiting nodes. Space variables resolve to their scale symbols through the registry the
+      analysed graph used, which the pass borrows: rendering after that registry has been
+      destroyed is undefined, exactly as it is for ``SymbolicPoly::to_string``.
+
+      :param os: The stream to write to.
+
+
+   .. cpp:function:: const std::vector<NodeCost> & node_costs() const noexcept
+
+      Per-node costs, in the order the nodes were visited.
+
+      :returns: The costs. Empty when the graph holds no contraction.
+
+
+   .. cpp:function:: const std::vector<IntermediateSize> & intermediate_sizes() const noexcept
+
+      Per-intermediate symbolic sizes, in tensor-id order within each graph visited.
+
+      :returns: The sizes.
+
+
+   .. cpp:function:: const SymbolicPoly & total_flops() const noexcept
+
+      The sum of every analysed node's flops polynomial.
+
+      :returns: The total. The zero polynomial when nothing was analysed.
+
+
+   .. cpp:function:: const SymbolicPoly & total_traffic() const noexcept
+
+      The sum of every analysed node's traffic polynomial.
+
+      :returns: The total. The zero polynomial when nothing was analysed.
+
+
+   .. cpp:function:: const SymbolicPoly & memory_bound() const noexcept
+
+      The sum of every intermediate's size, an UPPER BOUND on the memory high-water mark.
+
+      :returns: The bound, in elements. See the class documentation for what it does not say.
+
+
+   .. cpp:function:: const std::vector<NodeCost> & rate_limiting() const noexcept
+
+      The node or nodes whose flops polynomial is maximal under the registry's scale order.
+
+      :returns: The rate-limiting nodes. Empty when nothing was analysed; more than one entry only when their flop polynomials are identical.
+
+
+   .. cpp:function:: std::size_t num_unannotated_nodes() const noexcept
+
+      How many analysed nodes carry at least one unannotated letter.
+
+      :returns: The count. Nonzero means the report is weaker than annotation could make it.
+
+
+   .. cpp:function:: std::size_t num_analyzed() const noexcept
+
+      How many nodes were analysed.
+
+      :returns: The number of contraction nodes the pass costed.
+
+
+   .. cpp:function:: std::string report_string() const
+
+      The same report ``print_report`` writes, returned as a string.
+
+      The form a caller that is not holding a stream wants, which is every Python caller and every
+      test that asserts on what the report says. Streams are not bound, and a returned string
+      needs no flushing to be readable.
+
+      :returns: The report. Never empty; it says so when nothing was analysed.
+
+
+   .. cpp:function:: std::string total_flops_str() const
+
+      The rendering of ``total_flops``.
+
+      :returns: The polynomial as text, in the analysed graph's scale symbols.
+
+
+   .. cpp:function:: std::string total_traffic_str() const
+
+      The rendering of ``total_traffic``.
+
+      :returns: The polynomial as text, in the analysed graph's scale symbols.
+
+
+   .. cpp:function:: std::string memory_bound_str() const
+
+      The rendering of ``memory_bound``.
+
+      :returns: The polynomial as text. See the class documentation for what the bound does not say.
+
+
+   .. cpp:function:: std::vector<std::string> node_labels() const
+
+      The label of every analysed node, in the order they were visited.
+
+      :returns: The labels, parallel to ``node_flops``.
+
+
+   .. cpp:function:: std::vector<std::string> node_flops() const
+
+      The rendered flops polynomial of every analysed node, in the order they were visited.
+
+      :returns: The renderings, parallel to ``node_labels``.
+
+
+   .. cpp:function:: std::vector<std::string> rate_limiting_labels() const
+
+      The labels of the rate-limiting nodes.
+
+      :returns: The labels. More than one entry only when their flop polynomials are identical.
+
+
+   .. cpp:function:: std::vector<std::string> intermediate_names() const
+
+      The name of every sized intermediate, in the order they were visited.
+
+      :returns: The names, parallel to ``intermediate_sizes_str``.
+
+
+   .. cpp:function:: std::vector<std::string> intermediate_sizes_str() const
+
+      The rendered element-count polynomial of every sized intermediate.
+
+      :returns: The renderings, parallel to ``intermediate_names``.

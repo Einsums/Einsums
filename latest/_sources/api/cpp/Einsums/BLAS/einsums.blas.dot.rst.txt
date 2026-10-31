@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.dot:
+
+==================
+einsums::blas::dot
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> T dot(int_t n, const T *x, int_t incx, const T *y, int_t incy)
+
+   Computes the dot product of two vectors. For complex vectors it is the non-conjugated dot product;
+   (c|z)dotu in BLAS nomenclature.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: underlying data type
+   :param n: length of the vectors
+   :param x: first vector
+   :param incx: how many elements to skip in x
+   :param y: second vector
+   :param incy: how many elements to skip in yo
+   :returns: result of the dot product

@@ -1,0 +1,427 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PassManager:
+
+===================================
+einsums::compute_graph::PassManager
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PassManager
+
+   Manages an ordered sequence of optimization passes.
+
+   The PassManager collects passes and runs them in order on a graph.
+   Use add() to append individual passes, or use create_default() to
+   get a PassManager pre-loaded with all built-in passes in the
+   recommended order.
+
+   **Example: custom pass pipeline**
+
+   .. code-block:: text
+
+      cg::PassManager pm;
+      pm.add<cg::passes::ConstantFolding>();
+      pm.add<cg::passes::ScaleAbsorption>();
+      pm.add<cg::passes::CSE>();
+      pm.add<cg::passes::Reorder>();
+
+      graph.apply(pm);
+
+   **Example: default pass pipeline**
+
+   .. code-block:: text
+
+      auto pm = cg::PassManager::create_default();
+      graph.apply(pm);
+
+   .. seealso::
+
+      Graph::apply(PassManager&)
+
+   .. seealso::
+
+      Pipeline::apply(PassManager&)
+
+   .. seealso::
+
+      create_for(OptLevel)
+
+
+   .. cpp:function:: PassManager() = default
+
+      Default-construct an empty PassManager. Explicit (rather than
+      implicit) so the binding codegen has a constructor declaration to
+      annotate with APIARY_EXPOSE.
+
+
+   .. cpp:function:: template <typename PassType, typename... Args> PassManager & add(Args &&... args)
+
+      Add a pass to the end of the pipeline.
+
+      The pass is constructed in-place and owned by the PassManager.
+
+      .. code-block:: text
+
+         pm.add<cg::passes::CSE>()
+           .add<cg::passes::Reorder>()
+           .add<cg::passes::MemoryPlanning>();
+
+      :tparam PassType: The pass class (must derive from OptimizerPass).
+      :tparam Args: Constructor argument types.
+      :param args: Arguments forwarded to the pass constructor.
+      :returns: Reference to this PassManager (for chaining).
+
+
+   .. cpp:function:: PassManager & add(std::shared_ptr<OptimizerPass> optimizer_pass)
+
+      Non-templated overload taking shared ownership of a pass.
+
+      Exists so the Python binding can write ``pm.add(cg.CSE())``: the
+      templated form can't be bound directly because pybind11 has no way
+      to deduce ``PassType`` from a Python call site. C++ callers should
+      prefer ``add<PassType>(...)`` since it constructs in place. Stored
+      as ``shared_ptr`` to match the pybind11 holder type, pybind can't
+      transfer ownership of a Python-held ``unique_ptr`` across the FFI
+      boundary without ``py::smart_holder``.
+
+
+   .. cpp:function:: PassManager & disable(std::string pass_name)
+
+      Switch one pass off by name, without removing it from the pipeline.
+
+      The programmatic half of ``einsums:pass:disable``. Both exist because they
+      answer to different people: the option is what a user reaches for from a
+      command line with no rebuild, and this is what a driver reaches for when it
+      has to run the same pipeline N times with a different pass switched off each
+      time. A driver that had only the option would have to mutate process-global
+      configuration to do its job.
+
+      The name is the pass's ``OptimizerPass::name``, and it need not be in the
+      pipeline yet: switches are consulted at ``run``, so disabling before
+      ``populate_default`` works. A name that still matches no pass when
+      ``run()`` finishes is REPORTED through ``explain`` rather than ignored -
+      a mistyped pass name that silently does nothing is the failure mode this
+      whole surface exists to avoid.
+
+      .. code-block:: text
+
+         pm.disable("CSE").disable("Reorder");
+
+      .. versionadded:: 2.0.0
+
+      :param pass_name: The pass to switch off.
+      :returns: Reference to this PassManager, for chaining.
+
+
+   .. cpp:function:: PassManager & enable(std::string pass_name)
+
+      Switch one pass back on, overriding ``einsums:pass:disable``.
+
+      Undoes a ``disable``, and also overrides the option: an explicit call here
+      beats an environment variable, because the more specific statement about
+      this pipeline should win, and a program that asked for a pass by name and
+      silently did not get it is the surprise this surface is meant to remove.
+
+      .. versionadded:: 2.0.0
+
+      :param pass_name: The pass to switch on.
+      :returns: Reference to this PassManager, for chaining.
+
+
+   .. cpp:function:: std::vector<std::string> disabled_passes() const
+
+      The passes the last ``run`` actually skipped, in pipeline order.
+
+      Empty before the first run, and empty on a run that skipped nothing.
+      Reports what HAPPENED rather than what was requested, so a name in
+      ``einsums:pass:disable`` that matched no pass does not appear here; see
+      ``unmatched_switches`` for those.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The skipped passes' names.
+
+
+   .. cpp:function:: std::vector<std::string> unmatched_switches() const
+
+      Switch names, from either source, that matched no pass in the pipeline.
+
+      A mistyped name is indistinguishable from a correctly typed one for a pass
+      this build does not have, and both produce a pipeline that quietly did not
+      do what was asked. Sorted, so the report is diffable.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The unmatched names.
+
+
+   .. cpp:function:: void set_verbosity(int level)
+
+      Set introspection verbosity for every pass in the pipeline.
+
+      Propagates ``level`` to all currently-registered passes and to any added
+      afterward, and makes ``run()`` print a per-pass summary line
+      (``name: MODIFIED N -> M nodes (T ms)``) to the passes logger. See
+      ``OptimizerPass::set_verbosity`` for the level meanings.
+
+      .. code-block:: text
+
+         pm = cg.default_pass_manager()
+         pm.set_verbosity(2)   # narrate each modification
+         g.apply(pm)
+
+
+   .. cpp:function:: void set_optimizer_budget(std::int64_t allowance_ms)
+
+      Give every pass in this pipeline a wall-clock allowance for its run.
+
+      The programmatic half of ``einsums:graph:optimizer-budget``, and it exists for the same
+      reason ``disable`` does: a driver that wanted to bound one pipeline would otherwise have to
+      mutate process-global configuration to do it, which also makes it unrunnable concurrently.
+      An explicit setting wins over the option, because the more specific statement about this
+      pipeline is the one that should.
+
+      :param allowance_ms: How long each pass may take, in milliseconds. Zero or negative means unlimited.
+
+
+   .. cpp:function:: bool run(Graph &graph)
+
+      Run all passes in order on the given graph.
+
+      :param graph: The graph to optimize.
+      :returns: True if any pass modified the graph.
+
+
+   .. cpp:function:: const std::vector<std::shared_ptr<OptimizerPass>> & passes() const
+
+      Get the list of passes for inspection.
+
+      :returns: Const reference to the pass list.
+
+
+   .. cpp:function:: size_t size() const
+
+      Number of passes in the pipeline.
+
+
+   .. cpp:function:: static PassManager create_default()
+
+      Create a PassManager with all built-in passes in recommended order.
+
+      Ordering rationale: provenance first (DeltaElimination reads the tags it carries), then
+      lowering (TiledExpansion, so every pass below sees dense nodes), then index-space analysis,
+      then the algebraic rewrites (delta elimination, the antisymmetrizer passes, folding,
+      absorption, fusion, elimination, hoisting, factorization), then planning, then tiling, then scheduling
+      (Reorder/IOPrefetch), then deferred materialization and the read-only analyses of the
+      planned graph, then backend placement (GPU, distributed), then memory management. The GPU
+      and distributed blocks are compile-time-gated by backend availability; the numbering below
+      assumes both are present. build_default_passes() in Optimizer.cpp carries the per-pass
+      ordering rationale, and a test in PassPhases.cpp holds this list to it.
+
+      Each entry names its ``PassPhase``. The sequence is *not* sorted by
+      phase, and one entry is a recorded deviation from the phase rule: see
+      ``passes::TiledExpansion::phase`` for why lowering runs ahead of the
+      algebraic cleanups it feeds. The phase labels are what
+      ``structural_pass_manager`` and friends filter on, and what a saved
+      graph consults to decide which output it may keep.
+
+      1. ProvenancePropagation (analysis): carry provenance tags across identity-preserving ops
+      2. TiledExpansion (structural-resource): lower tiled ops into per-tile dense nodes
+      3. SpacePropagation (analysis): infer per-slot index spaces on graph intermediates
+      4. CrossSpaceValidation (diagnostic): flag letters binding slots of different index spaces
+      5. DeltaElimination (structural-algebraic): replace a contraction with a Kronecker delta by a rename
+      6. AntisymmetryDetection (analysis): read which permutation symmetries a bound input has
+      7. AntisymmetrizerLinearity (structural-algebraic): pull a sum of antisymmetrized terms inside one operator
+      8. AntisymmetryInference (analysis): tag a permutation operator's output with its antisymmetry
+      9. AntisymmetrizerFolding (structural-algebraic): collapse an operator on an antisymmetric operand to a scalar
+      10. AntisymmetrizerExpansion (structural-algebraic): lower remaining operators into explicit terms
+      11. ConstantFolding (structural-algebraic): evaluate constant-input nodes at compile time
+      12. ScaleAbsorption (structural-algebraic): drop a Scale(α) made dead by the next op overwriting it
+      13. PermuteFusion (structural-algebraic): absorb leading permutes into the GEMM trans flags
+      14. CSE (structural-algebraic): common subexpression elimination
+      15. DeadNodeElimination (structural-algebraic): drop nodes whose outputs are unused
+      16. SymmetrizedAccumulation (structural-algebraic): fold the r2 += s*(tmp + P(tmp)) idiom
+      17. ElementWiseFusion (structural-algebraic): merge adjacent element-wise ops
+      18. LinearCombinationContractionFolding (structural-algebraic): fold transpose-paired contractions
+      19. DistributiveFactoring (structural-algebraic): factor a shared operand out of sibling contractions
+      20. LoopInvariantHoisting (structural-algebraic): move invariant ops out of Loop bodies
+      21. ScratchPrivatization (structural-resource): clone reused scratch to break false WAR/WAW chains
+      22. MultiTermFactorization (structural-algebraic): parenthesize a region's contractions and share terms
+      23. LayoutAssignment (structural-algebraic): choose storage orders so contractions read operands flat
+      24. ContractionPlanning (structural-algebraic): cost-model chain reassociation
+      25. AxisTiling (structural-resource): stream an intermediate the memory budget cannot hold
+      26. SlabStreaming (structural-resource): read a backed tensor too large for its share a slab at a time
+      27. GEMMBatching (tuning): collapse compatible GEMMs into one BatchedGemm
+      28. Reorder (tuning): memory-aware topological sort
+      29. IOPrefetch (tuning): overlap DiskRead with compute
+      30. DistributionPlanning (structural-resource): classify indices for distributed dispatch
+      31. Materialization (tuning): resize deferred tensors to local partitions
+      32. SymmetryPropagation (analysis): infer symmetry on graph intermediates and push to backing tensors for rank-2 BLAS dispatch
+      33. ScalingAnalysis (diagnostic): report every contraction's cost polynomial and what limits it
+      34. StreamContractionFusion (tuning): loop-fuse sibling contractions over one big tensor
+
+      GPU block (when a GPU backend or mock is available):
+
+      35. GPUPlacement (structural-resource): cost-model based node-to-GPU assignment
+      36. TransferInsertion (structural-resource): insert HostToDevice / DeviceToHost nodes
+      37. TransferElimination (structural-resource): drop redundant transfers
+      38. GPUDiagnostics (diagnostic): log placement decisions
+      39. StreamAssignment (tuning): assign CUDA streams for overlap
+
+      Distributed block (when MPI or its mock is available):
+
+      40. InputSlicing (structural-resource): create per-rank views of distributed inputs
+      41. SUMMAExpansion (structural-resource): expand einsums to SUMMA loops on square grids
+      42. CommunicationInsertion (structural-resource): insert allreduces for replicated outputs
+      43. CommunicationElimination (structural-resource): drop redundant communications
+      44. CommunicationScheduling (structural-resource): split allreduce into async iallreduce + wait
+
+      Tail (always registered):
+
+      45. InplaceOptimization (tuning): merge elementwise outputs into dying inputs
+      46. FreeInsertion (tuning): free intermediates after last consumer
+      47. MemoryPlanning (tuning): tensor liveness, peak memory, and arena planning
+
+      Passes registered with ``register_default_pass`` run beside their anchors.
+
+      :returns: A fully-populated PassManager.
+
+
+   .. cpp:function:: static PassManager analysis_pass_manager()
+
+      The read-only phases of the default pipeline: analysis and diagnostic.
+
+      Holds every ``PassPhase::Analysis`` and ``PassPhase::Diagnostic`` pass
+      of ``create_default``, in the same relative order. The two share one
+      manager because they share the property that makes this manager useful:
+      running it changes nothing an executor can observe, so it is safe on a
+      graph in any state, including one just loaded from a file and not yet
+      re-planned.
+
+      :returns: A PassManager holding only the read-only passes.
+
+
+   .. cpp:function:: static PassManager structural_pass_manager()
+
+      The machine-independent rewrites: ``PassPhase::StructuralAlgebraic``.
+
+      This is the phase whose output a saved graph persists, so this manager is
+      what an offline optimizer runs before writing a file, and what a load
+      does *not* re-run.
+
+      :returns: A PassManager holding only the structural-algebraic passes.
+
+
+   .. cpp:function:: static PassManager resource_pass_manager()
+
+      The machine-dependent node-set changes: ``PassPhase::StructuralResource``.
+
+      Tiling, GPU placement, distribution planning, slicing and SUMMA
+      expansion. Never saved, always re-derived, so a load runs this manager
+      and then ``tuning_pass_manager`` over the file's algebraic form.
+
+      :returns: A PassManager holding only the structural-resource passes.
+
+
+   .. cpp:function:: static PassManager tuning_pass_manager()
+
+      The schedule, memory and batching decisions: ``PassPhase::Tuning``.
+
+      :returns: A PassManager holding only the tuning passes.
+
+
+   .. cpp:function:: std::vector<std::pair<std::string, PassPhase>> phase_of_each() const
+
+      Every pass in this pipeline, in order, with the phase it declares.
+
+      Introspection for tests and for anything that has to decide what a saved
+      graph may keep. Reads ``OptimizerPass::phase``, so a pass defined
+      outside this library is described like any other.
+
+      :returns: ``(name, phase)`` pairs in pipeline order.
+
+
+   .. cpp:function:: static PassManager create_for(OptLevel level)
+
+      Factory for a given optimization level (create_default() == O2).
+
+
+   .. cpp:function:: std::string explain() const
+
+      One human-readable report of what the last run() did.
+
+      Harvests the per-pass statistics (nodes eliminated, chains
+      restructured with estimated speedups, buffers merged in place, Frees
+      inserted, arena size vs the buffers it hosts, batches formed and
+      profitability-gate skips) into a few lines of text. Empty until run()
+      has been called. See Graph::explain() for the graph-level entry point.
+
+      At verbosity >= 2 the report gains a "not applied" section listing, per
+      pass, how many candidates it declined and why (see
+      ``OptimizerPass::skip_reasons``). "(no optimizations applied)" on its own
+      cannot tell you whether the graph was already optimal or whether every
+      candidate hit one satisfiable gate - and those call for opposite
+      responses - so raise the verbosity before concluding a pipeline is inert.
+
+      Each line is prefixed with the reporting pass's ``PassPhase``, because
+      "which phase produced this" is the first question asked of a rewrite that
+      turns out to be wrong on one machine and right on another.
+
+
+   .. cpp:function:: std::vector<Decision> decisions() const
+
+      Every decision of every pass in this pipeline, from its last run, in pipeline order.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The records ``explain`` prints from, each naming its pass and graph.
+
+
+   .. cpp:function:: void populate_default()
+
+      Populate this PassManager with the default pass list (in place).
+
+      Equivalent to ``*this = create_default()`` but doesn't require the
+      class to be move-assignable. Used by the Python binding, which
+      can't bind ``add<PassType>()`` (templated) and so needs an
+      instance method to put the canonical pass list together.
+
+
+   .. cpp:function:: void populate_analysis()
+
+      Append the read-only passes. @see analysis_pass_manager
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void populate_structural()
+
+      Append the machine-independent rewrites. @see structural_pass_manager
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void populate_resource()
+
+      Append the machine-dependent node-set changes. @see resource_pass_manager
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void populate_tuning()
+
+      Append the schedule, memory and batching passes. @see tuning_pass_manager
+
+      .. versionadded:: 2.0.0

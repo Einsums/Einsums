@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.UninitializedError:
+
+===========================
+einsums::UninitializedError
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: UninitializedError : public std::runtime_error
+
+   Indicates that the code is handling data that is uninitialized. This is usually thrown when
+   Einsums was not initialized.
+
+   .. versionadded:: 1.0.0

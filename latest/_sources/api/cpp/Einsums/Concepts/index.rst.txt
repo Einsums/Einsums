@@ -1,0 +1,202 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Concepts_api:
+
+================
+Concepts C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Concepts>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::BiggestType` - Gets the type with the biggest storage specification.
+- :cpp:any:`~einsums::details::IsSmartPointerHelper` - Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
+- :cpp:any:`~einsums::IsSmartPointerHelper` - Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
+- :cpp:any:`~einsums::LocationTensorBaseOf` - Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
+- :cpp:any:`~einsums::RemoveView` - Gets the underlying type of view.
+- :cpp:any:`~einsums::ValueType` - Gets the data type of tensor/scalar.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::AlgebraTensorConcept` - Checks to see if operations with the tensor can be optimized with libraries.
+- :cpp:any:`~einsums::AtLeastOneOfType` - Checks each type against a key. If any type matches, returns true.
+- :cpp:any:`~einsums::BasicLockableConcept` - Tests whether the given type satisfies the C++ BasicLockable requirement.
+- :cpp:any:`~einsums::BasicTensorConcept` - Checks to see if the tensor is a basic tensor.
+- :cpp:any:`~einsums::BlockTensorConcept` - Checks to see if the tensor is a block tensor with the given storage type.
+- :cpp:any:`~einsums::BufferableTensorConcept` - Checks to see if a tensor's data can be buffered.
+- :cpp:any:`~einsums::CanBeComplex` - Tests whether a type is an arithmetic type including complex.
+- :cpp:any:`~einsums::CollectedTensorConcept` - Checks to see if the tensor is a tensor collection with the given storage type.
+- :cpp:any:`~einsums::Complex` - Tests whether a type is complex, or is a tensor storing a complex value.
+- :cpp:any:`~einsums::Container` - Checks that a type satisfies the Container requirement.
+- :cpp:any:`~einsums::ContainerOf` - Check to see if a type satisfies the Container requirement and stores values of a certain type.
+- :cpp:any:`~einsums::ContainerOrInitializer` - Checks that a type satisfies the Container requirement or is an initializer list.
+- :cpp:any:`~einsums::CoreBasicTensorConcept` - Requires that a tensor is a basic tensor stored in-core.
+- :cpp:any:`~einsums::CoreBlockTensorConcept` - Requires that a tensor is a block tensor stored in-core.
+- :cpp:any:`~einsums::CoreRankBlockTensor` - Requires that a tensor is a block tensor stored in-core, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::CoreRankTensor` - Requires that a tensor is in-core, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::CoreTensorConcept` - Checks to see if the tensor is available in-core.
+- :cpp:any:`~einsums::CoreTiledTensorConcept` - Requires that a tensor is a tiled tensor stored in-core.
+- :cpp:any:`~einsums::DeviceTensorConcept` - Checks to see if the tensor is available to graphics hardware.
+- :cpp:any:`~einsums::DiskTensorConcept` - Checks to see if the tensor is stored on-disk.
+- :cpp:any:`~einsums::FastSubscriptableConcept` - Checks to see if the tensor has a faster method of subscripting.
+- :cpp:any:`~einsums::FileOrOStream` - Checks both IsFilePointer and IsOStream and returns true if either is true.
+- :cpp:any:`~einsums::FunctionTensorConcept` - Checks to see if the tensor is a function tensor.
+- :cpp:any:`~einsums::InSamePlace` - Requires that all tensors are in the same storage place.
+- :cpp:any:`~einsums::IsComplex` - Tests whether a type is a complex type.
+- :cpp:any:`~einsums::IsComplexTensor` - Tests whether a tensor stores a complex data type.
+- :cpp:any:`~einsums::IsFilePointer` - Tests if the given type is a file pointer.
+- :cpp:any:`~einsums::IsOStream` - Tests if the given type is a std::ostream.
+- :cpp:any:`~einsums::LockableConcept` - Tests whether the given type satisfies the C++ Lockable requirement.
+- :cpp:any:`~einsums::MatrixConcept` - Alias of RankTensorConcept<D, 2>.
+- :cpp:any:`~einsums::NoneOfType` - Checks each type against a key. If any type matches, returns false.
+- :cpp:any:`~einsums::NotASmartPointer` - The opposite of SmartPointer.
+- :cpp:any:`~einsums::NotComplex` - The opposite of Complex.
+- :cpp:any:`~einsums::NotTensorConcept` - Tests whether the given type is a tensor or not.
+- :cpp:any:`~einsums::NumOfType` - Checks each type against a key. If the number of matches matches the number, returns true.
+- :cpp:any:`~einsums::RankBasicTensor` - Requires that a tensor is a basic tensor, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::RankBlockTensor` - Requires that a tensor is a block tensor, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::RankTensorConcept` - Tests whether the given type is a tensor with the given rank.
+- :cpp:any:`~einsums::SameRank` - Checks that several tensors have the same rank.
+- :cpp:any:`~einsums::SameUnderlying` - Checks that several tensors store the same type.
+- :cpp:any:`~einsums::SameUnderlyingAndRank` - Checks that several tensors have the same rank and underlying type.
+- :cpp:any:`~einsums::Scalar`
+- :cpp:any:`~einsums::ScalarConcept` - Alias of RankTensorConcept<D, 0>.
+- :cpp:any:`~einsums::SmartPointer` - Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
+- :cpp:any:`~einsums::TensorConcept` - Tests whether the given type is a tensor or not.
+- :cpp:any:`~einsums::TensorViewConcept` - Checks to see if the tensor is a view of another.
+- :cpp:any:`~einsums::TiledTensorConcept` - Checks to see if the tensor is a tiled tensor with the given storage type.
+- :cpp:any:`~einsums::TRLTensorConcept` - Tests whether the given tensor type has a storage type and rank and can be locked.
+- :cpp:any:`~einsums::TRTensorConcept` - Tests whether the given tensor type has a storage type and rank.
+- :cpp:any:`~einsums::TypedTensorConcept` - Tests whether the given type is a tensor with an underlying type.
+- :cpp:any:`~einsums::VectorConcept` - Alias of RankTensorConcept<D, 1>.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::subscript_tensor` - Subscripts into a tensor, selecting between the subscript method or the function call syntax.
+
+Types
+-----
+
+- :cpp:any:`~einsums::AddComplexT` - If given a real type, it will give the complex equivalent. If given a complex type, no change will happen.
+- :cpp:any:`~einsums::BasicTensorLike` - Gets the type of basic tensor with the same storage location, but with different rank and underlying type.
+- :cpp:any:`~einsums::BiggestTypeT` - Gets the type with the biggest storage specification.
+- :cpp:any:`~einsums::LocationTensorBaseOfT` - Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
+- :cpp:any:`~einsums::RemoveComplexT` - If given a complex type, it will give the real equivalent. If given a real type, no change will happen.
+- :cpp:any:`~einsums::RemoveViewT` - Gets the underlying type of a view.
+- :cpp:any:`~einsums::TensorLike` - Gets the type of tensor, but with a new rank and type.
+- :cpp:any:`~einsums::ValueTypeT` - Gets the data type of tensor/scalar.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::IsAlgebraTensorV` - Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
+- :cpp:any:`~einsums::IsBasicLockableV` - Tests whether a given type satisfies C++'s BasicLockable requirement.
+- :cpp:any:`~einsums::IsBasicTensorV` - Checks to see if the tensor is a basic tensor.
+- :cpp:any:`~einsums::IsBlockTensorV` - Checks to see if the tensor is a block tensor with the given storage type.
+- :cpp:any:`~einsums::IsBufferableTensorV` - Checks to see if the tensor can be buffered.
+- :cpp:any:`~einsums::IsCollectedTensorV` - Checks to see if the tensor is a tensor collection with the given storage type.
+- :cpp:any:`~einsums::IsComplexV` - Tests whether a type is a complex type.
+- :cpp:any:`~einsums::IsDeviceTensorV` - Checks to see if the tensor is available to graphics hardware.
+- :cpp:any:`~einsums::IsDiskTensorV` - Checks to see if the tensor is stored on-disk.
+- :cpp:any:`~einsums::IsFastSubscriptableV` - Checks to see if the tensor provides the subscript function.
+- :cpp:any:`~einsums::IsFunctionTensorV` - Checks to see if the tensor is a function tensor.
+- :cpp:any:`~einsums::IsInSamePlaceV` - Requires that all tensors are in the same storage place.
+- :cpp:any:`~einsums::IsIncoreBasicTensorV` - Checks to see if the tensor is available in-core and is a basic tensor.
+- :cpp:any:`~einsums::IsIncoreBlockTensorV` - Checks to see if the tensor is available in-core and is a block tensor.
+- :cpp:any:`~einsums::IsIncoreRankBlockTensorV` - Requires that a tensor is a block tensor stored in-core, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::IsIncoreRankTensorV` - Requires that a tensor is in-core, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::IsIncoreTensorV` - Checks to see if the tensor is available in-core.
+- :cpp:any:`~einsums::IsIncoreTiledTensorV` - Checks to see if the tensor is available in-core and is a basic tensor.
+- :cpp:any:`~einsums::IsLockableV` - Tests whether the given type satisfies C++'s Lockable requirement.
+- :cpp:any:`~einsums::IsRankBasicTensorV` - Requires that a tensor is a basic tensor, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::IsRankBlockTensorV` - Requires that a tensor is a block tensor, stores the required type, and has the required rank.
+- :cpp:any:`~einsums::IsRankTensorV` - Tests whether the given type is a tensor with the given rank.
+- :cpp:any:`~einsums::IsSameRankV` - Checks to see if the tensors have the same rank.
+- :cpp:any:`~einsums::IsSameUnderlyingAndRankV` - Checks to see if the tensors have the same rank.
+- :cpp:any:`~einsums::IsSameUnderlyingV` - Checks to see if the tensors have the same storage type, but without specifying that type.
+- :cpp:any:`~einsums::IsScalarV` - Tests to see if a value is a scalar value.
+- :cpp:any:`~einsums::IsSmartPointerV` - Checks if a type is a std::shared_ptr, std::unique_ptr, or std::weak_ptr.
+- :cpp:any:`~einsums::IsTRLTensorV` - Tests whether the given tensor type has a storage type and rank and can be locked.
+- :cpp:any:`~einsums::IsTRTensorV` - Tests whether the given tensor type has a storage type and rank.
+- :cpp:any:`~einsums::IsTensorV` - Tests whether the given type is a tensor or not.
+- :cpp:any:`~einsums::IsTensorViewV` - Checks to see if the tensor is a view of another.
+- :cpp:any:`~einsums::IsTiledTensorV` - Checks to see if the tensor is a tiled tensor with the given storage type.
+- :cpp:any:`~einsums::IsTypedTensorV` - Tests whether the given type is a tensor with an underlying type.
+- :cpp:any:`~einsums::TensorRank` - Gets the rank of a tensor/scalar.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.AlgebraTensorConcept
+   einsums.AtLeastOneOfType
+   einsums.BasicLockableConcept
+   einsums.BasicTensorConcept
+   einsums.BiggestType
+   einsums.BlockTensorConcept
+   einsums.BufferableTensorConcept
+   einsums.CanBeComplex
+   einsums.CollectedTensorConcept
+   einsums.Complex
+   einsums.Container
+   einsums.ContainerOf
+   einsums.ContainerOrInitializer
+   einsums.CoreBasicTensorConcept
+   einsums.CoreBlockTensorConcept
+   einsums.CoreRankBlockTensor
+   einsums.CoreRankTensor
+   einsums.CoreTensorConcept
+   einsums.CoreTiledTensorConcept
+   einsums.details.IsSmartPointerHelper
+   einsums.DeviceTensorConcept
+   einsums.DiskTensorConcept
+   einsums.FastSubscriptableConcept
+   einsums.FileOrOStream
+   einsums.FunctionTensorConcept
+   einsums.InSamePlace
+   einsums.IsComplex
+   einsums.IsComplexTensor
+   einsums.IsFilePointer
+   einsums.IsOStream
+   einsums.IsSmartPointerHelper
+   einsums.LocationTensorBaseOf
+   einsums.LockableConcept
+   einsums.MatrixConcept
+   einsums.NoneOfType
+   einsums.NotASmartPointer
+   einsums.NotComplex
+   einsums.NotTensorConcept
+   einsums.NumOfType
+   einsums.RankBasicTensor
+   einsums.RankBlockTensor
+   einsums.RankTensorConcept
+   einsums.RemoveView
+   einsums.SameRank
+   einsums.SameUnderlying
+   einsums.SameUnderlyingAndRank
+   einsums.Scalar
+   einsums.ScalarConcept
+   einsums.SmartPointer
+   einsums.subscript_tensor
+   einsums.TensorConcept
+   einsums.TensorViewConcept
+   einsums.TiledTensorConcept
+   einsums.TRLTensorConcept
+   einsums.TRTensorConcept
+   einsums.TypedTensorConcept
+   einsums.ValueType
+   einsums.VectorConcept
+   types
+   variables

@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.resolve_scalar_operand:
+
+==============================================
+einsums::compute_graph::resolve_scalar_operand
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: ScalarAccessor resolve_scalar_operand(Graph &graph, TensorId id, std::string_view context, const char *role)
+
+   Bind a ``ScalarAccessor`` to ``id``, or explain why it cannot be bound.
+
+   :param graph: Graph the id belongs to.
+   :param id: The scalar destination.
+   :param context: Caller name for the diagnostic, e.g. ``"build_executor(Dot)"``.
+   :param role: The operand's role in that caller, e.g. ``"result"``.
+   :throws std::invalid_argument: When ``id`` names no tensor, or names one with neither rank-erased geometry nor a registered address.
+   :returns: A bound accessor.

@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.GpuError:
+
+======================
+einsums::gpu::GpuError
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Runtime.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:class:: GpuError
+
+   Structured error for GPU runtime operations.
+
+   For recoverable errors (allocation, no device), via expected<T, GpuError>; BLAS and solver errors throw.
+
+
+   .. cpp:member:: std::string message
+
+   .. cpp:member:: int code
+
+      Vendor error code (cudaError_t, etc.)

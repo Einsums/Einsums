@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.mn_roles_should_swap:
+
+==========================================
+einsums::packed_gemm::mn_roles_should_swap
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool mn_roles_should_swap(const PackingPlan &plan, const MicroKernelShape &shape, bool is_complex)
+
+   Whether this contraction should be packed with the roles of A and B exchanged, as C^T = B^T A^T.
+
+   The tile kernel holds a tile as MR-tall vectors, so it stores C with vector stores only when
+   consecutive m coordinates are adjacent in C, and the C scatter wants the same direction. When
+   C's unit stride comes through B, no order inside the M group supplies it and every tile is
+   written with MR*NR scalar stores. Exchanging the roles makes the kernel's m direction C's
+   unit-stride one.
+
+   Only when the N group has a unit stride and the M group has none. When neither is contiguous
+   both orders cost a cache line per element, and the exchange still cuts the register tile along
+   the other group, which wastes lanes when that group is short; hence also the floor of two tiles.
+   Only the tile-scatter path benefits: the direct-C branches, the block-GEMM strategy and the 1m
+   path handle the transpose their own way.

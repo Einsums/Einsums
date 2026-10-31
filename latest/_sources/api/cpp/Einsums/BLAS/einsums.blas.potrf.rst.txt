@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.potrf:
+
+====================
+einsums::blas::potrf
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t potrf(char uplo, int_t n, T *a, int_t lda)
+
+   Cholesky factorization of a symmetric (Hermitian) positive-definite matrix.
+
+   Overwrites the referenced triangle of :math:`\mathbf{A}` with its Cholesky
+   factor: :math:`\mathbf{A} = \mathbf{L}\mathbf{L}^T` (uplo='L') or
+   :math:`\mathbf{A} = \mathbf{U}^T\mathbf{U}` (uplo='U'). For complex types
+   the transposes are conjugate transposes and A must be Hermitian.
+
+   :param uplo: Which triangle of A is stored and factored ('U' or 'L').
+   :param n: Order of A.
+   :param a: On entry the matrix A; on exit the requested triangle holds the factor.
+   :param lda: Leading dimension of a.
+   :returns: 0 on success; i > 0 if the leading minor of order i is not positive definite and the factorization could not be completed.

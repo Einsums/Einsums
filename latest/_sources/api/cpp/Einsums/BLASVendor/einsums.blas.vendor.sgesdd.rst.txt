@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgesdd:
+
+=============================
+einsums::blas::vendor::sgesdd
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgesdd(char jobz, int_t m, int_t n, float *a, int_t lda, float *s, float *u, int_t ldu, float *vt, int_t ldvt)
+
+   Compute the singular value decomposition using the divide-and-conquer algorithm.
+
+   .. versionadded:: 1.0.0
+
+   :param jobz: Whether to compute the U and V vectors. Case insensitive. Can be either 'a', 's', 'o', or 'n'.
+   :param m: The number of rows of the matrix.
+   :param n: The number of columns of the matrix.
+   :param a: The matrix to decompose. Overwritten on exit.
+   :param lda: The leading dimension of the input matrix.
+   :param s: The singular values.
+   :param u: The U vectors.
+   :param ldu: The leading dimension of the U vectors. Must always be at least 1, even when not referenced.
+   :param vt: The transpose of the V vectors.
+   :param ldvt: The leading dimension of the transpose of the V vectors. Must always be at least 1, even when not referenced.
+   :returns: 0 on success. If positive, then the algorithm did not converge. If negative, then one of the parameters had an invalid value. The absolute value gives the parameter.

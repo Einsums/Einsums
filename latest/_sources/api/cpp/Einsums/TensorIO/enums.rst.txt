@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorIO_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Format.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:enum-class:: DType
+
+   Element type identifiers.
+
+
+   .. cpp:enumerator:: Float32
+
+   .. cpp:enumerator:: Float64
+
+   .. cpp:enumerator:: Complex64
+
+   .. cpp:enumerator:: Complex128
+
+   .. cpp:enumerator:: Int32
+
+   .. cpp:enumerator:: Int64
+
+   .. cpp:enumerator:: UInt32
+
+   .. cpp:enumerator:: UInt64

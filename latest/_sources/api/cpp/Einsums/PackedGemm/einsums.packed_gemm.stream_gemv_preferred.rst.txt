@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.stream_gemv_preferred:
+
+===========================================
+einsums::packed_gemm::stream_gemv_preferred
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool stream_gemv_preferred(int64_t elems)
+
+   Whether a GEMV whose matrix operand has ``elems`` elements should go to the stream route rather
+   than the vendor's gemv. Only where nothing can give that gemv threads: Accelerate's runs on one
+   core however many the process has (the Coulomb J over an 800 MB operand took 12 ms on the M4 at
+   one thread or ten), while the stream reads the operand on every thread (7.9 ms at ten). A vendor
+   that threads through OpenMP (OpenBLAS) or takes a per-thread count (MKL) keeps its gemv, as does
+   a GEMV too small for the stream to use more than one thread. Both einsum engines ask this, so a
+   contraction takes the same route from either.

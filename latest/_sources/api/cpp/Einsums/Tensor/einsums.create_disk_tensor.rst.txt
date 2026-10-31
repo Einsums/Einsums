@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_disk_tensor:
+
+===========================
+einsums::create_disk_tensor
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/DiskTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename Type = double, typename... Args> DiskTensor<Type, sizeof...(Args)> create_disk_tensor(hid_t file, const std::string &name, Args &&... args)
+
+   Create a disk tensor object.
+
+   Creates a new tensor that lives on disk. This function does not create any tensor in memory
+   but the tensor is "created" on the HDF5 ``file`` handle.
+
+   .. code-block:: text
+
+      auto a = create_disk_tensor(handle, "a", 3, 3);           // auto -> DiskTensor<double, 2>
+      auto b = create_disk_tensor<float>(handle, "b", 4, 5, 6); // auto -> DiskTensor<float, 3>
+
+   :tparam Type: The datatype of the underlying disk tensor. Defaults to double.
+   :tparam Args: The datatypes of the calling parameters. In almost all cases you should not need to worry about this parameter.
+   :param file: The HDF5 file descriptor
+   :param name: The name of the tensor. Stored in the file under this name.
+   :param args: The arguments needed to constructor the tensor
+   :returns: A new disk tensor.

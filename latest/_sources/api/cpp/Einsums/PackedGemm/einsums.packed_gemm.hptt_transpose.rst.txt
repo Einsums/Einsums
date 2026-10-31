@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.hptt_transpose:
+
+====================================
+einsums::packed_gemm::hptt_transpose
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void hptt_transpose(const int *perm, int rank, const float *src, const size_t *sizes, const size_t *outer_sizes, float *dst, int num_threads, bool conj)
+
+   Transpose ``src`` into a dense ``dst``, optionally reading a SUB-BLOCK.
+
+   ``sizes`` gives the extents to read, fastest-varying first, and @p
+   outer_sizes the extents of the array they sit inside - so a sub-block is
+   described by passing the block's extents in ``sizes``, the whole tensor's in
+   ``outer_sizes``, and a ``src`` already offset to the block's first element.
+   Pass nullptr for ``outer_sizes`` when the source IS the whole dense tensor.
+
+   This is what lets the flatten route hold a K chunk at a time rather than a
+   whole operand: a chunk is a sub-block along one axis, and an axis that is
+   not the slowest leaves gaps that only an outer size can express.

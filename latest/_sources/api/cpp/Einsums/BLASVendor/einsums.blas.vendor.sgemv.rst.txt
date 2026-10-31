@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgemv:
+
+============================
+einsums::blas::vendor::sgemv
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sgemv(char transa, int_t m, int_t n, float alpha, const float *a, int_t lda, const float *x, int_t incx, float beta, float *y, int_t incy)
+
+   Performs matrix vector multiplication.
+
+   .. versionadded:: 1.0.0
+
+   :param transa: Whether to transpose the matrix. Case insensitive. Can be 'n', 'c', or 't'.
+   :param m: The number of entries in the input vector.
+   :param n: The number of entries in the output vector.
+   :param alpha: The scale factor for the multiplication.
+   :param a: The matrix.
+   :param lda: The leading dimension for the matrix.
+   :param x: The input vector.
+   :param incx: The skip value for the input vector. If it is negative, then the multiplication proceeds in reverse.
+   :param beta: The scale factor for the output vector.
+   :param y: The output vector.
+   :param incy: The skip value for the output vector. If it is negative, then the multiplication proceeds in reverse.
+   :throws std::invalid_argument: If ``transa`` or ``transb`` are not one of the valid options.
+   :throws std::domain_error: If any of the integer arguments have invalid values.

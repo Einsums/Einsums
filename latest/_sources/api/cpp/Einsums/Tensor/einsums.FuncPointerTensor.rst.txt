@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.FuncPointerTensor:
+
+==========================
+einsums::FuncPointerTensor
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/FunctionTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t Rank> FuncPointerTensor : public tensor_base::FunctionTensor<T, Rank>
+
+   This is a function tensor that wraps a function pointer.
+
+   Function tensors of this type wrap function pointers. Whenever their subscript method is
+   called, the arguments will ultimately be passed on to the function pointer contained within.
+
+   :tparam T: The return type of the function.
+   :tparam Rank: The rank of the tensor.
+
+
+   .. cpp:function:: template <typename... Args> FuncPointerTensor(std::string name, T (*func_ptr)(const std::array<ptrdiff_t, Rank> &), Args... dims)
+
+      Construct a new function tensor with the given dimensions and function pointer.
+
+      :param name: The new name of the tensor.
+      :param func_ptr: The function pointer that will actually be doing the work.
+      :param dims: The dimensions of the tensor.
+
+
+   .. cpp:function:: FuncPointerTensor(const FuncPointerTensor<T, Rank> &copy)
+
+      Copy a function pointer tensor.
+
+      :param copy: The tensor to copy.
+
+
+   .. cpp:function:: virtual ~FuncPointerTensor() = default
+
+   .. cpp:function:: T call(const std::array<ptrdiff_t, Rank> &inds) const override
+
+      Call the function with the given indices.

@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.slange:
+
+=============================
+einsums::blas::vendor::slange
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: float slange(char norm_type, int_t m, int_t n, const float *A, int_t lda, float *work)
+
+   Computes matrix norms.
+
+   .. versionadded:: 1.0.0
+
+   :param norm_type: The type of norm to compute. Case insensitive. Can be 'm', 'o', 'i', 'f', 'e', or '1'. Note that that is the character '1', or ``0x31`` . It is not the value 1, which is the start-of-heading character.
+   :param m: The number of rows of the matrix.
+   :param n: The number of columns of the matrix.
+   :param A: The matrix in consideration.
+   :param lda: The leading dimension of the matrix.
+   :param work: A work array used by certain norms.
+   :returns: The requested norm of the array.

@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.CanBeComplex:
+
+=====================
+einsums::CanBeComplex
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/Complex.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename T> CanBeComplex
+
+   Tests whether a type is an arithmetic type including complex.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The type to test.

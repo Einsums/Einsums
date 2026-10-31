@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.tensor_ownership_name:
+
+=============================================
+einsums::compute_graph::tensor_ownership_name
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view tensor_ownership_name(TensorOwnership scope) noexcept
+
+   The name of an ownership scope, for diagnostics and for the saved form.
+
+   .. versionadded:: 2.0.0
+
+   :param scope: The scope to name.
+   :returns: A stable spelling ("graph", "pipeline", "workspace").

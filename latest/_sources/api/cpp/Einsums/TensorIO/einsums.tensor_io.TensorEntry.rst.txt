@@ -1,0 +1,108 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.TensorEntry:
+
+===============================
+einsums::tensor_io::TensorEntry
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Format.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:class:: TensorEntry
+
+   Per-tensor metadata entry (160 bytes).
+
+
+   .. cpp:function:: void init()
+
+      Initialize to zeros.
+
+
+   .. cpp:function:: bool permuted() const
+
+      Whether the entry is stored in an axis order other than its declared one.
+
+
+   .. cpp:function:: std::vector<size_t> stored_order() const
+
+      The declared axis held at each stored position: element ``s`` names the declared axis stored
+      ``s-th``, so the declared order is ``0, 1, ..., rank - 1``. Throws when the bytes do not name a
+      permutation of the entry's axes, which only a damaged file holds.
+
+
+   .. cpp:function:: void set_stored_order(const std::vector<size_t> &stored)
+
+      Record ``stored``, a permutation of the entry's axes in the form ``stored_order`` returns.
+      The declared order is recorded as all zero. Throws when ``stored`` is not a permutation of
+      ``0, ..., rank - 1``.
+
+
+   .. cpp:function:: void set_name(std::string_view n)
+
+      Set the tensor name (truncates if too long).
+
+
+   .. cpp:function:: std::string get_name() const
+
+      Get the tensor name as a string.
+
+
+   .. cpp:member:: char name[64]
+
+      Null-terminated tensor name
+
+
+   .. cpp:member:: uint8_t dtype
+
+      DType enum value
+
+
+   .. cpp:member:: uint8_t rank
+
+      Number of dimensions (1-8)
+
+
+   .. cpp:member:: uint8_t order[3]
+
+      The stored order, three bits per stored axis naming the declared axis held there; all zero
+      for the declared order. Read and written through ``stored_order`` and ``set_stored_order``.
+
+
+   .. cpp:member:: uint8_t reserved1[3]
+
+      Padding
+
+
+   .. cpp:member:: uint64_t dims[8]
+
+      Dimension sizes (unused dims = 0)
+
+
+   .. cpp:member:: uint64_t data_offset
+
+      Byte offset from file start to data
+
+
+   .. cpp:member:: uint64_t data_size
+
+      Size of data region in bytes
+
+
+   .. cpp:member:: uint32_t owning_rank
+
+      ETN_ALL_RANKS for serial/replicated
+
+
+   .. cpp:member:: uint32_t reserved2
+
+      Padding

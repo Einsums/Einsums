@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.string_permute:
+
+================================================
+einsums::compute_graph::dispatch::string_permute
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Detail/ErasedEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename CType::ValueType> void string_permute(const ParsedPermuteSpec &parsed, typename AType::ValueType beta, CType *C, typename AType::ValueType alpha, const AType &A)
+
+   Tensor-object overload of ``string_permute_impl``.
+
+   Forwards both operands' ``impl()`` to the one definition above, so every
+   caller that holds tensor objects (capture's eager path, the tiled lowering,
+   the reassociation passes) and the data-built executors run identical code.
+
+   :tparam AType,CType: Source and destination tensor types; same element type.
+   :param parsed: The index lists, and the raw spec for diagnostics.
+   :param beta: Prefactor on the destination; 0 overwrites it.
+   :param C: Destination tensor.
+   :param alpha: Prefactor on the source.
+   :param A: Source tensor.

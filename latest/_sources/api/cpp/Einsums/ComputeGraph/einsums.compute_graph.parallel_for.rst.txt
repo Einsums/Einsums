@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.parallel_for:
+
+====================================
+einsums::compute_graph::parallel_for
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename F, CoreBasicTensorConcept... ReadTensors, CoreBasicTensorConcept... WriteTensors> void parallel_for(std::string name, size_t begin, size_t end, F &&body, std::tuple<const ReadTensors *...> reads, std::tuple<WriteTensors *...> writes)
+
+   Graph-aware parallel_for that captures into the computation graph.
+
+   During capture, records a ParallelFor node with the specified input/output
+   tensor dependencies. At execution time, delegates to TaskPool::parallel_for().
+
+   The user must declare which tensors the body reads (inputs) and writes (outputs)
+   so that the graph's topological sort can order this node correctly relative to
+   other operations.
+
+   .. code-block:: text
+
+      cg::CaptureGuard guard(graph);
+      cg::parallel_for("J_build", 0, n_pairs,
+          [&](size_t pair) { compute_integrals(pair, J_mat, K_mat); },
+          {&D_mat, &eri},    // reads
+          {&J_mat, &K_mat}   // writes
+      );
+      cg::einsum("...", &F, ...);  // Automatically ordered after J_build
+
+   :param name: Label for profiling and debugging.
+   :param begin: Start of the index range [begin, end).
+   :param end: End of the index range.
+   :param body: Callable with signature void(size_t index).
+   :param reads: Tensors read by the body (used for dependency tracking).
+   :param writes: Tensors written by the body (used for dependency tracking).
+
+
+.. cpp:function:: template <typename F, CoreBasicTensorConcept... TensorTypes> void parallel_for(std::string name, size_t begin, size_t end, F &&body, TensorTypes *... tensors)
+
+   Simplified parallel_for with variadic output tensors.
+
+   Convenience overload: all listed tensors are treated as both inputs AND outputs.
+   This is the common case for accumulation patterns where the body both reads and
+   writes the same tensors.
+
+   .. code-block:: text
+
+      cg::parallel_for("J_build", 0, n_pairs,
+          [&](size_t pair) { compute_integrals(pair); },
+          &J_mat, &K_mat   // Both read and written
+      );

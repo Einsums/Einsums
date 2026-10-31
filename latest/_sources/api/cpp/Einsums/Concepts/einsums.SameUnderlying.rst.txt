@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.SameUnderlying:
+
+=======================
+einsums::SameUnderlying
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename First, typename... Rest> SameUnderlying
+
+   Checks that several tensors store the same type.
+
+   .. versionadded:: 1.0.0
+
+   :tparam First: The first tensor.
+   :tparam Rest: The rest of the tensors.

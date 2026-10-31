@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.has_runtime_view_bounds:
+
+===============================================
+einsums::compute_graph::has_runtime_view_bounds
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool has_runtime_view_bounds(const Node &node)
+
+   True when a ``View's`` slice is resolved from runtime state (a named parameter or a callback) rather than from literals.
+
+   Such a view aliases the same parent every iteration but describes a
+   different slice each time. Passes that would evaluate a node once and reuse
+   the result - constant folding, loop-invariant hoisting - must refuse it: the
+   parent input they inspect is genuinely invariant, and the part that moves is
+   not expressed as dataflow at all.

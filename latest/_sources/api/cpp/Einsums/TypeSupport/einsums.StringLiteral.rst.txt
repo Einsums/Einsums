@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.StringLiteral:
+
+======================
+einsums::StringLiteral
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TypeSupport/StringLiteral.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <size_t N> StringLiteral
+
+   A string usable as a template parameter, as NamedTuple names need.
+
+   .. versionadded:: 1.0.0
+
+   :tparam N: The size of the string including the null terminator.
+
+
+   .. cpp:function:: constexpr StringLiteral(const auto... chars)
+
+      Constructs a new string literal out of the list of characters.
+
+      .. versionadded:: 1.0.0
+
+      :param chars: The characters for the string.
+
+
+   .. cpp:function:: constexpr StringLiteral(const std::array<char, N> &arr)
+
+      Constructs a new string literal out of the list of characters.
+
+      .. versionadded:: 1.0.0
+
+      :param arr: The characters for the string.
+
+
+   .. cpp:function:: constexpr StringLiteral(const char (&str)[N])
+
+      Constructs a new stringn literal out of a string.
+
+      .. versionadded:: 1.0.0
+
+      :param str: The string to use for the construction
+
+
+   .. cpp:function:: std::string str() const
+
+      Returns the value as a string.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: constexpr std::string_view string_view() const
+
+      Returns the value as a string view.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:member:: std::array<char, N> _arr
+
+      The array containing the string data.
+
+      .. versionadded:: 1.0.0

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.register_shutdown_function:
+
+===================================
+einsums::register_shutdown_function
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/ShutdownFunction.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void register_shutdown_function(ShutdownFunctionType f)
+
+   Add a function to run in *einsums::finalize()*, after every pre-shutdown function.
+
+   .. note::
+
+      Throws once the shutdown functions have started running.
+
+   .. seealso::
+
+      *einsums::register_pre_shutdown_function()*
+
+   .. versionadded:: 1.0.0
+
+   :param f: [in] The function to register.

@@ -1,0 +1,83 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Region:
+
+==============================
+einsums::compute_graph::Region
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Region
+
+   A contiguous run of raisable nodes, and what crosses its boundary.
+
+   **Why contiguous**
+
+   A region's replacement is spliced over its nodes, so a region whose nodes are
+   interleaved with nodes it does not contain would have to prove that splicing
+   at one position preserves every dependency the interleaved nodes have. That
+   proof is exactly the reasoning the program-order guard in `PassManager::run`
+   exists because passes got wrong (GEMMBatching appended a writer past a
+   surviving reader; LCCF was bitten by the same trap earlier). A maximal run of
+   CONSECUTIVE raisable nodes needs no such proof, and it is deliberately the
+   first cut: growing to non-contiguous regions is a later extension that has to
+   bring the reasoning with it.
+
+   **Barriers**
+
+   Anything not in the raisable set ends a run: LAPACK, control flow,
+   communication, I/O, lifecycle, an anonymous ``OpKind::ElementTransform``
+   whose kernel has no registered name, and a node carrying a feature outside
+   ``RegionOptions::understood``. A method whose body is not flat therefore
+   gets a declined rewrite naming the barrier rather than a silently smaller
+   region.
+
+
+   .. cpp:function:: std::size_t size() const
+
+      How many nodes the region holds.
+
+      :returns: The count.
+
+
+   .. cpp:member:: std::size_t first
+
+      Positions in ``graph.nodes()``, contiguous and ascending.
+
+
+   .. cpp:member:: std::size_t last
+
+      One past the end.
+
+
+   .. cpp:member:: std::vector<NodeId> nodes
+
+      The node ids, in program order.
+
+
+   .. cpp:member:: std::vector<TensorId> inputs
+
+      Read inside, produced outside. Operands of the rewritten region.
+
+
+   .. cpp:member:: std::vector<TensorId> outputs
+
+      Written inside and observable outside. Must still be produced, and for a
+      bitwise-exact rewrite must be produced bit-compatibly.
+
+
+   .. cpp:member:: std::vector<TensorId> internal
+
+      Written and read only inside, and dissolvable: a rewrite may make these
+      disappear entirely.

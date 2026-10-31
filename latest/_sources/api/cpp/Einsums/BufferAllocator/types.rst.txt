@@ -1,0 +1,159 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BufferAllocator_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/BufferAllocator.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:type:: template <typename CharT, typename Traits = std::char_traits<CharT>> BufferBasicString
+
+   Alias for a basic string that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 2.0.0
+
+   :tparam CharT: The type of character stored by the string.
+   :tparam Traits: The character traits of the character type.
+
+
+.. cpp:type:: template <typename T> BufferDeque
+
+   Alias for a deque that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The data type stored by the container.
+
+
+.. cpp:type:: template <typename T> BufferForwardList
+
+   Alias for a forward list that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The data type stored by the container.
+
+
+.. cpp:type:: template <typename T> BufferList
+
+   Alias for a linked list that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The data type stored by the container.
+
+
+.. cpp:type:: template <typename Key, typename T, typename Compare = std::less<Key>> BufferMap
+
+   Alias for a map that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam T: The data type stored by the container.
+   :tparam Compare: A function that checks keys against each other.
+
+
+.. cpp:type:: template <typename Key, typename T, typename Compare = std::less<Key>> BufferMultiMap
+
+   Alias for a multimap that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam T: The data type stored by the container.
+   :tparam Compare: A function that checks keys against each other.
+
+
+.. cpp:type:: template <typename Key, typename Compare = std::less<Key>> BufferMultiSet
+
+   Alias for a multiset that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The data stored by the container.
+   :tparam Compare: A comparison function for the elements.
+
+
+.. cpp:type:: template <typename Key, typename Compare = std::less<Key>> BufferSet
+
+   Alias for a set that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The data stored by the container.
+   :tparam Compare: A comparison function for the elements.
+
+
+.. cpp:type:: BufferString
+
+   Alias for a string that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 2.0.0
+
+
+.. cpp:type:: template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>> BufferUnorderedMap
+
+   Alias for an unordered map that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam T: The data type stored by the container.
+   :tparam Hash: A function that hashes keys.
+   :tparam KeyEqual: A function to determine if two keys are the same.
+
+
+.. cpp:type:: template <typename Key, typename T, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>> BufferUnorderedMultiMap
+
+   Alias for an unordered multimap that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam T: The data type stored by the container.
+   :tparam Hash: A function that hashes keys.
+   :tparam KeyEqual: A function to determine if two keys are the same.
+
+
+.. cpp:type:: template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>> BufferUnorderedMultiSet
+
+   Alias for an unordered multiset that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam Hash: A function for hashing keys.
+   :tparam KeyEqual: A function to determine if two keys are the same.
+
+
+.. cpp:type:: template <typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>> BufferUnorderedSet
+
+   Alias for an unordered set that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam Key: The type for the keys for indexing the container.
+   :tparam Hash: A function for hashing keys.
+   :tparam KeyEqual: A function to determine if two keys are the same.
+
+
+.. cpp:type:: template <typename T> BufferVector
+
+   Alias for a vector that uses a BufferAllocator<T> as its allocator.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The data type stored by the container.

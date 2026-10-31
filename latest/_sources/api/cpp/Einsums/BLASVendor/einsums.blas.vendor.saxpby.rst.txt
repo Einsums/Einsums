@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.saxpby:
+
+=============================
+einsums::blas::vendor::saxpby
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void saxpby(const int_t n, const float a, const float *x, const int_t incx, const float b, float *y, const int_t incy)
+
+   Scales and adds two vectors.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of elements in the vectors.
+   :param a: The scale factor for the first vector.
+   :param x: The input vector.
+   :param incx: The skip value for the input vector. If it is negative, then the vector is traversed backwards. If it is zero, then the result will be broadcast to the output vector.
+   :param b: The scale factor for the output vector.
+   :param y: The output vector.
+   :param incy: The skip value for the output vector. If it is negative, then the vector is traversed backwards.

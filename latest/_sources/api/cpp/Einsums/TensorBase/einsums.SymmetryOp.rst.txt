@@ -1,0 +1,69 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.SymmetryOp:
+
+===================
+einsums::SymmetryOp
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/SymmetryDescriptor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: SymmetryOp
+
+   One generator of a tensor's symmetry group.
+
+   ``permutation[i]`` is the new position of the index that currently sits at
+   position ``i``. For a tensor ``T(i0, i1, ...)`` the operation maps
+   ``T(i0, i1, ...) -> sign * T(i_{perm[0]}, i_{perm[1]}, ...)``. For the
+   Hermitian case the right-hand side is additionally complex-conjugated.
+
+   Padding: for tensors of rank < ``kMaxSymmetryRank`` the unused trailing
+   positions must be filled with their natural index (``permutation[i] = i``).
+
+
+   .. cpp:function:: static SymmetryOp identity()
+
+      Identity operation: all positions map to themselves.
+
+
+   .. cpp:function:: static SymmetryOp swap(int a, int b, int8_t sign, bool conjugate)
+
+      Swap two index positions. All other positions are identity.
+
+
+   .. cpp:function:: static SymmetryOp group_swap(std::initializer_list<int> g1, std::initializer_list<int> g2, int8_t sign, bool conjugate)
+
+      Swap two index groups (useful for the bra/ket swap in chemists'-notation
+      ERIs: ``(ij|kl) = (kl|ij)``). ``g1`` and ``g2`` must be the same length;
+      positions not listed in either group are identity.
+
+
+   .. cpp:function:: static SymmetryOp group_swap(const std::vector<int> &g1, const std::vector<int> &g2, int8_t sign, bool conjugate)
+
+      Swap two index groups, held in vectors, which is the form a binding can pass.
+      ``SymmetryOp.group_swap([0, 2], [1, 3])`` on ``T[i, j, a, b]`` exchanges the pair ``(i, a)``
+      with the pair ``(j, b)``.
+
+
+   .. cpp:function:: bool operator==(const SymmetryOp &other) const noexcept
+
+   .. cpp:member:: std::array<int8_t, kMaxSymmetryRank> permutation
+
+   .. cpp:member:: int8_t sign
+
+      +1 symmetric, -1 antisymmetric
+
+
+   .. cpp:member:: bool conjugate
+
+      true for Hermitian / anti-Hermitian

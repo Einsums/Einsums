@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Build a Spin-Orbital CCSD &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howto/ccsd';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/howto/ccsd.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Porting from NumPy" href="from_numpy.html" />
+    <link rel="prev" title="Compute Graphs" href="graphs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Using Einsums</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contractions.html">Contractions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphs.html">Compute Graphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Building a method</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Build a Spin-Orbital CCSD</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Porting existing code</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="from_numpy.html">Porting from NumPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="from_psi4.html">Working with psi4</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Extending Einsums</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="add_an_option.html">Add a Runtime Option</a></li>
+<li class="toctree-l1"><a class="reference internal" href="add_a_module.html">Add a Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="expose_to_python.html">Expose a Type to Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="write_a_pass.html">Write an Optimization Pass</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-To Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Build a Spin-Orbital CCSD</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="build-a-spin-orbital-ccsd">
+<span id="howto-ccsd"></span><h1>Build a Spin-Orbital CCSD<a class="headerlink" href="#build-a-spin-orbital-ccsd" title="Link to this heading">#</a></h1>
+<p>A correlated method end to end: integrals in, converged correlation energy out.
+CCSD is a good subject because it exercises nearly everything the library offers, including views for orbital blocks, intermediates, antisymmetrizers, an amplitude iteration, and a convergence test.</p>
+<p>The complete program is <code class="docutils literal notranslate"><span class="pre">examples/psi4-bridge/ccsd_spinorbital_numpy_style.py</span></code>.
+This page explains the decisions in it rather than reprinting all of it, so read the two together.</p>
+<p>Running it on cc-pVDZ water reproduces psi4:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MP2 (spin-orbital einsums) = -0.2041547996
+converged in 28 iters
+spin-orbital einsums CCSD corr = -0.2134804971
+psi4 conv CCSD corr            = -0.2134804971
+difference                     = 1.26e-11
+</pre></div>
+</div>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#get-the-integrals-in" id="id1">Get the integrals in</a></p></li>
+<li><p><a class="reference internal" href="#slice-the-orbital-blocks" id="id2">Slice the orbital blocks</a></p></li>
+<li><p><a class="reference internal" href="#write-the-contraction-helper" id="id3">Write the contraction helper</a></p></li>
+<li><p><a class="reference internal" href="#write-the-antisymmetrizers-where-the-equations-write-them" id="id4">Write the antisymmetrizers where the equations write them</a></p></li>
+<li><p><a class="reference internal" href="#form-the-amplitudes" id="id5">Form the amplitudes</a></p></li>
+<li><p><a class="reference internal" href="#assemble-the-intermediates" id="id6">Assemble the intermediates</a></p></li>
+<li><p><a class="reference internal" href="#compute-the-energy" id="id7">Compute the energy</a></p></li>
+<li><p><a class="reference internal" href="#converge" id="id8">Converge</a></p></li>
+<li><p><a class="reference internal" href="#validate-against-a-reference" id="id9">Validate against a reference</a></p></li>
+<li><p><a class="reference internal" href="#making-it-faster" id="id10">Making it faster</a></p></li>
+<li><p><a class="reference internal" href="#next" id="id11">Next</a></p></li>
+</ul>
+</nav>
+<section id="get-the-integrals-in">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Get the integrals in</a><a class="headerlink" href="#get-the-integrals-in" title="Link to this heading">#</a></h2>
+<p>Integrals come from psi4 and cross into Einsums as buffers.
+Neither library is compiled against the other, so either side can be rebuilt freely.
+<a class="reference internal" href="from_psi4.html#howto-from-psi4"><span class="std std-ref">Working with psi4</span></a> covers the bridge in general; for spin-orbital CCSD the path is an AO integral transform, a spin block, and an antisymmetrization, all of which are NumPy work done once before the method starts:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"mp,nr,lq,os,mnlo-&gt;pqrs"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Iao</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># spin-block into interleaved spin orbitals, then antisymmetrize</span>
+<span class="n">gnp</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nso</span><span class="p">,</span> <span class="n">nso</span><span class="p">,</span> <span class="n">nso</span><span class="p">,</span> <span class="n">nso</span><span class="p">)</span>
+<span class="n">gnp</span> <span class="o">=</span> <span class="n">gnp</span> <span class="o">-</span> <span class="n">gnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>          <span class="c1"># &lt;PQ||RS&gt;</span>
+</pre></div>
+</div>
+<p>Doing this in NumPy is deliberate.
+It runs once, it is not the expensive part, and the Einsums half of the program is the iteration.
+The guidance to write correlated methods in Einsums rather than NumPy is about the parts that repeat.</p>
+</section>
+<section id="slice-the-orbital-blocks">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Slice the orbital blocks</a><a class="headerlink" href="#slice-the-orbital-blocks" title="Link to this heading">#</a></h2>
+<p>CCSD is written over occupied and virtual blocks of the antisymmetrized integrals.
+Each slice is taken once and handed to Einsums as its own tensor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">o</span><span class="p">,</span> <span class="n">vv</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">no</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">nso</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">einsums</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">g_oovv</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"oovv"</span><span class="p">,</span> <span class="n">gnp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">vv</span><span class="p">,</span> <span class="n">vv</span><span class="p">])</span>
+<span class="n">g_ooov</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"ooov"</span><span class="p">,</span> <span class="n">gnp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">vv</span><span class="p">])</span>
+<span class="n">g_oooo</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"oooo"</span><span class="p">,</span> <span class="n">gnp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">])</span>
+<span class="n">g_vvvv</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"vvvv"</span><span class="p">,</span> <span class="n">gnp</span><span class="p">[</span><span class="n">vv</span><span class="p">,</span> <span class="n">vv</span><span class="p">,</span> <span class="n">vv</span><span class="p">,</span> <span class="n">vv</span><span class="p">])</span>
+<span class="c1"># ... and the rest</span>
+</pre></div>
+</div>
+<p>The names are worth setting.
+They are what identifies an operation in profiler output and in a graph’s <code class="docutils literal notranslate"><span class="pre">explain()</span></code> report, and a program with eleven integral blocks is much easier to read there when they are not all called <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+<p>Note <code class="docutils literal notranslate"><span class="pre">np.ascontiguousarray</span></code> before the handoff.
+<a class="reference internal" href="from_numpy.html#howto-from-numpy"><span class="std std-ref">Porting from NumPy</span></a> explains why conversion into Einsums copies; passing a non-contiguous NumPy slice works but makes the copy do more work than it needs to.</p>
+</section>
+<section id="write-the-contraction-helper">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Write the contraction helper</a><a class="headerlink" href="#write-the-contraction-helper" title="Link to this heading">#</a></h2>
+<p>An Einsums contraction writes into an output you supply rather than returning one.
+For a term-by-term transcription of equations that is a little verbose, so the program defines one helper and uses it everywhere:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">E</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_zero_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">)</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">c_pf</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ab_pf</span><span class="o">=</span><span class="n">pf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+<p>This is the single most useful thing to copy from the example.
+It lets the rest of the program read like the equations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Fme</span> <span class="o">=</span> <span class="n">E</span><span class="p">(</span><span class="s2">"me &lt;- nf ; mnef"</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">g_oovv</span><span class="p">,</span> <span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">nv</span><span class="p">),</span> <span class="s2">"Fme"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The explicit <code class="docutils literal notranslate"><span class="pre">c_pf=0.0</span></code> says the output is overwritten rather than accumulated, and <code class="docutils literal notranslate"><span class="pre">ab_pf</span></code> carries the coefficient from the equation, so a term with a factor of one half does not need a separate scaling step.</p>
+<p>A second helper does the same for <code class="docutils literal notranslate"><span class="pre">einsums.permute</span></code>, and the next section is the only place the program needs it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">perm</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"p"</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_zero_tensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">)</span>
+    <span class="n">einsums</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</section>
+<section id="write-the-antisymmetrizers-where-the-equations-write-them">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Write the antisymmetrizers where the equations write them</a><a class="headerlink" href="#write-the-antisymmetrizers-where-the-equations-write-them" title="Link to this heading">#</a></h2>
+<p>The <span class="math notranslate nohighlight">\(P(ij)\)</span> and <span class="math notranslate nohighlight">\(P(ab)\)</span> operators go in the subscript string, as a prefix on the term, exactly as the coupled-cluster literature prints them.
+There is no helper to write and no permute-and-subtract to get backwards:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># one contraction, antisymmetrized in a and b</span>
+<span class="n">E</span><span class="p">(</span><span class="s2">"i,j,a,b &lt;- P(ab) i,j,a,e ; b,e"</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">be</span><span class="p">,</span> <span class="n">SH2</span><span class="p">,</span> <span class="s2">"t2ab"</span><span class="p">)</span>
+
+<span class="c1"># a tensor you already have, antisymmetrized in both pairs</span>
+<span class="n">perm</span><span class="p">(</span><span class="s2">"i,j,a,b &lt;- P(ij) P(ab) i,j,a,b"</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="n">SH2</span><span class="p">,</span> <span class="s2">"ringP"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both spellings run eagerly and both record into a graph; neither is capture-only.
+Commas between index letters are allowed and are worth using in a rank-4 spec, where <code class="docutils literal notranslate"><span class="pre">i,j,b,a</span></code> is a good deal easier to check against the paper than <code class="docutils literal notranslate"><span class="pre">ijba</span></code>.</p>
+<p><strong>An operator names letters, not axes.</strong>
+That is the whole reason to prefer it, and it removes a class of bug this example was originally written around: in the T2 residual <span class="math notranslate nohighlight">\(T2[i,j,a,b]\)</span>, <span class="math notranslate nohighlight">\(P(ij)\)</span> is axes (0,1) and <span class="math notranslate nohighlight">\(P(ab)\)</span> is axes (2,3), but in <span class="math notranslate nohighlight">\(W_{mnij}[m,n,i,j]\)</span> the same <span class="math notranslate nohighlight">\(P(ij)\)</span> is axes (2,3), and in <span class="math notranslate nohighlight">\(W_{abef}[a,b,e,f]\)</span> the same <span class="math notranslate nohighlight">\(P(ab)\)</span> is axes (0,1).
+Write <code class="docutils literal notranslate"><span class="pre">P(ij)</span></code> and the letters decide; write a transposition and you have to work it out per intermediate, which is where a 2e-6 ghost hid while MP2 stayed exact.</p>
+<p>The general form partitions the output letters with slashes: <code class="docutils literal notranslate"><span class="pre">P(i/jk)</span></code> is three terms, <code class="docutils literal notranslate"><span class="pre">P(ij/kl)</span></code> is six, and <code class="docutils literal notranslate"><span class="pre">P(ij)</span></code> is sugar for <code class="docutils literal notranslate"><span class="pre">P(i/j)</span></code>.
+The two spellings differ in what they cost.
+On <code class="docutils literal notranslate"><span class="pre">einsum</span></code> the contraction runs once into a temporary shaped like the output, and each term is a signed accumulation out of it; on <code class="docutils literal notranslate"><span class="pre">permute</span></code> there is no temporary at all, because every term reads a source the operation never writes.
+So fold the operator into the <code class="docutils literal notranslate"><span class="pre">einsum</span></code> when the antisymmetrized quantity <em>is</em> one contraction, and use <code class="docutils literal notranslate"><span class="pre">permute</span></code> when it is a sum of several, as the ring term is.
+Captured, neither allocates per call: <code class="docutils literal notranslate"><span class="pre">AntisymmetrizerExpansion</span></code> lowers the operator and the temporary becomes the graph’s to plan.</p>
+</section>
+<section id="form-the-amplitudes">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Form the amplitudes</a><a class="headerlink" href="#form-the-amplitudes" title="Link to this heading">#</a></h2>
+<p>The initial guess is MP2, which is the integrals divided by the denominators.
+Division is an operator, and it maps onto a real elementwise kernel rather than a temporary-heavy expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Dijab</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"Dijab"</span><span class="p">,</span> <span class="n">eo</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">eo</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+                   <span class="o">-</span> <span class="n">ev</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">ev</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:])</span>
+
+<span class="n">t1</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">no</span><span class="p">,</span> <span class="n">nv</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"t1"</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="s2">"t2"</span><span class="p">,</span> <span class="n">gnp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">vv</span><span class="p">,</span> <span class="n">vv</span><span class="p">])</span> <span class="o">/</span> <span class="n">Dijab</span>
+</pre></div>
+</div>
+<p>The same operator closes each iteration, where the new amplitudes are the residual over the denominators:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t1n</span> <span class="o">=</span> <span class="n">t1n</span> <span class="o">/</span> <span class="n">Dia</span>
+<span class="n">t2n</span> <span class="o">=</span> <span class="n">t2n</span> <span class="o">/</span> <span class="n">Dijab</span>
+</pre></div>
+</div>
+</section>
+<section id="assemble-the-intermediates">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Assemble the intermediates</a><a class="headerlink" href="#assemble-the-intermediates" title="Link to this heading">#</a></h2>
+<p>The one-body and two-body intermediates are direct transcriptions.
+Each is a sum of contractions, and accumulating them with <code class="docutils literal notranslate"><span class="pre">+</span></code> is clear enough at this size:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Fae</span> <span class="o">=</span> <span class="n">E</span><span class="p">(</span><span class="s2">"ae &lt;- mf ; amef"</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">g_vovv</span><span class="p">,</span> <span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">),</span> <span class="s2">"Fae"</span><span class="p">)</span> \
+    <span class="o">-</span> <span class="n">E</span><span class="p">(</span><span class="s2">"ae &lt;- mnaf ; mnef"</span><span class="p">,</span> <span class="n">taut</span><span class="p">,</span> <span class="n">g_oovv</span><span class="p">,</span> <span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">),</span> <span class="s2">"Fae2"</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">wt</span> <span class="o">=</span> <span class="n">E</span><span class="p">(</span><span class="s2">"m,n,i,j &lt;- P(ij) j,e ; m,n,i,e"</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">g_ooov</span><span class="p">,</span> <span class="n">OOOO</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">)</span>
+<span class="n">Wmnij</span> <span class="o">=</span> <span class="n">g_oooo</span> <span class="o">+</span> <span class="n">wt</span> \
+    <span class="o">+</span> <span class="n">E</span><span class="p">(</span><span class="s2">"mnij &lt;- ijef ; mnef"</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">g_oovv</span><span class="p">,</span> <span class="n">OOOO</span><span class="p">,</span> <span class="s2">"Wmnij2"</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Shapes are hoisted into named tuples at the top of the loop, because they are used repeatedly and a transposed pair here is a tedious bug to find:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">OOOO</span><span class="p">,</span> <span class="n">OVVO</span><span class="p">,</span> <span class="n">SH2</span> <span class="o">=</span> <span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">),</span> <span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">,</span> <span class="n">no</span><span class="p">),</span> <span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">,</span> <span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">)</span>
+<span class="n">VVVV</span> <span class="o">=</span> <span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">,</span> <span class="n">nv</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-the-energy">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Compute the energy</a><a class="headerlink" href="#compute-the-energy" title="Link to this heading">#</a></h2>
+<p>The CCSD energy is two dot products, one over the doubles and one over a singles intermediate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">energy</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">la</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">g_oovv</span><span class="p">,</span> <span class="n">t2</span><span class="p">))</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">E</span><span class="p">(</span><span class="s2">"ia &lt;- ijab ; jb"</span><span class="p">,</span> <span class="n">g_oovv</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="p">(</span><span class="n">no</span><span class="p">,</span> <span class="n">nv</span><span class="p">),</span> <span class="s2">"Xen"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">e</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">la</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">X</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">la.dot</span></code> returns a value, which is what you want in eager code.
+Inside a graph capture the returning form throws and you use the pointer-writing spelling instead; see <a class="reference internal" href="graphs.html#howto-graphs"><span class="std std-ref">Compute Graphs</span></a>.</p>
+</section>
+<section id="converge">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Converge</a><a class="headerlink" href="#converge" title="Link to this heading">#</a></h2>
+<p>The loop is ordinary Python.
+Convergence is on the energy change:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># ... form intermediates, update t1 and t2 ...</span>
+    <span class="n">e_new</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">e_new</span> <span class="o">-</span> <span class="n">e_old</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-11</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">e_old</span> <span class="o">=</span> <span class="n">e_new</span>
+</pre></div>
+</div>
+<p>On cc-pVDZ water this converges in 28 iterations and agrees with psi4 to 1.26e-11.</p>
+</section>
+<section id="validate-against-a-reference">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Validate against a reference</a><a class="headerlink" href="#validate-against-a-reference" title="Link to this heading">#</a></h2>
+<p>Do not skip this step, and do not write it afterwards.
+The example exists in two forms on purpose: <code class="docutils literal notranslate"><span class="pre">ccsd_spinorbital_oracle.py</span></code> is a pure NumPy implementation checked against psi4, and <code class="docutils literal notranslate"><span class="pre">ccsd_spinorbital_numpy_style.py</span></code> is the Einsums transcription of it term for term.</p>
+<p>Having the oracle first is what makes a wrong term findable.
+Every contraction in the Einsums version corresponds to one NumPy einsum that is already known to be right, so a disagreement localizes to a single line instead of to a method.</p>
+<p>Writing this way found two genuine library bugs, recorded in the example’s own header: a rank-4 by rank-4 to rank-2 contraction aborting in the packed backend, and a transposed-output GEMM such as <code class="docutils literal notranslate"><span class="pre">&quot;ia</span> <span class="pre">&lt;-</span> <span class="pre">ma</span> <span class="pre">;</span> <span class="pre">mi&quot;</span></code> ignoring the requested index order.
+Both are fixed, and both were found because a term disagreed with a reference rather than because a result looked wrong.</p>
+</section>
+<section id="making-it-faster">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Making it faster</a><a class="headerlink" href="#making-it-faster" title="Link to this heading">#</a></h2>
+<p>The version on this page is eager, which is the right place to start because eager is the reference semantics.
+It is not where the performance is.</p>
+<p>The iteration body is the same work every time, which is exactly the shape a <a class="reference internal" href="../user/tutorial_compute_graph.html"><span class="doc">ComputeGraph</span></a> is for.
+Capture the body once, optimize it, and replay it.
+Fusion, memory planning, and batching all operate on the captured form, and none of them are available to the eager calls above.
+<a class="reference internal" href="../user/tutorial_ccsd.html#tutorial-ccsd"><span class="std std-ref">Tutorial: From NumPy to an Optimized CCSD</span></a> takes the closed-shell CCSD through every step of that, from NumPy to a captured graph that runs in a memory budget, keeps its integrals and amplitudes in files, and uses the amplitudes’ symmetry, with each stage measured.</p>
+<p>Read <a class="reference internal" href="../user/tutorial_best_practices.html"><span class="doc">Tutorial: Performance Best Practices</span></a> before doing that conversion.
+Two points from it matter most here: everything you allocate per iteration wants to come from a pool rather than a fresh allocation, and the intermediates that die on first read should never be materialized at all.</p>
+</section>
+<section id="next">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Next</a><a class="headerlink" href="#next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user/tutorial_ccsd.html#tutorial-ccsd"><span class="std std-ref">Tutorial: From NumPy to an Optimized CCSD</span></a> for the closed-shell CCSD taken from NumPy to an optimized graph, stage by stage.</p></li>
+<li><p><a class="reference internal" href="graphs.html#howto-graphs"><span class="std std-ref">Compute Graphs</span></a> for converting the iteration body to a captured graph.</p></li>
+<li><p><a class="reference internal" href="from_psi4.html#howto-from-psi4"><span class="std std-ref">Working with psi4</span></a> for the integral bridge in detail.</p></li>
+<li><p><a class="reference internal" href="../user/tutorial_best_practices.html"><span class="doc">Tutorial: Performance Best Practices</span></a> for what to fix once it is captured.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="graphs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Compute Graphs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="from_numpy.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Porting from NumPy</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-the-integrals-in">Get the integrals in</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-the-orbital-blocks">Slice the orbital blocks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-the-contraction-helper">Write the contraction helper</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-the-antisymmetrizers-where-the-equations-write-them">Write the antisymmetrizers where the equations write them</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#form-the-amplitudes">Form the amplitudes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assemble-the-intermediates">Assemble the intermediates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-the-energy">Compute the energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#converge">Converge</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validate-against-a-reference">Validate against a reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#making-it-faster">Making it faster</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

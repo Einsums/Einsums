@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.NodeCost:
+
+========================================
+einsums::compute_graph::passes::NodeCost
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/ScalingAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: NodeCost
+
+   The symbolic cost attributed to one graph node.
+
+   A value type, so a caller may keep it after the pass and the graph are gone.
+
+
+   .. cpp:member:: std::string graph_name
+
+      Graph the node belongs to. Node ids are graph-local.
+
+
+   .. cpp:member:: NodeId node_id
+
+      The node's id within that graph.
+
+
+   .. cpp:member:: std::string label
+
+      The node's human-readable label.
+
+
+   .. cpp:member:: SymbolicCost cost
+
+      Its flops, traffic and resident polynomials.

@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.MPIExecutor:
+
+===================================
+einsums::compute_graph::MPIExecutor
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Executor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: MPIExecutor : public SequentialExecutor
+
+   MPI-aware executor for distributed computation graphs.
+
+   All ranks execute the same graph. Compute nodes operate on local
+   partitions; communication nodes (Allreduce, Broadcast, Barrier)
+   are collective operations that all ranks participate in.
+
+   On the mock backend (single rank), behaves identically to
+   SequentialExecutor: communication nodes are no-ops.
+
+   That last sentence is true by construction rather than by two copies of the
+   same loop staying in step: every rank walks the whole node sequence in
+   topological order, which is what ``SequentialExecutor`` does, so this
+   derives from it and contributes only the name. What makes the replay
+   distributed is the graph, not the walk: compute nodes were rewritten by the
+   distribution passes to touch local partitions, and communication nodes carry
+   collectives every rank enters at the same point in the sequence.
+
+   **Example**
+
+   .. code-block:: text
+
+      cg::MPIExecutor mpi_exec;
+      graph.execute(mpi_exec);  // All ranks execute the graph
+
+
+   .. cpp:function:: std::string name() const override

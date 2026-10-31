@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.scale:
+
+==============================
+einsums::linear_algebra::scale
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType> void scale(typename AType::ValueType scale, AType *A)
+
+   Scales a tensor by a scalar.
+
+   .. code-block:: text
+
+      auto A = einsums::create_ones_tensor("A", 3, 3);
+
+      // A is filled with 1.0
+      einsums::linear_algebra::scale(2.0, &A);
+      // A is now filled with 2.0
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType: The type of the tensor.
+   :param scale: The scalar to scale the tensor by.
+   :param A: The tensor to scale.

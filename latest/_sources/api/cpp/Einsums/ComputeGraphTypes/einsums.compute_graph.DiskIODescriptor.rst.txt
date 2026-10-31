@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DiskIODescriptor:
+
+========================================
+einsums::compute_graph::DiskIODescriptor
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Descriptors.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DiskIODescriptor
+
+   Metadata for disk I/O nodes (DiskRead / DiskWrite).
+
+   Stores the file path and dataset name for tensor serialization.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::string file_path
+
+      Path to the file (HDF5, binary, etc.)
+
+
+   .. cpp:member:: std::string dataset_name
+
+      Dataset/key name within the file
+
+
+   .. cpp:member:: TensorId tensor_id
+
+      Which tensor is being read/written
+
+
+   .. cpp:member:: size_t size_bytes
+
+   .. cpp:member:: std::vector<std::string> bound_params
+
+      The parameters the transfer's region is resolved from when it runs, for a transfer of a
+      box a loop's iteration chooses. The scheduler orders the transfer after the nodes that
+      write them, as it orders a parameter-bound view; empty for a fixed region.

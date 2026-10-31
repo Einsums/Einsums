@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.truncated_syev:
+
+======================================
+einsums::compute_graph::truncated_syev
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType> requires (NotComplex<AType>) std::tuple<GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>, GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>> truncated_syev(const AType &A, size_t k)
+
+   Rank-``k`` truncated symmetric eigendecomposition (returning): keeps the
+   top ``k`` eigenpairs of a real symmetric ``A``. Returns
+   ``(eigenvectors, eigenvalues)`` where eigenvectors has shape ``(n, k)``
+   and eigenvalues has shape ``(k,)``.
+
+   Randomized algorithm with over-sampling factor 5, which requires
+   ``A.dim(0) >= k + 5``. Smaller inputs raise ``IndexError`` from the
+   projection step. Results are approximate top-``k`` eigenpairs; expect
+   small drift versus a full ``syev``, especially for tightly clustered
+   eigenvalues.
+
+   Cannot be used during graph capture (returns by value); ``A`` is left
+   unmodified.

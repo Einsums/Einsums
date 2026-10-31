@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.is_grouped_raisable:
+
+===========================================
+einsums::compute_graph::is_grouped_raisable
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool is_grouped_raisable(OpKind kind)
+
+   Whether a GROUPED node kind can be raised into the algebra.
+
+   Separate from ``is_raisable`` because raising one produces a statement over
+   a member list rather than over a tensor, and a rewrite that reads
+   ``ExprTerm::tensor`` without gating on ``ExprTerm::ragged`` would act on a
+   tensor the statement does not name. A client opts in through
+   ``NodeFeature::Grouped`` in ``RegionOptions::understood``; everything else keeps these as barriers.
+
+   The two grouped kinds that are NOT here are fused kernels rather than one
+   algebraic term: ``OpKind::GroupedSandwich`` dresses a slice and accumulates
+   a symmetric product per auxiliary tile, and ``OpKind::GroupedGatherRotate``
+   gathers a block out of a shared parent before rotating it. Neither is a
+   contraction, an elementwise op or a permute, so neither has a term to raise
+   to and neither has a grouped kind a rewritten term could lower back onto.
+
+   :param kind: The op kind.
+   :returns: True when a node of this kind may join a region that raises grouped nodes.

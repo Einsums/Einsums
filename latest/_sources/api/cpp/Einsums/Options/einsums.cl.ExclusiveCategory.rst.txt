@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.ExclusiveCategory:
+
+==============================
+einsums::cl::ExclusiveCategory
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: ExclusiveCategory
+
+   A set of options of which at most one may be given.
+
+   Two options conflict only when set from the same ``Source``; a higher source simply wins.
+
+
+   .. cpp:function:: ExclusiveCategory()
+
+   .. cpp:function:: ExclusiveCategory(const ExclusiveCategory &) = delete
+
+   .. cpp:function:: ExclusiveCategory & operator=(const ExclusiveCategory &) = delete
+
+   .. cpp:function:: ~ExclusiveCategory()
+
+   .. cpp:function:: std::vector<OptionBase *> found_options(Source src) const
+
+      Options in this group that carry an explicitly supplied value.
+
+      :param src: Restrict to options whose value came from this source.
+
+
+   .. cpp:function:: std::optional<Source> conflicting_source() const
+
+      The source at which two options in this group conflict, if any.
+
+      Only options set at the same precedence level conflict.
+
+
+   .. cpp:member:: std::vector<OptionBase *> options

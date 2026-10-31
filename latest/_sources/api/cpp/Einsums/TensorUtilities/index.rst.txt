@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorUtilities_api:
+
+=======================
+TensorUtilities C++ API
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TensorUtilities>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::apply_view` - Create a view of a block tensor where each member has a different view.
+- :cpp:any:`~einsums::arange` - Creates a new rank-1 tensor filled with digits from ``start`` to ``stop`` in ``step`` increments.
+- :cpp:any:`~einsums::create_identity_tensor` - Create a new tensor with ``name`` and ``index`` with ones on the diagonal. Defaults to using double for the underlying data and automatically determines the rank of the tensor from ``index`` .
+- :cpp:any:`~einsums::create_incremented_tensor` - Create a new tensor with ``name`` and ``index`` filled with incremental data.
+- :cpp:any:`~einsums::create_random_definite` - Create a random positive or negative definite matrix. A positive definite matrix is a symmetric matrix whose eigenvalues are all positive. Similarly for negative definite matrices.
+- :cpp:any:`~einsums::create_random_semidefinite` - Create a random positive or negative semi-definite matrix. A positive semi-definite matrix is a symmetric matrix whose eigenvalues are all non-negative. Similarly for negative semi-definite matrices.
+- :cpp:any:`~einsums::create_random_tensor` - Create a new tensor with ``name`` and ``index`` filled with random data.
+- :cpp:any:`~einsums::create_tensor_like` - Creates a new tensor with the same rank and dimensions of the provided tensor.
+- :cpp:any:`~einsums::create_zero_tensor` - Create a tensor and zero its data.
+- :cpp:any:`~einsums::diagonal` - Creates a diagonal matrix from a vector.
+- :cpp:any:`~einsums::diagonal_like` - Creates a diagonal matrix from a vector using a template.
+- :cpp:any:`~einsums::rmsd` - Computes the root-mean-squared-difference between two tensors of arbitrary dimension
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.apply_view
+   einsums.arange
+   einsums.create_identity_tensor
+   einsums.create_incremented_tensor
+   einsums.create_random_definite
+   einsums.create_random_semidefinite
+   einsums.create_random_tensor
+   einsums.create_tensor_like
+   einsums.create_zero_tensor
+   einsums.diagonal
+   einsums.diagonal_like
+   einsums.rmsd

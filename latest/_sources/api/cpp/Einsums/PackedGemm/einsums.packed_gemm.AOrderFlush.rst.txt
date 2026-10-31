@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.AOrderFlush:
+
+=================================
+einsums::packed_gemm::AOrderFlush
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: AOrderFlush
+
+   The M group ordered for A, with C's contiguity still reachable.
+
+   When A's unit-stride index orders the flat M coordinate (pack_A is a memcpy) and C's sits
+   second-fastest, the C block still holds whole runs of C's index at stride ``xa``, which the
+   write-back transposes out in L1. On abcde-efcad-bf that trades a 4.1 cycle/element gather for
+   a copy at half the saving.
+
+   Interleaved A/B against the same tree without it, best of two, core 8 /
+   node 2: abcde-efcad-bf +67% single / +36% double, abcde-efbad-cf +73/+36,
+   abcde-ecbfa-fd +88/+59, abcd-dbea-ec +83/+24, abcd-deca-be +26/+9. Every
+   row that keeps the C order is inside +/-2%.
+
+   ``m_dims`` and ``c_m_dims`` must be in final (coalesced) order. They enumerate
+   the same flat coordinate but may be coalesced to different lengths, so the
+   fastest coordinate is the same one only when both last entries have the
+   same extent.
+
+
+   .. cpp:member:: bool valid
+
+   .. cpp:member:: int64_t xa
+
+      Extent of the fastest flat M coordinate (unit stride in A)
+
+
+   .. cpp:member:: int64_t xc
+
+      Extent of the M coordinate that is unit stride in C

@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ScaleDescriptor:
+
+=======================================
+einsums::compute_graph::ScaleDescriptor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ScaleDescriptor
+
+   Metadata for ``OpKind::Scale`` nodes: ``A *= factor``.
+
+   Used by ScaleAbsorption to detect scales a following overwrite makes dead,
+   and by ElementWiseFusion to merge consecutive scales of one tensor.
+
+   ``factor`` is a ``PrefactorScalar``, not a ``double``, so a complex scale
+   records exactly what the executor applies (CSE and ScaleAbsorption compare
+   and fold it).
+
+   ``params`` is null on nodes a pass built by hand rather than through
+   ``build_executor``; readers must gate on it.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: PrefactorScalar factor
+
+      The scaling factor (at-capture snapshot).
+
+
+   .. cpp:member:: std::shared_ptr<ElementwiseParams> params
+
+      Live value the executor reads each call (``ElementwiseParams::alpha``).

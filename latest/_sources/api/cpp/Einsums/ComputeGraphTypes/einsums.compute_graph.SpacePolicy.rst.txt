@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SpacePolicy:
+
+===================================
+einsums::compute_graph::SpacePolicy
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SpacePolicy
+
+   Machine policy attached to a space by name.
+
+   Deliberately a separate type from ``IndexSpace``, held in a separate table. Semantics travel
+   with a saved graph; policy does not.
+
+
+   .. cpp:member:: DistributionHint dist
+
+      Distribution preference for axes over this space.
+
+
+   .. cpp:member:: StorageHint storage
+
+      Storage preference for data indexed by this space.

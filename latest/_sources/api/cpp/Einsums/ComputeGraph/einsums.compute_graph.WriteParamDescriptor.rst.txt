@@ -1,0 +1,77 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.WriteParamDescriptor:
+
+============================================
+einsums::compute_graph::WriteParamDescriptor
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: WriteParamDescriptor
+
+   Metadata for ``WriteParam`` nodes, explicit dataflow write into a Pipeline parameter.
+
+   Reads a scalar tensor's value (or evaluates a callback) and stores the
+   result into ``params[name]``. Makes the parameter dependency visible to
+   the scheduler so subsequent ``View`` nodes that reference the same
+   parameter are correctly ordered.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::string name
+
+      Parameter name to write.
+
+
+   .. cpp:member:: TensorId source_id
+
+      Scalar tensor to read (0 when using ``source_expr``).
+
+      A structural record, not the operand the executor reads: execution
+      resolves the source through the node's own ``Node::inputs``, which is
+      what every pass rewrites. The two agree at capture and the dataflow list
+      is authoritative if they ever disagree.
+
+
+   .. cpp:member:: ParamSourceType source_type
+
+      The C++ type of the scalar at ``source_id``.
+
+      ``TensorHandle::dtype`` cannot answer this: it names the four BLAS
+      element types and reports ``Unknown`` for every integral one, and a loop
+      bound written through ``write_param`` is an integer far more often than
+      it is a double. A rebuilt executor has to know the width and the
+      signedness of the storage it reads before it can narrow the value to the
+      ``std::int64_t`` a ``ParamTable`` holds.
+
+      Meaningless on the callback arm, where there is no storage to decode.
+
+
+   .. cpp:member:: std::optional<BoundExpr> source_expr
+
+      Optional: compute the value from an expression rather than from a tensor.
+
+      Unset means the tensor arm above. Set means the value comes from a
+      ``BoundExpr``, which is a literal, a named ``ParamTable`` entry, or a
+      callback. Only the callback arm blocks a save, and
+      ``reconstruction_blocker`` inspects the arm to say so per node --
+      ``OpKind::WriteParam`` is a reconstructible KIND either way.
+
+      An ``optional`` rather than a bare ``BoundExpr`` because a default
+      ``BoundExpr`` is the literal 0, which is a legitimate value and
+      therefore cannot double as "no expression here".

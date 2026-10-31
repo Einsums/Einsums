@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.trace_python:
+
+====================================
+einsums::compute_graph::trace_python
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, typename AType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> && DenseOrTiled<AType> void trace_python(ResultType *result, const AType &A)
+
+   Python-friendly graph-aware trace: writes the diagonal sum into
+   ``result->data()[0]``. Runtime-rank input must be a square rank-2 tensor.

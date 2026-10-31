@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.ContractionKey:
+
+====================================
+einsums::packed_gemm::ContractionKey
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: ContractionKey
+
+   Full cache key uniquely identifying a contraction topology.
+
+   Combines the contraction topology with tensor ranks, element types, and
+   runtime dimension sizes.
+
+
+   .. cpp:function:: bool operator==(const ContractionKey &o) const
+
+   .. cpp:member:: ContractionSpec spec
+
+   .. cpp:member:: TensorDescriptor a_desc
+
+   .. cpp:member:: TensorDescriptor b_desc
+
+   .. cpp:member:: TensorDescriptor c_desc
+
+   .. cpp:member:: std::vector<int64_t> target_dims
+
+      Runtime sizes of target dimensions
+
+
+   .. cpp:member:: std::vector<int64_t> link_dims
+
+      Runtime sizes of link dimensions

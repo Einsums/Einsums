@@ -1,0 +1,182 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ManifestEntry:
+
+=====================================
+einsums::compute_graph::ManifestEntry
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ManifestEntry
+
+   One named slot of a graph's interface: an operand the graph does not own.
+
+   The formalization of the complement of ``TensorHandle::is_intermediate``. A handle
+   flagged intermediate is storage the graph created for itself and is never an entry
+   here; everything else a node touches is part of the contract a caller has to satisfy,
+   and this says what satisfying it means.
+
+   .. note::
+
+      ``dims`` holds the extents of the instance the graph was captured at.
+      ``dim_symbols`` says which of them are part of the contract and which a bind may
+      move; an entry with no symbols is fixed at exactly ``dims``, as ``Graph::rebind``
+      always required.
+
+   .. seealso::
+
+      Graph::manifest
+
+   .. seealso::
+
+      Graph::bind
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::string direction_name() const
+
+      The direction by name, for Python, where the enum is not bound.
+
+      .. versionadded:: 2.0.0
+
+      :returns: ``"input"``, ``"output"`` or ``"inout"``, as ``manifest_direction_name`` spells it.
+
+
+   .. cpp:function:: std::string dtype_name() const
+
+      The element type a bound tensor must hold, by name.
+
+      .. versionadded:: 2.0.0
+
+      :returns: As ``scalar_type_name`` spells it, ``"float64"`` for instance.
+
+
+   .. cpp:function:: std::string scope_name() const
+
+      The scope that owns the slot's storage, by name.
+
+      .. versionadded:: 2.0.0
+
+      :returns: As ``tensor_ownership_name`` spells it.
+
+
+   .. cpp:member:: std::string name
+
+      The binding key. Copied from ``TensorHandle::name``, which capture in turn copied
+      from the tensor. Names are the interface: a saved graph is bound by name, never by
+      id. A tensor registered without a meaningful name of its own (the generated
+      "tensor_<n>" spellings) is a legal entry and a fragile key - it is stable only as
+      long as nothing upstream renumbers, so a graph meant to be saved should name its
+      operands.
+
+
+   .. cpp:member:: TensorId id
+
+      This graph's id for the slot. Graph-LOCAL and not stable across processes: ids are
+      minted in registration order, so the same tensor in a re-captured graph can hold a
+      different one. Useful to reach ``Graph::tensor`` and to express ``aliases_input``
+      within one manifest; never a binding key and never written to a file.
+
+
+   .. cpp:member:: ManifestDirection direction
+
+      Read, written, or both.
+
+
+   .. cpp:member:: packed_gemm::ScalarType dtype
+
+      Element type a bound tensor must match.
+
+
+   .. cpp:member:: std::size_t rank
+
+      Number of dimensions.
+
+
+   .. cpp:member:: std::vector<std::size_t> dims
+
+      Extents at capture, one per axis. See the note above.
+
+
+   .. cpp:member:: std::vector<std::string> dim_symbols
+
+      Per-axis symbolic extent declaration, parallel to ``dims``, or empty when every
+      axis is literal. An empty string in a populated vector is one literal axis, an
+      ordinary string is a symbol every slot naming it must agree on, and a
+      ``"ragged:<space>"`` spelling is an axis whose extent differs per instance.
+
+      Names, never ids, for the same reason ``spaces`` holds names: this is what a
+      serializer writes and a loader reads back, and a symbol is only meaningful by name.
+
+      .. seealso::
+
+         TensorHandle::dim_symbols
+
+      .. seealso::
+
+         Graph::annotate_dims
+
+
+   .. cpp:member:: std::vector<std::string> spaces
+
+      Per-axis index-space NAMES, parallel to ``dims``, or empty when the slot is
+      unannotated. Names, not ``SpaceId`` values: an id is a handle into the registry
+      that issued it and means nothing in another process or another registry.
+
+
+   .. cpp:member:: bool spaces_inferred
+
+      Whether ``spaces`` was inferred rather than declared by a user.
+
+      .. seealso::
+
+         TensorHandle::spaces_inferred
+
+
+   .. cpp:member:: TensorOwnership scope
+
+      The scope that owns the slot's storage: ``Graph`` for an operand supplied to this
+      graph alone, ``Pipeline`` for one carried between a pipeline's stages, ``Workspace``
+      for one that outlives every pipeline over it.
+
+
+   .. cpp:member:: TensorId aliases_input
+
+      Manifest-level alias declaration: the ``id`` of the entry whose storage this entry
+      is part of, or 0 when the slot aliases nothing another entry names.
+
+      Populated from ``TensorHandle::aliases``, but only when BOTH ends are manifest
+      entries - an alias of an intermediate is the graph's own business. A loaded graph
+      has no addresses, so this declaration is how an aliasing relation between two
+      caller-supplied tensors survives a save at all; ``Graph::bind`` validates a bind
+      against it and rejects an aliasing bind that no entry declares.
+
+
+   .. cpp:member:: std::vector<TensorId> also
+
+      The OTHER graph-local ids this one slot covers, or empty for the ordinary case.
+
+      A name is a slot, and one slot may stand over more than one handle. Two factorization
+      providers handed one collocation matrix each capture their own view of it into their own
+      setup body, and each view object is a separate capture identity, so the graph holds two
+      handles over one buffer under one name.
+
+      The entry folds them, and this is what the fold has to remember: ``Graph::bind``
+      repoints every id here alongside ``id``, so the caller supplies the matrix ONCE. Folding
+      is refused unless the handles agree on the whole shape contract and are either the same
+      storage or all still unbound, so two different buffers that merely share a name are still
+      the ambiguity they always were.
+
+      Graph-LOCAL, like ``id``, and never written to a file.

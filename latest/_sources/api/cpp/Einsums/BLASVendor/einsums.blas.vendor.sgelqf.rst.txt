@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgelqf:
+
+=============================
+einsums::blas::vendor::sgelqf
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgelqf(int_t m, int_t n, float *a, int_t lda, float *tau)
+
+   Perform LQ decomposition.
+
+   .. versionadded:: 1.0.0
+
+   :param m: The number of rows in the input matrix.
+   :param n: The number of columns in the input matrix.
+   :param a: The matrix to decompose. On exit, the R matrix is above the diagonal and the reflection vectors are below the diagonal.
+   :param lda: The leading dimension of the matrix.
+   :param tau: The scale factors for the Householder reflectors.
+   :returns: 0 on success. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.

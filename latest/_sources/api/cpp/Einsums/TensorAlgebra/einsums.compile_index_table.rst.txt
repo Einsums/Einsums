@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compile_index_table:
+
+============================
+einsums::compile_index_table
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/IndexTable.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename... UniqueIndices, typename... Indices> void compile_index_table(const std::tuple<UniqueIndices...> &from_inds, const std::tuple<Indices...> &to_inds, int *out)
+
+   Turn a list of indices into a link table.
+
+   Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list.

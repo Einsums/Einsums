@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.find_pos:
+
+=======================
+einsums::hptt::find_pos
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Utils.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: template <typename t> int find_pos(t value, const std::vector<t> &array)
+
+   Find where a value is in an array.
+
+
+.. cpp:function:: int find_pos(int value, const int *array, int n)
+
+   Find where a value is in an array.
+
+   :param value: The value to find.
+   :param array: The array of values.
+   :param n: The maximum index to check.
+   :returns: The position of the value, or -1 if not found.

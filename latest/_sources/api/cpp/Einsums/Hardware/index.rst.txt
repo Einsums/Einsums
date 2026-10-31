@@ -1,0 +1,136 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Hardware_api:
+
+================
+Hardware C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Hardware>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::hardware::CacheSizes` - Data-cache sizes in bytes. Zero-initialised fields mean "not detected"; the accessors below always return usable values, falling back to conservative defaults.
+- :cpp:any:`~einsums::hardware::CpuInfo` - Hardware facts detected once, shared by every module that needs them.
+- :cpp:any:`~einsums::hardware::MachineIdentity` - The hardware a measurement depends on.
+- :cpp:any:`~einsums::hardware::ProfileStatus` - A profile file's verdict: its state, its path and, unless loaded cleanly, why.
+- :cpp:any:`~einsums::hardware::SoftwareIdentity` - The software a measurement depends on: this build's version and the BLAS in use.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::hardware::cpu_brand` - The CPU brand string: sysctl on macOS, CPUID on x86-64, /proc/cpuinfo on other Linux.
+- :cpp:any:`~einsums::hardware::cpu_info` - Detected once on first use.
+- :cpp:any:`~einsums::hardware::default_profile_path` - Where a tune writes this machine's profile: ``<cache-dir>/profiles/<fingerprint>.json``.
+- :cpp:any:`~einsums::hardware::evaluate_profile` - Decide what a profile document means here.
+- :cpp:any:`~einsums::hardware::fingerprint` - A short, stable name for an identity: 16 hexadecimal digits.
+- :cpp:any:`~einsums::hardware::get_max_threads` - The OpenMP runtime's current ceiling on a parallel region's team size.
+- :cpp:any:`~einsums::hardware::import_profile` - Adopt a profile from another machine of a kind, or from a site.
+- :cpp:any:`~einsums::hardware::machine_fingerprint` - This machine's fingerprint, the name its profile is filed under.
+- :cpp:any:`~einsums::hardware::machine_identity` - This machine's identity, detected once.
+- :cpp:any:`~einsums::hardware::machine_section` - The identity as the ``machine`` section of a profile writes it, fingerprint included.
+- :cpp:any:`~einsums::hardware::measure_region_cost_section` - Measure the OpenMP region cost at every team size, as the ``omp_region_cost_ns`` section.
+- :cpp:any:`~einsums::hardware::omp_min_parallel_elements` - Elements below which an elementwise loop should not be parallelized.
+- :cpp:any:`~einsums::hardware::omp_min_parallel_flops` - Work, in flops, below which parallelizing a contraction is a net loss.
+- :cpp:any:`~einsums::hardware::omp_region_cost_ns` - Cost in nanoseconds of entering and leaving an OpenMP parallel region.
+- :cpp:any:`~einsums::hardware::physical_memory_bytes` - Physical memory in bytes.
+- :cpp:any:`~einsums::hardware::profile_header` - The header a profile for this machine and build starts with.
+- :cpp:any:`~einsums::hardware::profile_header_json` - ``profile_header`` as JSON text, for tests and scripts that assemble a profile.
+- :cpp:any:`~einsums::hardware::profile_options` - The ``options`` section of the profile in effect, as the option parser's config layer.
+- :cpp:any:`~einsums::hardware::profile_path` - The file the profile in effect came from, or empty when none was found.
+- :cpp:any:`~einsums::hardware::profile_reason` - Why the profile in effect is not plainly loaded, or empty when it is.
+- :cpp:any:`~einsums::hardware::profile_search_path` - Every place a profile is looked for, in order, after a named file.
+- :cpp:any:`~einsums::hardware::profile_section` - A section of the profile in effect.
+- :cpp:any:`~einsums::hardware::profile_state` - The state of the profile in effect, by name (see ``to_string``).
+- :cpp:any:`~einsums::hardware::profile_status` - The verdict on the profile in effect.
+- :cpp:any:`~einsums::hardware::read_machine_section` - Read an identity back from a ``machine`` section.
+- :cpp:any:`~einsums::hardware::region_cost_is_calibrated` - Whether ``omp_region_cost_ns`` came from the hardware profile, not an in-process measurement. Also true single-threaded (the cost is zero) and when pinned.
+- :cpp:any:`~einsums::hardware::set_blas_identity_provider` - Register the function that names the BLAS in use.
+- :cpp:any:`~einsums::hardware::set_num_threads` - Set the OpenMP runtime's ceiling on a parallel region's team size.
+- :cpp:any:`~einsums::hardware::set_profile_option_check` - Register the check ``evaluate_profile`` applies to the ``options`` section.
+- :cpp:any:`~einsums::hardware::software_identity` - This build's software identity.
+- :cpp:any:`~einsums::hardware::software_section` - The identity as the ``software`` section of a profile writes it.
+- :cpp:any:`~einsums::hardware::to_string` - The state's name: "none", "loaded", "loaded-foreign", "foreign", "stale" or "invalid".
+- :cpp:any:`~einsums::hardware::write_profile` - Write a profile document, atomically.
+- :cpp:any:`~einsums::register_Einsums_Hardware_options` - Give the hardware detector's options their command-line presence. Idempotent.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::hardware::ProfileState` - What became of a profile file.
+
+Types
+-----
+
+- :cpp:any:`~einsums::hardware::ProfileOptionCheck` - Decide whether a profile may set an option.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::hardware::profile_format` - The profile format this build reads and writes.
+- :cpp:any:`~einsums::option::CacheDir` - Directory where measured constants are remembered between runs.
+- :cpp:any:`~einsums::option::HardwareL1CacheSize` - L1 data cache size in bytes, in place of the detected one. Zero, the default, detects it.
+- :cpp:any:`~einsums::option::HardwareL2CacheSize` - L2 cache size in bytes, in place of the detected one. Zero, the default, detects it.
+- :cpp:any:`~einsums::option::HardwareL3CacheSize` - L3 cache size in bytes, in place of the detected one. Zero, the default, detects it.
+- :cpp:any:`~einsums::option::HardwareOmpBreakEvenFlopsPerNs` - Flops per nanosecond of region cost at which a contraction goes parallel.
+- :cpp:any:`~einsums::option::HardwareOmpMinParallelElements` - Pin the element count at which elementwise kernels go parallel. Negative derives it; zero always.
+- :cpp:any:`~einsums::option::HardwareOmpMinParallelFlops` - Pin the flop count at which a contraction goes parallel. Negative derives it; zero always.
+- :cpp:any:`~einsums::option::HardwareOmpRegionCostNs` - Pin the cost of entering an OpenMP parallel region, in nanoseconds. Negative reads the profile or measures.
+- :cpp:any:`~einsums::option::HardwareProfile` - A hardware profile to use in place of searching for one.
+- :cpp:any:`~einsums::option::HardwareSiteProfiles` - The site directory of hardware profiles, searched after the user's cache directory.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.hardware.CacheSizes
+   einsums.hardware.cpu_brand
+   einsums.hardware.cpu_info
+   einsums.hardware.CpuInfo
+   einsums.hardware.default_profile_path
+   einsums.hardware.evaluate_profile
+   einsums.hardware.fingerprint
+   einsums.hardware.get_max_threads
+   einsums.hardware.import_profile
+   einsums.hardware.machine_fingerprint
+   einsums.hardware.machine_identity
+   einsums.hardware.machine_section
+   einsums.hardware.MachineIdentity
+   einsums.hardware.measure_region_cost_section
+   einsums.hardware.omp_min_parallel_elements
+   einsums.hardware.omp_min_parallel_flops
+   einsums.hardware.omp_region_cost_ns
+   einsums.hardware.physical_memory_bytes
+   einsums.hardware.profile_header
+   einsums.hardware.profile_header_json
+   einsums.hardware.profile_options
+   einsums.hardware.profile_path
+   einsums.hardware.profile_reason
+   einsums.hardware.profile_search_path
+   einsums.hardware.profile_section
+   einsums.hardware.profile_state
+   einsums.hardware.profile_status
+   einsums.hardware.ProfileStatus
+   einsums.hardware.read_machine_section
+   einsums.hardware.region_cost_is_calibrated
+   einsums.hardware.set_blas_identity_provider
+   einsums.hardware.set_num_threads
+   einsums.hardware.set_profile_option_check
+   einsums.hardware.software_identity
+   einsums.hardware.software_section
+   einsums.hardware.SoftwareIdentity
+   einsums.hardware.to_string
+   einsums.hardware.write_profile
+   einsums.register_Einsums_Hardware_options
+   enums
+   types
+   variables

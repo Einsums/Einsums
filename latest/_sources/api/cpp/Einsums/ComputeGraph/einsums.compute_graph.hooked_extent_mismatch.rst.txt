@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.hooked_extent_mismatch:
+
+==============================================
+einsums::compute_graph::hooked_extent_mismatch
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<std::string> hooked_extent_mismatch(const Graph &graph, const Node &node)
+
+   Why ``node's`` outputs in ``graph`` disagree with its registered ``output_extents`` hook: a different number of outputs, or an output whose known extents differ. Empty when they agree, or when there is no hook or it cannot say.

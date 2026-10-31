@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.register_option:
+
+============================
+einsums::cl::register_option
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: void register_option(ConfigOption<bool> &opt)
+
+   Give a descriptor its command-line, environment, and config presence.
+
+   Derives the config key and environment variable from the name; a boolean also gets its `--no-`
+   twin. Registering twice is a no-op; the options live until exit.
+
+   .. versionadded:: 2.0.0

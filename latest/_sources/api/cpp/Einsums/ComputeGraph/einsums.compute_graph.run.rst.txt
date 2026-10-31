@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.run:
+
+===========================
+einsums::compute_graph::run
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Pipeline.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename BuildFn> void run(std::string name, Workspace &workspace, BuildFn &&build)
+
+   One-shot: ``make_pipeline`` + ``Pipeline::run()``.
+
+   Equivalent to building a pipeline via ``make_pipeline`` then immediately
+   calling ``run()`` on it. The pipeline is destructed when the call returns,
+   so any result tensors the caller wants to read must be declared on the
+   workspace (which outlives the call).
+
+   .. code-block:: text
+
+      cg::Workspace ws("example");
+      auto &A = ws.declare_random_tensor<double, 2>("A", 8, 5);
+      auto &B = ws.declare_random_tensor<double, 2>("B", 5, 6);
+      auto &C = ws.declare_zero_tensor<double, 2>("C", 8, 6);
+
+      cg::run("compute", ws, [&](cg::Pipeline &p) {
+          p.add_stage("multiply", [&] {
+              cg::einsum("ij <- ik ; kj", &C, A, B);
+          });
+      });
+      // C is now populated.

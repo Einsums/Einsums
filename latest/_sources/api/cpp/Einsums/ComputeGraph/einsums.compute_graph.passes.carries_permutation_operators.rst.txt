@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.carries_permutation_operators:
+
+=============================================================
+einsums::compute_graph::passes::carries_permutation_operators
+=============================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: bool carries_permutation_operators(const Node &node)
+
+   Whether ``node`` applies a permutation operator (``P(ij)``) to its result.
+
+   Such a node computes a signed sum of permuted terms. A pass that matches, merges, batches or
+   rebuilds a contraction from its index lists alone computes the single unpermuted term instead,
+   so every such pass must either carry the operators through or decline the node; this is the
+   test for the second.

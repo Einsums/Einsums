@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SpaceTiling:
+
+===================================
+einsums::compute_graph::SpaceTiling
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SpaceTiling
+
+   One axis of a declared TILED tensor: what it means, and how it is cut up.
+
+   A tiled axis is described by a PARTITION, not an extent: an index space fixes the total
+   (``occ`` is 4) but ``{2,2}``, ``{1,3}`` and ``{4}`` all tile it. So the two halves are
+   supplied separately, and either may come from the space:
+
+   .. code-block:: text
+
+      {occ, virt}                        // both axes take their space's canonical tiling
+      {{occ, {2, 2}}, {virt, {4, 4}}}    // this tensor tiles differently from the default
+      {occ, tiles({4, 4})}               // second axis is a partition with no chemical meaning
+
+   Converts implicitly from ``SpaceId`` so the first form needs no ceremony. There is no
+   conversion from a bare tile list, so a plain ``{{2,2},{4,4}}`` keeps selecting the
+   tile-sizes overload unambiguously; ``tiles`` is how a space-less axis joins a shape that
+   names spaces elsewhere.
+
+   .. seealso::
+
+      tiles
+
+   .. seealso::
+
+      Graph::pin_space_tiling
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: SpaceTiling(SpaceId s)
+
+      An axis over ``s``, tiled the way ``s`` is canonically tiled.
+
+      :param s: The index space.
+
+
+   .. cpp:function:: SpaceTiling(SpaceId s, std::vector<int> sizes)
+
+      An axis over ``s`` with a tiling of its own.
+
+      :param s: The index space.
+      :param sizes: The tile sizes, which must sum to what ``s`` measures.
+
+
+   .. cpp:member:: SpaceId space
+
+      The space this axis ranges over, or an invalid id when the axis names none.
+
+
+   .. cpp:member:: std::vector<int> tile_sizes
+
+      How the axis is cut up. Empty means "whatever ``space`` is canonically tiled as".

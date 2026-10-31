@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.configure_profiler_from_options:
+
+========================================
+einsums::configure_profiler_from_options
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Profile/Options.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void configure_profiler_from_options()
+
+   Hand the profiler every profile option given on the command line or in the environment, and count Einsums as one of its users.
+
+   Only options something set are passed, so Einsums' defaults never count as a choice that would
+   keep another library's setting out. Called by einsums::initialize once the options are parsed;
+   the matching release is the profiler's finalize at einsums::finalize.

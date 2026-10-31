@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BisectReport:
+
+====================================
+einsums::compute_graph::BisectReport
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/BisectDriver.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BisectReport
+
+   The whole run.
+
+
+   .. cpp:function:: std::size_t first_divergence() const
+
+      Index into ``trials`` of the first pass that diverged.
+
+      FIRST rather than worst: in cumulative mode every later trial inherits the earlier one's
+      damage, so the largest gap is almost never the culprit.
+
+      :returns: The index, or the size of ``trials`` when none did.
+
+
+   .. cpp:function:: bool clean() const
+
+      Whether the baseline ran and nothing diverged.
+
+      :returns: True when there is nothing to report.
+
+
+   .. cpp:function:: std::string to_string() const
+
+      The report as a table, one line per pass.
+
+      :returns: The rendering, newline-terminated, empty when there were no trials.
+
+
+   .. cpp:member:: bool baseline_ok
+
+      Whether the unoptimized run produced something to compare against. When false nothing else
+      here means anything, which is why it is asked first.
+
+
+   .. cpp:member:: std::string baseline_note
+
+      Why the baseline failed, when it did.
+
+
+   .. cpp:member:: std::vector<BisectTrial> trials
+
+      One per pass tried, in pipeline order.

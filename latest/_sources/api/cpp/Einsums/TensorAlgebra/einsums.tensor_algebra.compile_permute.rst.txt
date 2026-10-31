@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.compile_permute:
+
+========================================
+einsums::tensor_algebra::compile_permute
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:function:: template <bool ConjA = false, CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U> requires (sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CType::Rank && sizeof...(AIndices) == AType::Rank && SameUnderlyingAndRank<AType, CType> && (std::is_arithmetic_v<U> || IsComplexV<U>)) std::shared_ptr<hptt::Transpose<typename AType::ValueType>> compile_permute(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor, const std::tuple<AIndices...> &A_indices, const AType &A, hptt::SelectionMethod method)
+
+   Compiles a permutation so that it can be used multiple times.
+
+   .. versionadded:: 2.0.0
+
+   :param UC_prefactor: The prefactor for the output.
+   :param C_indices: The indices for the output.
+   :param C: The output tensor.
+   :param UA_prefactor: The prefactor for the input.
+   :param A_indices: The indices for the input.
+   :param A: The input tensor.
+   :param method: Indicates which method HPTT should use to optimize the permutation. By default, it is hptt::ESTIMATE , which is the simplest of the options.
+   :returns: The compiled plan.

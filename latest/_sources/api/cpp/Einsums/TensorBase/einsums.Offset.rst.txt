@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.Offset:
+
+===============
+einsums::Offset
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/Common.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <std::size_t Rank> Offset : public std::array<std::int64_t, Rank>
+
+   Holds a list of offsets in an array.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <typename... Args> requires (std::is_integral_v<std::remove_cvref_t<Args>> && ...) constexpr explicit Offset(Args... args)
+
+      Aggregate constructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <std::input_iterator Iterator> constexpr Offset(Iterator start, Iterator end)
+
+      Construct an offset array from an iterator. If more elements are provided than the rank, then the extra elements are ignored.
+      If fewer elements are provided than the rank, then the array will be backfilled with zeros.
+
+      .. versionadded:: 2.0.0
+
+      :param start: The starting iterator.
+      :param end: The ending iterator.

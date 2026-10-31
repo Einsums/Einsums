@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.pow:
+
+===========================
+einsums::compute_graph::pow
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept AType> requires (NotComplex<AType>) GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>> pow(const AType &A, typename AType::ValueType alpha, typename AType::ValueType cutoff)
+
+   Matrix power: ``A^alpha`` via eigendecomposition.
+
+   Returns a freshly-allocated square matrix. ``alpha`` may be negative; an
+   optional ``cutoff`` zeros out eigenvalues whose magnitude is below
+   ``cutoff * max|eig|`` before exponentiation (guards against near-singular
+   inputs when ``alpha < 0``). Cannot be used during graph capture (returns
+   by value); ``A`` is left unmodified.

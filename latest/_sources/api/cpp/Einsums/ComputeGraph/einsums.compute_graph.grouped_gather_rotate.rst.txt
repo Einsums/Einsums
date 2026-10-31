@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_gather_rotate:
+
+=============================================
+einsums::compute_graph::grouped_gather_rotate
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept CType, CoreBasicTensorConcept SrcType, CoreBasicTensorConcept XType> requires (std::is_same_v<typename CType::ValueType, typename SrcType::ValueType> && std::is_same_v<typename CType::ValueType, typename XType::ValueType> && std::is_floating_point_v<typename CType::ValueType>) void grouped_gather_rotate(std::vector<CType *> c_list, const SrcType &src, const std::vector<std::vector<size_t>> &q_list, const std::vector<std::vector<size_t>> &u_list, std::vector<const XType *> x_list)
+
+   Emit one node holding many independent gather-and-rotate blocks: ``C_i[q, a, b] = sum_uv src[Q_i[q], U_i[u], U_i[v]] X_i[u, a] X_i[v, b]``, the whole run under one OpenMP region.
+
+   The shape this exists for is the DLPNO-(T0) three-external block, which the
+   naive emission spells as a ``gather`` of the whole ``(Q|u v)`` domain block
+   followed by two contractions - the gathered block and a half-transformed one
+   of the same leading extent, both of them the largest tensors the phase ever
+   holds, streamed four times over where one pass suffices. Here every member
+   streams its selection of ``src`` once and keeps the rotation in cache, the
+   auxiliary axis tiled into cache-resident blocks.
+
+   One source for the whole run, because that is what makes the streaming claim
+   true: the members are domain-restricted selections of ONE parent, and giving
+   each its own would only let a caller take the traffic back.
+
+   Both source axes are selected by the same index list and rotated by the same
+   transform. The operation is the symmetric two-sided rotation
+   ``X^T (Q|u v) X``, which is the only form the callers have; an asymmetric one
+   would need a second list and a second transform and is not this operation.
+
+   Every member is independent - destinations are distinct and each is ASSIGNED
+   by one thread - so replays are deterministic whatever the schedule, and the
+   result does not depend on the tiling at all (the tiled axis indexes no sum).
+   Agreement with the gather-plus-two-contractions form it replaces is to
+   roundoff rather than bitwise, because the two block their reductions
+   differently.
+
+   Operand shapes per member, all column-major: ``src`` is ``(NQ, NU, NU)`` with
+   the auxiliary axis fastest, ``X_i`` is ``(nu_i, nt_i)`` and column-contiguous,
+   and ``C_i`` is ``(nq_i, nt_i, nt_i)`` where ``nq_i`` and ``nu_i`` are the
+   lengths of the member's index lists. A member with any extent zero is a quick
+   return, except that an empty ``u`` selection writes its destination's zeros.
+
+   Outside capture this executes immediately, so the same call works eagerly.

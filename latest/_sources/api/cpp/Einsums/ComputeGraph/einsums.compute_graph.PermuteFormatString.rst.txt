@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PermuteFormatString:
+
+===========================================
+einsums::compute_graph::PermuteFormatString
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PermuteFormatString
+
+   Compile-time validated permute format string.
+
+   .. code-block:: text
+
+      cg::permute("ji <- ij", 1.0, &C, 0.0, A);  // Compile-time validated
+
+
+   .. cpp:function:: template <size_t N> consteval PermuteFormatString(const char (&s)[N])
+
+   .. cpp:function:: explicit PermuteFormatString(std::string_view s)
+
+   .. cpp:function:: constexpr operator std::string_view() const
+
+   .. cpp:member:: std::string_view str

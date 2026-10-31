@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.fft.fftfreq:
+
+=====================
+einsums::fft::fftfreq
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/FFT.hpp``.
+
+.. cpp:namespace:: einsums::fft
+
+.. cpp:function:: Tensor<double, 1> fftfreq(int n, double d)
+
+   Gets the frequency corresponding to each position in a frequency tensor.
+
+   .. versionadded:: 1.0.0
+
+   :param n: The number of positions in the tensor.
+   :param d: The scale factor for the frequency.
+   :returns: A tensor that contains the frequency at each position in a frequency tensor of the same size.

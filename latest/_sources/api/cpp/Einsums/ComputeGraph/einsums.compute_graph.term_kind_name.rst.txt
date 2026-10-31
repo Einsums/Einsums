@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.term_kind_name:
+
+======================================
+einsums::compute_graph::term_kind_name
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view term_kind_name(TermKind kind)
+
+   Lower-case name of a term kind, for dumps and test tables.
+
+   :param kind: The kind to name.
+   :returns: One of ``leaf``, ``contraction``, ``elementwise``, ``scale``, ``sum``.

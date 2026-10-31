@@ -1,0 +1,101 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Config_api:
+
+==============
+Config C++ API
+==============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Config>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::sealed::WorldInfo` - Everything one copy of libEinsums knows about itself.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::sealed::config_fingerprint` - Fold of every build setting reachable from <Einsums/Config.hpp>.
+- :cpp:any:`~einsums::sealed::library_layout_fingerprint` - The layout fingerprint of the library, as opposed to of the caller's headers.
+- :cpp:any:`~einsums::sealed::mapped_einsums_libraries` - Paths of every libEinsums currently mapped into this process.
+- :cpp:any:`~einsums::sealed::register_stage_module` - Record that a stage module bound to *this* library, and answer whether it had already.
+- :cpp:any:`~einsums::sealed::registered_stage_modules` - Names passed to register_stage_module() on this library, in call order.
+- :cpp:any:`~einsums::sealed::stage_module_registered` - Whether register_stage_module() was called on THIS library for ``name``.
+- :cpp:any:`~einsums::sealed::world` - The calling code's libEinsums.
+
+Macros
+------
+
+- :c:macro:`ALIAS_TEMPLATE_FUNC` - Creates an alias of a template function.
+- :c:macro:`EINSUMS_ALWAYS_INLINE` - Tell the compiler to inline a function.
+- :c:macro:`EINSUMS_BUILD_TYPE` - Evaluates to ``debug`` if compiled in debug mode, ``release`` otherwise.
+- :c:macro:`EINSUMS_CDECL` - Mark a function as using the ``__cdecl`` calling convention.
+- :c:macro:`EINSUMS_CLANG_VERSION` - Returns the Clang version einsums is compiled with. Only set if compiled with Clang.
+- :c:macro:`EINSUMS_COMPUTE_CODE` - Only available when Einsums was compiled with GPU capabilities. If not present, then there are no GPU capabilities.
+- :c:macro:`EINSUMS_COMPUTE_DEVICE_CODE` - Only available when Einsums was compiled with GPU capabilities and only during compilation for the graphics device.
+- :c:macro:`EINSUMS_COMPUTE_HOST_CODE` - Available whenever Einsums is not being compiled for the device. This means that it is defined when GPU capabilities are turned off and when they are turned on during compilation for the host.
+- :c:macro:`EINSUMS_CONSTANT` - When compiled with GPU capabilities, this expands to ``__constant__`` . Otherwise, it expands to nothing.
+- :c:macro:`EINSUMS_CUDA_VERSION` - The version of CUDA used to compile Einsums.
+- :c:macro:`EINSUMS_DEVICE` - When compiled with GPU capabilities, this expands to ``__device__`` . Otherwise, it expands to nothing.
+- :c:macro:`EINSUMS_DISABLE_WARNING` - Disables a specific warning. The behavior may differ between compilers.
+- :c:macro:`EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS` - Disable warnings of deprecated functions, classes, variables, etc.
+- :c:macro:`EINSUMS_DISABLE_WARNING_POP` - Ppp the current warning ignore state to revert the changes to the warning ignore rules.
+- :c:macro:`EINSUMS_DISABLE_WARNING_PUSH` - Pushes the current warning ignore state so that ignore rules can be changed and then reverted.
+- :c:macro:`EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE` - Disable warnings that a function that normally returns C's ``_Complex float`` or ``_Complex double`` is externed as a function that returns C++'s ``std::complex<float>`` or ``std::complex<double>``.
+- :c:macro:`EINSUMS_EXPERIMENTAL_EXPORT` - Marks a class or function to be exported from EinsumsExperimental or imported if it is consumed.
+- :c:macro:`EINSUMS_EXPORT` - Marks a class or function to be exported from Einsums or imported if it is consumed.
+- :c:macro:`EINSUMS_EXTERN_TEMPLATE_EXPORT` - Marks an explicit instantiation *declaration* (``extern`` ``template`` ) as exported or imported.
+- :c:macro:`EINSUMS_FORCEINLINE` - Marks a function to be forced inline.
+- :c:macro:`EINSUMS_GCC_VERSION` - Returns the GCC version einsums is compiled with. Only set if compiled with GCC.
+- :c:macro:`EINSUMS_HAVE_ADDRESS_SANITIZER` - Defined if Einsums was compiled with address sanitization (ASAN).
+- :c:macro:`EINSUMS_HAVE_THREAD_SANITIZER` - Defined if Einsums was compiled with thread sanitization.
+- :c:macro:`EINSUMS_HOST` - When compiled with GPU capabilities, this expands to ``__host__`` . Otherwise, it expands to nothing.
+- :c:macro:`EINSUMS_HOSTDEV` - When compiled with GPU capabilities, this expands to ``__host__`` ``__device__`` . Otherwise, it expands to nothing.
+- :c:macro:`EINSUMS_HOST_DEVICE` - See ``EINSUMS_HOSTDEV``.
+- :c:macro:`EINSUMS_INTEL_VERSION` - Returns the Intel Compiler version einsums is compiled with. Only set if compiled with the Intel Compiler.
+- :c:macro:`EINSUMS_LIKELY` - Hint at the compiler that ``expr`` is likely to be true.
+- :c:macro:`EINSUMS_MINGW` - This macro is set if the compilation is with Mingw.
+- :c:macro:`EINSUMS_MSVC` - This macro is set if the compilation is with MSVC.
+- :c:macro:`EINSUMS_NAMESPACE_BEGIN` - Open `einsums::inline <abi tag>`, optionally descending into a sub-namespace path such as `compute_graph::passes`.
+- :c:macro:`EINSUMS_NAMESPACE_END` - Close a block opened by EINSUMS_NAMESPACE_BEGIN. Pass the same path.
+- :c:macro:`EINSUMS_NO_SANITIZE_ADDRESS` - Marks a function to not be sanitized.
+- :c:macro:`EINSUMS_NVCC_PRAGMA_HD_WARNING_DISABLE` - Silences warnings about calling a host function from a device function, which is common when not using host/device specifiers.
+- :c:macro:`EINSUMS_NVHPC_VERSION` - Gives the version of the NVidia HPC compiler used to compile Einsums.
+- :c:macro:`EINSUMS_OMP_CRITICAL` - Indicates that the following block should only be executed by one thread at a time.
+- :c:macro:`EINSUMS_OMP_FOR_NOWAIT` - Tell the compiler that the following for-loop can be parallelized and it should not wait for threads to finish.
+- :c:macro:`EINSUMS_OMP_PARALLEL` - Tell the compiler that the following block should be done in parallel.
+- :c:macro:`EINSUMS_OMP_PARALLEL_FOR` - Tell the compiler that the following for-loop can be parallelized.
+- :c:macro:`EINSUMS_OMP_PARALLEL_FOR_IF` - Parallelize the following loop only when ``cond`` holds. See ``EINSUMS_OMP_PARALLEL_FOR_SIMD_IF``.
+- :c:macro:`EINSUMS_OMP_PARALLEL_FOR_SIMD` - Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD.
+- :c:macro:`EINSUMS_OMP_PARALLEL_FOR_SIMD_IF` - Parallelize and vectorize the following loop only when ``cond`` holds.
+- :c:macro:`EINSUMS_OMP_SIMD_CLAUSE_PRAGMA` - Combined `<directive> simd` with clauses, keeping `simd` in the directive.
+- :c:macro:`EINSUMS_OMP_TASK` - Start a new task within a parallel region.
+- :c:macro:`EINSUMS_OMP_TASK_FOR` - Tell the compiler that the following for-loop can be parallelized and should use tasks.
+- :c:macro:`EINSUMS_OMP_TASK_FOR_SIMD` - Tell the compiler that the following for-loop can be parallelized and vectorized using SIMD and should use tasks.
+- :c:macro:`EINSUMS_PRAGMA` - Creates a pragma line. Mostly used within other macros.
+- :c:macro:`EINSUMS_TRANSACTION_SAFE_DYN` - If transactional memory is supported by your compiler, expands to the ``synchronized`` keyword.
+- :c:macro:`EINSUMS_UNLIKELY` - Hint at the compiler that ``expr`` is likely to be false.
+- :c:macro:`EINSUMS_WINDOWS` - This macro is set if the compilation is for Windows.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.sealed.config_fingerprint
+   einsums.sealed.library_layout_fingerprint
+   einsums.sealed.mapped_einsums_libraries
+   einsums.sealed.register_stage_module
+   einsums.sealed.registered_stage_modules
+   einsums.sealed.stage_module_registered
+   einsums.sealed.world
+   einsums.sealed.WorldInfo
+   macros

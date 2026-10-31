@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.rscl:
+
+===================
+einsums::blas::rscl
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void rscl(int_t n, const T alpha, T *vec, int_t inc)
+
+   Scales a vector by the reciprocal of a value.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vector.
+   :param alpha: The value to divide all the elements in the vector by.
+   :param vec: The vector to scale.
+   :param inc: The spacing between elements in the vector.
+
+
+.. cpp:function:: template <Complex T> void rscl(int_t n, const RemoveComplexT<T> alpha, T *vec, int_t inc)
+
+   Scales a complex vector by the reciprocal of a real value.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vector.
+   :param alpha: The value to divide all the elements in the vector by.
+   :param vec: The vector to scale.
+   :param inc: The spacing between elements in the vector.

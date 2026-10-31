@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.diagonal:
+
+================================
+einsums::compute_graph::diagonal
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> void diagonal(ResultType *out, const AType &A)
+
+   Graph-aware diagonal extraction: ``out[i] := A[i, i]``.
+
+   ``out`` is rank-1 with extent ``min(A.dim(0), A.dim(1))``, matching numpy's
+   ``np.diag`` on a matrix. A rectangular ``A`` is fine; the shorter axis wins.

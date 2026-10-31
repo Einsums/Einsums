@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.destination_operand_count:
+
+=================================================
+einsums::compute_graph::destination_operand_count
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DestinationRead.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<std::size_t> destination_operand_count(const Node &node)
+
+   How many operands ``node`` lists before its destination, when the destination rule covers it.
+
+   Empty for a node the rule does not cover: no destination prefactor, more than one output (a
+   grouped or batched node keeps one prefactor per member), or a descriptor-less Custom node. A
+   registered descriptor with one output is covered when its ``destination`` hook gives an operand
+   count.

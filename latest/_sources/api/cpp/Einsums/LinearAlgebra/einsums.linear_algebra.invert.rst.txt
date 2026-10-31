@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.invert:
+
+===============================
+einsums::linear_algebra::invert
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept TensorType> requires (CoreTensorConcept<TensorType>) void invert(TensorType *A)
+
+   Inverts a matrix.
+
+   Utilizes the LAPACK routines getrf and getri to invert a matrix.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      This function now throws errors instead of simply aborting on error. Can also handle non-unit strides and row- and column-major
+      layouts.
+
+   :tparam TensorType: The type of the tensor.
+   :param A: Matrix to invert. On exit, the inverse of A, assuming it is non-singular. If it is singular, it may be overwritten by the LU decomposition.
+   :throws RankError: If the input is not a matrix.
+   :throws DimensionError: If the matrix is not square.
+   :throws std::runtime_error: If the matrix is singular.

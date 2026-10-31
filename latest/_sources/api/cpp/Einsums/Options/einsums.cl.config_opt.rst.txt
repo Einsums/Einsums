@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.config_opt:
+
+=======================
+einsums::cl::config_opt
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: template <typename T> constexpr ConfigOption<T> config_opt(std::string_view name, std::string_view help, std::string_view category, detail::storage_t<T> default_value, std::string_view value_name, std::optional<Range> range)
+
+   Declare a value option.

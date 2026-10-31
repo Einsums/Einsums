@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.string_einsum:
+
+===============================================
+einsums::compute_graph::dispatch::string_einsum
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType> && (!HasCompileTimeRank<AType> && !HasCompileTimeRank<BType> && !HasCompileTimeRank<CType>) void string_einsum(const ParsedEinsumSpec &parsed, typename AType::ValueType c_pf, CType *C, typename AType::ValueType ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b, const std::vector<std::string> *precomputed_links, packed_gemm::ContractionSite *pg_site)
+
+   Execute a contraction described by a parsed string spec, on runtime-rank operands.
+
+   Classifies the contraction at run time and takes the first route that fits: a dot product, GEMV,
+   GER, GEMM or direct product on the operands' TensorImpls (an operand whose letters are C's in
+   another order is permuted into C's first), then PackedGemm, then the generic loop.
+   Repeated letters are folded into strided views first (``fold_repeated_letters``) and the folded
+   contraction takes the same routes; an operand with lone summed letters is summed over them first
+   (``reduce_lone_letters``) and the smaller contraction takes the same routes too.
+
+   Every caller hands it runtime-rank views: the graph's replay executors, and eager ``cg::einsum``
+   through ``erased_string_einsum``, which is what code holding typed tensors calls.

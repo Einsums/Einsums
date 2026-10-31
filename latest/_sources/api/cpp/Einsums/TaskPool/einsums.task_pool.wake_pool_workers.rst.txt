@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.wake_pool_workers:
+
+=====================================
+einsums::task_pool::wake_pool_workers
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/TaskHandle.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:function:: void wake_pool_workers()
+
+   Wake all TaskPool workers. Called from handle wait loops to ensure enqueued tasks get processed even if the enqueue notification was missed.

@@ -1,0 +1,80 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExecutionObserver:
+
+=========================================
+einsums::compute_graph::ExecutionObserver
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Observer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExecutionObserver
+
+   What hears a graph's replays as they run, once attached with ``Graph::set_observer``.
+
+   Events arrive on the thread they happen on: under the OpenMP and dataflow executors two calls can
+   overlap, so an observer must be thread-safe. One that throws is detached and the failure logged
+   once; the replay goes on. With no observer attached an executor tests one pointer per node.
+
+   Every member is inline, so a program can derive its own observer: an out-of-line one would keep
+   the class's vtable inside the library.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: ExecutionObserver() = default
+
+   .. cpp:function:: ExecutionObserver(const ExecutionObserver &) = delete
+
+   .. cpp:function:: ExecutionObserver(ExecutionObserver &&) = delete
+
+   .. cpp:function:: ExecutionObserver & operator=(const ExecutionObserver &) = delete
+
+   .. cpp:function:: ExecutionObserver & operator=(ExecutionObserver &&) = delete
+
+   .. cpp:function:: virtual ~ExecutionObserver() = default
+
+   .. cpp:function:: virtual void on_replay_start(const ExecutionEvent &event)
+
+      The outermost replay began.
+
+      :param event: The event.
+
+
+   .. cpp:function:: virtual void on_node_start(const ExecutionEvent &event)
+
+      A node began.
+
+      :param event: The event.
+
+
+   .. cpp:function:: virtual void on_node_end(const ExecutionEvent &event)
+
+      A node finished, or threw; ``ExecutionEvent::ms`` is how long it ran.
+
+      :param event: The event.
+
+
+   .. cpp:function:: virtual void on_io(const ExecutionEvent &event)
+
+      A backing's storage was read, written or published.
+
+      :param event: The event.
+
+
+   .. cpp:function:: virtual void on_replay_end(const ExecutionEvent &event, const RunMetrics &run)
+
+      The outermost replay finished.
+
+      :param event: The event.
+      :param run: What it measured, as ``Graph::last_run`` will report it.

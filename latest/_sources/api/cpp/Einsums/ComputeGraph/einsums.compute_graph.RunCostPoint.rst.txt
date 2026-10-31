@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.RunCostPoint:
+
+====================================
+einsums::compute_graph::RunCostPoint
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: RunCostPoint
+
+   The extra cost per element of a memory pattern at one contiguous run length.
+
+   Extra over the pattern's best case, which the GEMM rate already includes: a C written in place
+   for the scatter, a flat operand for the packers. A run is the number of elements the pattern
+   touches contiguously before its next stride break.
+
+
+   .. cpp:member:: size_t run
+
+   .. cpp:member:: double ns_per_element

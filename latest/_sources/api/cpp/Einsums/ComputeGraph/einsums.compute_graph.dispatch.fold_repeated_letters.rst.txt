@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.fold_repeated_letters:
+
+=======================================================
+einsums::compute_graph::dispatch::fold_repeated_letters
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <typename T, typename TensorType> bool fold_repeated_letters(const std::vector<std::string> &idx, const TensorType &t, T *data, std::vector<std::string> &folded, detail::TensorImpl<T> &impl)
+
+   Fold an operand's repeated letters into one axis each, as a view of the same storage.
+
+   A letter that appears twice in one operand ('iik') walks every occurrence together, so it is a
+   single axis whose step is the sum of the occurrences' strides: A(i, i, k) is the rank-2 view with
+   strides (s0 + s1, s2). Folding costs no copy, and the folded operand has each letter once, which
+   is what every fast path in ``string_einsum`` assumes. ``folded`` receives the letters in order of
+   first appearance, ``impl`` the view.
+
+   Returns false, touching nothing the caller uses, when two occurrences of a letter disagree on
+   the extent. The capture and eager paths reject such a spec before dispatch
+   (validate_einsum_dims), so this only keeps a caller that skipped them on the loop, which walks
+   the first occurrence's extent as it always has.

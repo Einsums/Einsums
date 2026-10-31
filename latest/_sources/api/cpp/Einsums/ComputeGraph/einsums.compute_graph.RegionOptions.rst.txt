@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.RegionOptions:
+
+=====================================
+einsums::compute_graph::RegionOptions
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: RegionOptions
+
+   Knobs for ``form_regions``.
+
+
+   .. cpp:member:: std::size_t min_nodes
+
+      Regions smaller than this are not formed. One-node regions are legal and
+      useful for the identity test, which wants to raise everything; a rewriting
+      pass usually wants at least two nodes before there is anything to say.
+
+
+   .. cpp:member:: NodeFeatures understood
+
+      The node features a region may hold. A node carrying any other is a barrier, so the nodes
+      on either side of it still form regions and only a rewrite spanning it is given up.
+      ``RegionRewrite`` passes its client's declared ``understood_features`` here.
+
+      A grouped statement's value is a member LIST, so ``ExprTerm::tensor`` is empty on its
+      leaves and ``ExprStatement::target`` on its statements; a client that admits
+      ``NodeFeature::Grouped`` must read ``ExprTerm::ragged``. One that admits
+      ``NodeFeature::PermutationOperators`` must keep the rules ``ExprStatement::operators`` states.

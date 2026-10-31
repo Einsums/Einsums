@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.FunctionTensorView:
+
+===========================
+einsums::FunctionTensorView
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/FunctionTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank, size_t UnderlyingRank> FunctionTensorView : public tensor_base::FunctionTensor<T, rank>
+
+   Acts as a view of a FunctionTensor.
+
+   This class allows function tensors to define an offset and different dimensions for the indices.
+   When called, the indices passed will be converted into what they would be in the original function
+   tensor.
+
+
+   .. cpp:function:: FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, const std::array<ptrdiff_t, UnderlyingRank> &index_template)
+
+      Create a function tensor view with the given name, offsets, dimensions, etc.
+
+      :param name: The name of the view.
+      :param func_tens: The underlying tensor that this object views.
+      :param offsets: The offset for each axis in the view.
+      :param dims: The dimensions of the view.
+      :param index_template: A template for the indices. It contains negative numbers where values should be filled in, and full indices where they have been explicitly specified.
+
+
+   .. cpp:function:: FunctionTensorView(const tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, const std::array<ptrdiff_t, UnderlyingRank> &index_template)
+
+      Create a function tensor view with the given offsets, dimensions, etc.
+
+      :param func_tens: The underlying tensor that this object views.
+      :param offsets: The offset for each axis in the view.
+      :param dims: The dimensions of the view.
+      :param index_template: A template for the indices. It contains negative numbers where values should be filled in, and full indices where they have been explicitly specified.
+
+
+   .. cpp:function:: FunctionTensorView(const FunctionTensorView<T, rank, UnderlyingRank> &copy)
+
+      Function tensor view copy constructor.
+
+
+   .. cpp:function:: T call(const std::array<ptrdiff_t, Rank> &inds) const override
+
+      Call the underlying function of the function tensor.
+
+
+   .. cpp:function:: bool full_view_of_underlying() const override
+
+      Returns whether the view sees all of the data of the underlying tensor.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the view.

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sdirprod:
+
+===============================
+einsums::blas::vendor::sdirprod
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sdirprod(int_t n, float alpha, const float *x, int_t incx, const float *y, int_t incy, float beta, float *z, int_t incz)
+
+   Perform the direct product between two vectors, scaling the vector it is added to: :math:`z_i := \alpha x_i y_i + \beta z_i`.
+
+   .. versionadded:: 2.0.0
+
+   :param n: The number of elements in the vectors.
+   :param alpha: The scale factor for the product.
+   :param x: The first input vector.
+   :param incx: The skip value for the first vector. If negative, then it will be traversed backwards.
+   :param y: The second vector.
+   :param incy: The skip value for the second vector. If negative, then it will be traversed backwards.
+   :param beta: The scale factor for z. When zero, z is not read, so it may hold anything, NaN included.
+   :param z: The vector to accumulate to. It must not overlap x or y.
+   :param incz: The skip value for the accumulation vector. If negative, then it will be traversed backwards.

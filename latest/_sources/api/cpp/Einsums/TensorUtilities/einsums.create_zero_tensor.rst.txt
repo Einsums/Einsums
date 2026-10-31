@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_zero_tensor:
+
+===========================
+einsums::create_zero_tensor
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/CreateZeroTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T = double, typename... MultiIndex> Tensor<T, sizeof...(MultiIndex)> create_zero_tensor(const std::string &name, MultiIndex... index)
+
+   Create a tensor and zero its  data.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type to be stored by the tensor.
+   :tparam MultiIndex: The types of the indices.
+   :param name: The name of the new tensor.
+   :param index: The dimensions for the new tensor.
+   :returns: A new tensor whose elements have been zeroed.
+
+
+.. cpp:function:: template <typename T = double> RuntimeTensor<T> create_zero_tensor(const std::string &name, const std::vector<size_t> &dims)
+
+   Create a runtime-rank zero tensor from a runtime shape vector.
+
+   The runtime-rank form, exposed to Python as ``create_zero_tensor``.

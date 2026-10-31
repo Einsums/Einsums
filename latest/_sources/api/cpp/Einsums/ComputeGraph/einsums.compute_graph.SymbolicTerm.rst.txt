@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SymbolicTerm:
+
+====================================
+einsums::compute_graph::SymbolicTerm
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SymbolicTerm
+
+   One term of a cost polynomial: a coefficient times a monomial.
+
+   A term is CANONICAL when its factors are sorted ascending by ``SymbolicVar``'s order, no variable
+   appears twice, and no exponent is zero. ``SymbolicPoly`` canonicalizes every term it stores, so a
+   term obtained from ``SymbolicPoly::terms`` is always canonical.
+
+
+   .. cpp:function:: void canonicalize()
+
+      Sort the factors, merge repeats and drop zero exponents.
+
+
+   .. cpp:function:: int total_degree() const noexcept
+
+      The sum of the exponents.
+
+      :returns: The total degree, zero for a constant term.
+
+
+   .. cpp:function:: int degree_in(const SymbolicVar &variable) const noexcept
+
+      The power one variable is raised to in this term.
+
+      :param variable: The variable to look for.
+      :returns: The exponent, or zero when the variable does not appear.
+
+
+   .. cpp:member:: double coefficient
+
+      The numeric coefficient.
+
+
+   .. cpp:member:: std::vector<SymbolicFactor> factors
+
+      The monomial, canonical once stored in a polynomial.

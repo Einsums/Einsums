@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Utilities_api:
+
+=================
+Utilities C++ API
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Utilities>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::convert_array` - Converts the elements of an array to a new type.
+- :cpp:any:`~einsums::create_array_from_tuple` - Converts a tuple whose elements can all be converted to the same type into an array.
+- :cpp:any:`~einsums::create_tuple` - Creates a tuple consisting of copies of the passed value.
+- :cpp:any:`~einsums::create_tuple_from_array` - Converts an array into a tuple with the same representation.
+- :cpp:any:`~einsums::initialize_Einsums_Utilities` - Initializes the random number generator.
+- :cpp:any:`~einsums::is_in` - Check to see if an element is contained in a container or tuple.
+- :cpp:any:`~einsums::make_temp_path` - Generate a unique path in the system temporary directory.
+- :cpp:any:`~einsums::not_in` - Check to see if an element is not contained in a container or tuple.
+- :cpp:any:`~einsums::seed_random` - Set the seed of the random number generator.
+- :cpp:any:`~einsums::set_env_var` - Set (or overwrite) an environment variable, portably.
+- :cpp:any:`~einsums::slice_array` - Slices an array.
+- :cpp:any:`~einsums::unset_env_var` - Remove an environment variable, portably.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::random_engine` - The global random engine for random number generation.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.convert_array
+   einsums.create_array_from_tuple
+   einsums.create_tuple
+   einsums.create_tuple_from_array
+   einsums.initialize_Einsums_Utilities
+   einsums.is_in
+   einsums.make_temp_path
+   einsums.not_in
+   einsums.seed_random
+   einsums.set_env_var
+   einsums.slice_array
+   einsums.unset_env_var
+   variables

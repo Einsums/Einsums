@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DependencyInfo:
+
+======================================
+einsums::compute_graph::DependencyInfo
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Executor.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DependencyInfo
+
+   Dependency information for a sorted graph.
+
+   Computed by Graph::topological_sort() and stored for reuse by executors.
+   Indices refer to positions in the sorted nodes vector.
+
+
+   .. cpp:member:: std::vector<std::vector<size_t>> successors
+
+      successors[i] = nodes that depend on node i
+
+
+   .. cpp:member:: std::vector<std::vector<size_t>> predecessors
+
+      predecessors[i] = nodes that node i depends on
+
+
+   .. cpp:member:: std::vector<std::vector<size_t>> levels
+
+      levels[k] = node positions whose longest predecessor chain has length
+      k; every node in a level is independent of the others.
+
+      Computed with the lists above (positions are topological, so one forward pass) and
+      invalidated with them.

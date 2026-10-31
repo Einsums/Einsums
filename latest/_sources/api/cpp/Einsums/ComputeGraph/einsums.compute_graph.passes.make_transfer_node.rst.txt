@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.make_transfer_node:
+
+==================================================
+einsums::compute_graph::passes::make_transfer_node
+==================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/TransferNode.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: Node make_transfer_node(OpKind kind, const TensorHandle &handle, std::string_view label_prefix, std::size_t size_bytes)
+
+   Build a host<->device transfer node for ``handle``.
+
+   Shared by TransferInsertion (H2D / D2H staging) and TransferElimination
+   (D2H eviction); those three call sites differ only in ``kind``, the
+   ``label_prefix``, and ``size_bytes``. The executor is a device_synchronize
+   placeholder on the mock backend; the graph executor swaps in a real
+   gpu::memcpy once device shadow allocations exist.
+
+   :param kind: OpKind::HostToDevice or OpKind::DeviceToHost.
+   :param handle: The tensor being staged/evicted (supplies id and name).
+   :param label_prefix: Human-readable prefix, e.g. "H2D", "D2H", "D2H_evict".
+   :param size_bytes: Bytes moved (handle.total_bytes(), or an eviction size).

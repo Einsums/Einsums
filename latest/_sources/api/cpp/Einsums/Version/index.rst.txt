@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Version_api:
+
+===============
+Version C++ API
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Version>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::build_date_time` - Returns the einsums build date and time
+- :cpp:any:`~einsums::build_string` - Returns the einsums version string.
+- :cpp:any:`~einsums::build_type` - Returns the einsums build type ('Debug', 'Release', etc.)
+- :cpp:any:`~einsums::complete_version` - Returns the full version string.
+- :cpp:any:`~einsums::configuration_string` - Return the einsums configuration information.
+- :cpp:any:`~einsums::copyright` - Returns the copyright string.
+- :cpp:any:`~einsums::full_build_string` - Returns the einsums full build information string.
+- :cpp:any:`~einsums::full_version` - Returns the full einsums version.
+- :cpp:any:`~einsums::full_version_as_string` - Returns the full einsums version with its tag, as in ``2.0.0a1``: the release's PEP 440 version, which Python reports as ``einsums.__version__``.
+- :cpp:any:`~einsums::major_version` - Returns the major einsums version.
+- :cpp:any:`~einsums::minor_version` - Returns the minor einsums version.
+- :cpp:any:`~einsums::patch_version` - Returns the sub-minor/patch-level einsums version.
+- :cpp:any:`~einsums::tag` - Returns the tag.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.build_date_time
+   einsums.build_string
+   einsums.build_type
+   einsums.complete_version
+   einsums.configuration_string
+   einsums.copyright
+   einsums.full_build_string
+   einsums.full_version
+   einsums.full_version_as_string
+   einsums.major_version
+   einsums.minor_version
+   einsums.patch_version
+   einsums.tag

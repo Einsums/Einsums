@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.trsyl:
+
+====================
+einsums::blas::trsyl
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t trsyl(char trana, char tranb, int_t isgn, int_t m, int_t n, const T *a, int_t lda, const T *b, int_t ldb, T *c, int_t ldc, RemoveComplexT<T> *scale)
+
+   Solves a Sylvester equation. These equations look like the following.
+
+   .. math::
+
+      \mathbf{A}\mathbf{X} \pm \mathbf{X}\mathbf{B} = \alpha\mathbf{C}
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param trana: Whether to transpose the A matrix. Case insensitive. Can be 'c', 't', or 'n'.
+   :param tranb: Whether to transpose the B matrix. Case insensitive. Can be 'c', 't', or 'n'.
+   :param isgn: Whether the sign in the equation is positive or negative.
+   :param m: The number of rows in X.
+   :param n: The number of columns in X.
+   :param a: The A matrix in Schur canonical form.
+   :param lda: The leading dimension of A.
+   :param b: The B matrix in Schur canonical form.
+   :param ldb: The leading dimension of B.
+   :param c: The right hand side matrix. On exit, it contains the value of the X matrix that satisfies the equation.
+   :param ldc: The leading dimension of the C matrix.
+   :param scale: The scale factor for the right hand side matrix.
+   :returns: 0 on success. If 1, then some eigenvalues were close and needed to be perturbed. If negative, then one of the inputs had a bad value, and the absolute value of the return gives the parameter.

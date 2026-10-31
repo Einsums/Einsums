@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.multiply_prefactors:
+
+===================================================
+einsums::compute_graph::passes::multiply_prefactors
+===================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: PrefactorScalar multiply_prefactors(const PrefactorScalar &lhs, const PrefactorScalar &rhs)
+
+   ``lhs * rhs`` over two type-erased prefactors.
+
+   Needed wherever a pass collapses several scaled operations into one and has to
+   carry the scalars it removed: ContractionPlanning folds a chain of
+   contractions into a tree of GEMMs and owes the product of the prefactors the
+   chain carried. The arithmetic is done in ``complex<double>`` and the result
+   narrowed back, so precision is lost only where the inputs were already single
+   and an imaginary part only appears where one of the inputs had one.

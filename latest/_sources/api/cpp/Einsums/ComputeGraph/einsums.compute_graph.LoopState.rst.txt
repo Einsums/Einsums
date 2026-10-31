@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.LoopState:
+
+=================================
+einsums::compute_graph::LoopState
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: LoopState
+
+   Live state a ``LoopDescriptor`` shares with its executor.
+
+   Separate from the descriptor for the reason ``ExecutorBuilder.hpp`` states
+   once: nodes live in a ``std::vector`` that passes insert into, erase from and
+   reorder, so an executor cannot hold a pointer into one. Everything a replay
+   WRITES therefore lives in a shared block the executor holds by
+   ``shared_ptr``, exactly as ``EinsumParams`` and ``AxpbyParams`` do for
+   prefactors.
+
+
+   .. cpp:member:: size_t last_iteration_count
+
+      How many iterations the most recent execute() ran.

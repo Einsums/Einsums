@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_GPU_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/GPU/Stream.hpp``, ``Einsums/GPU/Types.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:type:: bfloat16_t = uint16_t
+
+.. cpp:type:: blas_handle_t = int
+
+.. cpp:type:: template <typename T> device_complex_t
+
+   Alias: device_complex_t<std::complex<float>> → cuFloatComplex (CUDA)
+
+
+.. cpp:type:: event_t = int
+
+.. cpp:type:: fp8_t = uint8_t
+
+.. cpp:type:: half_t = uint16_t
+
+.. cpp:type:: solver_handle_t = int
+
+.. cpp:type:: stream_t = int

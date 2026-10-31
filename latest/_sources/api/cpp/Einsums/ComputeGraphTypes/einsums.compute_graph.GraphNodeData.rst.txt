@@ -1,0 +1,62 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphNodeData:
+
+=====================================
+einsums::compute_graph::GraphNodeData
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/GraphData.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GraphNodeData
+
+   Serialized representation of a computation node in a graph snapshot.
+
+   Used for profiling, visualization, and inter-process communication.
+
+
+   .. cpp:member:: uint64_t id
+
+   .. cpp:member:: std::string kind
+
+   .. cpp:member:: std::string label
+
+   .. cpp:member:: std::string target
+
+   .. cpp:member:: int stream_id
+
+   .. cpp:member:: std::vector<uint64_t> inputs
+
+   .. cpp:member:: std::vector<uint64_t> outputs
+
+   .. cpp:member:: double timing_ms
+
+   .. cpp:member:: double c_prefactor
+
+   .. cpp:member:: double ab_prefactor
+
+   .. cpp:member:: double scale_factor
+
+   .. cpp:member:: double alpha
+
+   .. cpp:member:: double beta
+
+   .. cpp:member:: std::string c_indices
+
+   .. cpp:member:: std::string a_indices
+
+   .. cpp:member:: std::string b_indices
+
+   .. cpp:member:: bool conj_a
+
+   .. cpp:member:: bool conj_b

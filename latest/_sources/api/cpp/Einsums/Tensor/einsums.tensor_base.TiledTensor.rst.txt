@@ -1,0 +1,391 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_base.TiledTensor:
+
+=================================
+einsums::tensor_base::TiledTensor
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
+
+.. cpp:namespace:: einsums::tensor_base
+
+.. cpp:class:: template <typename T, size_t rank, typename TensorType> TiledTensor : public TiledTensorNoExtra, public design_pats::Lockable<std::recursive_mutex>, public AlgebraOptimizedTensor
+
+   Represents a tiled tensor. Is a lockable type.
+
+   :tparam TensorType: The underlying storage type.
+   :tparam T: The type of data being stored.
+   :tparam rank: The tensor rank.
+
+
+   .. cpp:function:: TiledTensor()
+
+      Create a new empty tiled tensor.
+
+
+   .. cpp:function:: template <ContainerOrInitializer... Sizes> requires (!ContainerOrInitializer<typename Sizes::value_type> && ... && true) TiledTensor(std::string name, const Sizes &... sizes)
+
+      Create a new empty tiled tensor with the given grid. If only one grid is given, the grid is applied to all dimensions.
+      Otherwise, the number of grids must match the rank.
+
+      :param name: The name of the tensor.
+      :param sizes: The grids to apply.
+
+
+   .. cpp:function:: template <Container ContainerType> requires (Container<typename ContainerType::value_type> && std::is_integral_v<typename ContainerType::value_type::value_type>) TiledTensor(std::string name, const ContainerType &sizes)
+
+      Create a new empty tiled tensor with the given grid.
+
+      :param name: The name of the tensor.
+      :param sizes: The grids to apply.
+
+
+   .. cpp:function:: TiledTensor(const TiledTensor<T, rank, TensorType> &other)
+
+      Copy a tiled tensor.
+
+      :param other: The tensor to be copied.
+
+
+   .. cpp:function:: template <TRTensorConcept<rank, T> OtherTensor> TiledTensor(const TiledTensor<T, rank, OtherTensor> &other)
+
+      Copy a tiled tensor from one tensor type to another.
+
+      :param other: The tensor to be copied and converted.
+
+
+   .. cpp:function:: virtual ~TiledTensor() = default
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) TensorType & tile(MultiIndex... index)
+
+      Returns the tile with given coordinates. If the tile is not filled, it will be created.
+
+      :param index: The index of the tile.
+      :returns: The tile at the given index.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) const TensorType & tile(MultiIndex... index) const
+
+      Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
+
+      :param index: The index of the tile.
+      :returns: The tile at the given index.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::integral<Storage>) const TensorType & tile(Storage index) const
+
+      Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
+
+      :param index: The index of the tile.
+      :returns: The tile at the given index.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::integral<Storage>) TensorType & tile(Storage index)
+
+      Returns the tile with given coordinates. If the tile is not filled, it will be created.
+
+      :param index: The index of the tile.
+      :returns: The tile at the given index.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) bool has_tile(MultiIndex... index) const
+
+      Returns whether a tile exists at a given position, and if it is filled.
+
+      :param index: The position to check for a tile.
+      :returns: True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) std::array<int, rank> tile_of(MultiIndex... index) const
+
+      Returns the tile coordinates of a given tensor index.
+
+      :param index: The tensor index to check.
+      :returns: The coordinates of the tile.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::integral<Storage>) bool has_tile(Storage index) const
+
+      Returns whether a tile exists at a given position, and if it is filled.
+
+      :param index: The position to check for a tile.
+      :returns: True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::integral<Storage>) std::array<int, rank> tile_of(Storage index) const
+
+      Returns the tile coordinates of a given tensor index.
+
+      :param index: The tensor index to check.
+      :returns: The coordinates of the tile.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) T operator()(MultiIndex... index) const
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+
+      :param index: The index to evaluate.
+      :returns: The value at the position.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) T at(MultiIndex... index) const
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+
+      :param index: The index to evaluate.
+      :returns: The value at the position.
+
+
+   .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) T & operator()(MultiIndex... index)
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+
+      :param index: The index to evaluate.
+      :returns: A reference to the position.
+
+
+   .. cpp:function:: template <typename ContainerType> requires (!std::is_integral_v<ContainerType> && !std::is_same_v<ContainerType, Dim<rank>> && !std::is_same_v<ContainerType, Stride<rank>> && !std::is_same_v<ContainerType, Offset<rank>> && !std::is_same_v<ContainerType, Range>) T operator()(const ContainerType &index) const
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+
+      :param index: The index to evaluate.
+      :returns: The value at the position.
+
+
+   .. cpp:function:: template <typename ContainerType> requires (!std::is_integral_v<ContainerType> && !std::is_same_v<ContainerType, Dim<rank>> && !std::is_same_v<ContainerType, Stride<rank>> && !std::is_same_v<ContainerType, Offset<rank>> && !std::is_same_v<ContainerType, Range>) T at(const ContainerType &index) const
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+
+      :param index: The index to evaluate.
+      :returns: The value at the position.
+
+
+   .. cpp:function:: template <typename ContainerType> requires (!std::is_integral_v<ContainerType> && !std::is_same_v<ContainerType, Dim<rank>> && !std::is_same_v<ContainerType, Stride<rank>> && !std::is_same_v<ContainerType, Offset<rank>> && !std::is_same_v<ContainerType, Range>) T & operator()(const ContainerType &index)
+
+      Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+
+      :param index: The index to evaluate.
+      :returns: A reference to the position.
+
+
+   .. cpp:function:: void zero()
+
+      Sets all entries in the tensor to zero. This clears all tiles. There will be no more tiles after this.
+
+
+   .. cpp:function:: void zero_no_clear()
+
+      Sets all entries in the tensor to zero. This keeps all tiles, just calls zero on the tensors.
+
+
+   .. cpp:function:: void set_all(T value)
+
+      Sets all entries to the given value. Initializes all tiles, unless zero is given.
+      If zero is passed, calls ``zero``
+
+      :param value: The value to broadcast.
+
+
+   .. cpp:function:: void set_all_existing(T value)
+
+      Sets all entries to the given value. If a tile does not exist, it is ignored.
+
+      :param value: The value to broadcast.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator=(const TiledTensor<T, rank, TensorType> &copy)
+
+      Copy assignment.
+
+      :param copy: The tensor to copy.
+
+
+   .. cpp:function:: template <TiledTensorConcept TensorOther> requires (SameUnderlyingAndRank<TiledTensor<T, rank, TensorType>, TensorOther>) TiledTensor<T, rank, TensorType> & operator=(const TensorOther &copy)
+
+      Copy assignment from a different kind of tiled tensor.
+
+      :param copy: The tensor to copy.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator=(T value)
+
+      Set all occupied tensors with the given value.
+
+      :param value: The value to fill the tensors with.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator+=(T value)
+
+      Add a scalar to every tensor.
+
+      :param value: The value to add.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator-=(T value)
+
+      Subtract a scalar from every tensor.
+
+      :param value: The value to subtract.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator*=(T value)
+
+      Multiply every tensor by a scalar.
+
+      :param value: The value to multiply.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator/=(T value)
+
+      Divide every tensor by a scalar.
+
+      :param value: The value to divide by.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator+=(const TiledTensor<T, rank, TensorType> &other)
+
+      Perform in-place addition between two tensors.
+
+      :param other: The tensor to add to this one.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator-=(const TiledTensor<T, rank, TensorType> &other)
+
+      Perform in-place subtraction between two tensors.
+
+      :param other: The tensor to subtract from this one.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator*=(const TiledTensor<T, rank, TensorType> &other)
+
+      Perform in-place multiplication between two tensors.
+
+      :param other: The tensor to multiply this one by.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator/=(const TiledTensor<T, rank, TensorType> &other)
+
+      Perform in-place division between two tensors.
+
+      If a block is zero in the divisor, then the corresponding block will also be zeroed in the output,
+      rather than setting it to NaN or infinity.
+
+      :param other: The tensor to division this one by.
+
+
+   .. cpp:function:: const std::array<std::vector<int>, rank> & tile_offsets() const
+
+      Returns the tile offsets.
+
+
+   .. cpp:function:: const std::vector<int> & tile_offset(int i) const
+
+      Returns the tile offsets along a given dimension.
+
+      :param i: The axis to retrieve.
+
+
+   .. cpp:function:: std::array<std::vector<int>, rank> tile_sizes() const
+
+      Returns the tile sizes.
+
+
+   .. cpp:function:: const std::vector<int> & tile_size(int i) const
+
+      Returns the tile sizes along a given dimension.
+
+      :param i: The axis to retrieve.
+
+
+   .. cpp:function:: const map_type & tiles() const
+
+      Get a reference to the tile map.
+
+
+   .. cpp:function:: map_type & tiles()
+
+      Get a reference to the tile map.
+
+
+   .. cpp:function:: virtual const std::string & name() const
+
+      Get the name.
+
+
+   .. cpp:function:: virtual void set_name(const std::string &val)
+
+      Sets the name.
+
+      :param val: The new name.
+
+
+   .. cpp:function:: size_t size() const
+
+      Gets the size of the tensor.
+
+
+   .. cpp:function:: size_t grid_size() const
+
+      Gets the number of possible tiles, empty and filled.
+
+
+   .. cpp:function:: size_t grid_size(int i) const
+
+      Gets the number of possible tiles along an axis, empty and filled.
+
+
+   .. cpp:function:: size_t num_filled() const
+
+      Gets the number of filled tiles.
+
+
+   .. cpp:function:: virtual bool full_view_of_underlying() const
+
+      Indicates whether the tensor sees all of the underlying elements, or could if all blocks were filled.
+
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Get the dimension along a given axis.
+
+      :param d: The axis to query.
+
+
+   .. cpp:function:: Dim<rank> dims() const
+
+      Get the dimensions
+
+
+   .. cpp:function:: template <std::integral... Index> requires (sizeof...(Index) == rank) bool has_zero_size(Index... index) const
+
+      Check to see if the given tile has zero size.
+
+      :param index: The index of the tile, as a list of integers.
+      :returns: True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+
+
+   .. cpp:function:: template <typename Storage> requires (!std::integral<Storage>) bool has_zero_size(const Storage &index) const
+
+      Check to see if the given tile has zero size.
+
+      :param index: The index of the tile, as a container of integers.
+      :returns: True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+
+
+   .. cpp:function:: operator TensorType() const
+
+      Convert to the underlying tensor type.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor.

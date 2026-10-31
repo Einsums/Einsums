@@ -1,0 +1,58 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ConditionalDescriptor:
+
+=============================================
+einsums::compute_graph::ConditionalDescriptor
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ConditionalDescriptor
+
+   Metadata for conditional (if-then-else) nodes.
+
+   Contains a predicate and two subgraphs. The predicate is evaluated at
+   execution time; if true, the then_branch executes, otherwise else_branch.
+
+   The predicate is a ``PredExpr`` rather than a bare ``std::function``, which
+   is what lets a conditional be data: a literal, a comparison over
+   ``ParamTable`` entries, or one slot of a ``GateFlags`` array all rebuild
+   from the descriptor, and only the callback arm does not. See
+   ``reconstruction_blocker``, which reports that arm per node.
+
+   .. code-block:: text
+
+      auto [then_graph, else_graph] = graph.add_conditional("check", [&]() {
+          return energy_diff < threshold;
+      });
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: PredExpr predicate
+
+      Evaluated at runtime to select branch
+
+
+   .. cpp:member:: std::shared_ptr<Graph> then_branch
+
+      Executed if the predicate is true
+
+
+   .. cpp:member:: std::shared_ptr<Graph> else_branch
+
+      Executed if the predicate is false (may be empty)

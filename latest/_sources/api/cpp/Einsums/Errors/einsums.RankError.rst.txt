@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RankError:
+
+==================
+einsums::RankError
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: RankError : public std::invalid_argument
+
+   Indicates that the rank of some tensor arguments are not compatible with the given operation.
+
+   .. versionadded:: 1.1.0

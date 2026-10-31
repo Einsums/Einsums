@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.BlockingParams:
+
+====================================
+einsums::packed_gemm::BlockingParams
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: BlockingParams
+
+   Cache-blocking parameters for BLIS-style GEMM, tuned per element size.
+
+
+   .. cpp:member:: int64_t KC
+
+      K tile size (L2 blocking)
+
+
+   .. cpp:member:: int64_t MC
+
+      M tile size (L2 blocking)
+
+
+   .. cpp:member:: int64_t NC
+
+      N tile size (L3 blocking)
+
+
+   .. cpp:member:: int64_t NR
+
+      N register-block

@@ -1,0 +1,72 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.ComputeNode:
+
+==========================
+einsums::hptt::ComputeNode
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/ComputeNode.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:class:: ComputeNode
+
+   A ComputeNode encodes a loop.
+
+   Nodes form a singly-linked list via the ``next`` pointer. The root node
+   is owned by the Plan (in a ``std::vector<ComputeNode>``), and each node
+   owns its successor via ``std::unique_ptr``.
+
+
+   .. cpp:member:: ptrdiff_t start
+
+      start index for at the current loop
+
+
+   .. cpp:member:: ptrdiff_t end
+
+      end index for at the current loop
+
+
+   .. cpp:member:: ptrdiff_t inc
+
+      increment for at the current loop
+
+
+   .. cpp:member:: size_t lda
+
+      stride of A w.r.t. the loop index
+
+
+   .. cpp:member:: size_t ldb
+
+      stride of B w.r.t. the loop index
+
+
+   .. cpp:member:: bool indexA
+
+      true if index of A is innermost (0)
+
+
+   .. cpp:member:: bool indexB
+
+      true if index of B is innermost (0)
+
+
+   .. cpp:member:: ptrdiff_t offDiffAB
+
+      difference in offset A and B (i.e., A - B) at the current loop
+
+
+   .. cpp:member:: std::unique_ptr<ComputeNode> next
+
+      next ComputeNode, or nullptr if this is the last (macro-kernel call)

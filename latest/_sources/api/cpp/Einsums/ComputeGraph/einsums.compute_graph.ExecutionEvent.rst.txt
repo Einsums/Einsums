@@ -1,0 +1,81 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExecutionEvent:
+
+======================================
+einsums::compute_graph::ExecutionEvent
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Observer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExecutionEvent
+
+   One thing that happened while a replay ran.
+
+   Every event carries the fields its kind has: a node event its node, a storage event its tensor,
+   storage and bytes. ``at_ms`` is measured from the start of the outermost replay on one steady
+   clock, so events from different threads order by it.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: EventKind kind
+
+   .. cpp:member:: std::string graph
+
+      The graph or body the node or storage belongs to.
+
+
+   .. cpp:member:: NodeId node
+
+      The node, for a node event.
+
+
+   .. cpp:member:: OpKind op
+
+      The node's kind, for a node event.
+
+
+   .. cpp:member:: std::string label
+
+      The node's label, for a node event.
+
+
+   .. cpp:member:: std::string tensor
+
+      The backed tensor, for a storage event.
+
+
+   .. cpp:member:: std::string storage
+
+      Its storage, as ``TensorBacking::describe`` names it, for a storage event.
+
+
+   .. cpp:member:: double at_ms
+
+      Milliseconds from the start of the outermost replay.
+
+
+   .. cpp:member:: double ms
+
+      How long the node ran, for a node end.
+
+
+   .. cpp:member:: std::uint64_t bytes
+
+      Bytes moved, for a storage event.
+
+
+   .. cpp:member:: std::uint64_t thread
+
+      Which thread it happened on: equal values are the same thread within one process.

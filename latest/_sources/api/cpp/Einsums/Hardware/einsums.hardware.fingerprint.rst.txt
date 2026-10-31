@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.fingerprint:
+
+==============================
+einsums::hardware::fingerprint
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::string fingerprint(const MachineIdentity &identity)
+
+   A short, stable name for an identity: 16 hexadecimal digits.
+
+   A hash of the identity's canonical JSON, so two machines share a fingerprint exactly when every
+   field agrees, and the same machine has the same one in every process and every build.
+
+   .. versionadded:: 2.0.0
+
+   :param identity: The identity.
+   :returns: The fingerprint.

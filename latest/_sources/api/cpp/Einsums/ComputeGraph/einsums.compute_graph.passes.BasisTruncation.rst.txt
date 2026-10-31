@@ -1,0 +1,352 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.BasisTruncation:
+
+===============================================
+einsums::compute_graph::passes::BasisTruncation
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/BasisTruncation.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: BasisTruncation : public OptimizerPass
+
+   Truncate an index space to the natural orbitals a density says are occupied.
+
+   .. seealso::
+
+      BasisTruncation.hpp for the construction and for what chemistry calls it
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: BasisTruncation() = default
+
+      Default-construct. Explicit so the binding codegen has a constructor to annotate.
+
+
+   .. cpp:function:: std::string name() const override
+
+      See ``OptimizerPass::name``.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Replaces a space by a contained subspace under a tolerance it records through
+      OptimizerPass::approximate. Never eligible for a default manager, which is what this tier means.
+
+
+   .. cpp:function:: static std::string space_name()
+
+      The index space the truncated axes carry.
+
+      :returns: ``"fno"``.
+
+
+   .. cpp:function:: static std::string dim_symbol()
+
+      The symbolic extent a truncated axis goes by.
+
+      :returns: ``"nfno"``.
+
+
+   .. cpp:function:: static SpaceId register_fno_space(Graph &graph, const std::string &outer, double fraction)
+
+      Register the truncated space in ``graph's`` own registry, inside ``outer``.
+
+      The same shape ``NaturalAuxiliaryFactorization::register_naf_space`` has, and the same three
+      statements: the space itself, its containment in the space it truncates, and the scale order
+      beside it. Containment is what says a contraction over the subspace is a RESTRICTION of the
+      one over the parent rather than an unrelated quantity; the scale order is what lets a cost
+      comparison rank the two.
+
+      The typical extent is derived from ``outer's`` at ``fraction`` of it, for the reason the
+      auxiliary truncation's is: a space declared smaller than another must carry a typical extent
+      when that other one does, or the cost comparison's second rung ranks the restricted form as
+      unmeasurable rather than as cheap.
+
+      Register ``outer`` BEFORE calling this.
+
+      :param graph: The graph whose registry gains the space.
+      :param outer: The name of the space being truncated, or empty for no relation.
+      :param fraction: What fraction of ``outer's`` typical extent the truncated space is expected to be. A half is the conventional frozen-natural-orbital saving.
+      :throws std::invalid_argument: When ``fraction`` does not lie strictly between zero and one.
+      :returns: The space's id in that registry.
+
+
+   .. cpp:function:: void set_amplitudes(const RuntimeTensor<double> &amplitudes)
+
+      Hand the pass the first-order amplitudes the density is built from.
+
+      Supplied to the PASS rather than found in the graph, which is the shape
+      ``LaplaceTransform`` has for its energies and ``MetricFitFactorization`` for its three-index
+      tensor, and for the same reason: a caller who computed the amplitudes outside the graph has
+      a tensor no node mentions, and the graph has never seen it.
+
+      It becomes an interface tensor of the transformed graph, under its own name, because the
+      setup body captures it. That is what lets a saved graph re-truncate at a new geometry.
+
+      :param amplitudes: ``t[i,a,j,b]``, rank 4, with the virtual axes second and fourth. Its storage must outlive every replay, since the setup body reads it on each bind.
+      :throws std::invalid_argument: When ``amplitudes`` is not a rank-4 tensor whose two virtual axes agree.
+
+
+   .. cpp:function:: void set_amplitudes(const Tensor<double, 4> &amplitudes)
+
+      The same, taking a compile-time-rank tensor.
+
+      :param amplitudes: ``t[i,a,j,b]``.
+
+
+   .. cpp:function:: void set_fock(const RuntimeTensor<double> &fock)
+
+      Hand the pass the Fock block over the space being truncated.
+
+      Needed because the kept natural orbitals are not canonical: their Fock block is not
+      diagonal, so an energy denominator built from the old orbital energies would be wrong.
+      Diagonalizing it inside the subspace is what restores a diagonal denominator and produces
+      the new energies.
+
+      :param fock: ``F[a,b]`` over the full virtual space, rank 2 and square.
+      :throws std::invalid_argument: When ``fock`` is not a square rank-2 tensor.
+
+
+   .. cpp:function:: void set_fock(const Tensor<double, 2> &fock)
+
+      The same, taking a compile-time-rank tensor.
+
+      :param fock: ``F[a,b]``.
+
+
+   .. cpp:function:: void set_occupied_energies(const RuntimeTensor<double> &energies)
+
+      Hand the pass the orbital energies of the space the amplitudes' other axes run over.
+
+      **What it is for, since the construction does not need it**
+
+      The record this pass writes carries :math:`E_{MP2}(\text{full}) - E_{MP2}(\text{fno})` as
+      its measured effect, and the two energies are what needs these. The integrals are not
+      asked for separately because the amplitudes already carry them: a first-order amplitude
+      is the integral over its denominator, and the denominator is these energies against the
+      diagonal of the Fock block the pass already holds.
+
+      A projection with no way to measure its own effect is declined rather than recorded with
+      a bound nobody computed, so these are required to PROJECT and not to build the space.
+
+      :param energies: ``eps[i]``, one per occupied orbital, rank 1.
+      :throws std::invalid_argument: When ``energies`` is not rank 1 or does not have one entry per occupied axis of the amplitudes. Set the amplitudes first.
+
+
+   .. cpp:function:: void set_occupied_energies(const Tensor<double, 1> &energies)
+
+      The same, taking a compile-time-rank tensor.
+
+      :param energies: ``eps[i]``.
+
+
+   .. cpp:function:: void set_occupation(double occupation)
+
+      Override ``einsums:graph:fno-occupation`` for this pipeline.
+
+      :param occupation: Natural orbitals whose occupation exceeds this are kept.
+      :throws std::invalid_argument: When ``occupation`` is not finite or is negative.
+
+
+   .. cpp:function:: double occupation() const
+
+      The occupation cutoff, taking ``set_occupation`` over the option.
+
+      :returns: The cutoff.
+
+
+   .. cpp:function:: void set_virtual_space(std::string name)
+
+      The name of the space this truncates.
+
+      :param name: An index-space name, e.g. ``"vir"``.
+
+
+   .. cpp:function:: std::string virtual_space() const
+
+      The space this truncates.
+
+      :returns: The name, ``"vir"`` unless ``set_virtual_space`` changed it.
+
+
+   .. cpp:function:: std::size_t kept() const noexcept
+
+      How many natural orbitals the last run kept, or zero before one ran.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::vector<double> occupations() const
+
+      The occupations the last run read off the density, largest first.
+
+      :returns: The eigenvalues of the virtual-virtual density, or empty before a run.
+
+
+   .. cpp:function:: RuntimeTensor<double> & transformation()
+
+      The transformation the setup writes, ``U`` over the full space by the truncated one.
+
+      The pass's own tensor rather than the caller's, because its second extent is decided by the
+      pass and a caller cannot size a buffer for a count they do not yet know. It becomes an
+      interface tensor of the transformed graph under ``transformation_name``.
+
+      :returns: The tensor. Empty until the pass has run; written on every bind after that.
+
+
+   .. cpp:function:: RuntimeTensor<double> & energies()
+
+      The orbital energies of the truncated space, ascending.
+
+      :returns: The tensor. Empty until the pass has run; written on every bind after that.
+
+
+   .. cpp:function:: static std::string transformation_name()
+
+      The interface name ``transformation`` is bound under.
+
+      :returns: ``"fno_transformation"``.
+
+
+   .. cpp:function:: static std::string energies_name()
+
+      The interface name ``energies`` is bound under.
+
+      :returns: ``"fno_energies"``.
+
+
+   .. cpp:function:: static std::string keep_matrix_name()
+
+      The interface name the rectangular selection matrix is bound under.
+
+      :returns: ``"fno_keep"``. See the file note on why the selection is a contraction.
+
+
+   .. cpp:function:: static std::string projected_name(const std::string &name)
+
+      What the setup writes the projection of ``name`` into.
+
+      **Not a manifest entry, and the difference is the whole of the contract**
+
+      A manifest entry is something a bind must SUPPLY. These are graph-owned intermediates
+      whose value the setup supplies and which nobody may bind. What a rebind supplies is the
+      UNTRUNCATED tensor, under its own name for whatever else reads it and under
+      ``projection_input_name`` for the projection to read.
+
+      :param name: The name of the tensor being projected.
+      :returns: ``"<name>@fno"``.
+
+
+   .. cpp:function:: static std::string projection_input_name(const std::string &name)
+
+      The interface name the projection reads ``name`` under.
+
+      The projection is captured, so what it reads becomes an interface tensor of the
+      transformed graph. The caller's own algebra no longer reads that tensor at all, so
+      naming the projection's copy is what keeps the untruncated tensor bindable; a rebind
+      supplies the same tensor under this name. The same shape a fit that reads the tensor it
+      replaces already has.
+
+      :param name: The name of the tensor being projected.
+      :returns: ``"<name>@fno_in"``.
+
+
+   .. cpp:function:: std::vector<std::string> projected() const
+
+      The names the last run projected, in the order they were projected.
+
+      :returns: One entry per projected tensor, spelled by ``projected_name``.
+
+
+   .. cpp:function:: double correction() const noexcept
+
+      The MP2 energy the truncation removed, :math:`E_{MP2}(\text{full}) - E_{MP2}(\text{fno})`.
+
+      The record's measured quantity rather than an extra output: a program that wants the
+      corrected number adds this to whatever the correlated method produced in the truncated
+      space, which is the same place the density-fitting and quadrature effects already
+      compose.
+
+      :returns: The correction, or zero when the last run projected nothing.
+
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      Structural-algebraic, for the reason the other two lossy passes are: replacing a space is a
+      statement about the arithmetic, and one a reload quietly dropped would change what the graph
+      computes.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Only what commutes with a real rotation of one index space: repointing is by id and does not reach loop bodies, so views, control
+      flow and redirected slots stay out.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      See ``OptimizerPass::reset_stats``.
+
+
+   .. cpp:member:: static constexpr Reason RecipeRenamed
+
+      The codes this pass records its decisions under (``Decision::code``).
+      @{
+
+
+   .. cpp:class:: Target
+
+      One tensor of the caller's whose axes run over the space being replaced.
+
+
+      .. cpp:member:: TensorId source
+
+         The caller's tensor, as this graph knows it.
+
+
+      .. cpp:member:: TensorId projected
+
+         The graph-owned tensor the setup writes.
+
+
+      .. cpp:member:: RuntimeTensorView<double> input
+
+         The projection's own view of the caller's tensor.
+
+
+      .. cpp:member:: RuntimeTensor<double> *destination
+
+         Where the projection writes.
+
+
+      .. cpp:member:: std::vector<std::size_t> axes
+
+         Which of its axes carry the space being replaced.
+
+
+      .. cpp:member:: std::string name
+
+         The caller's name for it.

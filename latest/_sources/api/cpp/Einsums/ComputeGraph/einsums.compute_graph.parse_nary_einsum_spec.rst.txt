@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.parse_nary_einsum_spec:
+
+==============================================
+einsums::compute_graph::parse_nary_einsum_spec
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<ParsedNaryEinsumSpec, GraphError> parse_nary_einsum_spec(std::string_view spec)
+
+   Parse an einsum spec with any number of operands, two or more.
+
+   .. versionadded:: 2.0.0
+
+   :param spec: The spec.
+   :returns: The index lists, or why the spec is malformed: a missing arrow, an operand with no indices, an output index no operand carries, or a letter that is not a letter or digit.

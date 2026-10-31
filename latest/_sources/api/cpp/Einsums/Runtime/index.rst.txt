@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Runtime_api:
+
+===============
+Runtime C++ API
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Runtime>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::InitParams` - Allows users to add functions to run at startup and shutdown.
+- :cpp:any:`~einsums::InvalidRuntimeState` - Indicates that the code is handling data that is uninitialized.
+- :cpp:any:`~einsums::RuntimeConfiguration` - Handles the current configuration state of the running instance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::executable_prefix` - Returns the id of the calling process. The directory Einsums was installed into, derived from the running executable's path.
+- :cpp:any:`~einsums::finalize` - Signal the runtime that it may be stopped.
+- :cpp:any:`~einsums::format_as` - ``fmt`` formats a ``RuntimeState`` as its name, so ``fmt::format("{}", state)`` needs no call to ``runtime_state_name``.
+- :cpp:any:`~einsums::initialize` - Initialize the runtime.
+- :cpp:any:`~einsums::is_running` - Test whether the runtime system is currently running.
+- :cpp:any:`~einsums::register_arguments` - Add a function to the list of startup functions to add module-specific command line arguments.
+- :cpp:any:`~einsums::register_Einsums_Runtime_options` - Give the runtime's options their command-line presence.
+- :cpp:any:`~einsums::register_pre_shutdown_function` - Add a function to run in *einsums::finalize()*, before every shutdown function.
+- :cpp:any:`~einsums::register_pre_startup_function` - Add a function to run before einsums_main and before every startup function.
+- :cpp:any:`~einsums::register_shutdown_function` - Add a function to run in *einsums::finalize()*, after every pre-shutdown function.
+- :cpp:any:`~einsums::register_startup_function` - Add a function to run before einsums_main, after every pre-startup function.
+- :cpp:any:`~einsums::runtime` - Returns a reference to the current Runtime structure
+- :cpp:any:`~einsums::runtime_config` - Gets a reference to the current runtime configuration structure.
+- :cpp:any:`~einsums::runtime_ptr` - Returns a pointer to the current Runtime structure.
+- :cpp:any:`~einsums::runtime_state_name` - The name of a runtime state, for diagnostics: ``"Running"``, ``"Stopped"`` and so on, or ``"Unknown"`` for a value outside the enumeration.
+- :cpp:any:`~einsums::start` - Initialize the runtime and start a function.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::RuntimeState` - Holds the possible states for the runtime.
+
+Types
+-----
+
+- :cpp:any:`~einsums::ShutdownFunctionType` - The type of a function which is registered to be executed as a shutdown or pre-shutdown function.
+- :cpp:any:`~einsums::StartupFunctionType` - The type of a function which is registered to be executed as a startup or pre-startup function.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::AttachDebugger` - Offer to attach a debugger when a detected error terminates the process.
+- :cpp:any:`~einsums::option::DiagnosticsOnTerminate` - Print extra diagnostics on the way down.
+- :cpp:any:`~einsums::option::InstallSignalHandlers` - Install the handlers that report a fatal signal before the process dies.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.executable_prefix
+   einsums.finalize
+   einsums.format_as
+   einsums.initialize
+   einsums.InitParams
+   einsums.InvalidRuntimeState
+   einsums.is_running
+   einsums.register_arguments
+   einsums.register_Einsums_Runtime_options
+   einsums.register_pre_shutdown_function
+   einsums.register_pre_startup_function
+   einsums.register_shutdown_function
+   einsums.register_startup_function
+   einsums.runtime
+   einsums.runtime_config
+   einsums.runtime_ptr
+   einsums.runtime_state_name
+   einsums.RuntimeConfiguration
+   einsums.start
+   enums
+   types
+   variables

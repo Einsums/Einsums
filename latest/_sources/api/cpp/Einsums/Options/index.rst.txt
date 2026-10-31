@@ -1,0 +1,133 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Options_api:
+
+===============
+Options C++ API
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Options>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::cl::Builtins` - The always-available `--help` and `--version` options.
+- :cpp:any:`~einsums::cl::ConfigOption` - An option declared completely, in one place.
+- :cpp:any:`~einsums::cl::EnvTag` - The environment variable name carried by ``Env``.
+- :cpp:any:`~einsums::cl::ExclusiveCategory` - A set of options of which at most one may be given.
+- :cpp:any:`~einsums::cl::Flag` - A boolean option whose meaning is carried by its presence.
+- :cpp:any:`~einsums::cl::HelpEntry` - One option's contribution to `--help`, before layout.
+- :cpp:any:`~einsums::cl::Location` - Binds an option to storage that outlives parsing.
+- :cpp:any:`~einsums::cl::NoEnvTag` - Exempt this option from the registry's automatic environment name derivation.
+- :cpp:any:`~einsums::cl::OptEnum` - An option whose value is one of a fixed set of named choices.
+- :cpp:any:`~einsums::cl::OptionBase` - The behaviour every option shares, whatever its value type.
+- :cpp:any:`~einsums::cl::OptionCategory` - A heading that groups related options in `--help`.
+- :cpp:any:`~einsums::cl::Positional` - Constructor tag marking an option positional rather than named.
+- :cpp:any:`~einsums::cl::Range` - Inclusive bounds applied to a numeric option after parsing.
+- :cpp:any:`~einsums::cl::RegisteredOption` - One registered option, flattened into data.
+- :cpp:any:`~einsums::cl::Registry` - Process-wide list of every declared option.
+- :cpp:any:`~einsums::cl::Setter` - A callback invoked every time an option receives a value.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::cl::Parsable` - Types usable as the value type of Opt<T>, List<T>, and friends.
+- :cpp:any:`~einsums::cl::SetterCallable` - Anything acceptable as a Setter<T> callback.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::cl::config_flag` - Declare a boolean option. Registration also generates the `--no-` spelling, so a default-true flag needs no hand-written negation.
+- :cpp:any:`~einsums::cl::config_opt` - Declare a value option.
+- :cpp:any:`~einsums::cl::config_opt_computed` - Declare a value option whose default is only knowable at run time, such as the system temporary directory or a name built from the process id.
+- :cpp:any:`~einsums::cl::derive_env_name` - Derive an environment variable name from a prefix and an option name.
+- :cpp:any:`~einsums::cl::derive_key` - The config key derived from a command-line long name.
+- :cpp:any:`~einsums::cl::derive_negated_name` - The `--no-` spelling generated for a flag.
+- :cpp:any:`~einsums::cl::Env` - Read this option from a named environment variable.
+- :cpp:any:`~einsums::cl::format_help` - Render the full `--help` text.
+- :cpp:any:`~einsums::cl::freeze_registry` - Close the registry to new options.
+- :cpp:any:`~einsums::cl::on_change` - Hear about every change to an option's value.
+- :cpp:any:`~einsums::cl::parse` - Parse command-line arguments into the previously registered options.
+- :cpp:any:`~einsums::cl::parse_with_config` - Parse command-line arguments, consulting a config file first.
+- :cpp:any:`~einsums::cl::RangeBetween` - Bounds for an integral option, e.g. `RangeBetween(1, 256)`.
+- :cpp:any:`~einsums::cl::read_config` - Read a `key = value` or flat-JSON config file into a map.
+- :cpp:any:`~einsums::cl::register_option` - Give a descriptor its command-line, environment, and config presence.
+- :cpp:any:`~einsums::cl::registered_option_values` - Every option's key and current value, rendered for a log or a dump.
+- :cpp:any:`~einsums::cl::registered_options` - Every option a descriptor has registered, in registration order.
+- :cpp:any:`~einsums::cl::terminal_width` - The width to wrap help text at, honouring COLUMNS and the terminal size.
+- :cpp:any:`~einsums::cl::to_string` - Human-readable name for a value source, for diagnostics and help text.
+- :cpp:any:`~einsums::cl::unfreeze_registry_for_tests` - Reopen the registry. For tests that declare options of their own; @ref Registry::clear_for_tests calls it.
+- :cpp:any:`~einsums::cl::verify_registered_options` - Assert that nothing registered so far contradicts anything else.
+- :cpp:any:`~einsums::config::get` - The value in effect for an option.
+- :cpp:any:`~einsums::config::get_dynamic` - Read an option by key, for keys built at run time.
+- :cpp:any:`~einsums::config::set` - Write an option through its descriptor.
+- :cpp:any:`~einsums::config::set_dynamic` - Write an option by key.
+- :cpp:any:`~einsums::config::try_get` - The value, but only when something explicitly supplied it.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::cl::Occurrence` - How many times an option may, or must, be given.
+- :cpp:any:`~einsums::cl::OptionKind` - How an option is spelled on the command line.
+- :cpp:any:`~einsums::cl::OptionType` - The value type an option holds. A descriptor fixes it at declaration; the enumeration API hands it to callers who only see an option as data.
+- :cpp:any:`~einsums::cl::Source` - Where an option's current value came from.
+- :cpp:any:`~einsums::cl::ValueExpected` - Whether an option takes a value, and whether it may go without one.
+- :cpp:any:`~einsums::cl::Visibility` - Whether an option appears in `--help` at all.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.cl.Builtins
+   einsums.cl.config_flag
+   einsums.cl.config_opt
+   einsums.cl.config_opt_computed
+   einsums.cl.ConfigOption
+   einsums.cl.derive_env_name
+   einsums.cl.derive_key
+   einsums.cl.derive_negated_name
+   einsums.cl.Env
+   einsums.cl.EnvTag
+   einsums.cl.ExclusiveCategory
+   einsums.cl.Flag
+   einsums.cl.format_help
+   einsums.cl.freeze_registry
+   einsums.cl.HelpEntry
+   einsums.cl.Location
+   einsums.cl.NoEnvTag
+   einsums.cl.on_change
+   einsums.cl.OptEnum
+   einsums.cl.OptionBase
+   einsums.cl.OptionCategory
+   einsums.cl.Parsable
+   einsums.cl.parse
+   einsums.cl.parse_with_config
+   einsums.cl.Positional
+   einsums.cl.Range
+   einsums.cl.RangeBetween
+   einsums.cl.read_config
+   einsums.cl.register_option
+   einsums.cl.registered_option_values
+   einsums.cl.registered_options
+   einsums.cl.RegisteredOption
+   einsums.cl.Registry
+   einsums.cl.Setter
+   einsums.cl.SetterCallable
+   einsums.cl.terminal_width
+   einsums.cl.to_string
+   einsums.cl.unfreeze_registry_for_tests
+   einsums.cl.verify_registered_options
+   einsums.config.get
+   einsums.config.get_dynamic
+   einsums.config.set
+   einsums.config.set_dynamic
+   einsums.config.try_get
+   enums

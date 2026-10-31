@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ger:
+
+===========================
+einsums::compute_graph::ger
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <MatrixOperand AType, VectorOperand XType, VectorOperand YType> requires SameUnderlying<AType, XType, YType> void ger(typename AType::ValueType alpha, const XType &X, const YType &Y, AType *A)
+
+   Graph-aware GER (rank-1 update): ``A += alpha * X * Y^T``.
+
+   Outer product of vectors X and Y added to matrix A. X and Y must be
+   rank 1; A must be rank 2.

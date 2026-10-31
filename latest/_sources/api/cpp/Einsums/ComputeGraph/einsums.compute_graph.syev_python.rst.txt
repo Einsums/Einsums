@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.syev_python:
+
+===================================
+einsums::compute_graph::syev_python
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename AType, typename WType> requires (std::is_same_v<typename AType::ValueType, typename WType::ValueType> && !IsComplexV<typename AType::ValueType> && DenseOrTiled<AType> && DenseOrTiled<WType>) void syev_python(AType *A, WType *W)
+
+   Python-facing syev: real-symmetric eigendecomposition (in place; A receives
+   eigenvectors, W the eigenvalues).
+
+   A wrapper because the templated syev has a leading non-type
+   ``bool ComputeEigenvectors`` parameter the pybind codegen can't pin via
+   INSTANTIATE_AS; this fixes it to true and presents a clean, type-only signature. Accepts dense (RuntimeTensor) or tiled operands; the
+   inner syev<true>() dispatches accordingly.

@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.symm:
+
+===================
+einsums::blas::symm
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void symm(char side, char uplo, int_t m, int_t n, T alpha, const T *a, int_t lda, const T *b, int_t ldb, T beta, T *c, int_t ldc)
+
+   Matrix multiplication where one operand is symmetric.
+
+   Computes :math:`\mathbf{C} := \alpha \mathbf{A}\mathbf{B} + \beta \mathbf{C}`
+   (side='L') or :math:`\mathbf{C} := \alpha \mathbf{B}\mathbf{A} + \beta \mathbf{C}`
+   (side='R'), where :math:`\mathbf{A}` is symmetric and only its referenced
+   triangle is read.
+
+   :param side: 'L': C := alpha*A*B + beta*C; 'R': C := alpha*B*A + beta*C.
+   :param uplo: Which triangle of A is stored ('U' or 'L').
+   :param m: Rows of C.
+   :param n: Columns of C.
+   :param alpha: Scalar on the product.
+   :param a: The symmetric matrix A.
+   :param lda: Leading dimension of a.
+   :param b: The general matrix B.
+   :param ldb: Leading dimension of b.
+   :param beta: Scalar on C.
+   :param c: The result matrix C, updated in place.
+   :param ldc: Leading dimension of c.

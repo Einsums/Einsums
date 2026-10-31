@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.last_contraction_route:
+
+============================================
+einsums::packed_gemm::last_contraction_route
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: const char *& last_contraction_route()
+
+   Name of the kernel route the most recent ``blis_contraction`` call on this thread took:
+   "gemm_batch", "flatten_gemm", "flatten_gemm_hptt", "flatten_gemm_hptt_chunked",
+   "flatten_gemm_gather", "single_k_gemm" or "packed". The flatten suffixes say how the operands
+   were made flat: already flat, transposed by HPTT, or gathered.
+
+   Test introspection only, not an API for steering execution. Thread-local; for a batched
+   contraction it names the last slice this thread ran. Exported and defined out of line so the
+   whole process shares one slot.

@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.set_num_threads_this_thread:
+
+==========================================
+einsums::blas::set_num_threads_this_thread
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: void set_num_threads_this_thread(int nthreads)
+
+   Limit the calling thread to ``nthreads`` BLAS threads, where the vendor allows it.
+
+   For threads that already parallelize across work items (``einsums::TaskPool``'s workers), so
+   BLAS does not multiply the thread count. OpenMP-built OpenBLAS already follows
+   ``omp_set_num_threads``; MKL, on its own runtime, gets its thread-local setter; Accelerate and
+   reference BLAS are no-ops. The vendor is fixed at build time, so a missing symbol fails to link.
+   Calling thread only: OpenBLAS's process-wide setter would also throttle the main thread.
+
+   .. versionadded:: 2.0.0
+
+   :param nthreads: Thread count to request. Values below 1 are ignored.

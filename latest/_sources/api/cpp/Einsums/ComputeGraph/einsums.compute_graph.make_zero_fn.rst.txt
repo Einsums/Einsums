@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_zero_fn:
+
+====================================
+einsums::compute_graph::make_zero_fn
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename TensorType> std::function<void ()> make_zero_fn(TensorType *tensor)
+
+   The post-materialize zero fill a deferred tensor's ``TensorHandle::zero_fn`` runs.
+
+   Materializing first is the whole reason this is not simply ``zero()``: a deferred tensor has
+   no storage until the ``passes::Materialization`` pass reaches it, and an Initialize node runs
+   against whatever the handle was given at declaration time.
+
+   .. seealso::
+
+      make_random_fn
+
+   :tparam TensorType: The tensor's type. Must expose ``materialize()`` and ``zero()``.
+   :param tensor: The tensor to fill. Must outlive the handle.
+   :returns: The callable.

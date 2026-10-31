@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.reads_destination:
+
+=========================================
+einsums::compute_graph::reads_destination
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DestinationRead.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool reads_destination(const Node &node)
+
+   True when ``node`` reads its destination (accumulates into it or updates it in place).
+
+   The in-place scale and element transform always do. An axpby without a descriptor is assumed to,
+   since nothing says otherwise. Every other kind with a destination prefactor reads its
+   destination exactly when the LIVE prefactor is nonzero, so a pass that rewrites the prefactor is
+   answered by its rewrite. A node without a destination prefactor (a dot, a trace, a grouped node)
+   returns false. A registered descriptor's ``destination`` hook answers for its node
+   (DescriptorHooks.hpp).

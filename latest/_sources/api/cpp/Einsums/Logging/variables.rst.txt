@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Logging_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Logging/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::string> LogDestination
+
+   Where log records go: `cerr`, `cout`, or a file name.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> LogFormat
+
+   The spdlog pattern each record is rendered with.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> LogLevel
+
+   spdlog's numeric level: 0=TRACE, 1=DEBUG, 2=INFO, 3=WARN, 4=ERROR.

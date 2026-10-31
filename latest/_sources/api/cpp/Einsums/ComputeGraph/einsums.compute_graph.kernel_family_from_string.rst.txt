@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.kernel_family_from_string:
+
+=================================================
+einsums::compute_graph::kernel_family_from_string
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool kernel_family_from_string(std::string_view name, KernelFamily &out)
+
+   Parse a ``KernelFamily`` name. Returns false and leaves ``out`` alone when
+   the name is not one of the five; an unknown family in a profile file is
+   dropped rather than silently priced as something else.

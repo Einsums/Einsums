@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorAlgebra_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/Utilities.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:type:: template <typename T> CUniqueT
+
+   Same as UniqueT, but it decays away all cvref modifiers on the tuple.
+
+
+.. cpp:type:: template <typename Tuple> DecayElementsT
+
+.. cpp:type:: template <typename S1, typename S2> DifferenceT
+
+   The result of a difference operation. @sa Difference
+
+
+.. cpp:type:: template <typename S1, typename S2> IntersectT
+
+   Gives the result of an intersection operation. @sa Intersect
+
+
+.. cpp:type:: template <typename... Args> ReverseT
+
+   Reverses the elements of a tuple.
+
+
+.. cpp:type:: template <typename T> UniqueT

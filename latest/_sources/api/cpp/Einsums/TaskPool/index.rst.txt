@@ -1,0 +1,64 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TaskPool_api:
+
+================
+TaskPool C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TaskPool>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::task_pool::execution::ParallelPolicy` - Parallel execution policy: distribute across TaskPool workers.
+- :cpp:any:`~einsums::task_pool::execution::SequentialPolicy` - Sequential execution policy: run on calling thread.
+- :cpp:any:`~einsums::task_pool::TaskGroup` - Handle for a group of submitted tasks with a collective barrier.
+- :cpp:any:`~einsums::task_pool::TaskHandle` - Future-like handle with continuation support.
+- :cpp:any:`~einsums::task_pool::TaskPool` - Work-stealing thread pool with HPX-inspired continuations and dataflow.
+- :cpp:any:`~einsums::task_pool::WidthBudget` - Process-wide admission control for the threads a task is allowed to fork.
+- :cpp:any:`~einsums::task_pool::WorkerContext` - Per-worker thread context.
+- :cpp:any:`~einsums::task_pool::WorkStealingDeque` - Lock-free Chase-Lev work-stealing deque on a growable circular buffer. The owner calls push() and pop(); any thread may steal().
+
+Functions
+---------
+
+- :cpp:any:`~einsums::task_pool::make_ready_handle` - Create an immediately-ready TaskHandle.
+- :cpp:any:`~einsums::task_pool::wake_pool_workers` - Wake all TaskPool workers. Called from handle wait loops to ensure enqueued tasks get processed even if the enqueue notification was missed.
+- :cpp:any:`~einsums::task_pool::when_all` - Fan-in: returns a handle that completes when all input handles complete.
+
+Types
+-----
+
+- :cpp:any:`~einsums::task_pool::execution::Policy` - Type-erased execution policy.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::task_pool::execution::seq` - Pre-defined policy instances.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.task_pool.execution.ParallelPolicy
+   einsums.task_pool.execution.SequentialPolicy
+   einsums.task_pool.make_ready_handle
+   einsums.task_pool.TaskGroup
+   einsums.task_pool.TaskHandle
+   einsums.task_pool.TaskPool
+   einsums.task_pool.wake_pool_workers
+   einsums.task_pool.when_all
+   einsums.task_pool.WidthBudget
+   einsums.task_pool.WorkerContext
+   einsums.task_pool.WorkStealingDeque
+   types
+   variables

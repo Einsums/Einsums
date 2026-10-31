@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.fprintln:
+
+=================
+einsums::fprintln
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <TiledTensorConcept TensorType> void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options)
+
+   Prints a TiledTensor to a file pointer.
+
+
+.. cpp:function:: template <TiledTensorConcept TensorType> void fprintln(std::ostream &os, const TensorType &A, TensorPrintOptions options)
+
+   Prints a TiledTensor to an output stream.

@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.config.set:
+
+====================
+einsums::config::set
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::config
+
+.. cpp:function:: template <typename T> void set(const cl::ConfigOption<T> &opt, T value)
+
+   Write an option through its descriptor.
+
+   .. versionadded:: 2.0.0

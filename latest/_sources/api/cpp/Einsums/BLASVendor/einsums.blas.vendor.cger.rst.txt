@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cger:
+
+===========================
+einsums::blas::vendor::cger
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void cger(int_t m, int_t n, std::complex<float> alpha, const std::complex<float> *x, int_t inc_x, const std::complex<float> *y, int_t inc_y, std::complex<float> *a, int_t lda)
+
+   See ``sger``.

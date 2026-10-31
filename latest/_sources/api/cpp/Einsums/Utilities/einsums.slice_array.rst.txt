@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.slice_array:
+
+====================
+einsums::slice_array
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Tuple.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t NewN, typename T, size_t OldN> requires (OldN >= NewN) constexpr std::array<T, NewN> slice_array(const std::array<T, OldN> &old_array)
+
+   Slices an array.
+
+   This function takes an array and returns a new one whose elements are the first several elements of the input.
+
+   .. versionadded:: 1.1.0
+
+   :tparam NewN: The number of elements to extract.
+   :tparam T: The datatype stored by the array.
+   :tparam OldN: The size of the input array.
+   :param old_array: The array to slice.
+   :returns: An array containing the first several elements of the input array.
+
+
+.. cpp:function:: template <size_t NewN, typename T, size_t OldN> requires (OldN >= NewN) constexpr std::array<T, NewN> slice_array(std::array<T, OldN> &&old_array)
+
+   Slices an array.
+
+   This function takes an array and returns a new one whose elements are the first several elements of the input.
+
+   .. versionadded:: 1.1.0
+
+   :tparam NewN: The number of elements to extract.
+   :tparam T: The datatype stored by the array.
+   :tparam OldN: The size of the input array.
+   :param old_array: The array to slice.
+   :returns: An array containing the first several elements of the input array.

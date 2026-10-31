@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Runtime_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Runtime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:enum-class:: RuntimeState
+
+   Holds the possible states for the runtime.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:enumerator:: Invalid
+
+   .. cpp:enumerator:: Initialized
+
+   .. cpp:enumerator:: PreStartup
+
+   .. cpp:enumerator:: Startup
+
+   .. cpp:enumerator:: PreMain
+
+   .. cpp:enumerator:: Starting
+
+   .. cpp:enumerator:: Running
+
+   .. cpp:enumerator:: PreShutdown
+
+   .. cpp:enumerator:: Shutdown
+
+   .. cpp:enumerator:: Stopping
+
+   .. cpp:enumerator:: Terminating
+
+   .. cpp:enumerator:: Stopped
+
+   .. cpp:enumerator:: LastValidState

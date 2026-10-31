@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.MemoryPoolStats:
+
+========================
+einsums::MemoryPoolStats
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/MemoryPool.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: MemoryPoolStats
+
+   Accounting snapshot for one ``MemoryPool``.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: size_t bytes_reserved
+
+      Total arena bytes registered with mimalloc.
+
+
+   .. cpp:member:: size_t bytes_used
+
+      Net bytes currently carved out, as mimalloc sizes them.
+
+
+   .. cpp:member:: size_t high_water
+
+      Largest value ``bytes_used`` ever reached.
+
+
+   .. cpp:member:: size_t live_borrows
+
+      Outstanding keepalive tokens across every scope.
+
+
+   .. cpp:member:: size_t arenas
+
+      Arena count; more than one means the pool grew on overflow.
+
+
+   .. cpp:member:: size_t epoch_depth
+
+      Number of open epochs.

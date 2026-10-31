@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.named_reads:
+
+===================================
+einsums::compute_graph::named_reads
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<std::string> named_reads(const Node &node)
+
+   Every named resource outside the tensor dataflow this node READS, as ordering keys: ``param_reads`` and the dataset a ``DiskRead`` loads, plus, for a control-flow node, every key read anywhere in its child graphs, plus the named reads a registered descriptor's ``accesses`` hook reports. See ``named_writes``.

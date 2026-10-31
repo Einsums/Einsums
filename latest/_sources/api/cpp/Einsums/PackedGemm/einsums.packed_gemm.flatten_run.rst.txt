@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.flatten_run:
+
+=================================
+einsums::packed_gemm::flatten_run
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <BasicTensorConcept TensorType> bool flatten_run(const TensorType &t, size_t begin, size_t end, size_t &extent, size_t &stride_out)
+
+   Collapse axes [``begin``, ``end``) of ``t`` into one (extent, stride).
+
+   Succeeds only when the axes tile memory exactly in axis order, each beginning where the previous
+   one ended (s_next == s * d). The caller walks two operands' flat runs in lockstep, so the order
+   must agree: sorting by stride would accept a reversed run and transpose the result. Extent-1
+   axes are ignored, since their stride is arbitrary. This is the runtime twin of the compile-time
+   `contiguous_positions` check.

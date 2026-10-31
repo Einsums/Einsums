@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_transform_python:
+
+================================================
+einsums::compute_graph::element_transform_python
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename TensorType> requires DenseOrTiled<TensorType> void element_transform_python(TensorType *C, std::function<typename TensorType::ValueType (typename TensorType::ValueType)> unary_op)
+
+   Python-friendly element_transform wrapper.
+
+   The generic ``element_transform`` template requires ``RankTensorConcept``
+   (compile-time rank), which ``GeneralRuntimeTensor`` doesn't satisfy, so it
+   can't be reused here. This overload walks the contiguous underlying storage
+   directly and accepts ``std::function<T(T)>`` so pybind11's caster can wrap a
+   Python callable. A serial loop (rather than the OMP-parallel path used by
+   ``detail::dense_element_transform``) keeps the per-call GIL acquire from
+   causing thread contention, which is fine for the small unary maps typical of
+   SCF/MP2 (eigenvalues, denominators).

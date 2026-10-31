@@ -1,0 +1,72 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.RaggedExtentTable:
+
+=========================================
+einsums::compute_graph::RaggedExtentTable
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/InterfaceManifest.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: RaggedExtentTable
+
+   Per-instance extents a caller supplied for one ragged axis.
+
+   A ragged axis is the design's answer to a family whose members genuinely differ in
+   size - PNO domains, block and tile dims - where declaring one symbol per space would be
+   a lie. ``Graph::bind_ragged_extents`` accepts the table, validates it, and stores it
+   here; the grouped-batched-GEMM path already consumes exactly this shape, which is why
+   the representation is not new work.
+
+   .. note::
+
+      STORED, not yet consumed. Re-forming the batched nodes that read a table is the
+      resource/tuning phase's job on the load path, and that phase is a later task; see
+      ``Graph::bind_ragged_extents`` for the deferral and what a bind refuses in the
+      meantime.
+
+   .. seealso::
+
+      Graph::bind_ragged_extents
+
+   .. seealso::
+
+      Graph::ragged_extent_tables
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: TensorId id
+
+      This graph's id for the slot the table describes.
+
+
+   .. cpp:member:: std::string name
+
+      The manifest name the table was supplied under.
+
+
+   .. cpp:member:: std::size_t axis
+
+      Which axis of that slot is ragged.
+
+
+   .. cpp:member:: std::string space
+
+      The index space the axis is ragged over.
+
+
+   .. cpp:member:: std::vector<std::size_t> extents
+
+      One extent per instance of ``space``, in instance order. Its length is the
+      instance count, which every table over one space in one graph must agree on.

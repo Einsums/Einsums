@@ -1,0 +1,191 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.MemoryPool:
+
+===================
+einsums::MemoryPool
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/MemoryPool.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: MemoryPool
+
+   A pre-reserved region of memory that mimalloc manages exclusively.
+
+   An exclusive mimalloc arena plus a heap bound to it. A carve takes about a microsecond for a
+   multi-megabyte block, against tens to hundreds for an mmap, and a free returns the bytes at once.
+   When the arena runs out the pool reserves another and warns, rather than throwing in a kernel.
+
+   ``allocate`` must run on the constructing thread (it throws otherwise); freeing may happen on any.
+   Arenas are capped per process and never returned to the OS, so keep pools few, long-lived and
+   reserved to their peak size up front.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: explicit MemoryPool(size_t reserve_bytes, std::string name, size_t warn_bytes, bool pinned)
+
+      Reserve a pool.
+
+      .. versionadded:: 2.0.0
+
+      :param reserve_bytes: Bytes the caller expects to carve; the arena adds headroom.
+      :param name: Label used in log messages.
+      :param warn_bytes: Usage that logs a one-shot warning; zero disables it.
+      :param pinned: Keep freed pages resident, so recarves are fault-free but the pool never shrinks below its high water. For small, hot scratch pools only; unpinned pages purge back to the OS.
+      :throws std::runtime_error: if the arena cannot be reserved.
+
+
+   .. cpp:function:: MemoryPool(const MemoryPool &) = delete
+
+   .. cpp:function:: MemoryPool(MemoryPool &&) = delete
+
+   .. cpp:function:: ~MemoryPool()
+
+   .. cpp:function:: MemoryPool & operator=(const MemoryPool &) = delete
+
+   .. cpp:function:: MemoryPool & operator=(MemoryPool &&) = delete
+
+   .. cpp:function:: static std::shared_ptr<MemoryPool> create(size_t reserve_bytes, std::string name, size_t warn_bytes, bool pinned)
+
+      Convenience factory for the shared-ownership form the tensor factories expect.
+
+
+   .. cpp:function:: void * allocate(size_t bytes)
+
+      Carve ``bytes`` of 64-byte-aligned memory from the pool.
+
+      A zero-byte request still returns a distinct address.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::runtime_error: if called off the owning thread, or if the pool could neither carve nor grow.
+
+
+   .. cpp:function:: void * allocate_zeroed(size_t bytes)
+
+      Carve ``bytes`` and hand them back zeroed.
+
+      Skips the memset only on pages mimalloc knows are OS-fresh.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void deallocate(void *ptr) noexcept
+
+      Return a carve to the pool. Safe from any thread; null is a no-op.
+
+
+   .. cpp:function:: std::shared_ptr<const void> borrow(void *ptr)
+
+      Wrap a carve in a keepalive token that frees it when the last holder drops it.
+
+      The token is a pooled tensor's storage owner, so the tensor's death frees the carve.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::pair<void *, std::shared_ptr<const void>> allocate_borrowed(size_t bytes)
+
+      Carve ``bytes`` and hand back the keepalive token for it in one step.
+
+
+   .. cpp:function:: std::pair<void *, std::shared_ptr<const void>> allocate_borrowed_zeroed(size_t bytes)
+
+      ``allocate_borrowed`` against ``allocate_zeroed``.
+
+
+   .. cpp:function:: void reserve(size_t bytes)
+
+      Grow the pool so at least ``bytes`` of capacity are reserved.
+
+      A no-op when already that large. Reserve once rather than in steps: each growth costs an
+      arena, and arenas are capped and never reclaimed.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: void reset()
+
+      Bulk-free everything the pool holds and start over.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::runtime_error: if any keepalive token is outstanding, or if an epoch is open.
+
+
+   .. cpp:function:: MemoryPoolEpoch epoch()
+
+      Open a nested scope; see ``MemoryPoolEpoch``.
+
+
+   .. cpp:function:: MemoryPoolStats stats() const noexcept
+
+      Read the pool's accounting in one shot. The individual getters below are
+      what the Python surface exposes; this is the C++ convenience form.
+
+
+   .. cpp:function:: size_t bytes_reserved() const noexcept
+
+   .. cpp:function:: size_t bytes_used() const noexcept
+
+   .. cpp:function:: size_t high_water() const noexcept
+
+   .. cpp:function:: size_t live_borrows() const noexcept
+
+   .. cpp:function:: size_t arenas() const noexcept
+
+   .. cpp:function:: size_t epoch_depth() const noexcept
+
+   .. cpp:function:: const std::string & name() const noexcept
+
+   .. cpp:function:: size_t warn_bytes() const noexcept
+
+      Usage threshold that logs a one-shot warning when crossed; zero disables it.
+
+
+   .. cpp:function:: void set_warn_bytes(size_t bytes) noexcept
+
+   .. cpp:function:: template <typename TensorT, typename Dims> TensorT empty_as(std::string tensor_name, const Dims &dims)
+
+      Place a runtime-rank tensor of type ``TensorT`` on this pool.
+
+      A template because this module sits below Tensor; see ``Einsums/Tensor/PooledTensor.hpp`` for
+      ``pool_empty``, ``pool_zeros`` and ``pool_tensor``. The result behaves as an owned tensor and frees
+      its bytes back to the pool when it dies.
+
+      .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: template <typename TensorT, typename Dims> TensorT zeros_as(std::string tensor_name, const Dims &dims)
+
+      ``empty_as`` with the storage zeroed.
+
+
+   .. cpp:function:: template <typename TensorT, std::integral... Dims> TensorT empty_ranked(std::string tensor_name, Dims... dims)
+
+      Compile-time-rank form: the dimensions are the tensor constructor's own arguments.
+
+
+   .. cpp:function:: template <typename TensorT, std::integral... Dims> TensorT zeros_ranked(std::string tensor_name, Dims... dims)
+
+      ``empty_ranked`` with the storage zeroed.
+
+
+   .. cpp:function:: template <typename TensorT> void place(TensorT &t, bool zeroed)
+
+      Carve storage for an already-shaped deferred tensor and attach it with a keepalive token.
+
+      The copy-free form of the factories above: nothing is returned by value.
+
+      .. versionadded:: 2.0.0

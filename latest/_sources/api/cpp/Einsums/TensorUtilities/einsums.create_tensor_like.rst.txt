@@ -1,0 +1,82 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_tensor_like:
+
+===========================
+einsums::create_tensor_like
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorUtilities/CreateTensorLike.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> Tensor<typename TensorType::ValueType, TensorType::Rank> create_tensor_like(const TensorType &t)
+
+   Creates a new tensor with the same rank and dimensions of the provided tensor.
+
+   The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+
+   .. code-block:: text
+
+      auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+      auto b = create_tensor_like(a);                  // auto -> Tensor<double, 2>
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The basic type of the provided tensor.
+   :param t: The provided tensor to copy the dimensions from.
+   :returns: A new tensor with the same rank and dimensions as the provided tensor.
+
+
+.. cpp:function:: template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank> requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType> BlockTensor<DataType, Rank> create_tensor_like(const TensorType<DataType, Rank> &tensor)
+
+   Creates a new tensor with the same rank, dimensions, and block sizes of the provided tensor.
+
+   The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The basic type of the provided tensor.
+   :tparam DataType: The underlying datatype of the provided tensor.
+   :tparam Rank: The rank of the provided tensor.
+   :param tensor: The provided tensor to copy the dimensions from.
+   :returns: A new tensor with the same rank and dimensions as the provided tensor.
+
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> Tensor<typename TensorType::ValueType, TensorType::Rank> create_tensor_like(const std::string name, const TensorType &t)
+
+   Creates a new tensor with the same rank and dimensions of the provided tensor.
+
+   .. code-block:: text
+
+      auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+      auto b = create_tensor_like("b", a);             // auto -> Tensor<double, 2>
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The basic type of the provided tensor.
+   :param name: The name of the new tensor.
+   :param t: The provided tensor to copy the dimensions from.
+   :returns: A new tensor with the same rank and dimensions as the provided tensor.
+
+
+.. cpp:function:: template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank> requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType> BlockTensor<DataType, Rank> create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor)
+
+   Creates a new tensor with the same, rank, dimensions, and block parameters of the provided tensor.
+
+   .. versionadded:: 1.0.0
+
+   :tparam TensorType: The basic type of the provided tensor.
+   :tparam DataType: The underlying datatype of the provided tensor.
+   :tparam Rank: The rank of the provided tensor.
+   :param name: The name of the new tensor.
+   :param tensor: The provided tensor to copy the dimensions from.
+   :returns: A new tensor with the same rank and dimensions as the provided tensor.

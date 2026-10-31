@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.micro_kernel_shape:
+
+========================================
+einsums::packed_gemm::micro_kernel_shape
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/MicroKernel.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> MicroKernelShape micro_kernel_shape()
+
+   The register-block shape of the kernel micro_kernel_entry<T>() resolves to. Query both together and pack panels with this shape.

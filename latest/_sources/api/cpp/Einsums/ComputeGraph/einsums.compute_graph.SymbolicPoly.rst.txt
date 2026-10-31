@@ -1,0 +1,148 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SymbolicPoly:
+
+====================================
+einsums::compute_graph::SymbolicPoly
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SymbolicPoly
+
+   A multivariate polynomial in index-space scales, always in canonical form.
+
+   **Canonical form**
+
+   Terms are sorted ascending by their MONOMIAL KEY, like terms are merged, and a term whose
+   coefficient is exactly zero is dropped. The monomial key compares two monomials by
+
+   1. their variable sequences, element by element under ``SymbolicVar``'s order, a prefix being smaller than what extends it, then
+   2. their exponent sequences, element by element.
+
+   Because like terms are merged, no two stored terms share a monomial key, so the key alone orders
+   them. Canonical form is load-bearing: ``operator``== is structural equality on it, and the last
+   rung of ``compare`` is a lexicographic walk over it.
+
+
+   .. cpp:function:: SymbolicPoly() = default
+
+      Construct the zero polynomial, which has no terms.
+
+
+   .. cpp:function:: static SymbolicPoly zero()
+
+      The zero polynomial.
+
+      :returns: A polynomial with no terms.
+
+
+   .. cpp:function:: static SymbolicPoly constant(double value)
+
+      A constant polynomial.
+
+      :param value: The constant. Exactly zero yields the zero polynomial.
+      :returns: The polynomial.
+
+
+   .. cpp:function:: static SymbolicPoly variable(SymbolicVar variable, int exponent)
+
+      A single power of a single variable, with coefficient one.
+
+      :param variable: The variable.
+      :param exponent: The power. Zero yields the constant one.
+      :returns: The polynomial.
+
+
+   .. cpp:function:: static SymbolicPoly from_terms(std::vector<SymbolicTerm> terms)
+
+      Build a polynomial from arbitrary terms, canonicalizing them.
+
+      :param terms: The terms, in any order, with any repeats.
+      :returns: The canonical polynomial.
+
+
+   .. cpp:function:: const std::vector<SymbolicTerm> & terms() const noexcept
+
+      The terms, in canonical order.
+
+      :returns: The stored terms. Empty for the zero polynomial.
+
+
+   .. cpp:function:: bool is_zero() const noexcept
+
+      Whether this is the zero polynomial.
+
+      :returns: True when there are no terms.
+
+
+   .. cpp:function:: int total_degree() const noexcept
+
+      The largest total degree over the terms.
+
+      :returns: The degree, zero for the zero polynomial and for a constant.
+
+
+   .. cpp:function:: int degree_in(const SymbolicVar &variable) const noexcept
+
+      The largest exponent one variable carries in any term.
+
+      :param variable: The variable to look for.
+      :returns: The degree in that variable, zero when it never appears.
+
+
+   .. cpp:function:: std::vector<SymbolicVar> variables() const
+
+      Every variable appearing in any term.
+
+      :returns: The variables, sorted ascending and deduplicated.
+
+
+   .. cpp:function:: std::optional<double> evaluate(const ExtentLookup &extents) const
+
+      Substitute numeric extents and evaluate.
+
+      :param extents: Resolver for each variable.
+      :returns: The value, or an empty optional as soon as ``extents`` cannot resolve some variable. The zero polynomial evaluates to zero without consulting ``extents``.
+
+
+   .. cpp:function:: SymbolicPoly & operator+=(const SymbolicPoly &other)
+
+      Add another polynomial in place.
+
+      :param other: The addend.
+      :returns: This polynomial.
+
+
+   .. cpp:function:: SymbolicPoly & operator*=(const SymbolicPoly &other)
+
+      Multiply by another polynomial in place.
+
+      :param other: The multiplier.
+      :returns: This polynomial.
+
+
+   .. cpp:function:: SymbolicPoly & operator*=(double factor)
+
+      Scale every coefficient in place.
+
+      :param factor: The scalar. Exactly zero yields the zero polynomial.
+      :returns: This polynomial.
+
+
+   .. cpp:function:: std::string to_string(const SpaceRegistry *registry) const
+
+      Render the polynomial, for reports and test failures.
+
+      :param registry: Registry used to resolve a space variable to its scale symbol. May be null, in which case every space variable renders as its id.
+      :returns: Something like the string 2*o^2*v^2*?a. Terms appear in canonical order, joined by a plus sign; a coefficient of one is elided when the term has factors; an anonymous variable renders as a question mark followed by its letter; a space variable with no resolvable scale symbol renders as its name, or as the letter s followed by its id when even that is unavailable. The zero polynomial renders as a single zero.

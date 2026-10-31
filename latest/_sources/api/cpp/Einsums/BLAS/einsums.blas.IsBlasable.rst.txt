@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.IsBlasable:
+
+=========================
+einsums::blas::IsBlasable
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:class:: template <typename T> IsBlasable
+
+   Determines whether a type can be used in a BLAS call.
+
+   This checks to see if a type is ``float`` or ``double`` or a complex type of these..
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The type to test.
+
+
+   .. cpp:member:: static constexpr bool value

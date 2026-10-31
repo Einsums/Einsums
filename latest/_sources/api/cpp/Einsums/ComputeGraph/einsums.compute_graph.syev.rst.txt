@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.syev:
+
+============================
+einsums::compute_graph::syev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, MatrixOperand AType, VectorOperand WType> requires (InSamePlace<AType, WType> && SameUnderlying<AType, WType> && !Complex<AType>) void syev(AType *A, WType *W)
+
+   Real symmetric eigendecomposition (in-place): ``A = V * diag(W) * V^T``.
+
+   On return, when ``compute_eigenvectors=True`` (the default), ``A``
+   holds the eigenvectors as columns; ``W`` holds the eigenvalues in
+   ascending order. ``A`` must be rank 2 and square; ``W`` must be
+   rank 1 with size ``A.dim(0)``. For the returning form (allocates
+   fresh outputs) see ``syev_eig``.
+
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, TiledTensorConcept AType, TiledTensorConcept WType> requires (std::is_same_v<typename AType::ValueType, typename WType::ValueType> && !IsComplexV<typename AType::ValueType>) void syev(AType *A, WType *W)
+
+   Tiled real-symmetric eigendecomposition: independently diagonalize each
+   diagonal block of a block-diagonal tiled matrix. A is overwritten in place
+   with the per-block eigenvectors; W (tiled rank-1, partitioned like A's rows)
+   receives each block's eigenvalues. Off-diagonal tiles are rejected (the op is
+   only meaningful for a block-diagonal operator).

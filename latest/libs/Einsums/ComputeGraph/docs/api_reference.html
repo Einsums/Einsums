@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/api_reference';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/api_reference.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="ComputeGraphTypes" href="../../ComputeGraphTypes/docs/index.html" />
+    <link rel="prev" title="Graph Update / Rebind" href="rebind.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">API Reference</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
+<p>All classes and functions are in the <code class="docutils literal notranslate"><span class="pre">einsums::compute_graph</span></code> namespace.
+Optimization passes are in <code class="docutils literal notranslate"><span class="pre">einsums::compute_graph::passes</span></code>.</p>
+<section id="core-classes">
+<h2>Core Classes<a class="headerlink" href="#core-classes" title="Link to this heading">#</a></h2>
+<section id="graph">
+<h3>Graph<a class="headerlink" href="#graph" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Graph.html#_CPPv4N7einsums13compute_graph5GraphE" title="einsums::compute_graph::Graph"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::Graph</span></code></a></p>
+</section>
+<section id="pipeline">
+<h3>Pipeline<a class="headerlink" href="#pipeline" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Pipeline.html#_CPPv4N7einsums13compute_graph8PipelineE" title="einsums::compute_graph::Pipeline"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::Pipeline</span></code></a></p>
+</section>
+<section id="workspace">
+<h3>Workspace<a class="headerlink" href="#workspace" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Workspace.html#_CPPv4N7einsums13compute_graph9WorkspaceE" title="einsums::compute_graph::Workspace"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::Workspace</span></code></a></p>
+</section>
+<section id="captureguard">
+<h3>CaptureGuard<a class="headerlink" href="#captureguard" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.CaptureGuard.html#_CPPv4N7einsums13compute_graph12CaptureGuardE" title="einsums::compute_graph::CaptureGuard"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::CaptureGuard</span></code></a></p>
+</section>
+<section id="capturecontext">
+<h3>CaptureContext<a class="headerlink" href="#capturecontext" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.CaptureContext.html#_CPPv4N7einsums13compute_graph14CaptureContextE" title="einsums::compute_graph::CaptureContext"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::CaptureContext</span></code></a></p>
+</section>
+</section>
+<section id="execution">
+<h2>Execution<a class="headerlink" href="#execution" title="Link to this heading">#</a></h2>
+<section id="executor">
+<h3>Executor<a class="headerlink" href="#executor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Executor.html#_CPPv4N7einsums13compute_graph8ExecutorE" title="einsums::compute_graph::Executor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::Executor</span></code></a></p>
+</section>
+<section id="sequentialexecutor">
+<h3>SequentialExecutor<a class="headerlink" href="#sequentialexecutor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.SequentialExecutor.html#_CPPv4N7einsums13compute_graph18SequentialExecutorE" title="einsums::compute_graph::SequentialExecutor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::SequentialExecutor</span></code></a></p>
+</section>
+<section id="openmpexecutor">
+<h3>OpenMPExecutor<a class="headerlink" href="#openmpexecutor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.OpenMPExecutor.html#_CPPv4N7einsums13compute_graph14OpenMPExecutorE" title="einsums::compute_graph::OpenMPExecutor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::OpenMPExecutor</span></code></a></p>
+</section>
+<section id="dataflowexecutor">
+<h3>DataflowExecutor<a class="headerlink" href="#dataflowexecutor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.DataflowExecutor.html#_CPPv4N7einsums13compute_graph16DataflowExecutorE" title="einsums::compute_graph::DataflowExecutor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::DataflowExecutor</span></code></a></p>
+</section>
+<section id="mpiexecutor">
+<h3>MPIExecutor<a class="headerlink" href="#mpiexecutor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.MPIExecutor.html#_CPPv4N7einsums13compute_graph11MPIExecutorE" title="einsums::compute_graph::MPIExecutor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::MPIExecutor</span></code></a></p>
+</section>
+<section id="dependencyinfo">
+<h3>DependencyInfo<a class="headerlink" href="#dependencyinfo" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.DependencyInfo.html#_CPPv4N7einsums13compute_graph14DependencyInfoE" title="einsums::compute_graph::DependencyInfo"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">einsums::compute_graph::DependencyInfo</span></code></a></p>
+</section>
+</section>
+<section id="data-types">
+<h2>Data Types<a class="headerlink" href="#data-types" title="Link to this heading">#</a></h2>
+<section id="tensorhandle">
+<h3>TensorHandle<a class="headerlink" href="#tensorhandle" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.TensorHandle.html#_CPPv4N7einsums13compute_graph12TensorHandleE" title="einsums::compute_graph::TensorHandle"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::TensorHandle</span></code></a></p>
+</section>
+<section id="tensorslot">
+<h3>TensorSlot<a class="headerlink" href="#tensorslot" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.TensorSlot.html#_CPPv4N7einsums13compute_graph10TensorSlotE" title="einsums::compute_graph::TensorSlot"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::TensorSlot</span></code></a></p>
+</section>
+<section id="einsumparams">
+<h3>EinsumParams<a class="headerlink" href="#einsumparams" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.EinsumParams.html#_CPPv4N7einsums13compute_graph12EinsumParamsE" title="einsums::compute_graph::EinsumParams"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::EinsumParams</span></code></a></p>
+</section>
+<section id="node">
+<h3>Node<a class="headerlink" href="#node" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.Node.html#_CPPv4N7einsums13compute_graph4NodeE" title="einsums::compute_graph::Node"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::Node</span></code></a></p>
+</section>
+<section id="opkind">
+<h3>OpKind<a class="headerlink" href="#opkind" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraphTypes/enums.html#_CPPv4N7einsums13compute_graph6OpKindE" title="einsums::compute_graph::OpKind"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">einsums::compute_graph::OpKind</span></code></a></p>
+</section>
+<section id="einsumdescriptor">
+<h3>EinsumDescriptor<a class="headerlink" href="#einsumdescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.EinsumDescriptor.html#_CPPv4N7einsums13compute_graph16EinsumDescriptorE" title="einsums::compute_graph::EinsumDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::EinsumDescriptor</span></code></a></p>
+</section>
+<section id="scaledescriptor">
+<h3>ScaleDescriptor<a class="headerlink" href="#scaledescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ScaleDescriptor.html#_CPPv4N7einsums13compute_graph15ScaleDescriptorE" title="einsums::compute_graph::ScaleDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::ScaleDescriptor</span></code></a></p>
+</section>
+<section id="permutedescriptor">
+<h3>PermuteDescriptor<a class="headerlink" href="#permutedescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.PermuteDescriptor.html#_CPPv4N7einsums13compute_graph17PermuteDescriptorE" title="einsums::compute_graph::PermuteDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::PermuteDescriptor</span></code></a></p>
+</section>
+<section id="conditionaldescriptor">
+<h3>ConditionalDescriptor<a class="headerlink" href="#conditionaldescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ConditionalDescriptor.html#_CPPv4N7einsums13compute_graph21ConditionalDescriptorE" title="einsums::compute_graph::ConditionalDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::ConditionalDescriptor</span></code></a></p>
+</section>
+<section id="loopdescriptor">
+<h3>LoopDescriptor<a class="headerlink" href="#loopdescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.LoopDescriptor.html#_CPPv4N7einsums13compute_graph14LoopDescriptorE" title="einsums::compute_graph::LoopDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::LoopDescriptor</span></code></a></p>
+</section>
+<section id="allocdescriptor">
+<h3>AllocDescriptor<a class="headerlink" href="#allocdescriptor" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraphTypes/einsums.compute_graph.AllocDescriptor.html#_CPPv4N7einsums13compute_graph15AllocDescriptorE" title="einsums::compute_graph::AllocDescriptor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::AllocDescriptor</span></code></a></p>
+</section>
+<section id="loopnode-pipeline">
+<h3>LoopNode (Pipeline)<a class="headerlink" href="#loopnode-pipeline" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.LoopNode.html#_CPPv4N7einsums13compute_graph8LoopNodeE" title="einsums::compute_graph::LoopNode"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::LoopNode</span></code></a></p>
+</section>
+</section>
+<section id="string-einsum">
+<h2>String Einsum<a class="headerlink" href="#string-einsum" title="Link to this heading">#</a></h2>
+<section id="parsedeinsumspec">
+<h3>ParsedEinsumSpec<a class="headerlink" href="#parsedeinsumspec" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ParsedEinsumSpec.html#_CPPv4N7einsums13compute_graph16ParsedEinsumSpecE" title="einsums::compute_graph::ParsedEinsumSpec"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::ParsedEinsumSpec</span></code></a></p>
+</section>
+<section id="einsumformatstring">
+<h3>EinsumFormatString<a class="headerlink" href="#einsumformatstring" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.EinsumFormatString.html#_CPPv4N7einsums13compute_graph18EinsumFormatStringE" title="einsums::compute_graph::EinsumFormatString"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::EinsumFormatString</span></code></a></p>
+</section>
+</section>
+<section id="type-aliases">
+<h2>Type Aliases<a class="headerlink" href="#type-aliases" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraphTypes/types.html#_CPPv4N7einsums13compute_graph8TensorIdE" title="einsums::compute_graph::TensorId"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::compute_graph::TensorId</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraphTypes/types.html#_CPPv4N7einsums13compute_graph6NodeIdE" title="einsums::compute_graph::NodeId"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::compute_graph::NodeId</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/types.html#_CPPv4N7einsums13compute_graph13LoopConditionE" title="einsums::compute_graph::LoopCondition"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::compute_graph::LoopCondition</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.OpData.html#_CPPv4N7einsums13compute_graph6OpDataE" title="einsums::compute_graph::OpData"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::OpData</span></code></a></p>
+</section>
+<section id="optimization-passes">
+<h2>Optimization Passes<a class="headerlink" href="#optimization-passes" title="Link to this heading">#</a></h2>
+<p>See <a class="reference internal" href="optimization_passes.html#computegraph-optimization-passes"><span class="std std-ref">the pass catalog</span></a> for what each one
+matches, what it reports, and where it sits in the default pipeline.</p>
+<section id="infrastructure">
+<h3>Infrastructure<a class="headerlink" href="#infrastructure" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.OptimizerPass.html#_CPPv4N7einsums13compute_graph13OptimizerPassE" title="einsums::compute_graph::OptimizerPass"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::OptimizerPass</span></code></a> - the base class every pass derives from.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.PassManager.html#_CPPv4N7einsums13compute_graph11PassManagerE" title="einsums::compute_graph::PassManager"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::PassManager</span></code></a> - ordered pass list; <code class="docutils literal notranslate"><span class="pre">create_default()</span></code>, <code class="docutils literal notranslate"><span class="pre">create_for(OptLevel)</span></code>, <code class="docutils literal notranslate"><span class="pre">explain()</span></code>.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/enums.html#_CPPv4N7einsums13compute_graph8OptLevelE" title="einsums::compute_graph::OptLevel"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">einsums::compute_graph::OptLevel</span></code></a> - <code class="docutils literal notranslate"><span class="pre">O0</span></code> / <code class="docutils literal notranslate"><span class="pre">O1</span></code> / <code class="docutils literal notranslate"><span class="pre">O2</span></code>.</p></li>
+</ul>
+</section>
+<section id="lowering-and-cleanup">
+<h3>Lowering and cleanup<a class="headerlink" href="#lowering-and-cleanup" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.TiledExpansion.html#_CPPv4N7einsums13compute_graph6passes14TiledExpansionE" title="einsums::compute_graph::passes::TiledExpansion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::TiledExpansion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.DeltaElimination.html#_CPPv4N7einsums13compute_graph6passes16DeltaEliminationE" title="einsums::compute_graph::passes::DeltaElimination"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::DeltaElimination</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ConstantFolding.html#_CPPv4N7einsums13compute_graph6passes15ConstantFoldingE" title="einsums::compute_graph::passes::ConstantFolding"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ConstantFolding</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ScaleAbsorption.html#_CPPv4N7einsums13compute_graph6passes15ScaleAbsorptionE" title="einsums::compute_graph::passes::ScaleAbsorption"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ScaleAbsorption</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.PermuteFusion.html#_CPPv4N7einsums13compute_graph6passes13PermuteFusionE" title="einsums::compute_graph::passes::PermuteFusion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::PermuteFusion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.CSE.html#_CPPv4N7einsums13compute_graph6passes3CSEE" title="einsums::compute_graph::passes::CSE"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::CSE</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.DeadNodeElimination.html#_CPPv4N7einsums13compute_graph6passes19DeadNodeEliminationE" title="einsums::compute_graph::passes::DeadNodeElimination"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::DeadNodeElimination</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ElementWiseFusion.html#_CPPv4N7einsums13compute_graph6passes17ElementWiseFusionE" title="einsums::compute_graph::passes::ElementWiseFusion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ElementWiseFusion</span></code></a></p></li>
+</ul>
+</section>
+<section id="algebraic-rewrites">
+<h3>Algebraic rewrites<a class="headerlink" href="#algebraic-rewrites" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.AntisymmetrizerLinearity.html#_CPPv4N7einsums13compute_graph6passes24AntisymmetrizerLinearityE" title="einsums::compute_graph::passes::AntisymmetrizerLinearity"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::AntisymmetrizerLinearity</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.AntisymmetrizerFolding.html#_CPPv4N7einsums13compute_graph6passes22AntisymmetrizerFoldingE" title="einsums::compute_graph::passes::AntisymmetrizerFolding"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::AntisymmetrizerFolding</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.AntisymmetrizerExpansion.html#_CPPv4N7einsums13compute_graph6passes24AntisymmetrizerExpansionE" title="einsums::compute_graph::passes::AntisymmetrizerExpansion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::AntisymmetrizerExpansion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.SymmetrizedAccumulation.html#_CPPv4N7einsums13compute_graph6passes23SymmetrizedAccumulationE" title="einsums::compute_graph::passes::SymmetrizedAccumulation"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::SymmetrizedAccumulation</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.LinearCombinationContractionFolding.html#_CPPv4N7einsums13compute_graph6passes35LinearCombinationContractionFoldingE" title="einsums::compute_graph::passes::LinearCombinationContractionFolding"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::LinearCombinationContractionFolding</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.StreamContractionFusion.html#_CPPv4N7einsums13compute_graph6passes23StreamContractionFusionE" title="einsums::compute_graph::passes::StreamContractionFusion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::StreamContractionFusion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.DistributiveFactoring.html#_CPPv4N7einsums13compute_graph6passes21DistributiveFactoringE" title="einsums::compute_graph::passes::DistributiveFactoring"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::DistributiveFactoring</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.MultiTermFactorization.html#_CPPv4N7einsums13compute_graph6passes22MultiTermFactorizationE" title="einsums::compute_graph::passes::MultiTermFactorization"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::MultiTermFactorization</span></code></a> - off unless <code class="docutils literal notranslate"><span class="pre">einsums:graph:structural-search</span></code> is set.</p></li>
+</ul>
+</section>
+<section id="analysis-and-diagnostics">
+<h3>Analysis and diagnostics<a class="headerlink" href="#analysis-and-diagnostics" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ProvenancePropagation.html#_CPPv4N7einsums13compute_graph6passes21ProvenancePropagationE" title="einsums::compute_graph::passes::ProvenancePropagation"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ProvenancePropagation</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.SpacePropagation.html#_CPPv4N7einsums13compute_graph6passes16SpacePropagationE" title="einsums::compute_graph::passes::SpacePropagation"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::SpacePropagation</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.CrossSpaceValidation.html#_CPPv4N7einsums13compute_graph6passes20CrossSpaceValidationE" title="einsums::compute_graph::passes::CrossSpaceValidation"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::CrossSpaceValidation</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.AntisymmetryDetection.html#_CPPv4N7einsums13compute_graph6passes21AntisymmetryDetectionE" title="einsums::compute_graph::passes::AntisymmetryDetection"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::AntisymmetryDetection</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.AntisymmetryInference.html#_CPPv4N7einsums13compute_graph6passes21AntisymmetryInferenceE" title="einsums::compute_graph::passes::AntisymmetryInference"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::AntisymmetryInference</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ScalingAnalysis.html#_CPPv4N7einsums13compute_graph6passes15ScalingAnalysisE" title="einsums::compute_graph::passes::ScalingAnalysis"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ScalingAnalysis</span></code></a></p></li>
+</ul>
+</section>
+<section id="scheduling-and-planning">
+<h3>Scheduling and planning<a class="headerlink" href="#scheduling-and-planning" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.LoopInvariantHoisting.html#_CPPv4N7einsums13compute_graph6passes21LoopInvariantHoistingE" title="einsums::compute_graph::passes::LoopInvariantHoisting"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::LoopInvariantHoisting</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ScratchPrivatization.html#_CPPv4N7einsums13compute_graph6passes20ScratchPrivatizationE" title="einsums::compute_graph::passes::ScratchPrivatization"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ScratchPrivatization</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.LayoutAssignment.html#_CPPv4N7einsums13compute_graph6passes16LayoutAssignmentE" title="einsums::compute_graph::passes::LayoutAssignment"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::LayoutAssignment</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.ContractionPlanning.html#_CPPv4N7einsums13compute_graph6passes19ContractionPlanningE" title="einsums::compute_graph::passes::ContractionPlanning"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::ContractionPlanning</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.GEMMBatching.html#_CPPv4N7einsums13compute_graph6passes12GEMMBatchingE" title="einsums::compute_graph::passes::GEMMBatching"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::GEMMBatching</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.Reorder.html#_CPPv4N7einsums13compute_graph6passes7ReorderE" title="einsums::compute_graph::passes::Reorder"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::Reorder</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.IOPrefetch.html#_CPPv4N7einsums13compute_graph6passes10IOPrefetchE" title="einsums::compute_graph::passes::IOPrefetch"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::IOPrefetch</span></code></a></p></li>
+</ul>
+</section>
+<section id="memory-and-symmetry">
+<h3>Memory and symmetry<a class="headerlink" href="#memory-and-symmetry" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.DistributionPlanning.html#_CPPv4N7einsums13compute_graph6passes20DistributionPlanningE" title="einsums::compute_graph::passes::DistributionPlanning"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::DistributionPlanning</span></code></a> - always runs; a no-op on one rank.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.Materialization.html#_CPPv4N7einsums13compute_graph6passes15MaterializationE" title="einsums::compute_graph::passes::Materialization"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::Materialization</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.SymmetryPropagation.html#_CPPv4N7einsums13compute_graph6passes19SymmetryPropagationE" title="einsums::compute_graph::passes::SymmetryPropagation"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::SymmetryPropagation</span></code></a> - see <a class="reference internal" href="symmetry.html"><span class="doc">Symmetry-Aware Tensors</span></a> for the user-facing guide.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.InplaceOptimization.html#_CPPv4N7einsums13compute_graph6passes19InplaceOptimizationE" title="einsums::compute_graph::passes::InplaceOptimization"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::InplaceOptimization</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.FreeInsertion.html#_CPPv4N7einsums13compute_graph6passes13FreeInsertionE" title="einsums::compute_graph::passes::FreeInsertion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::FreeInsertion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.MemoryPlanning.html#_CPPv4N7einsums13compute_graph6passes14MemoryPlanningE" title="einsums::compute_graph::passes::MemoryPlanning"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::MemoryPlanning</span></code></a></p></li>
+</ul>
+</section>
+<section id="gpu-gpu-builds-only">
+<h3>GPU (GPU builds only)<a class="headerlink" href="#gpu-gpu-builds-only" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.GPUPlacement.html#_CPPv4N7einsums13compute_graph6passes12GPUPlacementE" title="einsums::compute_graph::passes::GPUPlacement"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::GPUPlacement</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.TransferInsertion.html#_CPPv4N7einsums13compute_graph6passes17TransferInsertionE" title="einsums::compute_graph::passes::TransferInsertion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::TransferInsertion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.TransferElimination.html#_CPPv4N7einsums13compute_graph6passes19TransferEliminationE" title="einsums::compute_graph::passes::TransferElimination"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::TransferElimination</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.GPUDiagnostics.html#_CPPv4N7einsums13compute_graph6passes14GPUDiagnosticsE" title="einsums::compute_graph::passes::GPUDiagnostics"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::GPUDiagnostics</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.StreamAssignment.html#_CPPv4N7einsums13compute_graph6passes16StreamAssignmentE" title="einsums::compute_graph::passes::StreamAssignment"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::StreamAssignment</span></code></a></p></li>
+</ul>
+</section>
+<section id="distributed-mpi-builds-only">
+<h3>Distributed (MPI builds only)<a class="headerlink" href="#distributed-mpi-builds-only" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.InputSlicing.html#_CPPv4N7einsums13compute_graph6passes12InputSlicingE" title="einsums::compute_graph::passes::InputSlicing"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::InputSlicing</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.SUMMAExpansion.html#_CPPv4N7einsums13compute_graph6passes14SUMMAExpansionE" title="einsums::compute_graph::passes::SUMMAExpansion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::SUMMAExpansion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.CommunicationInsertion.html#_CPPv4N7einsums13compute_graph6passes22CommunicationInsertionE" title="einsums::compute_graph::passes::CommunicationInsertion"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::CommunicationInsertion</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.CommunicationElimination.html#_CPPv4N7einsums13compute_graph6passes24CommunicationEliminationE" title="einsums::compute_graph::passes::CommunicationElimination"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::CommunicationElimination</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.passes.CommunicationScheduling.html#_CPPv4N7einsums13compute_graph6passes23CommunicationSchedulingE" title="einsums::compute_graph::passes::CommunicationScheduling"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::compute_graph::passes::CommunicationScheduling</span></code></a></p></li>
+</ul>
+</section>
+</section>
+<section id="free-functions">
+<h2>Free Functions<a class="headerlink" href="#free-functions" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.make_handle.html#_CPPv4I_21GraphCapturableTensorEN7einsums13compute_graph11make_handleE12TensorHandleRK10TensorType8TensorIdPKv" title="einsums::compute_graph::make_handle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::compute_graph::make_handle</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.make_scalar_handle.html#_CPPv4I0EIQooNSt15is_arithmetic_vI1TEE10IsComplexVI1TEEN7einsums13compute_graph18make_scalar_handleE12TensorHandleP1T8TensorIdNSt6stringE" title="einsums::compute_graph::make_scalar_handle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::compute_graph::make_scalar_handle</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraphTypes/einsums.compute_graph.op_kind_name.html#_CPPv4N7einsums13compute_graph12op_kind_nameE6OpKind" title="einsums::compute_graph::op_kind_name"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::compute_graph::op_kind_name</span></code></a>
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.parse_einsum_spec.html#_CPPv4N7einsums13compute_graph17parse_einsum_specENSt11string_viewE" title="einsums::compute_graph::parse_einsum_spec"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::compute_graph::parse_einsum_spec</span></code></a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="rebind.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Graph Update / Rebind</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../ComputeGraphTypes/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">ComputeGraphTypes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-classes">Core Classes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#graph">Graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline">Pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#workspace">Workspace</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#captureguard">CaptureGuard</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#capturecontext">CaptureContext</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution">Execution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#executor">Executor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sequentialexecutor">SequentialExecutor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openmpexecutor">OpenMPExecutor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataflowexecutor">DataflowExecutor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mpiexecutor">MPIExecutor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencyinfo">DependencyInfo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-types">Data Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorhandle">TensorHandle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorslot">TensorSlot</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsumparams">EinsumParams</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#node">Node</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#opkind">OpKind</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsumdescriptor">EinsumDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaledescriptor">ScaleDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#permutedescriptor">PermuteDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conditionaldescriptor">ConditionalDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loopdescriptor">LoopDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#allocdescriptor">AllocDescriptor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loopnode-pipeline">LoopNode (Pipeline)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#string-einsum">String Einsum</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parsedeinsumspec">ParsedEinsumSpec</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsumformatstring">EinsumFormatString</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-aliases">Type Aliases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization-passes">Optimization Passes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure">Infrastructure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lowering-and-cleanup">Lowering and cleanup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#algebraic-rewrites">Algebraic rewrites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-and-diagnostics">Analysis and diagnostics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-planning">Scheduling and planning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-and-symmetry">Memory and symmetry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-gpu-builds-only">GPU (GPU builds only)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#distributed-mpi-builds-only">Distributed (MPI builds only)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#free-functions">Free Functions</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

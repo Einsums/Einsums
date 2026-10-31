@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.sync_destination_input:
+
+==============================================
+einsums::compute_graph::sync_destination_input
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DestinationRead.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void sync_destination_input(Node &node)
+
+   Make ``node's`` input list follow the rule: its operands, then its destination exactly when it reads it. A node the rule does not cover is left alone.

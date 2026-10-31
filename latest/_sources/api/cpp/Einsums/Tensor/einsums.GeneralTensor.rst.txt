@@ -1,0 +1,755 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.GeneralTensor:
+
+======================
+einsums::GeneralTensor
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/Tensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank, typename Alloc> GeneralTensor : public tensor_base::CoreTensor, public design_pats::Lockable<std::recursive_mutex>, public tensor_base::AlgebraOptimizedTensor
+
+   Represents a general tensor
+
+   The data is stored contiguously in memory.
+
+   :tparam T: data type of the underlying tensor data
+   :tparam Rank: the rank of the tensor
+
+
+   .. cpp:function:: GeneralTensor() = default
+
+      Construct a new Tensor object. Default constructor.
+
+
+   .. cpp:function:: GeneralTensor(const GeneralTensor<T, rank, Alloc> &other)
+
+      Construct a new Tensor object. Default copy constructor
+
+
+   .. cpp:function:: template <typename Alloc2> GeneralTensor(const GeneralTensor<T, Rank, Alloc2> &other)
+
+      Construct a new Tensor object from one with a different allocator.
+
+      Handles host↔device transfers automatically when copying between
+      host tensors and GPU tensors.
+
+
+   .. cpp:function:: GeneralTensor(GeneralTensor<T, rank, Alloc> &&other) noexcept
+
+      Default move constructor.
+
+
+   .. cpp:function:: template <std::integral... Dims> requires (sizeof...(Dims) == Rank) GeneralTensor(std::string name, Dims... dims)
+
+      Construct a new Tensor object with the given name and dimensions.
+
+      Constructs a new Tensor object using the information provided in ``name`` and ``dims`` .
+
+      .. code-block:: text
+
+         auto A = Tensor("A", 3, 3);
+
+      The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+      in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+
+      :tparam Dims: Variadic template arguments for the dimensions. Must be castable to size_t.
+      :param name: Name of the new tensor.
+      :param dims: The dimensions of each rank of the tensor.
+
+
+   .. cpp:function:: template <std::integral... Dims> requires (sizeof...(Dims) == Rank) GeneralTensor(bool row_major, std::string name, Dims... dims)
+
+      Construct a new Tensor object with the given name and dimensions.
+
+      Constructs a new Tensor object using the information provided in ``name`` and ``dims`` .
+
+      .. code-block:: text
+
+         auto A = Tensor("A", 3, 3);
+
+      The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+      in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+
+      :tparam Dims: Variadic template arguments for the dimensions. Must be castable to size_t.
+      :param row_major: Lay the elements out in row-major order instead of column-major.
+      :param name: Name of the new tensor.
+      :param dims: The dimensions of each rank of the tensor.
+
+
+   .. cpp:function:: template <size_t OtherRank, typename... Dims> explicit GeneralTensor(GeneralTensor<T, OtherRank, Alloc> &&existingTensor, std::string name, Dims... dims)
+
+      Construct a new Tensor object. Moving ``existingTensor`` data to the new tensor.
+
+      This constructor is useful for reshaping a tensor. It does not modify the underlying
+      tensor data. It only creates new mapping arrays for how the data is viewed.
+
+      .. code-block:: text
+
+         auto A = Tensor("A", 27); // Creates a rank-1 tensor of 27 elements
+         auto B = Tensor(std::move(A), "B", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+         // At this point A is no longer valid.
+
+      Supports using -1 for one of the ranks to automatically compute the dimension of it.
+
+      .. code-block:: text
+
+         auto A = Tensor("A", 27);
+         auto B = Tensor(std::move(A), "B", 3, -1, 3); // Automatically determines that -1 should be 3.
+
+      :tparam OtherRank: The rank of ``existingTensor`` can be different from the rank of the new tensor
+      :tparam Dims: Variadic template arguments for the dimensions. Must be castable to size_t.
+      :param existingTensor: The existing tensor that holds the tensor data.
+      :param name: The name of the new tensor
+      :param dims: The dimensionality of each rank of the new tensor.
+
+
+   .. cpp:function:: explicit GeneralTensor(Dim<Rank> dims)
+
+      Construct a new Tensor object using the dimensions given by Dim object.
+
+      :param dims: The dimensions of the new tensor in Dim form.
+
+
+   .. cpp:function:: explicit GeneralTensor(bool row_major, Dim<Rank> dims)
+
+      Construct a new Tensor object using the dimensions given by Dim object.
+
+      :param row_major: Lay the elements out in row-major order instead of column-major.
+      :param dims: The dimensions of the new tensor in Dim form.
+
+
+   .. cpp:function:: GeneralTensor(const TensorView<T, rank> &other)
+
+      Construct a new Tensor object from a TensorView.
+
+      Data is explicitly copied from the view to the new tensor.
+
+      :param other: The tensor view to copy.
+
+
+   .. cpp:function:: GeneralTensor(const detail::TensorImpl<T> &other)
+
+      Construct a new Tensor from the implementation of another.
+
+
+   .. cpp:function:: template <std::integral... Dims> requires (sizeof...(Dims) == Rank) GeneralTensor(DeferredAlloc tag, std::string name, Dims... dims)
+
+      Construct a shell tensor with deferred allocation.
+
+      Creates a tensor object with valid dimensions and strides but NO
+      data allocation. The tensor address is valid for registration with
+      CaptureContext. Call materialize() to allocate storage.
+
+      :param tag: The DeferredAlloc tag.
+      :param name: Name of the tensor.
+      :param dims: Dimensions of each rank.
+
+
+   .. cpp:function:: GeneralTensor(detail::SharedStorageTag, const GeneralTensor<T, rank, Alloc> &src)
+
+      See ``GeneralTensor::shallow_alias``.
+
+      The in-place form. See ``einsums::detail::SharedStorageTag`` for why
+      building an alias through ``make_shared`` needs its own constructor.
+
+
+   .. cpp:function:: ~GeneralTensor() = default
+
+      Destroy the Tensor object.
+
+      Storage is released by the block, once the last holder drops it. A tensor
+      captured into a graph is not the last holder, which is the point.
+
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator=(GeneralTensor<T, rank, Alloc> &&other) noexcept
+
+      Default move assignment.
+
+
+   .. cpp:function:: void materialize()
+
+      Allocate the backing data storage for a deferred tensor.
+
+      After this call, data() returns a valid pointer and the tensor
+      can be used in computations. The call is idempotent and safe to repeat.
+
+
+   .. cpp:function:: void materialize_into(T *ptr)
+
+      Materialize into caller-provided storage instead of allocating.
+
+      The tensor uses ``ptr`` (which must hold at least size() elements and
+      outlive every use of this tensor) as its backing storage without taking
+      ownership: release() detaches from it and the destructor never frees
+      it. Used by the MemoryPlanning arena to place graph-owned intermediates
+      at planned offsets in one shared block. Idempotent for the same
+      pointer; switching storage requires an intervening release().
+
+
+   .. cpp:function:: void materialize_into(T *ptr, std::shared_ptr<const void> owner)
+
+      Materialize into caller-provided storage that carries its own keepalive.
+
+      Same contract as the raw overload except for lifetime: holding ``owner``
+      is what keeps ``ptr`` alive, so the "must outlive every use" promise is
+      kept by construction rather than by the caller. A MemoryPool carve
+      arrives this way, and dropping the token - through release(), resize(),
+      or the tensor's death, on any thread - returns the bytes to the pool.
+
+
+   .. cpp:function:: bool is_materialized() const
+
+      Check if this tensor has allocated backing storage.
+
+      :returns: true if data() returns a valid pointer.
+
+
+   .. cpp:function:: void release()
+
+      Release the backing data storage, returning to deferred state.
+
+      Frees owned memory immediately; external storage (materialize_into) is
+      detached, never freed. The tensor retains its dimensions and strides
+      but data() returns a sentinel pointer. Call materialize() or
+      materialize_into() to re-attach storage.
+      Used by FreeInsertion pass to release intermediates after their last consumer.
+
+
+   .. cpp:function:: void resync_storage() noexcept
+
+      Re-seat this wrapper's cached data pointer on the storage block's current buffer.
+
+      ``detail::TensorImpl`` caches the address it reads and writes through, and a wrapper
+      that SHARES a storage block (``shallow_alias()``, and the stand-in graph capture adopts)
+      holds its own copy of that cache. Every relocation - ``release``, ``materialize``,
+      ``materialize_into``, a resize - republishes the live address as
+      ``detail::StorageBase::base`` and counts itself in
+      ``detail::StorageBase::generation``, but only on the wrapper that made the call. The
+      others keep pointing at whatever the block held when they were built, which after a
+      release is memory the block has already freed.
+
+      Calling this before reading through a shared wrapper is what closes that: it costs one
+      comparison when nothing has moved, and it is how the generation counter is meant to be
+      consumed. Dims and strides are untouched; a relocation moves the buffer, not the shape.
+
+      A block nobody has relocated is still at generation zero, so a wrapper built over
+      storage it does not own is left exactly as its constructor set it.
+
+
+   .. cpp:function:: void resize_deferred(Dim<Rank> dims)
+
+      Change the dimensions of a deferred tensor before allocation.
+
+      Used by DistributionPlanning/Materialization to shrink a globally-declared
+      tensor to a local partition before allocating storage. Must only be called
+      on deferred (not yet materialized) tensors.
+
+      :param dims: New dimensions for the tensor.
+
+
+   .. cpp:function:: template <std::integral... Dims> requires (sizeof...(Dims) == Rank) void resize_deferred(Dims... dims)
+
+   .. cpp:function:: void set_distribution(std::array<size_t, Rank> global_dims, std::array<size_t, Rank> offsets)
+
+      Set the global-to-local mapping for distributed tensors.
+
+      Called by MaterializationPass after resize_deferred. Stores the global
+      dimensions and the starting offset for this rank's partition along each
+      dimension. Enables range() and global() methods.
+
+      :param global_dims: Global tensor dimensions (before partitioning).
+      :param offsets: Starting global index for this rank along each dimension.
+
+
+   .. cpp:function:: std::pair<size_t, size_t> range(size_t dim) const
+
+      Get the global index range [start, end) for this rank along dimension ``dim``.
+
+      For non-distributed tensors, returns {0, dim(dim)} (full range).
+      For distributed tensors, returns the partition assigned to this rank.
+
+      Use this in fill lambdas to iterate only over local elements:
+
+      .. code-block:: text
+
+         auto [p_start, p_end] = T.range(0);
+         for (size_t p = p_start; p < p_end; p++) { ... }
+
+
+   .. cpp:function:: template <std::integral... Indices> requires (sizeof...(Indices) == Rank) T & global(Indices... indices)
+
+      Access an element using GLOBAL indices.
+
+      Subtracts the local offset before accessing the underlying data.
+      For non-distributed tensors, equivalent to operator().
+
+      .. code-block:: text
+
+         auto [p_start, p_end] = T.range(0);
+         for (size_t p = p_start; p < p_end; p++)
+             T.global(p, q) = value;  // p is a global index
+
+
+   .. cpp:function:: template <std::integral... Indices> requires (sizeof...(Indices) == Rank) const T & global(Indices... indices) const
+
+   .. cpp:function:: bool is_distributed_tensor() const
+
+      Check if this tensor has distribution metadata set.
+
+
+   .. cpp:function:: size_t global_dim(size_t d) const
+
+      Global dimension along axis ``d`` (before partitioning).
+
+
+   .. cpp:function:: LocalViewState begin_local_view(size_t dim, size_t start, size_t count)
+
+      Temporarily restrict this tensor to a contiguous slice along one dimension.
+
+      Modifies the data pointer and dims so that operations see only the local
+      partition. Call end_local_view() to restore the original state.
+
+      Used by InputSlicing pass for distributed computation: each rank "views"
+      its portion of a pre-allocated tensor without copying.
+
+      :param dim: Which dimension to slice along.
+      :param start: First element index along that dimension.
+      :param count: Number of elements in the slice.
+      :returns: Saved state to pass to end_local_view().
+
+
+   .. cpp:function:: void end_local_view(const LocalViewState &state)
+
+      Restore a tensor to its original state after a local view.
+
+
+   .. cpp:function:: void resize(Dim<Rank> dims)
+
+      Resize a tensor.
+
+      :param dims: The new dimensions of a tensor.
+
+
+   .. cpp:function:: template <std::integral... Dims> requires (sizeof...(Dims) == Rank) void resize(Dims... dims)
+
+      Resize a tensor.
+
+      :param dims: The new dimensions of a tensor.
+
+
+   .. cpp:function:: void zero()
+
+      Zeroes out the tensor data.
+
+
+   .. cpp:function:: void set_all(T value)
+
+      Set the all entries to the given value.
+
+      :param value: Value to set the elements to.
+
+
+   .. cpp:function:: Pointer data()
+
+      Returns a pointer to the data.
+
+      Try very hard to not use this function. Current data may or may not exist
+      on the host device at the time of the call if using GPU backend.
+
+      :returns: T* A pointer to the data.
+
+
+   .. cpp:function:: ConstPointer data() const
+
+      Returns a constant pointer to the data.
+
+      Try very hard to not use this function. Current data may or may not exist
+      on the host device at the time of the call if using GPU backend.
+
+      :returns: const T* An immutable pointer to the data.
+
+
+   .. cpp:function:: void set_data(Pointer ptr)
+
+      Redirect the tensor's internal data pointer.
+
+      Used by the ComputeGraph GPU executor to temporarily swap the tensor's
+      data buffer to a device shadow allocation. The caller is responsible for
+      restoring the original pointer after use.
+
+      .. warning::
+
+         This does NOT change ownership or lifetime of the underlying buffer.
+         The original buffer must remain valid until the pointer is restored.
+
+      :param ptr: New data pointer. Must point to a buffer of at least size() elements.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Pointer data(MultiIndex &&... index)
+
+      Returns a pointer into the tensor at the given location.
+
+      .. code-block:: text
+
+         auto A = Tensor("A", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+
+         double* A_pointer = A.data(1, 2, 3); // Returns the pointer to element (1, 2, 3) in A.
+
+      :tparam MultiIndex: The datatypes of the passed parameters. Must be castable to
+      :param index: The explicit desired index into the tensor. Must be castable to ptrdiff_t.
+      :returns: A pointer into the tensor at the requested location.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) ConstReference operator()(MultiIndex &&... index) const
+
+      Subscripts into the tensor.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam MultiIndex: Datatype of the indices. Must be castable to ptrdiff_t.
+      :param index: The explicit desired index into the tensor. Elements must be castable to ptrdiff_t. Negative indices are taken to be an offset from the end of the axis.
+      :returns: const T&
+
+
+   .. cpp:function:: template <Container Index> ConstReference subscript(const Index &index) const
+
+      Subscripts into the tensor. Does not do any index checks.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam Index: A container of the indices, one per axis.
+      :param index: The explicit desired index into the tensor. Elements must be castable to size_t.
+      :returns: const T&
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) ConstReference subscript(MultiIndex &&... index) const
+
+      Subscripts into the tensor. Does not do any index checks.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam MultiIndex: Datatype of the indices. Must be castable to size_t.
+      :param index: The explicit desired index into the tensor. Elements must be castable size_t.
+      :returns: const T&
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Reference operator()(MultiIndex &&... index)
+
+      Subscripts into the tensor.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam MultiIndex: Datatype of the indices. Must be castable to ptrdiff_t.
+      :param index: The explicit desired index into the tensor. Elements must be castable to ptrdiff_t. Negative indices are taken to be an offset from the end of the axis.
+      :returns: T&
+
+
+   .. cpp:function:: template <Container Index> Reference subscript(const Index &index)
+
+      Subscripts into the tensor. Does not do any index checks.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam Index: A container of the indices, one per axis.
+      :param index: The explicit desired index into the tensor. Elements must be castable to size_t.
+      :returns: T&
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (std::is_integral_v<std::remove_cvref_t<MultiIndex>> && ...) Reference subscript(MultiIndex &&... index)
+
+      Subscripts into the tensor. Does not do any index checks.
+
+      This version works when all elements are explicit values into the tensor.
+      It does not work with All or Range tags.
+
+      :tparam MultiIndex: Datatype of the indices. Must be castable to ptrdiff_t.
+      :param index: The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
+      :returns: T&
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires ((AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)) TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(const MultiIndex &... index)
+
+      Subscripts into the tensor.
+
+      This version works when some of the indices are All or Range. It then constructs a view of the tensor with those properties.
+
+      :tparam MultiIndex: Data type of the indices.
+      :param index: The indices.
+      :returns: A tensor view with the appropriate starting point and dimensions.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires ((AtLeastOneOfType<AllT, MultiIndex...> || AtLeastOneOfType<Range, MultiIndex...>)) const TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(const MultiIndex &... index) const
+
+      Subscripts into the tensor.
+
+      This version works when some of the indices are All or Range. It then constructs a view of the tensor with those properties.
+
+      :tparam MultiIndex: Data type of the indices.
+      :param index: The indices.
+      :returns: A tensor view with the appropriate starting point and dimensions.
+
+
+   .. cpp:function:: template <Container Index> requires (!std::is_same_v<Index, Offset<Rank>> && !std::is_same_v<Index, Range>) Reference operator()(const Index &index)
+
+      See ``GeneralTensor<T, Rank, Alloc>::operator(MultiIndex...) -> T&``.
+
+
+   .. cpp:function:: template <Container Index> requires (!std::is_same_v<Index, Offset<Rank>> && !std::is_same_v<Index, Range>) ConstReference operator()(const Index &index) const
+
+      See ``GeneralTensor<T, Rank, Alloc>::operator(MultiIndex...) -> T&``.
+
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator=(const GeneralTensor<T, rank, Alloc> &other)
+
+      Copy the data from one tensor into this.
+
+      :param other: The tensor to copy.
+
+
+   .. cpp:function:: template <typename Alloc2> GeneralTensor<T, rank, Alloc> & operator=(const GeneralTensor<T, Rank, Alloc2> &other)
+
+   .. cpp:function:: template <typename TOther, typename Alloc2> requires (!std::same_as<T, TOther>) GeneralTensor<T, rank, Alloc> & operator=(const GeneralTensor<TOther, Rank, Alloc2> &other)
+
+      Cast the data from one tensor while copying its data into this tensor.
+
+      :param other: The tensor to cast and copy.
+
+
+   .. cpp:function:: template <BasicTensorConcept OtherTensor> GeneralTensor<T, rank, Alloc> & operator=(const OtherTensor &other)
+
+      Copy the data from a tensor of a different kind into this one.
+
+
+   .. cpp:function:: template <TensorConcept OtherTensor> requires (!BasicTensorConcept<OtherTensor> && SameRank<GeneralTensor<T, rank, Alloc>, OtherTensor> && CoreTensorConcept<OtherTensor>) GeneralTensor<T, rank, Alloc> & operator=(const OtherTensor &other)
+
+   .. cpp:function:: template <typename TOther> GeneralTensor<T, rank, Alloc> & operator=(const TensorView<TOther, Rank> &other)
+
+      Cast the data from a tensor view while copying into this tensor.
+
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator=(const T &fill_value)
+
+      Fill this tensor with a value.
+
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator+=(const T &b)
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator-=(const T &b)
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator*=(const T &b)
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> & operator/=(const T &b)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> GeneralTensor<T, rank, Alloc> & operator+=(const TOther &other)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> GeneralTensor<T, rank, Alloc> & operator-=(const TOther &other)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> GeneralTensor<T, rank, Alloc> & operator*=(const TOther &other)
+
+   .. cpp:function:: template <BasicTensorConcept TOther> GeneralTensor<T, rank, Alloc> & operator/=(const TOther &other)
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Get the dimension of the tensor along a given axis.
+
+
+   .. cpp:function:: const Dim<Rank> & dims() const
+
+      Get all the dimensions of the tensor.
+
+
+   .. cpp:function:: const Vector & vector_data() const
+
+      Get the internal vector containing the tensor's data.
+
+
+   .. cpp:function:: Vector & vector_data()
+
+      See ``GeneralTensor<T,Rank, Alloc>::vector_data() const``.
+
+
+   .. cpp:function:: const std::shared_ptr<detail::StorageBlock<T, Vector>> & storage() const noexcept
+
+      This tensor's refcounted storage block.
+
+      Hold it to keep the buffer alive independently of this wrapper, and read
+      ``StorageBase::base`` through it rather than caching ``data()``, which
+      goes stale across materialize / materialize_into / release / resize.
+
+
+   .. cpp:function:: GeneralTensor<T, rank, Alloc> shallow_alias() const
+
+      A second wrapper over the same storage.
+
+      Same element type, rank, dims and strides as this tensor, sharing the
+      buffer rather than copying it: writes through either are visible to
+      both. Copy construction deliberately does not do this, so sharing is
+      always something the caller asked for by name.
+
+      Graph capture uses it to hold an operand by value without deep-copying,
+      which is what lets a captured tensor go out of scope before
+      ``execute()``.
+
+
+   .. cpp:function:: size_t stride(int d) const
+
+      Get the stride along a given axis.
+
+
+   .. cpp:function:: const Stride<Rank> & strides() const
+
+      Get the strides of this tensor.
+
+
+   .. cpp:function:: TensorView<T, 1> to_rank_1_view() const
+
+      Flatten out the tensor.
+
+
+   .. cpp:function:: size_t size() const
+
+      Returns the linear size of the tensor.
+
+
+   .. cpp:function:: bool full_view_of_underlying() const noexcept
+
+      Indicates that the tensor is contiguous.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Get the name of the tensor.
+
+
+   .. cpp:function:: void set_name(const std::string &new_name)
+
+      Set the name of the tensor.
+
+
+   .. cpp:function:: detail::TensorImpl<T> & impl()
+
+      Get the implementation of the tensor.
+
+
+   .. cpp:function:: const detail::TensorImpl<T> & impl() const
+
+      Get the implementation of the tensor.
+
+
+   .. cpp:function:: bool is_row_major() const
+
+   .. cpp:function:: bool is_column_major() const
+
+   .. cpp:function:: void set_symmetry(SymmetryDescriptor desc)
+
+      Attach or replace the symmetry descriptor. Pass an empty descriptor
+      to clear.
+
+
+   .. cpp:function:: const SymmetryDescriptor * symmetry() const noexcept
+
+      Current symmetry descriptor, or ``nullptr`` if none declared. The
+      returned pointer is valid for the tensor's lifetime.
+
+
+   .. cpp:function:: void clear_symmetry()
+
+      Clear any declared symmetry.
+
+
+   .. cpp:function:: bool has_symmetry() const
+
+      True iff a non-empty symmetry descriptor is attached.
+
+
+   .. cpp:function:: TensorView<T, Rank> transpose_view()
+
+   .. cpp:function:: const TensorView<T, Rank> transpose_view() const
+
+   .. cpp:function:: TensorView<T, Rank> to_row_major()
+
+   .. cpp:function:: const TensorView<T, Rank> to_row_major() const
+
+   .. cpp:function:: TensorView<T, Rank> to_column_major()
+
+   .. cpp:function:: const TensorView<T, Rank> to_column_major() const
+
+   .. cpp:function:: bool is_gemmable(size_t *lda) const
+
+   .. cpp:function:: bool is_totally_vectorable(size_t *incx) const
+
+   .. cpp:function:: template <std::integral... MultiIndex> TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&... index)
+
+   .. cpp:function:: template <std::integral... MultiIndex> const TensorView<T, Rank - sizeof...(MultiIndex) + 1> tie_indices(MultiIndex &&... index) const
+
+   .. cpp:function:: std::weak_ptr<void> liveness_token() const
+
+      Lazily-created token whose lifetime tracks this object.
+
+      The graph's validator watches it through a std::weak_ptr. Created on first request.
+
+
+   .. cpp:function:: PendingInit pending_init() const
+
+      Pending post-materialize init kind. Defaults to ``None``.
+
+
+   .. cpp:function:: void set_pending_init(PendingInit k)
+
+      Tag this tensor with a post-materialize init policy.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the tensor.
+
+
+   .. cpp:member:: static constexpr bool IsDeviceTensor
+
+      True if this tensor uses device (GPU) memory.
+
+
+   .. cpp:member:: static constexpr DeferredAlloc deferred_alloc
+
+      Tag value for deferred allocation constructors.
+
+
+   .. cpp:class:: DeferredAlloc
+
+      Tag type for deferred allocation.
+
+      A shell tensor has valid metadata (name, dims, strides, rank) but no
+      backing data storage. Call materialize() to allocate data after
+      optimization passes have decided placement and distribution.
+
+
+
+   .. cpp:class:: LocalViewState
+
+      Saved state for restoring a tensor after a local view.
+
+
+      .. cpp:member:: T *saved_data
+
+      .. cpp:member:: std::array<size_t, Rank> saved_dims
+
+      .. cpp:member:: std::array<size_t, Rank> saved_strides
+
+      .. cpp:member:: bool active

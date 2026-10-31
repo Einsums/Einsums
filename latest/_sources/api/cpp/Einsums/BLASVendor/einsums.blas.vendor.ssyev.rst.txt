@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.ssyev:
+
+============================
+einsums::blas::vendor::ssyev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t ssyev(char job, char uplo, int_t n, float *a, int_t lda, float *w, float *work, int_t lwork)
+
+   Performs symmetric matrix diagonalization.
+
+   .. versionadded:: 1.0.0
+
+   :param job: Whether to compute the eigenvectors. Case insensitive. Can be either 'n' or 'v'.
+   :param uplo: Whether the data is stored in the upper or lower triangle of the input. Case insensitive. Can be either 'u' or 'l'.
+   :param n: The number of rows and columns of the matrix.
+   :param a: The matrix to factor. On exit, its data is overwritten. If the vectors are computed, they are placed in the columns of the matrix.
+   :param lda: The leading dimension of the matrix.
+   :param w: The output for the eigenvalues.
+   :param work: A work array. If ``lwork`` is -1, then the optimal work array size is placed in the first element of this array.
+   :param lwork: The size of the work array. If it is -1, then a workspace query is performed, and the optimal workspace size is put in the first element of ``work``.
+   :returns: 0 on success. If positive, then the eigenvalue algorithm did not converge. If negative, then one of the parameters was given a bad value. The absolute value indicates which parameter it was.

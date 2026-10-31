@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.parse:
+
+==================
+einsums::cl::parse
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Parse.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: ParseResult parse(std::span<const std::string> args, const char *programName, std::string_view version, std::vector<std::string> *unknown_args)
+
+   Parse command-line arguments into the previously registered options.
+
+   Values are resolved in increasing order of precedence: the programmer's
+   `Default(...)`, then any environment variable the option names, then the
+   command line.
+
+   :param args: command-line arguments, argv[0] included
+   :param programName: the program name to display in help printing
+   :param version: the program version to display in version printing
+   :param unknown_args: arguments not understood by our parser are placed here
+   :returns: if ParseResult.ok is true then parsing completed successfully

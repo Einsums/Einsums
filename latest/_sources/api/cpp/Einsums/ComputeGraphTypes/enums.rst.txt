@@ -1,0 +1,294 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraphTypes_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraphTypes/Descriptors.hpp``, ``Einsums/ComputeGraphTypes/Enums.hpp``, ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:enum-class:: AllocState
+
+   Allocation state of a tensor in the graph.
+
+
+   .. cpp:enumerator:: Materialized
+
+   .. cpp:enumerator:: Deferred
+
+
+.. cpp:enum-class:: BlasScalar
+
+   Data-type tag for BatchedGemmDescriptor.
+
+   Tells the executor which `blas::gemm_batch<T>` to call.
+
+
+   .. cpp:enumerator:: Float
+
+   .. cpp:enumerator:: Double
+
+   .. cpp:enumerator:: ComplexFloat
+
+   .. cpp:enumerator:: ComplexDouble
+
+
+.. cpp:enum-class:: DistributionHint
+
+   How a space's axis should be laid out across ranks. Machine policy, never part of ``IndexSpace``.
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Replicate
+
+   .. cpp:enumerator:: Tile
+
+
+.. cpp:enum-class:: InitKind
+
+   Initialization strategy for deferred tensors.
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Zero
+
+   .. cpp:enumerator:: Random
+
+   .. cpp:enumerator:: FromDisk
+
+
+.. cpp:enum-class:: OpKind
+
+   Identifies the kind of operation a node represents.
+
+   Used by optimization passes for pattern matching. For example,
+   ScaleAbsorption looks for OpKind::Scale followed by a prefactor-bearing op.
+
+   Categories:
+
+   - **TensorAlgebra**: Einsum, Permute, Transpose, ElementTransform, KhatriRao
+   - **BLAS-level**: Gemm, Gemv, Ger, Dot, Scale, Axpby, DirectProduct
+   - **LAPACK-level**: SVD, QR, Syev, Heev, Geev, Gesv, Getrf, Getrs, Invert, Det, Pow, etc.
+   - **Other**: HPTTPermute, Custom
+
+
+   .. cpp:enumerator:: Einsum
+
+   .. cpp:enumerator:: Permute
+
+   .. cpp:enumerator:: GroupedPermute
+
+   .. cpp:enumerator:: Transpose
+
+   .. cpp:enumerator:: ElementTransform
+
+   .. cpp:enumerator:: KhatriRao
+
+   .. cpp:enumerator:: BatchedGemm
+
+   .. cpp:enumerator:: GroupedBatchedGemm
+
+   .. cpp:enumerator:: Gemm
+
+   .. cpp:enumerator:: Gemv
+
+   .. cpp:enumerator:: Ger
+
+   .. cpp:enumerator:: Dot
+
+   .. cpp:enumerator:: GroupedDot
+
+   .. cpp:enumerator:: Scale
+
+   .. cpp:enumerator:: Axpby
+
+   .. cpp:enumerator:: GroupedAxpby
+
+   .. cpp:enumerator:: GroupedSandwich
+
+   .. cpp:enumerator:: GroupedGatherRotate
+
+   .. cpp:enumerator:: DirectProduct
+
+   .. cpp:enumerator:: DirectDivision
+
+   .. cpp:enumerator:: GroupedDirectProduct
+
+   .. cpp:enumerator:: GroupedDirectDivision
+
+   .. cpp:enumerator:: SVD
+
+   .. cpp:enumerator:: SVD_DD
+
+   .. cpp:enumerator:: TruncatedSVD
+
+   .. cpp:enumerator:: QR
+
+   .. cpp:enumerator:: Syev
+
+   .. cpp:enumerator:: Heev
+
+   .. cpp:enumerator:: Geev
+
+   .. cpp:enumerator:: TruncatedSyev
+
+   .. cpp:enumerator:: Gesv
+
+   .. cpp:enumerator:: Getrf
+
+   .. cpp:enumerator:: Getrs
+
+   .. cpp:enumerator:: Getri
+
+   .. cpp:enumerator:: Invert
+
+   .. cpp:enumerator:: Pseudoinverse
+
+   .. cpp:enumerator:: Det
+
+   .. cpp:enumerator:: Pow
+
+   .. cpp:enumerator:: SymmGemm
+
+   .. cpp:enumerator:: Norm
+
+   .. cpp:enumerator:: SolveLyapunov
+
+   .. cpp:enumerator:: HPTTPermute
+
+   .. cpp:enumerator:: Conditional
+
+   .. cpp:enumerator:: Loop
+
+   .. cpp:enumerator:: Setup
+
+   .. cpp:enumerator:: LaplaceQuadrature
+
+   .. cpp:enumerator:: Alloc
+
+   .. cpp:enumerator:: Free
+
+   .. cpp:enumerator:: HostToDevice
+
+   .. cpp:enumerator:: DeviceToHost
+
+   .. cpp:enumerator:: ParallelFor
+
+   .. cpp:enumerator:: ParallelReduce
+
+   .. cpp:enumerator:: DiskRead
+
+   .. cpp:enumerator:: DiskWrite
+
+   .. cpp:enumerator:: Materialize
+
+   .. cpp:enumerator:: Initialize
+
+   .. cpp:enumerator:: View
+
+   .. cpp:enumerator:: WriteParam
+
+   .. cpp:enumerator:: Trace
+
+   .. cpp:enumerator:: Allreduce
+
+   .. cpp:enumerator:: Broadcast
+
+   .. cpp:enumerator:: Allgather
+
+   .. cpp:enumerator:: Scatter
+
+   .. cpp:enumerator:: Barrier
+
+   .. cpp:enumerator:: TileGather
+
+   .. cpp:enumerator:: TileScatter
+
+   .. cpp:enumerator:: TileElementwise
+
+   .. cpp:enumerator:: DiisStep
+
+   .. cpp:enumerator:: Custom
+
+
+.. cpp:enum-class:: Residency
+
+   Where a tensor's data currently resides.
+
+   Tracked per-tensor by the GPU optimization passes.
+
+
+   .. cpp:enumerator:: Host
+
+   .. cpp:enumerator:: Device
+
+   .. cpp:enumerator:: Both
+
+   .. cpp:enumerator:: Unknown
+
+
+.. cpp:enum-class:: StorageHint
+
+   Where a space's data should preferentially live. Machine policy, never part of ``IndexSpace``.
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: PreferMemory
+
+   .. cpp:enumerator:: SpillOk
+
+
+.. cpp:enum-class:: Target
+
+   Where a node should execute.
+
+   Set by the GPUPlacement pass. Defaults to CPU. A node's executor is not
+   replaced when it is placed: the graph's built-in serial replay
+   (``Graph::execute()`` with no executor installed) dispatches a GPU node
+   to the device's BLAS and runs its own executor when that declines. An
+   installed executor runs every node on the CPU, whatever its target.
+
+
+   .. cpp:enumerator:: CPU
+
+   .. cpp:enumerator:: GPU
+
+
+.. cpp:enum-class:: TensorOwnership
+
+   Ownership level of a tensor (determines declaration scope in code generation).
+
+
+   .. cpp:enumerator:: Graph
+
+   .. cpp:enumerator:: Pipeline
+
+   .. cpp:enumerator:: Workspace
+
+
+.. cpp:enum-class:: Tristate
+
+   Answer to a relation query that may simply not be known.
+
+   The registry knows only what was declared and what follows; a rewriting pass treats Unknown as No.
+
+
+   .. cpp:enumerator:: No
+
+   .. cpp:enumerator:: Yes
+
+   .. cpp:enumerator:: Unknown

@@ -1,0 +1,89 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.FileHeader:
+
+==============================
+einsums::tensor_io::FileHeader
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Format.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:class:: FileHeader
+
+   File header (64 bytes, at offset 0).
+
+
+   .. cpp:function:: void init()
+
+      Initialize with default values.
+
+
+   .. cpp:function:: bool is_valid() const
+
+      Validate magic and version.
+
+
+   .. cpp:member:: char magic[8]
+
+      "EINSUMS\0"  // NOLINT(modernize-avoid-c-arrays)
+
+
+   .. cpp:member:: uint32_t version
+
+      Format version (ETN_VERSION)
+
+
+   .. cpp:member:: uint32_t num_tensors
+
+      Number of TensorEntry records
+
+
+   .. cpp:member:: uint64_t entry_table_offset
+
+      Byte offset to first TensorEntry (end of data)
+
+
+   .. cpp:member:: uint64_t data_offset
+
+      Byte offset to first data region (typically 64)
+
+
+   .. cpp:member:: uint64_t total_size
+
+      Total file size in bytes
+
+
+   .. cpp:member:: uint32_t flags
+
+      Bit flags: 0x1 = has distributed tensors
+
+
+   .. cpp:member:: uint32_t num_ranks
+
+      MPI world_size at write time (0 = serial)
+
+
+   .. cpp:member:: uint64_t generation
+
+      Commits so far. A writer refuses to commit over a file whose generation moved since it last
+      read the header, as another handle's commit would otherwise be lost. Zero before version 3.
+
+
+   .. cpp:member:: uint32_t table_crc
+
+      CRC-32C of the entry table; zero before version 3.
+
+
+   .. cpp:member:: uint32_t header_crc
+
+      CRC-32C of these 64 bytes with this field zero; zero before version 3.

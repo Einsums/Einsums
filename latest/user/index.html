@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Einsums User Guide &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Einsums: The Absolute Basics for Beginners" href="absolute_beginners.html" />
+    <link rel="prev" title="Einsums’s Documentation" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums User Guide</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-user-guide">
+<span id="user"></span><h1>Einsums User Guide<a class="headerlink" href="#einsums-user-guide" title="Link to this heading">#</a></h1>
+<p>This guide is an overview and explains the important features;
+details are found in the reference. Follow the links below to find more information on the specific parts of Einsums.</p>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+<section id="design-goals">
+<h2>Design Goals<a class="headerlink" href="#design-goals" title="Link to this heading">#</a></h2>
+<p>The overall goal of Einsums is to allow scientists and mathematicians to write highly parallelized
+code without needing to become a wizard in high-performance computing. Another goal is to have an
+interface that mimics mathematical notation as closely as possible, so users don’t necessarily
+need to think about how to transform their equations into code. As an example, one might construct
+the Einstein tensor using the following equation.</p>
+<div class="math notranslate nohighlight">
+\[G_{\mu\nu} = R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu}\]</div>
+<p>This would become the following code using Einsums.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="w"> </span><span class="n">ricci_tensor</span><span class="p">{</span><span class="s">"R"</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">},</span><span class="w"> </span><span class="n">metric_tensor</span><span class="p">{</span><span class="s">"g"</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">ricci_curvature</span><span class="p">;</span>
+<span class="c1">// Initializations of all of these.</span>
+
+<span class="n">Tensor</span><span class="w"> </span><span class="n">einstein_tensor</span><span class="p">{</span><span class="s">"G"</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+<span class="n">einstein_tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ricci_tensor</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ricci_curvature</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">metric_tensor</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Another example for a more general contraction is the coupled-cluster singles and doubles energy expression.
+The governing equation is this.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}E_{CCSD} = E_{HF} + \sum_{i}^{occ}\sum_{a}^{virt} F_{ia} t_{i}^{a} +
+\frac{1}{4}\sum_{ij}^{occ} \sum_{ab}^{virt} \left&lt;ij\middle|\middle| ab\right&gt; \tau_{ij}^{ab}\\\tau_{ij}^{ab} = t_{ij}^{ab} + 2t_{i}^{a}t_{j}^{b}\\\left&lt;pq \middle|\middle| rs \right&gt; = \left&lt;pq\middle|rs\right&gt; - \left&lt;pq\middle|sr\right&gt;\end{aligned}\end{align} \]</div>
+<p>This becomes the following code.</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="n">E_hf</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n_occ</span><span class="p">;</span><span class="w"> </span><span class="c1">// The number of occupied orbitals.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">;</span><span class="w"> </span><span class="c1">// The number of orbitals.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n_virt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_orbs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n_occ</span><span class="p">;</span><span class="w"> </span><span class="c1">// The number of virtual orbitals.</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">F</span><span class="p">{</span><span class="s">"F"</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">};</span><span class="w"> </span><span class="c1">// The Fock matrix.</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">TEI</span><span class="p">{</span><span class="s">"G"</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">};</span><span class="w"> </span><span class="c1">// The electron repulsion integrals.</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">t1_amps</span><span class="p">{</span><span class="s">"T1"</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_virt</span><span class="p">};</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">t2_amps</span><span class="p">{</span><span class="s">"T2"</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_virt</span><span class="p">,</span><span class="w"> </span><span class="n">n_virt</span><span class="p">};</span>
+<span class="c1">// Populate these values.</span>
+
+<span class="c1">// The intermediate, scaled by the 1/4 of the energy expression: tau2 = (t2 + 2 t1 t1) / 4.</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">tau2</span><span class="p">{</span><span class="s">"tau2"</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_virt</span><span class="p">,</span><span class="w"> </span><span class="n">n_virt</span><span class="p">};</span>
+<span class="n">tau2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t2_amps</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ijab &lt;- ia ; jb"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tau2</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">t1_amps</span><span class="p">,</span><span class="w"> </span><span class="n">t1_amps</span><span class="p">);</span>
+
+<span class="c1">// The antisymmetrized two-electron integrals: &lt;pq||rs&gt; = &lt;pq|rs&gt; - &lt;pq|sr&gt;.</span>
+<span class="n">Tensor</span><span class="w"> </span><span class="n">TEI_antisym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TEI</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="s">"pqrs &lt;- pqsr"</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">TEI_antisym</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="n">TEI</span><span class="p">);</span>
+
+<span class="c1">// Each term is a full contraction to a scalar, which comes out through a dot product.</span>
+<span class="n">TensorView</span><span class="w"> </span><span class="n">Fia</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">F</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">});</span>
+<span class="n">TensorView</span><span class="w"> </span><span class="n">TEI_ijab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TEI_antisym</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="n">n_occ</span><span class="p">,</span><span class="w"> </span><span class="n">n_orbs</span><span class="p">});</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="n">e_singles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">e_doubles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_singles</span><span class="p">,</span><span class="w"> </span><span class="n">Fia</span><span class="p">,</span><span class="w"> </span><span class="n">t1_amps</span><span class="p">);</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_doubles</span><span class="p">,</span><span class="w"> </span><span class="n">TEI_ijab</span><span class="p">,</span><span class="w"> </span><span class="n">tau2</span><span class="p">);</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="n">E_ccsd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">E_hf</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e_singles</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e_doubles</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="runtime-comparisons">
+<h2>Runtime Comparisons<a class="headerlink" href="#runtime-comparisons" title="Link to this heading">#</a></h2>
+<p>Einsums aims to run a contraction as fast as code written by hand for that one contraction, which is a claim that has to be measured rather than asserted.
+Two comparisons are given here: against the other libraries that solve the same problem, and against hand-written code on a workload from quantum chemistry.
+To find out which path your own code is taking and how long it spends there, see <a class="reference internal" href="tutorial_performance.html"><span class="doc">Tutorial: Performance Tuning</span></a>.</p>
+<section id="against-other-tensor-libraries">
+<h3>Against other tensor libraries<a class="headerlink" href="#against-other-tensor-libraries" title="Link to this heading">#</a></h3>
+<p>The figure below reports all 48 contractions of version 0.1 of the Tensor Contraction Benchmark, single precision above and double below.
+Forty of the forty-eight come from quantum chemistry, covering the AO-to-MO transformation, CCSD, and CCSD(T).
+Einsums is measured against TBLIS, which like Einsums packs cache-sized blocks directly out of the operands, and against TCL, which permutes both operands into canonical order, calls one matrix multiplication, and permutes the result back.
+All three are timed in one process on one core of an AMD Ryzen Threadripper 2970WX, with allocations bound to a memory-attached NUMA node, against the same OpenBLAS, keeping the fastest of three repetitions.
+Every case is checked against a reference contraction at reduced extents before it is timed.</p>
+<img alt="Einsums, TBLIS, and TCL on all 48 contractions of the Tensor Contraction Benchmark." src="../_images/head_to_head.png" />
+<p>The rule drawn over each contraction is the rate an equally-sized matrix multiplication reached on the same machine in the same harness, which is the normalization both prior reports use.
+Contractions are ordered by that rate, so bandwidth-bound shapes are at the left of the figure and compute-bound shapes at the right.
+Measured against it, the medians are 101% and 100% for Einsums in single and double precision, 98% and 95% for TBLIS, and 67% and 68% for TCL.
+Einsums is first on 65 of the 96 measurements and second on the other 31.</p>
+<p>The eighteen CCSD(T) contractions at the left are worth reading on their own.
+At a given precision they share a flop count and an output volume exactly and differ only in how the six output indices are permuted across the two operands, so they measure sensitivity to index order and nothing else.
+Across that sweep Einsums varies by 1.05x in single precision and 1.03x in double, against 1.93x and 1.50x for TBLIS and 1.19x and 1.29x for TCL.
+Writing the output is 99% of the compulsory traffic on these shapes, and Einsums enumerates the output along whichever direction is contiguous in it and retires the resulting runs with non-temporal stores, which is why the group clears the equally-sized matrix multiplication that still reads its output before overwriting it.</p>
+<p>Twelve of the ninety-six measurements trail the better of the other two libraries by more than 5%, by at most 1.57x, and none of them trails both at once.
+Ten of those twelve share a shape in which the second operand supplies a single index of extent 24, so packing a large first operand is amortized over very little work.
+No native route recovers the matrix multiplication on that group: the Einsums median there is 66% of an equally-sized GEMM and the TBLIS median is 67%.</p>
+<p>This figure belongs to the Einsums paper, in preparation, rather than to the repository; its harness builds all three libraries from source and pins them to one core.</p>
+</section>
+<section id="against-hand-written-code">
+<h3>Against hand-written code<a class="headerlink" href="#against-hand-written-code" title="Link to this heading">#</a></h3>
+<p>The second comparison is the two-electron contribution to the Fock matrix, which is bandwidth-bound and is where a self-consistent field calculation spends most of its time.</p>
+<div class="math notranslate nohighlight">
+\[J_{\mu\nu} = D_{\lambda\sigma}\left(\mu\nu\middle|\lambda\sigma\right)\]</div>
+<div class="math notranslate nohighlight">
+\[K_{\mu\nu} = D_{\lambda\sigma}\left(\mu\lambda\middle|\nu\sigma\right)\]</div>
+<div class="math notranslate nohighlight">
+\[G_{\mu\nu} = 2J_{\mu\nu} - K_{\mu\nu}\]</div>
+<p>The gray family in the figure is hand-written C++: the straightforward unfused loops that form <span class="math notranslate nohighlight">\(J\)</span> in one pass over the integrals and <span class="math notranslate nohighlight">\(K\)</span> in a second, the same loops fused into a single cache-ordered nest, and that fused nest parallelized with OpenMP.
+The serial pair shows that fusion alone buys almost nothing on one core, because a single core cannot saturate memory bandwidth and so halving the traffic does not help.
+The fused OpenMP nest, which is what a careful programmer writes by hand, is the baseline to beat.</p>
+<p>Writing the same two contractions as <a class="reference internal" href="../api/cpp/Einsums/TensorAlgebra/einsums.tensor_algebra.einsum.html#_CPPv4I_b_b_13TensorConcept_13TensorConcept00DpDpDpEIQaa11InSamePlaceI5AType5BTypeEaaoo11InSamePlaceI5AType5CTypeEnt13TensorConceptI5CTypeEnt12SmartPointerI5CTypeEEN7einsums14tensor_algebra6einsumEvK1URKNSt5tupleIDp8CIndicesEEP5CTypeK1URKNSt5tupleIDp8AIndicesEERK5ATypeRKNSt5tupleIDp8BIndicesEERK5BTypePN6detail15AlgorithmChoiceE" title="einsums::tensor_algebra::einsum"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsum</span></code></a> calls trades that hand fusion for notation and still comes out ahead.
+That line was measured with the compile-time-index API, which at these sizes sends both contractions to PackedGemm, as the string form that ComputeGraph and the Python bindings use does.
+The integrals are streamed twice, yet the eager pair is 1.6 to 2.5 times faster than the fused OpenMP nest.
+Capturing the same two calls into a <a class="reference internal" href="tutorial_compute_graph.html"><span class="doc">ComputeGraph</span></a> halves the time again: the <code class="docutils literal notranslate"><span class="pre">StreamContractionFusion</span></code> pass sees that both contractions read the same tensor and fuses them into one storage-order pass that feeds both accumulators, so the integrals are read once, and the build runs three to four and a half times faster than the fused OpenMP nest with no fusion written by the programmer.</p>
+<img alt="A Fock build through five execution strategies, from unfused loops to a stream-fused graph." src="../_images/why_einsums.png" />
+<p>This figure was measured on an Apple-silicon Mac and is regenerated by <code class="docutils literal notranslate"><span class="pre">devtools/profiling/plot_why_einsums.py</span></code>, which drives the <code class="docutils literal notranslate"><span class="pre">profile_strategies</span></code> benchmark in the same directory and prints the timings as it draws.</p>
+</section>
+</section>
+<section id="capabilities-and-limitations">
+<h2>Capabilities and Limitations<a class="headerlink" href="#capabilities-and-limitations" title="Link to this heading">#</a></h2>
+<p>As of right now, Einsums is capable of the following:</p>
+<ul class="simple">
+<li><p>General contractions between two tensors of the form <span class="math notranslate nohighlight">\(C_{ijk\cdots} = \alpha C_{ijk\cdots} + \beta A_{abc\cdots} B_{xyz\cdots}\)</span>.</p></li>
+<li><p>Generalized transpositions of the form <span class="math notranslate nohighlight">\(C_{ijk\cdots} = \alpha C_{ijk\cdots} + \beta A_{abc\cdots}\)</span>.</p></li>
+<li><p>Linear algebra on tensors using BLAS and LAPACK as a backend.</p></li>
+<li><p>Taking advantage of tensor layout. If the tensor is block diagonal or has blocks of zeros, the <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.BlockTensor.html#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">BlockTensor</span></code></a> and <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.TiledTensor.html#_CPPv4I0_6size_tEN7einsums11TiledTensorE" title="einsums::TiledTensor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">TiledTensor</span></code></a>
+classes can parallelize certain operations.</p></li>
+<li><p>Mapping operations over all of a tensor’s indices.</p></li>
+<li><p>A PackedGemm backend that applies BLIS-style cache-blocked packing for high-rank
+tensor contractions with multi-M, multi-N, multi-K, and batch dimensions,
+automatically dispatched from <code class="docutils literal notranslate"><span class="pre">einsum</span></code>.</p></li>
+<li><p>Computation graphs, much like CUDA Graphs, that capture, optimize, and replay
+sequences of tensor operations. They include several dozen optimization passes, parallel
+execution, control flow, and profiler integration with an interactive node viewer.
+<a class="reference internal" href="optimizer.html"><span class="doc">Tutorial: The Algebraic Optimizer</span></a> documents the pipeline and how to drive it.</p></li>
+<li><p>Profiling through the Waggle profiler, which Einsums builds alongside itself: it streams to a
+real-time TCP server, with a terminal viewer showing the call tree, flame graphs, thread
+timelines, and hotspots.</p></li>
+<li><p>Python bindings for runtime-rank tensors, strided views and tiled tensors, <code class="docutils literal notranslate"><span class="pre">einsum</span></code>, linear
+algebra, and the ComputeGraph. NumPy arrays cross the boundary through <code class="docutils literal notranslate"><span class="pre">einsums.asarray</span></code>,
+which copies them into a tensor; the operations themselves take Einsums tensors rather than
+raw NumPy arrays.</p></li>
+<li><p>GPU acceleration through CUDA or Apple’s Metal Performance Shaders.</p></li>
+<li><p>Simple arithmetic between tensors. The tensors all need to have the same dimensions, though, and this does not yet work on GPU.</p></li>
+<li><p>Tensors representing functions of their indices.</p></li>
+</ul>
+<p>The following is not supported, but may be supported in the future.</p>
+<ul class="simple">
+<li><p>An einsum never permutes an operand to reach a BLAS call. Index orders that BLAS’s transposition flags cannot absorb go to PackedGemm,
+which rearranges the data as it packs it, and only a pattern PackedGemm cannot decompose runs on the generic loop.</p></li>
+<li><p>Most simple arithmetic does not work on <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.BlockTensor.html#_CPPv4I0_6size_tEN7einsums11BlockTensorE" title="einsums::BlockTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::BlockTensor</span></code></a>, <a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.TiledTensor.html#_CPPv4I0_6size_tEN7einsums11TiledTensorE" title="einsums::TiledTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::TiledTensor</span></code></a>,
+<a class="reference internal" href="../api/cpp/Einsums/Tensor/einsums.tensor_base.FunctionTensor.html#_CPPv4I0_6size_tEN7einsums11tensor_base14FunctionTensorE" title="einsums::tensor_base::FunctionTensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::tensor_base::FunctionTensor</span></code></a>, or any tensor for the GPU.</p></li>
+<li><p>The Python module does not expose block tensors, function tensors, or disk tensors.</p></li>
+<li><p>The Python module interacts with Einsums in a completely different way than C++. Be careful of pitfalls when working with
+interoperable code.</p></li>
+<li><p>Multi-node acceleration using MPI is in development through the <a class="reference internal" href="../libs/Einsums/Comm/docs/index.html#modules-einsums-comm"><span class="std std-ref">Comm</span></a> module.</p></li>
+<li><p>Tensors stored on disk are not fully fleshed out yet, and the interface is not yet stable.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Einsums’s Documentation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="absolute_beginners.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Einsums: The Absolute Basics for Beginners</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-goals">Design Goals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runtime-comparisons">Runtime Comparisons</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#against-other-tensor-libraries">Against other tensor libraries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#against-hand-written-code">Against hand-written code</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#capabilities-and-limitations">Capabilities and Limitations</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

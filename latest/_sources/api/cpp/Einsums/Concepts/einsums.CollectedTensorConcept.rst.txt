@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.CollectedTensorConcept:
+
+===============================
+einsums::CollectedTensorConcept
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D, typename StoredType = void> CollectedTensorConcept
+
+   Checks to see if the tensor is a tensor collection with the given storage type.
+
+   Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+   given.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor to check.
+   :tparam StoredType: The type of the tensors stored in the collection, or void if you don't care.

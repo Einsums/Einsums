@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.view_indexed_python:
+
+===========================================
+einsums::compute_graph::view_indexed_python
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept ParentT> RuntimeTensorView<typename std::remove_cvref_t<ParentT>::ValueType> & view_indexed_python(ParentT &parent, const std::vector<std::tuple<int, std::int64_t, std::int64_t>> &specs)
+
+   Python-friendly indexed view supporting rank-reducing integer indices.
+
+   One ``(kind, a, b)`` triple per parent axis:
+
+   * ``kind == 0``: full axis (``a``/``b`` ignored)
+   * ``kind == 1``: range ``[a, b)``
+   * ``kind == 2``: drop, indexing the axis at ``a`` and removing it from the result Result rank = parent rank − (number of drop axes). This is what backs capture-mode rank-reducing reads like ``A[i]`` / ``A[:, j]`` (the plain ``view`` above only does full/range, i.e. rank-preserving slices).

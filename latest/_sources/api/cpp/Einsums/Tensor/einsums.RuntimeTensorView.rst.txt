@@ -1,0 +1,472 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RuntimeTensorView:
+
+==========================
+einsums::RuntimeTensorView
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/RuntimeTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> RuntimeTensorView : public tensor_base::CoreTensor, public tensor_base::RuntimeTensorNoType, public tensor_base::RuntimeTensorViewNoType, public design_pats::Lockable<std::recursive_mutex>
+
+   Represents a view of a tensor whose properties can be determined at runtime but not compile time.
+
+   Like GeneralRuntimeTensor, this kind of view is unable to be used in many of the same ways as a tensor with compile-time rank, and is
+   mostly used for communication with the Python interface. To use it with rank-templated Einsums calls, convert it into a TensorView so
+   that the rank can be coerced at compile time.
+
+
+   .. cpp:function:: RuntimeTensorView() = default
+
+   .. cpp:function:: RuntimeTensorView(const RuntimeTensorView<T> &copy) = default
+
+      Default copy constructor.
+
+      :param copy: The tensor to copy.
+
+
+   .. cpp:function:: RuntimeTensorView(const RuntimeTensor<T> &view)
+
+      Creates a new view based on another view.
+
+      This view and the other view will share the same data pointer.
+
+      :param view: The tensor to view.
+
+
+   .. cpp:function:: template <Container Dim> RuntimeTensorView(const RuntimeTensor<T> &other, const Dim &dims)
+
+      Creates a view of a tensor with new dimensions specified.
+
+      :param other: The tensor to view.
+      :param dims: The new dimensions for the view.
+
+
+   .. cpp:function:: template <Container Dim> RuntimeTensorView(const RuntimeTensorView<T> &other, const Dim &dims)
+
+      Creates a view of a tensor with new dimensions specified.
+
+      :param other: The tensor to view.
+      :param dims: The new dimensions for the view.
+
+
+   .. cpp:function:: template <Container Dim, Container Stride, Container Offset, typename Alloc> RuntimeTensorView(const GeneralRuntimeTensor<T, Alloc> &other, const Dim &dims, const Stride &strides, const Offset &offsets)
+
+      Creates a view of a tensor with new dimensions, strides, and offsets specified.
+
+      :param other: The tensor to view.
+      :param dims: The new dimensions for the view.
+      :param strides: The new strides for the view.
+      :param offsets: The offsets for the view.
+
+
+   .. cpp:function:: template <Container Dim, Container Stride, Container Offset> RuntimeTensorView(const RuntimeTensorView<T> &other, const Dim &dims, const Stride &strides, const Offset &offsets)
+
+      Creates a view of a tensor with new dimensions, strides, and offsets specified.
+
+      :param other: The tensor to view.
+      :param dims: The new dimensions for the view.
+      :param strides: The new strides for the view.
+      :param offsets: The offsets for the view.
+
+
+   .. cpp:function:: template <size_t Rank> RuntimeTensorView(const TensorView<T, Rank> &copy)
+
+      Creates a view of a tensor with compile-time rank.
+
+      :param copy: The tensor to view.
+
+
+   .. cpp:function:: template <size_t Rank, typename Alloc> RuntimeTensorView(const GeneralTensor<T, Rank, Alloc> &copy)
+
+      Creates a view of a tensor with compile-time rank.
+
+      :param copy: The tensor to view.
+
+
+   .. cpp:function:: RuntimeTensorView(const detail::TensorImpl<T> &impl)
+
+      Creates a view around an implementation.
+
+
+   .. cpp:function:: RuntimeTensorView(const detail::TensorImpl<T> &impl, std::shared_ptr<detail::StorageBase> storage)
+
+      Creates a view around an implementation, holding ``storage`` alive.
+
+      The slicing helpers use this form: an impl on its own carries a bare
+      pointer into somebody else's buffer, so a view built from one has no way
+      to keep that buffer alive. Passing the parent's storage block along makes
+      the view self-sufficient, which is what lets a sliced-then-orphaned view
+      still be read (and still be a valid graph operand) after the tensor it
+      came from is gone.
+
+
+   .. cpp:function:: virtual ~RuntimeTensorView() = default
+
+   .. cpp:function:: virtual void zero()
+
+      Set all the entries in the tensor to zero.
+
+
+   .. cpp:function:: virtual void set_all(T val)
+
+      Fill the tensor with the specified value.
+
+      :param val: The value to fill the tensor with.
+
+
+   .. cpp:function:: Pointer data()
+
+      Return a pointer to the beginning of the data.
+
+
+   .. cpp:function:: ConstPointer data() const
+
+      Return a pointer to the beginning of the data.
+
+
+   .. cpp:function:: template <Container Storage> Pointer data(const Storage &index)
+
+      Return a pointer to the data starting at the given index.
+
+
+   .. cpp:function:: template <Container Storage> ConstPointer data(const Storage &index) const
+
+      Return a pointer to the data starting at the given index.
+
+
+   .. cpp:function:: Reference operator()()
+
+   .. cpp:function:: ConstReference operator()() const
+
+   .. cpp:function:: template <Container Storage> requires (!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>) Reference operator()(const Storage &index)
+
+      Subscript into the tensor.
+
+      This version checks for negative values and does bounds checking.
+
+      :param index: The index to use for subscripting.
+
+
+   .. cpp:function:: template <Container Storage> requires (!std::is_base_of_v<Range, typename Storage::value_type> && !std::is_base_of_v<Range, Storage>) ConstReference operator()(const Storage &index) const
+
+      Subscript into the tensor.
+
+      This version checks for negative values and does bounds checking.
+
+      :param index: The index to use for subscripting.
+
+
+   .. cpp:function:: template <Container Storage> requires (std::is_base_of_v<Range, typename Storage::value_type>) RuntimeTensorView<T> operator()(const Storage &index)
+
+      Subscript into the tensor.
+
+      This version checks for negative values and does bounds checking.
+
+      :param index: The index to use for subscripting.
+
+
+   .. cpp:function:: template <Container Storage> requires (std::is_base_of_v<Range, typename Storage::value_type>) const RuntimeTensorView<T> operator()(const Storage &index) const
+
+      Subscript into the tensor.
+
+      This version checks for negative values and does bounds checking.
+
+      :param index: The index to use for subscripting.
+
+
+   .. cpp:function:: template <std::integral... Args> Pointer data(Args &&... args)
+
+      Get the data starting at the given index.
+
+      :param args: The indices for the starting point.
+
+
+   .. cpp:function:: template <std::integral... Args> ConstPointer data(Args &&... args) const
+
+      Get the data starting at the given index.
+
+      :param args: The indices for the starting point.
+
+
+   .. cpp:function:: template <std::integral... Args> Pointer data(const Args &... args)
+
+      Get the data starting at the given index.
+
+      :param args: The indices for the starting point.
+
+
+   .. cpp:function:: template <std::integral... Args> ConstPointer data(const Args &... args) const
+
+      Get the data starting at the given index.
+
+      :param args: The indices for the starting point.
+
+
+   .. cpp:function:: template <std::integral... Args> Reference operator()(const Args &... args)
+
+      Subscript into the tensor.
+
+      If there aren't enough indices, an error will be thrown. This version checks for negative indices and does bounds checking.
+
+      :param args: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <std::integral... Args> ConstReference operator()(const Args &... args) const
+
+      Subscript into the tensor.
+
+      If there aren't enough indices, an error will be thrown. This version checks for negative indices and does bounds checking.
+
+      :param args: The indices to use for the subscript.
+
+
+   .. cpp:function:: template <typename... Args> requires (((std::is_same_v<Range, Args> || ... || false) || (std::is_same_v<AllT, Args> || ... || false)) && !(std::is_integral_v<Args> && ... && true)) const RuntimeTensorView<T> operator()(const Args &... args) const
+
+      Create a view with the given parameters.
+
+      :param args: The indices for the subscript. Can contain Range and All.
+
+
+   .. cpp:function:: template <typename... Args> requires (((std::is_same_v<Range, Args> || ... || false) || (std::is_same_v<AllT, Args> || ... || false)) && !(std::is_integral_v<Args> && ... && true)) RuntimeTensorView<T> operator()(const Args &... args)
+
+      Create a view with the given parameters.
+
+      :param args: The indices for the subscript. Can contain Range and All.
+
+
+   .. cpp:function:: template <typename TOther, size_t Rank> RuntimeTensorView<T> & operator=(const Tensor<TOther, Rank> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: template <typename TOther, size_t Rank> RuntimeTensorView<T> & operator=(const TensorView<TOther, Rank> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: virtual RuntimeTensorView<T> & operator=(const RuntimeTensor<T> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: virtual RuntimeTensorView<T> & operator=(const BufferRuntimeTensor<T> &other)
+
+   .. cpp:function:: template <typename Alloc> RuntimeTensorView<T> & operator=(const GeneralRuntimeTensor<T, Alloc> &other)
+
+   .. cpp:function:: RuntimeTensorView<T> & operator=(const RuntimeTensorView<T> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: template <typename TOther, typename Alloc> RuntimeTensorView<T> & operator=(const GeneralRuntimeTensor<TOther, Alloc> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: template <typename TOther> RuntimeTensorView<T> & operator=(const RuntimeTensorView<TOther> &other)
+
+      Copy data from one tensor into this tensor.
+
+      :param other: The tensor to copy from.
+
+
+   .. cpp:function:: virtual RuntimeTensorView<T> & operator=(T value)
+
+      Fill the tensor with the given value.
+
+      :param value: The value to fill the tensor with.
+
+
+   .. cpp:function:: template <typename TOther> RuntimeTensorView<T> & operator+=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> RuntimeTensorView<T> & operator-=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> RuntimeTensorView<T> & operator*=(const TOther &b)
+
+   .. cpp:function:: template <typename TOther> RuntimeTensorView<T> & operator/=(const TOther &b)
+
+   .. cpp:function:: template <size_t Rank> operator TensorView<T, Rank>()
+
+   .. cpp:function:: template <size_t Rank> operator TensorView<T, Rank>() const
+
+   .. cpp:function:: template <size_t Rank, typename Alloc> operator GeneralTensor<T, Rank, Alloc>() const
+
+   .. cpp:function:: virtual size_t dim(int d) const
+
+      Get the length of the tensor along the given axis.
+
+      :param d: The axis to query. Negative indices will be wrapped around.
+
+
+   .. cpp:function:: virtual ShapeVector<size_t> dims() const noexcept
+
+      Gets the dimensions of the tensor.
+
+
+   .. cpp:function:: virtual size_t stride(int d) const
+
+      Gets the stride of the tensor along the given axis.
+
+      :param d: The axis to query. Negative indices will be wrapped around.
+
+
+   .. cpp:function:: virtual ShapeVector<size_t> strides() const noexcept
+
+      Gets the strides of the tensor.
+
+
+   .. cpp:function:: virtual RuntimeTensorView<T> to_rank_1_view() const
+
+      Gets the rank-1 view of the tensor.
+
+      This does not work well for tensor views due to the variation in strides.
+
+
+   .. cpp:function:: virtual size_t size() const noexcept
+
+      Returns the linear size of the tensor.
+
+
+   .. cpp:function:: virtual bool full_view_of_underlying() const noexcept
+
+      Checks whether the tensor sees all of the underlying data.
+
+
+   .. cpp:function:: virtual const std::string & name() const
+
+      Returns the name of the tensor.
+
+
+   .. cpp:function:: virtual void set_name(const std::string &new_name)
+
+      Sets the name of the tensor.
+
+      :param new_name: The new name for the tensor.
+
+
+   .. cpp:function:: virtual size_t rank() const noexcept
+
+      Gets the rank of the tensor.
+
+
+   .. cpp:function:: T at_element(const std::vector<std::int64_t> &idx) const
+
+      Read a single element by full integer index.
+
+      Pure-C++ entry point used by the codegen index protocol.
+
+
+   .. cpp:function:: RuntimeTensorView<T> at_view(const std::vector<SliceSpec> &specs) const
+
+      Slice this view, producing a nested RuntimeTensorView.
+
+      Pure-C++ entry point used by the codegen index protocol for
+      slice/partial-tuple subscript. Mirrors RuntimeTensor::at_view: ``Index``
+      specs collapse an axis, ``Range`` re-strides it, ``Full`` keeps it. The
+      new view composes onto this view's own strides/offset (the view-of-view
+      constructor resolves the base pointer via ``this->data(offsets)``), so
+      slicing a view behaves exactly like slicing a full tensor.
+
+
+   .. cpp:function:: void set_element(const std::vector<std::int64_t> &idx, T value)
+
+      Write a single element by full integer index.
+
+
+   .. cpp:function:: virtual detail::TensorImpl<T> & impl()
+
+      Gets the implementation details.
+
+
+   .. cpp:function:: virtual const detail::TensorImpl<T> & impl() const
+
+   .. cpp:function:: bool is_row_major() const
+
+   .. cpp:function:: bool is_column_major() const
+
+   .. cpp:function:: RuntimeTensorView<T> transpose_view()
+
+   .. cpp:function:: const RuntimeTensorView<T> transpose_view() const
+
+   .. cpp:function:: RuntimeTensorView<T> permute_view(const std::vector<size_t> &perm)
+
+   .. cpp:function:: RuntimeTensorView<T> reshape_view(const std::vector<size_t> &new_dims)
+
+   .. cpp:function:: const RuntimeTensorView<T> reshape_view(const std::vector<size_t> &new_dims) const
+
+   .. cpp:function:: bool reshapable_as_view(const std::vector<size_t> &new_dims) const
+
+   .. cpp:function:: RuntimeTensorView<T> to_row_major()
+
+   .. cpp:function:: const RuntimeTensorView<T> to_row_major() const
+
+   .. cpp:function:: RuntimeTensorView<T> to_column_major()
+
+   .. cpp:function:: const RuntimeTensorView<T> to_column_major() const
+
+   .. cpp:function:: template <std::integral... MultiIndex> RuntimeTensorView<T> tie_indices(MultiIndex &&... index)
+
+   .. cpp:function:: template <std::integral... MultiIndex> const RuntimeTensorView<T> tie_indices(MultiIndex &&... index) const
+
+   .. cpp:function:: std::weak_ptr<void> liveness_token() const
+
+      Liveness token for graph-capture safety.
+
+      ``TensorHandle::make_handle`` captures a ``std::weak_ptr`` to this so the
+      executor's validator can detect a destroyed view via ``.expired()`` WITHOUT
+      dereferencing possibly-freed memory. Mirrors
+      ``GeneralRuntimeTensor::liveness_token``. Without it, a view captured as a
+      temporary (e.g. ``cg::dot(res, t.permute_view(...), b)``) and then
+      garbage-collected before ``Graph::execute()`` would fall through to a
+      ``name()`` read on freed storage -- a use-after-free; with it the executor
+      instead reports the view cleanly as destroyed.
+
+
+   .. cpp:function:: const std::shared_ptr<detail::StorageBase> & storage() const noexcept
+
+      The storage block of the tensor this view was sliced from, or null when
+      the view was built from a bare ``TensorImpl`` and has none.
+
+
+   .. cpp:function:: RuntimeTensorView<T> shallow_alias() const
+
+      A second view over the same region, holding the same parent storage.
+
+      A plain copy, for the interface ``Graph::adopt_operand`` uses on owning tensors.
+
+
+   .. cpp:function:: void __getitem__( key)
+
+      Subscript access (NumPy-style). A full integer index returns a scalar; partial, slice, or ellipsis indices return a view. Synthesized from the index protocol.
+
+
+   .. cpp:function:: void __setitem__( key,  value)
+
+      Assign to a scalar element or sub-view. Synthesized from the index protocol.
+
+
+   .. cpp:member:: static constexpr int Rank
+
+      Compile-time rank sentinel; see ``einsums::dynamic_rank``.

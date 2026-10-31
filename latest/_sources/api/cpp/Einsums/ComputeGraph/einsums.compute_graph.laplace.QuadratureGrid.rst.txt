@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.laplace.QuadratureGrid:
+
+===============================================
+einsums::compute_graph::laplace::QuadratureGrid
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/LaplaceQuadrature.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::laplace
+
+.. cpp:class:: QuadratureGrid
+
+   One quadrature rule for :math:`1/x` on a bounded positive interval.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::vector<double> points
+
+      :math:`t_j`, the exponents.
+
+
+   .. cpp:member:: std::vector<double> weights
+
+      :math:`w_j`.
+
+
+   .. cpp:member:: double x_low
+
+      The interval this rule was built for.
+
+
+   .. cpp:member:: double x_high
+
+      The other end of it.
+
+
+   .. cpp:member:: bool negated
+
+      Whether the signed sum was uniformly NEGATIVE, so the rule was built for its negation.
+
+      A denominator of orbital energies is negative as often as it is positive, depending
+      only on which way round the caller wrote the difference, and refusing one of the two
+      would be an arbitrary convention for a caller to trip over. The rule is built for
+      :math:`|x|` and the weights carry the sign, so the caller's convention survives.

@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.scatter_add:
+
+===================================
+einsums::compute_graph::scatter_add
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept DstType, CoreBasicTensorConcept SrcType> requires std::is_same_v<typename DstType::ValueType, typename SrcType::ValueType> void scatter_add(DstType *dst, const SrcType &src, const std::vector<std::vector<size_t>> &indices)
+
+   Graph-aware accumulating scatter: ``dst[indices...] += src[...]``.
+
+   numpy's ``np.add.at``. The companion to ``scatter`` rather than a
+   relaxation of it: scatter REJECTS repeated indices, because a plain write
+   twice to one element leaves the result depending on loop order. Under an
+   accumulation that ambiguity disappears - addition is commutative - so
+   repeats are meaningful here and are allowed.

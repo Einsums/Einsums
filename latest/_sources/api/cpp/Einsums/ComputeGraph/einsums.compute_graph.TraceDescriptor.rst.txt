@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TraceDescriptor:
+
+=======================================
+einsums::compute_graph::TraceDescriptor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TraceDescriptor
+
+   Metadata for the DENSE ``OpKind::Trace`` nodes: ``result = sum_i A(i,i)``.
+
+   Deliberately EMPTY, and present anyway. A trace is fully described by its
+   kind, dtype and operand ids -- there is no prefactor, no index list and no
+   variant of the operation to choose between -- so the type records nothing.
+
+   What it buys is the per-node verdict. ``OpKind::Trace`` also carries the
+   TILED trace, which reduces over a grid rather than over one buffer and has no
+   builder entry; without a descriptor to hold, "dense or tiled" would not be a
+   question ``reconstruction_blocker`` could answer from the node alone. The
+   empty type is that answer, and it is the same argument ``build_executor``
+   makes in reverse for ``OpKind::Transpose``, where the alternative that would
+   be recorded already exists and would say something false.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.

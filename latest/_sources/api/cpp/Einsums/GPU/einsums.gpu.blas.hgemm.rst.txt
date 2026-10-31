@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.hgemm:
+
+=========================
+einsums::gpu::blas::hgemm
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: void hgemm(char transa, char transb, int64_t m, int64_t n, int64_t k, float alpha, const half_t *a, int64_t lda, const half_t *b, int64_t ldb, float beta, float *c, int64_t ldc)
+
+   FP16 GEMM: C(fp32) = alpha * A(fp16) * B(fp16) + beta * C(fp32)

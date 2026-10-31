@@ -1,0 +1,103 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Comm_api:
+
+============
+Comm C++ API
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Comm>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::comm::CommError` - Structured error for MPI/communication operations.
+- :cpp:any:`~einsums::comm::Communicator` - Communicator abstraction wrapping MPI_Comm.
+- :cpp:any:`~einsums::comm::DistributionDescriptor` - Type-erased distribution descriptor for a tensor on a 2D process grid.
+- :cpp:any:`~einsums::comm::DistributionMap` - Describes how a tensor is partitioned across MPI ranks.
+- :cpp:any:`~einsums::comm::ProcessGrid` - 2D process grid for distributed tensor operations.
+- :cpp:any:`~einsums::comm::Request` - Handle for a non-blocking collective operation.
+
+Concepts
+--------
+
+- :cpp:any:`~einsums::comm::Communicable` - Concept for types that can be communicated (arithmetic + complex).
+
+Functions
+---------
+
+- :cpp:any:`~einsums::comm::allgather` - All-gather: each rank contributes a piece, all receive the whole.
+- :cpp:any:`~einsums::comm::allreduce` - All-reduce: combine values from all ranks using ``op``.
+- :cpp:any:`~einsums::comm::allreduce_inplace` - In-place allreduce: result overwrites the input buffer.
+- :cpp:any:`~einsums::comm::auto_distribute` - Auto-decide distribution: replicate if small, block-distribute if large.
+- :cpp:any:`~einsums::comm::barrier` - Barrier: synchronize all ranks.
+- :cpp:any:`~einsums::comm::broadcast` - Broadcast: root sends data to all other ranks.
+- :cpp:any:`~einsums::comm::finalize` - Finalize the communication layer (MPI_Finalize). Called by the module's shutdown hook.
+- :cpp:any:`~einsums::comm::iallreduce` - Non-blocking all-reduce. Returns a Request to wait on.
+- :cpp:any:`~einsums::comm::iallreduce_inplace` - Non-blocking in-place allreduce.
+- :cpp:any:`~einsums::comm::initialize` - Initialize the communication layer: MPI_Init_thread(MPI_THREAD_FUNNELED), or nothing on the mock backend. Called by the module's startup hook.
+- :cpp:any:`~einsums::comm::is_initialized` - Check if the communication layer has been initialized.
+- :cpp:any:`~einsums::comm::is_root` - True if this is rank 0 in the world communicator.
+- :cpp:any:`~einsums::comm::recv` - Point-to-point receive.
+- :cpp:any:`~einsums::comm::scatter` - Scatter: root distributes equal pieces to each rank.
+- :cpp:any:`~einsums::comm::send` - Point-to-point send.
+- :cpp:any:`~einsums::comm::world_rank` - Rank of this process in the world communicator. Mock: always returns 0.
+- :cpp:any:`~einsums::comm::world_size` - Total number of processes in the world communicator. Mock: always returns 1.
+- :cpp:any:`~einsums::finalize_Einsums_Comm` - Finalize the Comm runtime (MPI_Finalize under MPI, no-op under the mock backend).
+- :cpp:any:`~einsums::initialize_Einsums_Comm` - Initialize the Comm runtime (MPI_Init under MPI, no-op under the mock backend).
+- :cpp:any:`~einsums::setup_Einsums_Comm` - Registers the initialization and finalization functions with the runtime manager.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::comm::DistStrategy` - How a single dimension of a tensor is distributed across ranks.
+- :cpp:any:`~einsums::comm::GridAxis` - Which axis of the 2D process grid a tensor dimension is distributed along.
+- :cpp:any:`~einsums::comm::ReduceOp` - Reduction operations for collective communication.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::comm::has_mpi` - True when MPI support is compiled in.
+- :cpp:any:`~einsums::comm::is_mock` - True when running without MPI (serial mock backend).
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.comm.allgather
+   einsums.comm.allreduce
+   einsums.comm.allreduce_inplace
+   einsums.comm.auto_distribute
+   einsums.comm.barrier
+   einsums.comm.broadcast
+   einsums.comm.CommError
+   einsums.comm.Communicable
+   einsums.comm.Communicator
+   einsums.comm.DistributionDescriptor
+   einsums.comm.DistributionMap
+   einsums.comm.finalize
+   einsums.comm.iallreduce
+   einsums.comm.iallreduce_inplace
+   einsums.comm.initialize
+   einsums.comm.is_initialized
+   einsums.comm.is_root
+   einsums.comm.ProcessGrid
+   einsums.comm.recv
+   einsums.comm.Request
+   einsums.comm.scatter
+   einsums.comm.send
+   einsums.comm.world_rank
+   einsums.comm.world_size
+   einsums.finalize_Einsums_Comm
+   einsums.initialize_Einsums_Comm
+   einsums.setup_Einsums_Comm
+   enums
+   variables

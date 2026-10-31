@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.can_fork_threads:
+
+======================================
+einsums::packed_gemm::can_fork_threads
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool can_fork_threads()
+
+   Whether a parallel region opened here would run on more than one thread: false inside a region already at the deepest active level the runtime allows, where a nested one runs serially and a thread grid planned for it would only cut the work finer for one thread.

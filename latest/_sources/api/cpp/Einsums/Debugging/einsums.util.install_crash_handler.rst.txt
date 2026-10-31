@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.util.install_crash_handler:
+
+====================================
+einsums::util::install_crash_handler
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Debugging/CrashHandler.hpp``.
+
+.. cpp:namespace:: einsums::util
+
+.. cpp:function:: void install_crash_handler(const std::string &dump_directory)
+
+   Install a last-chance handler that reports a hard crash instead of dying silently.
+
+   On Windows, registers a ``SetUnhandledExceptionFilter``; nothing else in einsums sees an access
+   violation there, so a faulting process would otherwise die with no output. It writes the
+   exception code and address, a backtrace when ``EINSUMS_WITH_BACKTRACES`` is on, and a minidump
+   to stderr and ``dump_directory``, then returns ``EXCEPTION_CONTINUE_SEARCH`` so the platform's
+   own error reporting still runs.
+
+   Independent of ``install-signal-handlers``, so a Python process can leave ``SIGSEGV`` to its
+   ``faulthandler`` and still get a report. Idempotent; a no-op elsewhere, where the Runtime
+   module's signal handlers report crashes.
+
+   .. versionadded:: 2.0.0
+
+   :param dump_directory: Where to write the minidump. Empty means the working directory.

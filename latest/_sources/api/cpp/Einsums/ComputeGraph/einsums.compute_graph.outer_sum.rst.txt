@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.outer_sum:
+
+=================================
+einsums::compute_graph::outer_sum
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept VectorType> requires std::is_same_v<typename ResultType::ValueType, typename VectorType::ValueType> void outer_sum(ResultType *result, std::vector<const VectorType *> vectors, std::vector<double> coefficients)
+
+   Outer sum of N rank-1 vectors with per-axis coefficients.
+
+   Fills ``result`` with
+
+   .. code-block:: text
+
+      result(i_0, i_1, ..., i_{N-1}) = Σ_k coefficients[k] * vectors[k](i_k)
+
+   Canonical use case is the MP2/CC energy denominator:
+
+   .. code-block:: text
+
+      Δ(i,j,a,b) = ε_i + ε_j − ε_a − ε_b
+        ↪ outer_sum(&Δ, {ε_occ, ε_occ, ε_virt, ε_virt}, {+1, +1, -1, -1})
+
+   If ``coefficients`` is empty, defaults to all +1.
+
+   Capture-aware: outside capture executes immediately; inside capture
+   records a Custom node with each input vector and the result as
+   dependencies. ``result->rank()`` must equal ``vectors.size()`` and
+   ``result->dim(k)`` must equal ``vectors[k]->dim(0)``.

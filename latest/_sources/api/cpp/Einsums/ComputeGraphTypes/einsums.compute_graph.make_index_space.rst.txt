@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_index_space:
+
+========================================
+einsums::compute_graph::make_index_space
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: IndexSpace make_index_space(std::string name, std::string scale_symbol, double typical_extent, GrowthClass growth, std::string dim_symbol)
+
+   Build an ``IndexSpace`` from its parts.
+
+   For callers without aggregate initialization (Python).
+
+   :param name: Human-readable name, unique within a registry.
+   :param scale_symbol: Letter this space contributes to a symbolic cost polynomial.
+   :param typical_extent: Advisory extent. Zero, the default, means unset.
+   :param growth: How the extent grows with system size. Linear by default.
+   :param dim_symbol: Name a symbolic extent over this space goes by ("no", "nv", ...). Empty, the default, when the space has none.
+   :returns: The space.

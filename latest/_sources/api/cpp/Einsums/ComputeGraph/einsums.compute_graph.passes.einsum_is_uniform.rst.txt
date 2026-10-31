@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.einsum_is_uniform:
+
+=================================================
+einsums::compute_graph::passes::einsum_is_uniform
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: bool einsum_is_uniform(const Graph &graph, const Node &node)
+
+   Whether an einsum node's operands all hold one element type.
+
+   A node whose operands differ runs the mixed-precision generic loop, and a pass that rebuilds a
+   contraction as a GEMM, raises it into algebra, or synthesizes new nodes from one dtype must
+   decline it. The rule is the executor's: the node is mixed when all three operands' types are
+   recorded and they are not all the same. Anything that is not an einsum is uniform.

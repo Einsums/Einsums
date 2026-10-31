@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgemm_batch_grouped:
+
+==========================================
+einsums::blas::vendor::sgemm_batch_grouped
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void sgemm_batch_grouped(const char *transa_array, const char *transb_array, const int_t *m_array, const int_t *n_array, const int_t *k_array, const float *alpha_array, const float **a_array, const int_t *lda_array, const float **b_array, const int_t *ldb_array, const float *beta_array, float **c_array, const int_t *ldc_array, int_t group_count, const int_t *group_size)
+
+   Performs a batch of independent general matrix-matrix multiplications whose
+   shapes need not agree.
+
+   The batch is described as ``group_count`` groups. Every parameter a plain
+   batch shares across the whole call is per group here, so each group is a
+   uniform batch of its own; the pointer arrays are the groups' members
+   concatenated in group order, so their length is the sum of ``group_size``.
+
+   The signature mirrors MKL's grouped ``gemm_batch`` so that a vendor
+   implementation can be dropped in behind it unchanged.
+
+   :param transa_array,transb_array: Per group, whether to transpose A and B.
+   :param m_array,n_array,k_array: Per group, the GEMM dimensions.
+   :param alpha_array: Per group, the scalar multiplier for A*B.
+   :param a_array: Pointers to every group's A matrices, concatenated.
+   :param lda_array: Per group, the leading dimension of each A.
+   :param b_array: Pointers to every group's B matrices, concatenated.
+   :param ldb_array: Per group, the leading dimension of each B.
+   :param beta_array: Per group, the scalar multiplier for C.
+   :param c_array: Pointers to every group's C matrices, concatenated.
+   :param ldc_array: Per group, the leading dimension of each C.
+   :param group_count: Number of groups.
+   :param group_size: Per group, how many GEMMs it holds.

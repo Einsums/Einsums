@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.named_writes:
+
+====================================
+einsums::compute_graph::named_writes
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<std::string> named_writes(const Node &node)
+
+   Every named resource outside the tensor dataflow this node WRITES, as ordering keys.
+
+   The union of ``param_writes`` (as ``param:<name>``) and the disk dataset a ``DiskWrite``
+   stores (as ``disk:<file>#<dataset>``). A disk read and a disk write of one dataset share no
+   tensor, since the read names only its destination and the write only its source, so a
+   TensorId-keyed scan let a read of a dataset move ahead of the graph's own write to it and
+   return the file's previous contents. Anything that orders nodes pairs this with
+   ``named_reads`` exactly as it pairs outputs with inputs.
+
+   A control-flow node (loop, conditional, setup) also reports every key written anywhere in
+   its child graphs, as ``Graph::effective_io`` does for tensors. A dataset stored inside a
+   loop and loaded after it otherwise shares no edge with the loop, and the load can be
+   scheduled ahead of it.
+
+   A node with ``NodeEffects::external_effects`` writes ``any_named_key``, and one that is not
+   ``NodeEffects::deterministic`` reads it: a closure the graph cannot see into may print, write
+   a file another node reads, or read a parameter a ``WriteParam`` sets, and shares no tensor with
+   any of them. The effects are ``effects_of``'s answer, so a registered descriptor's ``effects``
+   hook decides them, and its ``accesses`` hook adds named writes of its own.

@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RuntimeRankWalkable:
+
+============================
+einsums::RuntimeRankWalkable
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/SymmetryOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename TensorType> RuntimeRankWalkable
+
+   A runtime-rank tensor the walks below can traverse: extents, strides and a
+   base pointer, which is all an offset odometer needs.
+
+   No descriptor required, as ``GeneralRuntimeTensorView`` has none.

@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.live_factor:
+
+===================================
+einsums::compute_graph::live_factor
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: const PrefactorScalar & live_factor(const ScaleDescriptor &desc) noexcept
+
+   The factor a scale will actually apply.
+
+   A scale uses ``ElementwiseParams::alpha`` only; its ``beta`` is meaningless for an in-place
+   multiply and is never read.
+
+   :param desc: The descriptor to read.
+   :returns: The live value, or the snapshot when the node carries no params block.

@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.OperandAccessor:
+
+=======================================
+einsums::compute_graph::OperandAccessor
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: OperandAccessor
+
+   One operand's live geometry, resolved once when an executor is built.
+
+   Resolution order is slot first, handle second, and the order is the point.
+   A ``TensorSlot`` is what ``Graph::rebind`` and ``Graph::redirect_slot``
+   repoint, so reading through it is what makes a built executor honor both
+   without the pass author having to think about it. ``TensorHandle::impl_fn``
+   is the fallback for a tensor that reached the graph without ever being
+   captured through a slot, which is only ever a node some pass assembled.
+
+   Neither path allocates or looks anything up at call time: the slot address
+   is stable for the graph's lifetime, and ``TensorSlot::impl_of`` is a plain
+   function pointer.
+
+   .. seealso::
+
+      resolve_operand
+
+
+   .. cpp:function:: OperandAccessor() = default
+
+   .. cpp:function:: explicit OperandAccessor(TensorSlot *slot, packed_gemm::ScalarType dtype)
+
+      Read through ``slot``, which must carry a non-null ``TensorSlot::impl_of``. ``dtype`` is the
+      tensor's element type, when known.
+
+
+   .. cpp:function:: explicit OperandAccessor(std::function<void *()> handle_impl, packed_gemm::ScalarType dtype)
+
+      Read through a handle's own rank-erased accessor.
+
+
+   .. cpp:function:: bool valid() const noexcept
+
+      Whether this accessor was bound to anything.
+
+
+   .. cpp:function:: packed_gemm::ScalarType dtype() const noexcept
+
+      The operand's element type, recorded from its tensor when the accessor was resolved; Unknown
+      when nothing recorded one. An einsum's executor reads its three operands' types from here.
+
+
+   .. cpp:function:: void * raw() const
+
+      The operand's CURRENT rank-erased geometry, type-erased.
+
+
+   .. cpp:function:: template <typename T> detail::TensorImpl<T> * impl() const
+
+      The operand's CURRENT rank-erased geometry, as element type ``T``.
+
+      :throws std::logic_error: when the operand's recorded type is not ``T``. The cast below would otherwise reinterpret the tensor's memory as another type and compute garbage, silently: an executor built with the wrong type, by a pass or anything else, fails here instead.

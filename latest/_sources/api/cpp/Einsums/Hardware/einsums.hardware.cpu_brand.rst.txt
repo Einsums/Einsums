@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.cpu_brand:
+
+============================
+einsums::hardware::cpu_brand
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::string cpu_brand()
+
+   The CPU brand string: sysctl on macOS, CPUID on x86-64, /proc/cpuinfo on other Linux.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The brand, or "Unknown CPU" when the platform will not say.

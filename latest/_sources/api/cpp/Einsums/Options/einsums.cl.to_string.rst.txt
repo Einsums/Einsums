@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.to_string:
+
+======================
+einsums::cl::to_string
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Source.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: constexpr std::string_view to_string(Source s) noexcept
+
+   Human-readable name for a value source, for diagnostics and help text.

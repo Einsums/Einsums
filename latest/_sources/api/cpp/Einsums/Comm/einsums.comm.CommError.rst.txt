@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.CommError:
+
+========================
+einsums::comm::CommError
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Error.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: CommError
+
+   Structured error for MPI/communication operations.
+
+   Used with expected<T, CommError> for explicit error handling.
+   Carries the MPI error code (when available) and a human-readable message.
+
+
+   .. cpp:function:: static CommError from_message(std::string msg)
+
+   .. cpp:function:: static CommError from_mpi(std::string msg, int code)
+
+   .. cpp:member:: std::string message
+
+   .. cpp:member:: int mpi_error_code
+
+      MPI_SUCCESS on mock, MPI_ERR_* on real MPI

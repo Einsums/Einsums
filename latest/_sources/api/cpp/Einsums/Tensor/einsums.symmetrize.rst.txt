@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.symmetrize:
+
+===================
+einsums::symmetrize
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/SymmetryOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, size_t Rank, typename Alloc> void symmetrize(GeneralTensor<T, Rank, Alloc> &tensor)
+
+   Enforce the declared symmetry on ``T`` in place by averaging all elements
+   related by each generator. The result satisfies ``check_symmetry()`` to
+   within the descriptor's tolerance (up to round-off).
+
+   For a single symmetric generator ``T(i,j) = T(j,i)``: replaces
+   ``(T(i,j), T(j,i))`` with ``(T(i,j) + T(j,i))/2``.
+
+   For antisymmetric: subtracts and halves. For Hermitian: averages with
+   the conjugate of the partner. Generators are applied sequentially; the
+   final tensor satisfies each individually.
+
+
+.. cpp:function:: template <RuntimeRankSymmetryTensor TensorType> void symmetrize(TensorType &tensor)
+
+   Enforce a runtime-rank tensor's declared symmetry in place, by averaging the
+   elements each generator relates. The runtime-rank twin of the
+   ``symmetrize`` overload taking a compile-time-rank tensor.
+
+   Throws when the descriptor cannot apply, rather than leaving the invariant unenforced.

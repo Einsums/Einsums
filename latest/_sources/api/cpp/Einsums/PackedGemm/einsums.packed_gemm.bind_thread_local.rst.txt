@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.bind_thread_local:
+
+=======================================
+einsums::packed_gemm::bind_thread_local
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> T & bind_thread_local(T &slot)
+
+   Returns ``slot`` through a value the compiler cannot recompute, so it keeps one address in a
+   register or on the stack instead of re-deriving it from the TLS block. See "Thread-local
+   buffers" above.

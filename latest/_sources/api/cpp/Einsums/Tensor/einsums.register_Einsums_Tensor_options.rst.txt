@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.register_Einsums_Tensor_options:
+
+========================================
+einsums::register_Einsums_Tensor_options
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/Options.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: int register_Einsums_Tensor_options()
+
+   Give the Tensor module's options their command-line presence. Idempotent.
+
+   Run from a namespace-scope initializer rather than from the module's
+   argument hook, because the hook fires part-way through `initialize()` and
+   anything that enumerates the registry earlier - the Python binding layer
+   building argv, for one - would not see these options at all.

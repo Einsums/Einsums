@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PermutationTerm:
+
+=======================================
+einsums::compute_graph::PermutationTerm
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PermutationTerm
+
+   One term of an expanded permutation operator product.
+
+   ``c_indices`` is the output index list relabelled by this term's
+   permutation, which is exactly the output spec of the permuted accumulation
+   that realizes the term: `permute(term.c_indices <- base.c_indices)` scaled by
+   ``sign`` reads the base result and adds it at the transposed position.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Output order for this term.
+
+
+   .. cpp:member:: double sign
+
+      Parity of the representative, +1 or -1.

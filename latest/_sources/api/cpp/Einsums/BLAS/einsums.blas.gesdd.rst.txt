@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gesdd:
+
+====================
+einsums::blas::gesdd
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t gesdd(char jobz, int_t m, int_t n, T *a, int_t lda, RemoveComplexT<T> *s, T *u, int_t ldu, T *vt, int_t ldvt)
+
+   Performs singular value decomposition for a matrix using the divide and conquer algorithm.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{U\Sigma V}^T
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param jobz: What computation to do. Case insensitive. Can be 'a', 's', 'o', or 'n'.
+   :param m: The number of rows of the input matrix.
+   :param n: The number of columns of the input matrix.
+   :param a: The input matrix.
+   :param lda: The leading dimension of the input matrix.
+   :param s: The singular values output.
+   :param u: The U matrix from the singular value decomposition.
+   :param ldu: The leading dimension of U.
+   :param vt: The transpose of the V matrix from the singular value decomposition.
+   :param ldvt: The leading dimension of the transpose of the V matrix.
+   :returns: 0 on success. If positive, the algorithm did not converge. If -4, then the input matrix had a NaN entry. If negative otherwise, then one of the parameters had a bad value. The absolute value of the return gives the parameter.

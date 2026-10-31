@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Performance Tuning &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/tutorial_performance';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/tutorial_performance.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: Performance Best Practices" href="tutorial_best_practices.html" />
+    <link rel="prev" title="Tutorial: The Algebraic Optimizer" href="optimizer.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_compute_graph.html">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Performance Tuning</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-performance-tuning">
+<span id="tutorial-performance"></span><h1>Tutorial: Performance Tuning<a class="headerlink" href="#tutorial-performance-tuning" title="Link to this heading">#</a></h1>
+<p>This tutorial explains how Einsums chooses a kernel for a contraction, how to use the profiler to
+find out where time actually goes, and how to write code that gives the library something to work
+with.</p>
+<p>For structuring code so the time goes to arithmetic in the first place, see
+<a class="reference internal" href="tutorial_best_practices.html"><span class="doc">Tutorial: Performance Best Practices</span></a>. For choosing a cheaper <em>algorithm</em>, by factoring an integral or
+truncating a space, see <a class="reference internal" href="optimizer.html"><span class="doc">Tutorial: The Algebraic Optimizer</span></a>.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#how-a-contraction-is-written" id="id2">How a Contraction Is Written</a></p></li>
+<li><p><a class="reference internal" href="#how-dispatch-chooses" id="id3">How Dispatch Chooses</a></p></li>
+<li><p><a class="reference internal" href="#using-the-profiler" id="id4">Using the Profiler</a></p>
+<ul>
+<li><p><a class="reference internal" href="#what-it-costs" id="id5">What It Costs</a></p></li>
+<li><p><a class="reference internal" href="#getting-a-report" id="id6">Getting a Report</a></p></li>
+<li><p><a class="reference internal" href="#reading-the-report" id="id7">Reading the Report</a></p></li>
+<li><p><a class="reference internal" href="#instrumenting-your-own-code" id="id8">Instrumenting Your Own Code</a></p></li>
+<li><p><a class="reference internal" href="#from-python" id="id9">From Python</a></p></li>
+<li><p><a class="reference internal" href="#the-live-viewer" id="id10">The Live Viewer</a></p></li>
+<li><p><a class="reference internal" href="#finding-out-which-kernel-ran" id="id11">Finding Out Which Kernel Ran</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#performance-tips" id="id12">Performance Tips</a></p>
+<ul>
+<li><p><a class="reference internal" href="#prefer-einsum-over-manual-loops" id="id13">1. Prefer einsum over manual loops</a></p></li>
+<li><p><a class="reference internal" href="#use-views-instead-of-copying" id="id14">2. Use views instead of copying</a></p></li>
+<li><p><a class="reference internal" href="#mind-index-ordering-for-cache-efficiency" id="id15">3. Mind index ordering for cache efficiency</a></p></li>
+<li><p><a class="reference internal" href="#use-computegraph-for-iterative-code" id="id16">4. Use ComputeGraph for iterative code</a></p></li>
+<li><p><a class="reference internal" href="#use-taskpool-for-data-parallel-workloads" id="id17">5. Use TaskPool for data-parallel workloads</a></p></li>
+<li><p><a class="reference internal" href="#state-a-memory-cap-instead-of-writing-the-loop" id="id18">6. State a memory cap instead of writing the loop</a></p></li>
+<li><p><a class="reference internal" href="#give-a-search-pass-room-or-take-its-allowance-away" id="id19">7. Give a search pass room, or take its allowance away</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#understanding-packedgemm" id="id20">Understanding PackedGemm</a></p></li>
+<li><p><a class="reference internal" href="#dispatch-reference" id="id21">Dispatch Reference</a></p>
+<ul>
+<li><p><a class="reference internal" href="#through-the-string-form" id="id22">Through the string form</a></p></li>
+<li><p><a class="reference internal" href="#what-is-still-not-accelerated" id="id23">What is still not accelerated</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#what-s-not-covered" id="id24">What’s Not Covered</a></p></li>
+</ul>
+</nav>
+<section id="how-a-contraction-is-written">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">How a Contraction Is Written</a><a class="headerlink" href="#how-a-contraction-is-written" title="Link to this heading">#</a></h2>
+<p>An einsum names its operands’ axes with a string spec, and the pattern is analysed when the call
+runs:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>String spec</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>How you write it</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cg::einsum(&quot;ik;kj-&gt;ij&quot;,</span> <span class="pre">&amp;C,</span> <span class="pre">A,</span> <span class="pre">B)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pattern analysed</p></td>
+<td><p>when the call runs; inside a graph, once at capture and again at each replay</p></td>
+</tr>
+<tr class="row-even"><td><p>Used by</p></td>
+<td><p>eager C++ on <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::Tensor</span></code></a> and <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0EN7einsums13RuntimeTensorE" title="einsums::RuntimeTensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::RuntimeTensor</span></code></a>, the
+ComputeGraph, the Python bindings</p></td>
+</tr>
+<tr class="row-odd"><td><p>Names its route</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">last_dispatch_route()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Route names</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemm_direct_runtime</span></code>, <code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code>, <code class="docutils literal notranslate"><span class="pre">generic_loop</span></code>, …</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">_runtime</span></code> suffix on the BLAS routes names how they are reached: every einsum passes the library its
+operands’ rank-erased form, whether the tensors are typed or runtime-rank.</p>
+<p>The compile-time-index form, <code class="docutils literal notranslate"><span class="pre">einsum(Indices{i,j},</span> <span class="pre">&amp;C,</span> <span class="pre">Indices{i,k},</span> <span class="pre">A,</span> <span class="pre">Indices{k,j},</span> <span class="pre">B)</span></code>,
+remains for eager code written against it. It analyses the pattern while your code compiles and
+does not share that analysis with the string form, so the two can route one contraction
+differently; the string form, which ComputeGraph and the Python bindings use, is the one this page
+describes, and the one to tune for.</p>
+</section>
+<section id="how-dispatch-chooses">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">How Dispatch Chooses</a><a class="headerlink" href="#how-dispatch-chooses" title="Link to this heading">#</a></h2>
+<p>Dispatch walks a ladder, stopping at the first rung that fits. Two cases are settled before it:
+a zero-length dimension, which only scales the output, and a letter repeated inside one operand or
+summed out of one operand alone, which is read as a strided view or summed out first, after which
+the rest of the contraction continues down the ladder.</p>
+<ol class="arabic simple">
+<li><p><strong>A vendor BLAS call</strong>, when the contraction already is one: <code class="docutils literal notranslate"><span class="pre">DOT</span></code> for a scalar result over
+identical index packs, <code class="docutils literal notranslate"><span class="pre">GER</span></code> for an outer product, <code class="docutils literal notranslate"><span class="pre">GEMV</span></code> for matrix times vector, <code class="docutils literal notranslate"><span class="pre">GEMM</span></code>
+for matrix times matrix, and an elementwise product. Nothing is copied and nothing is packed.</p></li>
+<li><p><strong>PackedGemm</strong>, when the contraction has a valid decomposition into output dimensions from A
+(M), output dimensions from B (N), summed dimensions (K), and batch dimensions present in both.
+This covers most higher-rank tensor contractions. See <a class="reference internal" href="#understanding-packedgemm">Understanding PackedGemm</a>.</p></li>
+<li><p><strong>A generic loop nest</strong>, for everything else. Correct, and the slowest option.</p></li>
+</ol>
+<p>Dispatch never permutes an operand to reach a BLAS call; the one permutation it makes is for an
+elementwise product, whose operand is permuted into the output’s order
+(<code class="docutils literal notranslate"><span class="pre">direct_product_permuted_runtime</span></code>). It uses the transposition flags a BLAS call already offers, so <span class="math notranslate nohighlight">\(C_{ik} = \sum_j A_{ji} B_{kj}\)</span> still reaches one <code class="docutils literal notranslate"><span class="pre">GEMM</span></code>; any other
+index order goes to PackedGemm, which rearranges the data as it packs it. If you know a
+permutation would pay for a contraction that lands on the generic loop, do it yourself with
+<code class="docutils literal notranslate"><span class="pre">cg::permute</span></code> and contract the result.</p>
+<p><a class="reference internal" href="#id1">Dispatch Reference</a> below has the measured route for every common shape.</p>
+</section>
+<section id="using-the-profiler">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Using the Profiler</a><a class="headerlink" href="#using-the-profiler" title="Link to this heading">#</a></h2>
+<p>Einsums is instrumented throughout. The profiler is not a sampling profiler attached from outside:
+every BLAS wrapper, every einsum, every graph node and every pass already opens a named region, so
+a report tells you which <em>operations</em> your time went to rather than which functions the optimizer
+happened to leave standing.</p>
+<p>It records three things:</p>
+<dl class="simple">
+<dt><strong>Zones</strong></dt><dd><p>A named, nested region with a start and an end. Zones nest by call depth, so the report is a
+tree, and each one carries its file, line and enclosing function.</p>
+</dd>
+<dt><strong>Annotations</strong></dt><dd><p>Key-value pairs attached to the enclosing zone. This is how an einsum records which route it
+took and the ranks of its operands, and it is why the profile can answer
+“which kernel ran” without a second tool.</p>
+</dd>
+<dt><strong>Counters</strong></dt><dd><p>Hardware counters per zone where the platform provides them, recorded when
+<a class="reference internal" href="arguments.html#cmdoption-einsums-profile-sources"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:sources</span></code></a> names <code class="docutils literal notranslate"><span class="pre">counters</span></code> and reported in the detailed report.</p>
+</dd>
+</dl>
+<section id="what-it-costs">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">What It Costs</a><a class="headerlink" href="#what-it-costs" title="Link to this heading">#</a></h3>
+<p>Instrumentation is on by default, at build time through <code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_PROFILER</span></code> and at run time
+unless you disable it. A zone costs a few nanoseconds, which disappears next to a
+contraction and does not disappear next to a graph of many tiny nodes.</p>
+<p>If you are measuring a workload made of many small operations, turn it off for the measurement:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:profile:disable
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_PROFILER_INTERNAL</span></code> is a separate, default-off build option that adds zones inside
+Einsums’ own hot paths. It is for working on the library, not for profiling a calculation.</p>
+</section>
+<section id="getting-a-report">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Getting a Report</a><a class="headerlink" href="#getting-a-report" title="Link to this heading">#</a></h3>
+<p>A report is written at shutdown, with no code change required:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Runtime.hpp&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// ... your calculation ...</span>
+
+<span class="w">    </span><span class="n">einsums</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span><span class="w">   </span><span class="c1">// the report is written here</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>By default it replaces <code class="docutils literal notranslate"><span class="pre">profile.txt</span></code> in the working directory.
+The options that shape it:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 42.0%" />
+<col style="width: 58.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-disable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:disable</span></code></a></p></td>
+<td><p>Record nothing. The large speedup for many-small-operations workloads.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-report"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:report</span></code></a></p></td>
+<td><p>Write the report at exit. On by default; turn it off with <code class="docutils literal notranslate"><span class="pre">--einsums:profile:no-report</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-filename"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:filename</span></code></a></p></td>
+<td><p>Where the report goes. Defaults to <code class="docutils literal notranslate"><span class="pre">profile.txt</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-append"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:append</span></code></a></p></td>
+<td><p>Append rather than replace. Off by default, so each run leaves one report.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-detailed"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:detailed</span></code></a></p></td>
+<td><p>Report every zone with its minimum, maximum and average, and its counters when
+<code class="docutils literal notranslate"><span class="pre">--einsums:profile:sources=counters</span></code> recorded them, rather than the summary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-save"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:save</span></code></a></p></td>
+<td><p>Also write the session as JSON, for the viewer to load later. Requires
+<code class="docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code>, and says so if it is missing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-server"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code></a></p></td>
+<td><p>Serve live data over TCP so a viewer can attach.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-port"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:port</span></code></a></p></td>
+<td><p>The port to serve on. Defaults to 19216.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arguments.html#cmdoption-einsums-profile-wait-for-viewer"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:wait-for-viewer</span></code></a></p></td>
+<td><p>Block at startup until a viewer connects, so nothing is missed.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="reading-the-report">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Reading the Report</a><a class="headerlink" href="#reading-the-report" title="Link to this heading">#</a></h3>
+<p>The report is one tree per thread. Indentation is nesting, and a zone’s own annotations follow its
+name:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Thread: main (12681229)  (total exclusive:   2.052 ms)
+  total(ms)    count       mean(ms)     name                                file:line               function
+      0.005           1    0.005±0.000  Runtime constructor                 Runtime.cpp:264         Runtime
+      0.293           1    0.293±0.000  Calling startup routines            Runtime.cpp:389         call_startup_functions
+      0.019           1    0.019±0.000  demo run
+      0.007           1    0.007±0.000    iteration 0                                                       iter=0
+      0.483           1    0.483±0.000      build_intermediate              probe_profiler.py:7     build_intermediate  stage=intermediate
+      0.343           1    0.343±0.000        einsum eager                  Operations.hpp:5550     einsum
+      0.853           1    0.853±0.000          cg::einsum: i,j &lt;- i,k ; k,j  StringDispatch.hpp:636  string_einsum  a_rank=2 b_rank=2 c_rank=2 dispatch=gemm_direct_runtime
+      0.013           1    0.013±0.000            dgemm                     gemm.cpp:121            dgemm
+      0.003           1    0.003±0.000    iteration 1                                                       iter=1
+      0.015           1    0.015±0.000      build_intermediate              probe_profiler.py:7     build_intermediate  stage=intermediate
+      0.001           1    0.001±0.000        einsum eager                  Operations.hpp:5550     einsum
+      0.002           1    0.002±0.000          cg::einsum: i,j &lt;- i,k ; k,j  StringDispatch.hpp:636  string_einsum  a_rank=2 b_rank=2 c_rank=2 dispatch=gemm_direct_runtime
+      0.002           1    0.002±0.000            dgemm                     gemm.cpp:121            dgemm
+</pre></div>
+</div>
+<p>Four things are worth pointing at in that output.</p>
+<p><code class="docutils literal notranslate"><span class="pre">total(ms)</span></code> and <code class="docutils literal notranslate"><span class="pre">mean</span></code> are <strong>exclusive</strong>: a parent’s number leaves out its children’s time, so
+the zone with the largest figure is where the time actually went. The thread header sums them,
+which is the figure to compare against wall clock.</p>
+<p><code class="docutils literal notranslate"><span class="pre">count</span></code> and <code class="docutils literal notranslate"><span class="pre">mean±stddev</span></code> are what distinguish “one slow call” from “a million fast ones”. A
+large standard deviation on a repeated zone usually means load imbalance or a cold first call; the
+first einsum above costs hundreds of times the second.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dgemm</span></code> nests under the einsum zone that called it, so its count says how many BLAS calls each
+einsum made. A count higher than the einsum’s is the give-away that a contraction ran as several
+calls.</p>
+<p>The trailing <code class="docutils literal notranslate"><span class="pre">dispatch=gemm_direct_runtime</span></code> is the einsum telling you which kernel it chose.
+That annotation is the most direct answer to “is this contraction accelerated”, and it is present
+in every report without a special flag.</p>
+</section>
+<section id="instrumenting-your-own-code">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Instrumenting Your Own Code</a><a class="headerlink" href="#instrumenting-your-own-code" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">WAGGLE_ZONE</span></code> macros. They open a zone that closes when the enclosing scope exits, so
+an early return or a thrown exception cannot leave the tree unbalanced:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Profile/Profile.hpp&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">build_fock</span><span class="p">(</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">WAGGLE_ZONE_FUNC</span><span class="p">();</span><span class="w">                       </span><span class="c1">// zone named after the function</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">iter</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">WAGGLE_ZONE</span><span class="p">(</span><span class="s">"iteration {}"</span><span class="p">,</span><span class="w"> </span><span class="n">iter</span><span class="p">);</span><span class="w"> </span><span class="c1">// name built per call</span>
+<span class="w">        </span><span class="n">WAGGLE_ANNOTATE</span><span class="p">(</span><span class="s">"stage"</span><span class="p">,</span><span class="w"> </span><span class="s">"fock"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">WAGGLE_ANNOTATE</span><span class="p">(</span><span class="s">"iter"</span><span class="p">,</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">iter</span><span class="p">));</span>
+<span class="w">        </span><span class="c1">// ... work ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 66.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Macro</p></th>
+<th class="head"><p>Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ZONE_FUNC()</span></code></p></td>
+<td><p>A zone named after the enclosing function. The common case.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ZONE(&quot;literal&quot;)</span></code></p></td>
+<td><p>A zone with a fixed name, interned once per call site.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ZONE(&quot;fmt</span> <span class="pre">{}&quot;,</span> <span class="pre">args...)</span></code></p></td>
+<td><p>A name built per call. The format string must be a literal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ZONE_DYNAMIC(expr)</span></code></p></td>
+<td><p>A name only known at run time. Interned on every entry, which takes a lock, so prefer one of the above where the label can be a literal.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ANNOTATE(key,</span> <span class="pre">value)</span></code></p></td>
+<td><p>Attach a string, integer or double to the enclosing zone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WAGGLE_ANNOTATE_DIMS(key,</span> <span class="pre">dims)</span></code></p></td>
+<td><p>Attach a sequence of extents as <code class="docutils literal notranslate"><span class="pre">key.0</span></code>, <code class="docutils literal notranslate"><span class="pre">key.1</span></code>, …</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These are the library’s own instrumentation, used at about seven hundred call sites, and they
+compile to nothing when <code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_PROFILER</span></code> is off, so an instrumented function needs no
+preprocessor guard of its own.</p>
+<p>There is also a lower-level <code class="docutils literal notranslate"><span class="pre">waggle::push(name)</span></code> and <code class="docutils literal notranslate"><span class="pre">waggle::pop()</span></code> pair. Prefer the
+macros: a manual pair leaks a zone if anything between them throws.</p>
+</section>
+<section id="from-python">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">From Python</a><a class="headerlink" href="#from-python" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">einsums.profile</span></code> exposes the same two facilities as a context manager and a helper:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums.profile</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">profile</span>
+
+<span class="k">with</span> <span class="n">profile</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">"ao_to_mo"</span><span class="p">):</span>
+    <span class="n">transform</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">profile</span><span class="o">.</span><span class="n">annotate_dims</span><span class="p">(</span><span class="s2">"shape"</span><span class="p">,</span> <span class="p">[</span><span class="n">nocc</span><span class="p">,</span> <span class="n">nvirt</span><span class="p">,</span> <span class="n">naux</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To time every call of a function, decorate it instead.
+The zone takes the function’s qualified name unless you give it one, and records where the function is defined, so the report links to it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@profile</span><span class="o">.</span><span class="n">profile</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_fock</span><span class="p">(</span><span class="n">density</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="nd">@profile</span><span class="o">.</span><span class="n">profile</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"SCF iteration"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The decorator refuses coroutine and generator functions.
+A zone has to close before any zone opened after it on the same thread, and one held open across an <code class="docutils literal notranslate"><span class="pre">await</span></code> or a <code class="docutils literal notranslate"><span class="pre">yield</span></code> would not; wrap their synchronous parts in <code class="docutils literal notranslate"><span class="pre">section</span></code> instead.</p>
+</section>
+<section id="the-live-viewer">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">The Live Viewer</a><a class="headerlink" href="#the-live-viewer" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">profiler</span></code> is a terminal interface that attaches to a running program and shows the
+tree as it fills. The build writes the <code class="docutils literal notranslate"><span class="pre">einsums</span></code> command to <code class="docutils literal notranslate"><span class="pre">build/bin</span></code> and installs it to
+<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;/bin</span></code> (see <a class="reference internal" href="../contributors/einsums_command.html#einsums-command"><span class="std std-ref">The einsums Command</span></a>). It needs Textual (in the
+<code class="docutils literal notranslate"><span class="pre">einsums-dev</span></code> environment; <code class="docutils literal notranslate"><span class="pre">textual-plotext</span></code> adds the timeline and roofline plots, and
+<code class="docutils literal notranslate"><span class="pre">zeroconf</span></code> adds discovery). Start the program with the server enabled, then attach:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Terminal 1: run with the profile server on (defaults to port 19216)</span>
+./my_program<span class="w"> </span>--einsums:profile:server
+
+<span class="c1"># Terminal 2: attach</span>
+einsums<span class="w"> </span>profiler
+</pre></div>
+</div>
+<p>With no arguments the viewer connects to <code class="docutils literal notranslate"><span class="pre">127.0.0.1:19216</span></code> and keeps retrying, so it can be
+started first. Name other servers as <code class="docutils literal notranslate"><span class="pre">HOST:PORT</span></code> arguments, or with <code class="docutils literal notranslate"><span class="pre">--host</span></code> and <code class="docutils literal notranslate"><span class="pre">--port</span></code>.
+Servers on macOS also advertise themselves over mDNS, which the viewer follows when <code class="docutils literal notranslate"><span class="pre">zeroconf</span></code>
+is installed; <code class="docutils literal notranslate"><span class="pre">--no-mdns</span></code> turns that off. If a program is short enough that you would miss the
+start, run it with <a class="reference internal" href="arguments.html#cmdoption-einsums-profile-wait-for-viewer"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:wait-for-viewer</span></code></a> and it will block until you attach.</p>
+<p><code class="docutils literal notranslate"><span class="pre">?</span></code> lists every key; the ones worth knowing:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 14.0%" />
+<col style="width: 86.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/</span></code></p></td>
+<td><p>Filter zones by name, regular expressions accepted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">u</span></code></p></td>
+<td><p>Bottom-up view: who called the expensive leaves.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">H</span></code></p></td>
+<td><p>Top-N hotspots panel.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">G</span></code></p></td>
+<td><p>Thread Gantt chart, for seeing imbalance across workers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">C</span></code></p></td>
+<td><p>Compare two sessions side by side, which is how you show a change helped.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">b</span></code> / <code class="docutils literal notranslate"><span class="pre">B</span></code></p></td>
+<td><p>Bookmark a zone, and jump to the next bookmark.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">V</span></code></p></td>
+<td><p>Source panel for the selected zone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">f</span></code></p></td>
+<td><p>Flame graph of the selected thread; click a bar to zoom in.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">A</span></code></p></td>
+<td><p>Disassembly of the selected zone’s function, found with <code class="docutils literal notranslate"><span class="pre">nm</span></code> and <code class="docutils literal notranslate"><span class="pre">objdump</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p>The program’s compute graphs: nodes with their measured times, and the tensors each reads
+and writes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">W</span></code></p></td>
+<td><p>TaskPool workers: tasks run and stolen per worker, polled from a live program.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
+<td><p>Save the session to JSON.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Sessions can be recorded and replayed without a live program, which is the usual way to compare a
+run before and after a change:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>einsums<span class="w"> </span>profiler<span class="w"> </span>--record<span class="w"> </span>before.jsonl
+<span class="c1"># ... make the change, run again ...</span>
+einsums<span class="w"> </span>profiler<span class="w"> </span>--replay<span class="w"> </span>before.jsonl
+</pre></div>
+</div>
+<p>A program run with <a class="reference internal" href="arguments.html#cmdoption-einsums-profile-save"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:save</span></code></a> writes a session file directly, which
+<code class="docutils literal notranslate"><span class="pre">--load</span></code> opens; <code class="docutils literal notranslate"><span class="pre">--load</span></code> accepts several files at once for comparison.</p>
+<p>One constraint on that option: it writes nothing unless <a class="reference internal" href="arguments.html#cmdoption-einsums-profile-server"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code></a> is
+also given, because the export goes through the server object. Asking for a session without one
+is reported rather than ignored, so the run says so instead of leaving you to notice a missing
+file.</p>
+<p>The session is exported during teardown, whichever way a program ends, so it holds the same run
+the text report does.</p>
+<p>Saved sessions can also be read without the viewer, which is how a script or a CI job uses them:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>einsums<span class="w"> </span>profiler<span class="w"> </span>report<span class="w"> </span>session.json<span class="w">                  </span><span class="c1"># hotspots by exclusive time</span>
+einsums<span class="w"> </span>profiler<span class="w"> </span>report<span class="w"> </span>session.json<span class="w"> </span>--tree<span class="w"> </span>--format<span class="w"> </span>csv
+einsums<span class="w"> </span>profiler<span class="w"> </span>diff<span class="w"> </span>before.json<span class="w"> </span>after.json<span class="w">          </span><span class="c1"># zone by zone, largest change first</span>
+einsums<span class="w"> </span>profiler<span class="w"> </span>diff<span class="w"> </span>runs.json<span class="w"> </span>--fail-above<span class="w"> </span><span class="m">10</span><span class="w">       </span><span class="c1"># exit 1 if any zone grew more than 10%</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">report</span></code> and <code class="docutils literal notranslate"><span class="pre">diff</span></code> take <code class="docutils literal notranslate"><span class="pre">--format</span> <span class="pre">text|csv|json</span></code> and <code class="docutils literal notranslate"><span class="pre">--filter</span></code>; <code class="docutils literal notranslate"><span class="pre">diff</span></code> compares the
+first and last sessions of a single file that holds several, as repeated
+<code class="docutils literal notranslate"><span class="pre">--einsums:profile:save</span></code> runs do, and <code class="docutils literal notranslate"><span class="pre">--fail-above</span></code> ignores zones under <code class="docutils literal notranslate"><span class="pre">--min-ms</span></code> (1 ms).</p>
+</section>
+<section id="finding-out-which-kernel-ran">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Finding Out Which Kernel Ran</a><a class="headerlink" href="#finding-out-which-kernel-ran" title="Link to this heading">#</a></h3>
+<p>Three ways, in the order they are usually easiest.</p>
+<p><strong>The profile annotation.</strong> Every einsum zone carries a <code class="docutils literal notranslate"><span class="pre">dispatch</span></code> annotation naming its route,
+and PackedGemm records why it declined under <code class="docutils literal notranslate"><span class="pre">packed_gemm_skip</span></code> and which path it took under
+<code class="docutils literal notranslate"><span class="pre">packed_gemm_path</span></code>. No flags, no code change.</p>
+<p><strong>The log.</strong> PackedGemm explains two of its declines, an invalid packing topology and a deferral
+to Sort+GEMM, at INFO level, which <a class="reference internal" href="arguments.html#cmdoption-einsums-log-level"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:log:level</span></code></a> controls; every decline is in the
+<code class="docutils literal notranslate"><span class="pre">packed_gemm_skip</span></code> annotation. A contraction that lands on the generic loop is not
+logged; the annotation above and the route below are where it shows.</p>
+<p><strong>Programmatically.</strong> A thread-local naming the last route:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph/StringDispatch.hpp&gt;</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">"%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">dispatch</span><span class="o">::</span><span class="n">last_dispatch_route</span><span class="p">());</span><span class="w">   </span><span class="c1">// gemm_direct_runtime</span>
+</pre></div>
+</div>
+<p>It exists for test introspection. Assert on it in a test that means to pin a fast path; do not
+branch on it inside a calculation.</p>
+</section>
+</section>
+<section id="performance-tips">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Performance Tips</a><a class="headerlink" href="#performance-tips" title="Link to this heading">#</a></h2>
+<section id="prefer-einsum-over-manual-loops">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">1. Prefer einsum over manual loops</a><a class="headerlink" href="#prefer-einsum-over-manual-loops" title="Link to this heading">#</a></h3>
+<p>Einsums dispatches to BLAS when it can. Hand-written loops almost never will:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SLOW: manual loop</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
+<span class="w">            </span><span class="n">C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+
+<span class="c1">// FAST: dispatches to BLAS GEMM</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="use-views-instead-of-copying">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">2. Use views instead of copying</a><a class="headerlink" href="#use-views-instead-of-copying" title="Link to this heading">#</a></h3>
+<p>Views avoid an allocation and a copy:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SLOW: copies a submatrix</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"block"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">block</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// FAST: zero-copy view</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">Range</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">},</span><span class="w"> </span><span class="n">Range</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">});</span>
+</pre></div>
+</div>
+</section>
+<section id="mind-index-ordering-for-cache-efficiency">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">3. Mind index ordering for cache efficiency</a><a class="headerlink" href="#mind-index-ordering-for-cache-efficiency" title="Link to this heading">#</a></h3>
+<p>Einsums tensors are column-major, so the first index varies fastest and a run along it is
+contiguous. A contraction is cheapest when the indices it walks innermost are the contiguous
+ones, because PackedGemm can then fill its blocks from stride-1 runs rather than gathering
+element by element:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C_il = A_ijk * B_jkl</span>
+<span class="c1">// i varies fastest in A, so runs over i are contiguous</span>
+<span class="c1">// j varies fastest in B, so runs over j are contiguous</span>
+</pre></div>
+</div>
+</section>
+<section id="use-computegraph-for-iterative-code">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">4. Use ComputeGraph for iterative code</a><a class="headerlink" href="#use-computegraph-for-iterative-code" title="Link to this heading">#</a></h3>
+<p>Capture once, replay many times. The graph pays the pattern analysis once, and every optimization
+the library performs happens on the captured form:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"iteration"</span><span class="p">);</span>
+<span class="p">{</span><span class="w"> </span><span class="cm">/* capture the body once */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="n">graph</span><span class="p">.</span><span class="n">optimize</span><span class="p">();</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">iter</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">       </span><span class="c1">// no capture or parsing; packed plans are memoized</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>One rule to get right before measuring anything: a graph-owned tensor you read after
+<code class="docutils literal notranslate"><span class="pre">execute()</span></code> must be created as a result rather than as scratch, or the optimizer removes the
+node that writes it. See <a class="reference internal" href="../howto/graphs.html#howto-graphs-intermediate"><span class="std std-ref">Say which tensors are results</span></a>.</p>
+</section>
+<section id="use-taskpool-for-data-parallel-workloads">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">5. Use TaskPool for data-parallel workloads</a><a class="headerlink" href="#use-taskpool-for-data-parallel-workloads" title="Link to this heading">#</a></h3>
+<p>For workloads with thousands of independent tasks, such as integral generation, use the TaskPool
+rather than raw OpenMP:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TaskPool/TaskPool.hpp&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">task_pool</span><span class="o">::</span><span class="n">TaskPool</span><span class="o">::</span><span class="n">get_singleton</span><span class="p">();</span>
+
+<span class="c1">// parallel_for: chunked, work-stealing, load-balanced</span>
+<span class="n">pool</span><span class="p">.</span><span class="n">parallel_for</span><span class="p">(</span><span class="s">"integral_batches"</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">num_shell_pairs</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span><span class="w"> </span><span class="n">pair</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">compute_integrals</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F_local</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// parallel_reduce: thread-local accumulators, no false sharing</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pool</span><span class="p">.</span><span class="n">parallel_reduce</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"energy"</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span>
+<span class="w">    </span><span class="p">[]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">&amp;</span><span class="n">acc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">compute_contribution</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">[](</span><span class="kt">double</span><span class="w"> </span><span class="o">&amp;</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">l</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>What it buys over an OpenMP loop: work-stealing absorbs load imbalance, continuations
+(<code class="docutils literal notranslate"><span class="pre">.then()</span></code>) and dataflow remove hand-written synchronization, and every task is a profiler zone,
+so per-task and per-worker timings show up in the report without extra instrumentation.</p>
+</section>
+<section id="state-a-memory-cap-instead-of-writing-the-loop">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">6. State a memory cap instead of writing the loop</a><a class="headerlink" href="#state-a-memory-cap-instead-of-writing-the-loop" title="Link to this heading">#</a></h3>
+<p>A captured program declares the tensors its equations mention, and for a density-fitted method
+those are exactly the objects density fitting exists to avoid holding. The usual answer is to
+write the pair loop by hand. The other answer is to state the footprint you have to live inside
+and let <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> derive the loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tiling</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">AxisTiling</span><span class="p">()</span>
+<span class="n">tiling</span><span class="o">.</span><span class="n">set_memory_cap</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>          <span class="c1"># bytes</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tiling</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">default_pass_manager</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The pass slices free axes of the program and streams every intermediate that carries them, so the
+body is the same algebra at one slice, and a chunk of slices deeper than one takes the grouped
+kernels. The cap, <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-tiling-memory-cap"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-memory-cap</span></code></a>, is read three times over: whether
+to tile at all, since a program whose largest intermediate already fits is left alone; which axes
+to slice; and how deep a chunk may be.</p>
+<p>It is in the default pipeline, and by default the cap is derived from the machine: an intermediate
+may take what <a class="reference internal" href="arguments.html#cmdoption-einsums-max-memory"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:max-memory</span></code></a> leaves after every other tensor the graph names, and
+no more than <a class="reference internal" href="arguments.html#cmdoption-einsums-graph-tiling-budget-share"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:tiling-budget-share</span></code></a> of the budget. Under that default the
+pass fires on a program that would not fit, and on one that fits but holds an intermediate large
+enough that streaming it in blocks is faster than holding it whole. A positive cap, as above, asks
+for a smaller footprint than the machine allows, and zero is the spelling for the captured schedule.</p>
+<p>On the full-axis DF-MP2 capture at water in cc-pVDZ, a cap of 4096 bytes slices <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code>,
+takes the six intermediates it streams from 72200 bytes to 2888 each, and moves them into a
+<code class="docutils literal notranslate"><span class="pre">Loop</span></code> over the 25 pairs. <code class="docutils literal notranslate"><span class="pre">optimizer_tour.py</span></code> in the ComputeGraph examples prints the decision
+and the buffers the tiled graph allocates.</p>
+</section>
+<section id="give-a-search-pass-room-or-take-its-allowance-away">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">7. Give a search pass room, or take its allowance away</a><a class="headerlink" href="#give-a-search-pass-room-or-take-its-allowance-away" title="Link to this heading">#</a></h3>
+<p>Most passes walk the graph once. <code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code> searches, and its runtime is a
+function of how many candidates the program offers rather than of how large it is, which is why
+the search half is off unless a program asks for it with
+<a class="reference internal" href="arguments.html#cmdoption-einsums-graph-structural-search"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:structural-search</span></code></a>.</p>
+<p><a class="reference internal" href="arguments.html#cmdoption-einsums-graph-optimizer-budget"><code class="xref std std-option docutils literal notranslate"><span class="pre">--einsums:graph:optimizer-budget</span></code></a> is the wall-clock allowance each search pass gets, in
+milliseconds, with <code class="docutils literal notranslate"><span class="pre">PassManager.set_optimizer_budget</span></code> as the per-pipeline override and zero
+meaning unlimited. Running out of it costs optimization rather than correctness: the pass keeps
+the best candidate it had reached and reports that it was cut off. That candidate is a
+<strong>different graph</strong> from the one an unbounded search would emit, so a program that compares two
+emitted graphs, or a measurement that has to be reproducible across machines, should take the
+allowance away with <code class="docutils literal notranslate"><span class="pre">set_optimizer_budget(0)</span></code> and check <code class="docutils literal notranslate"><span class="pre">was_cut_off</span></code>.</p>
+<p>Within one process, the plan a search chose is cached and replayed for a structurally identical
+graph, which is what makes a pipeline whose stages present the same program search once. See
+<a class="reference internal" href="optimizer.html"><span class="doc">Tutorial: The Algebraic Optimizer</span></a>.</p>
+</section>
+</section>
+<section id="understanding-packedgemm">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Understanding PackedGemm</a><a class="headerlink" href="#understanding-packedgemm" title="Link to this heading">#</a></h2>
+<p>PackedGemm is the BLIS-inspired backend that handles contractions beyond a plain GEMM. It</p>
+<ol class="arabic simple">
+<li><p>classifies the contraction into M dimensions (output, from A), N dimensions (output, from B),
+K dimensions (summed) and batch dimensions (present in both operands and the output);</p></li>
+<li><p>takes a vendor GEMM directly when the strides already describe one, either per batch slice,
+over flattened multi-K buffers, or as a single <code class="docutils literal notranslate"><span class="pre">gemm_batch</span></code> call;</p></li>
+<li><p>otherwise packs A and B into cache-friendly contiguous buffers and contracts each block with
+either its own register-blocked micro-kernel or one vendor GEMM per block, whichever is faster
+on this CPU.</p></li>
+</ol>
+<p>It beats the generic loop nest because the data is laid out for L1/L2/L3 reuse, the inner kernel
+is vectorized (the vendor’s, or a per-instruction-set micro-kernel chosen at run time), and the
+packing cost is amortized over the whole contraction. Batch contractions go through <code class="docutils literal notranslate"><span class="pre">gemm_batch</span></code>,
+which runs the slices in parallel.</p>
+<p>The requirement is a valid M/N/K decomposition: every output index must classify as M-only from A,
+N-only from B, or batch from both. Rank is otherwise unrestricted.</p>
+<p>See <a class="reference internal" href="architecture.html"><span class="doc">Architecture Overview</span></a> for the full route list and how the micro-kernel rung is chosen.</p>
+</section>
+<section id="dispatch-reference">
+<span id="id1"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Dispatch Reference</a><a class="headerlink" href="#dispatch-reference" title="Link to this heading">#</a></h2>
+<p>The routes below are measured, not predicted: each one is the value
+<code class="docutils literal notranslate"><span class="pre">last_dispatch_route()</span></code> returned for that spec on the build these docs were generated from, and
+<code class="docutils literal notranslate"><span class="pre">docs/doctests</span></code> pins them so the table cannot quietly go stale.</p>
+<section id="through-the-string-form">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Through the string form</a><a class="headerlink" href="#through-the-string-form" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 34.0%" />
+<col style="width: 32.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Spec</p></th>
+<th class="head"><p>Route</p></th>
+<th class="head"><p>What runs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i;i-&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dot_runtime</span></code></p></td>
+<td><p>one <code class="docutils literal notranslate"><span class="pre">DOT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">i;j-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ger_runtime</span></code></p></td>
+<td><p>rank-1 update</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ij;j-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemv_mat_vec_runtime</span></code></p></td>
+<td><p>one <code class="docutils literal notranslate"><span class="pre">GEMV</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ik;kj-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemm_direct_runtime</span></code></p></td>
+<td><p>one <code class="docutils literal notranslate"><span class="pre">GEMM</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ki;jk-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemm_direct_runtime</span></code></p></td>
+<td><p>one <code class="docutils literal notranslate"><span class="pre">GEMM</span></code>, using its transpose flags</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ij;ij-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">direct_product_runtime</span></code></p></td>
+<td><p>elementwise</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ijk;jkl-&gt;il</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>multi-K</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ijk;klm-&gt;ijlm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>multi-M and multi-N</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bik;bkj-&gt;bij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>batch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ijkl;klmn-&gt;ijmn</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>rank-4 both sides</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ijk;k-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>all output indices from A</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ij;ji-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>shared index plus a summed one</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ii;i-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">diagonal:direct_product_runtime</span></code></p></td>
+<td><p>the diagonal as a strided view, then elementwise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ikk;k-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">diagonal:gemv_mat_vec_runtime</span></code></p></td>
+<td><p>the diagonal as a strided view, then one <code class="docutils literal notranslate"><span class="pre">GEMV</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ikm;j-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lone_reduced:ger_runtime</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">A</span></code> summed over <code class="docutils literal notranslate"><span class="pre">k</span></code> and <code class="docutils literal notranslate"><span class="pre">m</span></code>, then a rank-1 update</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A contraction with a zero-length dimension reports <code class="docutils literal notranslate"><span class="pre">empty_input_scale_only</span></code> or
+<code class="docutils literal notranslate"><span class="pre">empty_output_noop</span></code> and still applies the output prefactor exactly once.</p>
+<p>A scalar over <em>permuted</em> index packs, such as <span class="math notranslate nohighlight">\(s = \sum_{ij} A_{ij} B_{ji}\)</span>, falls to the
+generic loop: <code class="docutils literal notranslate"><span class="pre">DOT</span></code> needs the two operands to name their indices in the same order, and
+PackedGemm does not produce a scalar.</p>
+</section>
+<section id="what-is-still-not-accelerated">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">What is still not accelerated</a><a class="headerlink" href="#what-is-still-not-accelerated" title="Link to this heading">#</a></h3>
+<p><strong>An operand whose every letter is summed out of it alone.</strong> In <code class="docutils literal notranslate"><span class="pre">k;ij-&gt;ij</span></code> the first operand
+sums to a single number, which no route takes as an operand, so it runs on the generic loop. A
+diagonal, or a letter summed out of an operand that keeps others, is accelerated: the diagonal is
+read as a strided view and the lone letter is summed first, and what remains takes the table’s
+routes.</p>
+<p><strong>A scalar result over permuted index packs.</strong> <code class="docutils literal notranslate"><span class="pre">DOT</span></code> requires the two operands to name their
+indices in the same order, so <span class="math notranslate nohighlight">\(s = \sum_{ij} A_{ij} B_{ji}\)</span> takes the generic loop. Permute
+one operand first if this is hot.</p>
+<p><strong>Mixed value types.</strong> A contraction whose operands and output are not all the same scalar type
+runs on <code class="docutils literal notranslate"><span class="pre">generic_loop_mixed_precision</span></code>, never BLAS or PackedGemm. Convert first if you care
+about the speed.</p>
+<p><strong>Tiled tensors.</strong> A contraction over <code class="docutils literal notranslate"><span class="pre">TiledRuntimeTensor</span></code> operands runs tile by tile, each tile
+a dense einsum that is accelerated. The per-tile work around it is not free, so a structure with
+very many tiny tiles spends its time in bookkeeping.</p>
+</section>
+</section>
+<section id="what-s-not-covered">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">What’s Not Covered</a><a class="headerlink" href="#what-s-not-covered" title="Link to this heading">#</a></h2>
+<p>This page is about the CPU schedule: which kernel runs, and how to see it. Two neighbours cover
+the rest.</p>
+<p>Choosing a cheaper <em>algorithm</em>, by factoring an integral, decoupling an energy denominator or
+truncating a space, is <a class="reference internal" href="optimizer.html"><span class="doc">Tutorial: The Algebraic Optimizer</span></a>.</p>
+<p>Structuring code so the time reaches arithmetic at all, including pooling transient state and not
+materializing scratch that dies on first read, is <a class="reference internal" href="tutorial_best_practices.html"><span class="doc">Tutorial: Performance Best Practices</span></a>.</p>
+<p>GPU execution is placed by the graph’s GPU passes; <a class="reference internal" href="tutorial_compute_graph.html"><span class="doc">Tutorial: Computation Graphs</span></a> covers offload
+and the transfers around it.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="optimizer.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: The Algebraic Optimizer</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorial_best_practices.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial: Performance Best Practices</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-a-contraction-is-written">How a Contraction Is Written</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-dispatch-chooses">How Dispatch Chooses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-profiler">Using the Profiler</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-it-costs">What It Costs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-a-report">Getting a Report</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-report">Reading the Report</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instrumenting-your-own-code">Instrumenting Your Own Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#from-python">From Python</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-live-viewer">The Live Viewer</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finding-out-which-kernel-ran">Finding Out Which Kernel Ran</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-tips">Performance Tips</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prefer-einsum-over-manual-loops">1. Prefer einsum over manual loops</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-views-instead-of-copying">2. Use views instead of copying</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mind-index-ordering-for-cache-efficiency">3. Mind index ordering for cache efficiency</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-computegraph-for-iterative-code">4. Use ComputeGraph for iterative code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-taskpool-for-data-parallel-workloads">5. Use TaskPool for data-parallel workloads</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-a-memory-cap-instead-of-writing-the-loop">6. State a memory cap instead of writing the loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#give-a-search-pass-room-or-take-its-allowance-away">7. Give a search pass room, or take its allowance away</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-packedgemm">Understanding PackedGemm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dispatch-reference">Dispatch Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#through-the-string-form">Through the string form</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-still-not-accelerated">What is still not accelerated</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-not-covered">What’s Not Covered</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

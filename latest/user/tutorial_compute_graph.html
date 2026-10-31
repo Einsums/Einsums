@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Computation Graphs &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/tutorial_compute_graph';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/user/tutorial_compute_graph.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: From NumPy to an Optimized CCSD" href="tutorial_ccsd.html" />
+    <link rel="prev" title="Tutorial: Linear Algebra" href="tutorial_linalg.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="absolute_beginners.html">Einsums: The Absolute Basics for Beginners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Einsums in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arguments.html">Command Line Arguments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">How Einsums is built</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tensors.html">Tutorial: Tensors 101</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_einsum.html">Tutorial: Einstein Summation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_views.html">Tutorial: Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linalg.html">Tutorial: Linear Algebra</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Tutorial: Computation Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ccsd.html">Tutorial: From NumPy to an Optimized CCSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Tutorial: The Algebraic Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_performance.html">Tutorial: Performance Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_best_practices.html">Tutorial: Performance Best Practices</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Computation Graphs</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-computation-graphs">
+<span id="tutorial-compute-graph"></span><h1>Tutorial: Computation Graphs<a class="headerlink" href="#tutorial-computation-graphs" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">ComputeGraph</span></code> module lets you capture a sequence of tensor operations
+into a graph, then execute and replay them. This is useful for iterative
+algorithms where the same operations run many times with changing data.</p>
+<p>Inspired by CUDA Graphs and PyTorch FX, the Einsums compute graph also supports
+optimization passes, parallel execution, control flow, and profiler integration.</p>
+<p>Capture is also what the optimizer works on. Every pass, every factorization and
+every schedule rewrite in the library reads a captured graph; eager execution
+gets none of them, and that is deliberate. Eager is the reference semantics this
+layer is validated against, so a numpy-style script stays eager and computes
+exactly what it wrote. Capture is how you ask for something else.</p>
+<p>This page covers capturing, replaying and running the passes. For what the
+passes can do to the <em>mathematics</em> of a program, and for the annotations that
+let them, see <a class="reference internal" href="optimizer.html#tutorial-optimizer"><span class="std std-ref">Tutorial: The Algebraic Optimizer</span></a>.</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TensorUtilities/CreateRandomTensor.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TensorUtilities/CreateZeroTensor.hpp&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="basic-capture-and-execute">
+<h2>Basic Capture and Execute<a class="headerlink" href="#basic-capture-and-execute" title="Link to this heading">#</a></h2>
+<p>Wrap operations in a <code class="docutils literal notranslate"><span class="pre">CaptureGuard</span></code> to record them into a graph:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"matmul"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Operations here are RECORDED, not executed</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Execute the recorded operations</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">   </span><span class="c1">// C = A * B</span>
+
+<span class="c1">// Change A's data and replay</span>
+<span class="n">A</span><span class="p">.</span><span class="n">set_all</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">   </span><span class="c1">// C = A * B (with new A data)</span>
+</pre></div>
+</div>
+</section>
+<section id="graph-owned-tensors">
+<h2>Graph-Owned Tensors<a class="headerlink" href="#graph-owned-tensors" title="Link to this heading">#</a></h2>
+<p>For intermediate tensors that shouldn’t outlive the graph, use
+<code class="docutils literal notranslate"><span class="pre">create_tensor()</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"pipeline"</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"tmp"</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tmp</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tmp</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">axpy</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">tmp</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+<span class="c1">// tmp is destroyed when graph is destroyed</span>
+</pre></div>
+</div>
+</section>
+<section id="available-operations">
+<h2>Available Operations<a class="headerlink" href="#available-operations" title="Link to this heading">#</a></h2>
+<p>All common tensor operations have graph-aware wrappers in the <code class="docutils literal notranslate"><span class="pre">cg::</span></code> namespace:</p>
+<ul class="simple">
+<li><p>Tensor algebra: <code class="docutils literal notranslate"><span class="pre">einsum</span></code>, <code class="docutils literal notranslate"><span class="pre">permute</span></code>, <code class="docutils literal notranslate"><span class="pre">transpose</span></code>, <code class="docutils literal notranslate"><span class="pre">element_transform</span></code></p></li>
+<li><p>BLAS: <code class="docutils literal notranslate"><span class="pre">gemm</span></code>, <code class="docutils literal notranslate"><span class="pre">gemv</span></code>, <code class="docutils literal notranslate"><span class="pre">ger</span></code>, <code class="docutils literal notranslate"><span class="pre">dot</span></code>, <code class="docutils literal notranslate"><span class="pre">scale</span></code>, <code class="docutils literal notranslate"><span class="pre">axpy</span></code>, <code class="docutils literal notranslate"><span class="pre">axpby</span></code>, <code class="docutils literal notranslate"><span class="pre">direct_product</span></code></p></li>
+<li><p>LAPACK: <code class="docutils literal notranslate"><span class="pre">syev</span></code>, <code class="docutils literal notranslate"><span class="pre">gesv</span></code>, <code class="docutils literal notranslate"><span class="pre">invert</span></code></p></li>
+</ul>
+<p>The returning forms of <code class="docutils literal notranslate"><span class="pre">dot</span></code>, <code class="docutils literal notranslate"><span class="pre">norm</span></code>, <code class="docutils literal notranslate"><span class="pre">trace</span></code>, <code class="docutils literal notranslate"><span class="pre">syev</span></code>, <code class="docutils literal notranslate"><span class="pre">svd</span></code>, <code class="docutils literal notranslate"><span class="pre">qr</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pow</span></code> and <code class="docutils literal notranslate"><span class="pre">det</span></code> throw <code class="docutils literal notranslate"><span class="pre">std::logic_error</span></code> during capture, because they return
+new objects. <code class="docutils literal notranslate"><span class="pre">dot</span></code>, <code class="docutils literal notranslate"><span class="pre">norm</span></code> and <code class="docutils literal notranslate"><span class="pre">syev</span></code> have capturable pointer forms
+(<code class="docutils literal notranslate"><span class="pre">cg::dot(&amp;result,</span> <span class="pre">A,</span> <span class="pre">B)</span></code>, <code class="docutils literal notranslate"><span class="pre">cg::syev(&amp;A,</span> <span class="pre">&amp;W)</span></code>); <code class="docutils literal notranslate"><span class="pre">svd</span></code>, <code class="docutils literal notranslate"><span class="pre">qr</span></code>, <code class="docutils literal notranslate"><span class="pre">pow</span></code> and
+<code class="docutils literal notranslate"><span class="pre">det</span></code> have none and must run outside capture.</p>
+</section>
+<section id="optimization-passes">
+<h2>Optimization Passes<a class="headerlink" href="#optimization-passes" title="Link to this heading">#</a></h2>
+<p>The graph can be optimized before execution:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Apply all default optimizations</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The default pipeline runs the passes below, in this order. The GPU and MPI
+passes join it only when the corresponding backend (or its mock) is built in,
+between <code class="docutils literal notranslate"><span class="pre">StreamContractionFusion</span></code> and <code class="docutils literal notranslate"><span class="pre">InplaceOptimization</span></code>. When a
+structural pass has changed the graph, the analysis passes run once more at the
+end so their annotations describe the final node set:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">ProvenancePropagation</span></code></dt><dd><p>Carry a tag declared on a tensor down to the handles the passes below read,
+including a loop or setup body’s own handle for the same buffer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TiledExpansion</span></code></dt><dd><p>Lower tiled operations into per-tile dense nodes so every pass below can read them.
+Whether a tiled contraction is densified and whether a tiled elementwise op is
+fused into one node are left to the cost model (<code class="docutils literal notranslate"><span class="pre">Densify::Auto</span></code> and
+<code class="docutils literal notranslate"><span class="pre">FuseTiles::Auto</span></code>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SpacePropagation</span></code></dt><dd><p>Infer the index spaces of intermediates from their producers’ operands.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CrossSpaceValidation</span></code></dt><dd><p>Flag a contraction letter that binds slots of two different index spaces.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DeltaElimination</span></code></dt><dd><p>Rewrite a contraction against a tagged Kronecker delta as a rename, and a
+contraction over two spaces declared disjoint as a scaling.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AntisymmetryDetection</span></code></dt><dd><p>Establish, by reading the bound inputs, which of a permutation operator’s
+symmetries they actually have.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AntisymmetrizerLinearity</span></code></dt><dd><p>Pull a sum of antisymmetrized quantities inside one antisymmetrizer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AntisymmetryInference</span></code></dt><dd><p>Tag the output of a permutation operator with the antisymmetry it always has.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AntisymmetrizerFolding</span></code></dt><dd><p>Collapse a permutation operator contracted against an antisymmetric operand
+into a scalar multiple.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">AntisymmetrizerExpansion</span></code></dt><dd><p>Lower a remaining permutation operator into a contraction plus one permuted
+accumulation per term.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ConstantFolding</span></code></dt><dd><p>Pre-compute constant subexpressions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ScaleAbsorption</span></code></dt><dd><p>Absorb <code class="docutils literal notranslate"><span class="pre">scale</span></code> into adjacent <code class="docutils literal notranslate"><span class="pre">einsum</span></code> prefactors.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PermuteFusion</span></code></dt><dd><p>Fold a pure axis reorder into the subscript of the einsum that reads it.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CSE</span></code></dt><dd><p>Common subexpression elimination.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DeadNodeElimination</span></code></dt><dd><p>Remove unused computations.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SymmetrizedAccumulation</span></code></dt><dd><p>Fold the <code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">+=</span> <span class="pre">s*(t</span> <span class="pre">+</span> <span class="pre">P(t))</span></code> symmetrization idiom.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ElementWiseFusion</span></code></dt><dd><p>Merge consecutive element-wise operations on one tensor.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">LinearCombinationContractionFolding</span></code></dt><dd><p>Fold transpose-paired contractions over one operand into a single contraction.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DistributiveFactoring</span></code></dt><dd><p>Rewrite <code class="docutils literal notranslate"><span class="pre">A*B1</span> <span class="pre">+</span> <span class="pre">A*B2</span></code> as <code class="docutils literal notranslate"><span class="pre">A*(B1</span> <span class="pre">+</span> <span class="pre">B2)</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">LoopInvariantHoisting</span></code></dt><dd><p>Hoist invariant ops out of loops.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ScratchPrivatization</span></code></dt><dd><p>Rename reused scratch onto clones so false dependencies stop serializing the graph.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MultiTermFactorization</span></code></dt><dd><p>Re-bracket products and share partial products between them. The search half
+is off unless asked for; see <a class="reference internal" href="optimizer.html#tutorial-optimizer"><span class="std std-ref">Tutorial: The Algebraic Optimizer</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">LayoutAssignment</span></code></dt><dd><p>Choose each intermediate’s storage order so that contraction kernels make
+fewer internal copies, and fold away a permuted copy the choice makes an
+identity.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ContractionPlanning</span></code></dt><dd><p>Cost-model-driven contraction ordering.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">GEMMBatching</span></code></dt><dd><p>Batch independent GEMM calls into <code class="docutils literal notranslate"><span class="pre">blas::gemm_batch</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Reorder</span></code></dt><dd><p>Minimize peak memory via node reordering.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">IOPrefetch</span></code></dt><dd><p>Move <code class="docutils literal notranslate"><span class="pre">DiskRead</span></code> nodes early for I/O-compute overlap.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">DistributionPlanning</span></code></dt><dd><p>Decide replicate vs. distribute per tensor.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Materialization</span></code></dt><dd><p>Insert allocation nodes for deferred tensors.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">SymmetryPropagation</span></code></dt><dd><p>Tag intermediates whose symmetry is provable from their inputs.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ScalingAnalysis</span></code></dt><dd><p>Report every contraction’s cost polynomial and the rate-limiting term.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">StreamContractionFusion</span></code></dt><dd><p>Fuse contractions that stream one large tensor into a single pass over it.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">InplaceOptimization</span></code></dt><dd><p>Reuse buffers for in-place operations.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">FreeInsertion</span></code></dt><dd><p>Release large intermediates after their last consumer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MemoryPlanning</span></code></dt><dd><p>Analyze tensor lifetime intervals and pack non-overlapping intermediates
+into one shared arena.</p>
+</dd>
+</dl>
+<p>See the <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/optimization_passes.html#computegraph-optimization-passes"><span class="std std-ref">pass catalog</span></a> for what each one
+matches and what it reports.</p>
+<p>No lossy pass is ever in this list. A factorization, a quadrature, a basis
+truncation or a memory cap is something a program asks for by name, so until it
+does, the answer this pipeline computes is the answer the program wrote.
+<a class="reference internal" href="optimizer.html#tutorial-optimizer"><span class="std std-ref">Tutorial: The Algebraic Optimizer</span></a> covers what asking looks like.</p>
+<p>You can also apply a single pass:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">modified</span><span class="p">,</span><span class="w"> </span><span class="n">mem</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">MemoryPlanning</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">mem</span><span class="p">.</span><span class="n">print_report</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="index-space-annotation">
+<h2>Index Space Annotation<a class="headerlink" href="#index-space-annotation" title="Link to this heading">#</a></h2>
+<p>A tensor’s dimensions say how big <em>this</em> problem is. An index space says what an
+axis ranges over - occupied orbitals, virtuals, an auxiliary basis - which is
+what lets a pass reason about how a <em>family</em> of problems grows.</p>
+<p>Spaces are registered once, with the letter each contributes to a cost
+polynomial and any relations that hold between them:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">registry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">global_space_registry</span><span class="p">();</span>
+<span class="k">auto</span><span class="w">  </span><span class="n">occ</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">registry</span><span class="p">.</span><span class="n">register_space</span><span class="p">({.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"occ"</span><span class="p">,</span><span class="w">  </span><span class="p">.</span><span class="n">scale_symbol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"o"</span><span class="p">});</span>
+<span class="k">auto</span><span class="w">  </span><span class="n">virt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">registry</span><span class="p">.</span><span class="n">register_space</span><span class="p">({.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"virt"</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">scale_symbol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"v"</span><span class="p">});</span>
+<span class="n">registry</span><span class="p">.</span><span class="n">declare_less</span><span class="p">(</span><span class="n">occ</span><span class="p">,</span><span class="w"> </span><span class="n">virt</span><span class="p">);</span><span class="w">        </span><span class="c1">// there are fewer occupieds</span>
+<span class="n">registry</span><span class="p">.</span><span class="n">declare_disjoint</span><span class="p">(</span><span class="n">occ</span><span class="p">,</span><span class="w"> </span><span class="n">virt</span><span class="p">);</span><span class="w">    </span><span class="c1">// and no orbital is both</span>
+</pre></div>
+</div>
+<p>Tensors are then annotated one slot per axis, before the operations that use
+them are captured:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="p">.</span><span class="n">annotate_spaces</span><span class="p">(</span><span class="n">T2</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">occ</span><span class="p">,</span><span class="w"> </span><span class="n">occ</span><span class="p">,</span><span class="w"> </span><span class="n">virt</span><span class="p">,</span><span class="w"> </span><span class="n">virt</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>Only a program’s inputs need annotating. <code class="docutils literal notranslate"><span class="pre">SpacePropagation</span></code> carries the
+annotation through the intermediates, <code class="docutils literal notranslate"><span class="pre">CrossSpaceValidation</span></code> reports a letter
+that binds two different spaces, and <code class="docutils literal notranslate"><span class="pre">ScalingAnalysis</span></code> reports what the program
+costs as a polynomial in the scale symbols:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">modified</span><span class="p">,</span><span class="w"> </span><span class="n">scaling</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ScalingAnalysis</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">scaling</span><span class="p">.</span><span class="n">print_report</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span><span class="w">   </span><span class="c1">// total flops: 2*o^2*v^4, and what limits it</span>
+</pre></div>
+</div>
+<p>From Python the same three passes run through <code class="docutils literal notranslate"><span class="pre">PassManager</span></code>, spaces are built
+with <code class="docutils literal notranslate"><span class="pre">cg.index_space</span></code>, and annotation takes names rather than ids:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums.graph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cg</span>
+
+<span class="n">registry</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">global_space_registry</span><span class="p">()</span>
+<span class="n">registry</span><span class="o">.</span><span class="n">register_space</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">index_space</span><span class="p">(</span><span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">))</span>
+<span class="n">registry</span><span class="o">.</span><span class="n">register_space</span><span class="p">(</span><span class="n">cg</span><span class="o">.</span><span class="n">index_space</span><span class="p">(</span><span class="s2">"virt"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">))</span>
+
+<span class="k">with</span> <span class="n">cg</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">cg</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">T2</span><span class="p">,</span> <span class="p">(</span><span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"occ"</span><span class="p">,</span> <span class="s2">"virt"</span><span class="p">,</span> <span class="s2">"virt"</span><span class="p">))</span>
+    <span class="o">...</span>
+
+<span class="n">scaling</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">ScalingAnalysis</span><span class="p">()</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">PassManager</span><span class="p">()</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scaling</span><span class="p">)</span>
+<span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">scaling</span><span class="o">.</span><span class="n">report_string</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Cost polynomials reach Python as their renderings - <code class="docutils literal notranslate"><span class="pre">scaling.total_flops_str()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">scaling.node_flops()</span></code> - rather than as objects to compute with.</p>
+<p>Annotating a program buys more than a report. A space carries a dim symbol, and
+an axis annotated with one is an axis a later bind may resize, which is what
+lets a saved graph be replayed on a different molecule; and a rewrite whose
+value depends on how the spaces compare is judged for the declared family rather
+than for the geometry the capture happened to hold.
+<a class="reference internal" href="optimizer.html#tutorial-optimizer"><span class="std std-ref">Tutorial: The Algebraic Optimizer</span></a> covers both.</p>
+</section>
+<section id="pipeline-multi-stage-workflows">
+<h2>Pipeline: Multi-Stage Workflows<a class="headerlink" href="#pipeline-multi-stage-workflows" title="Link to this heading">#</a></h2>
+<p>For iterative algorithms with convergence checks:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Pipeline</span><span class="w"> </span><span class="n">pipeline</span><span class="p">(</span><span class="s">"scf"</span><span class="p">);</span>
+
+<span class="c1">// Stage 1: Setup (runs once)</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">add_stage</span><span class="p">(</span><span class="s">"setup"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="n">H</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Stage 2: Iteration loop (runs until convergence or max iterations)</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">add_loop</span><span class="p">(</span><span class="s">"iterate"</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">    </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span><span class="w"> </span><span class="n">iter</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">energy</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">energy_old</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1e-8</span><span class="p">;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="n">H</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">);</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">syev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">eigvals</span><span class="p">);</span><span class="w">   </span><span class="c1">// F now holds the eigenvectors</span>
+<span class="w">        </span><span class="c1">// ... update density, energy ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">);</span>
+
+<span class="n">pipeline</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="control-flow">
+<h2>Control Flow<a class="headerlink" href="#control-flow" title="Link to this heading">#</a></h2>
+<p>Conditionals and loops within a flat graph:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"adaptive"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">add_conditional</span><span class="p">(</span><span class="s">"check"</span><span class="p">,</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">threshold</span><span class="p">;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w">   </span><span class="c1">// then branch</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">    </span><span class="c1">// else branch</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">execute()</span></code> automatically integrates with the Einsums profiler. Each node
+appears as a named region with timing data. Run with
+<code class="docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code> and attach <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">profiler</span></code>
+to see a real-time call tree and flame graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+
+<span class="c1">// Print per-node timing</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">print_timing_report</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+
+<span class="c1">// Export graph as DOT for GraphViz</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="s">"graph.dot"</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">print_dot</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="rebinding-tensors">
+<h2>Rebinding Tensors<a class="headerlink" href="#rebinding-tensors" title="Link to this heading">#</a></h2>
+<p>Swap a tensor for a different one without re-capturing:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A1"</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A2"</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"rebind_demo"</span><span class="p">);</span>
+<span class="p">{</span><span class="w"> </span><span class="cm">/* capture with A1 */</span><span class="w"> </span><span class="p">}</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">  </span><span class="c1">// Uses A1</span>
+
+<span class="n">graph</span><span class="p">.</span><span class="n">rebind</span><span class="p">(</span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">);</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">  </span><span class="c1">// Now uses A2 (same graph structure)</span>
+</pre></div>
+</div>
+</section>
+<section id="taskpool-integration">
+<h2>TaskPool Integration<a class="headerlink" href="#taskpool-integration" title="Link to this heading">#</a></h2>
+<p>The TaskPool module provides fine-grained task parallelism that integrates
+directly with ComputeGraph.</p>
+<section id="graph-capturable-parallel-for">
+<h3>Graph-capturable parallel_for<a class="headerlink" href="#graph-capturable-parallel-for" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cg::parallel_for()</span></code> captures a data-parallel loop as a graph node.
+The graph’s topological sort ensures it runs before any node that reads
+its output tensors:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TaskPool/TaskPool.hpp&gt;</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"fock_build"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Node 1: parallel_for computes integrals (via TaskPool workers)</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">parallel_for</span><span class="p">(</span><span class="s">"integrals"</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_pairs</span><span class="p">,</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span><span class="w"> </span><span class="n">pair</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">compute_integrals</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span><span class="w"> </span><span class="n">J</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">);</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">J</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">K</span><span class="p">);</span><span class="w">  </span><span class="c1">// Declare J and K as outputs</span>
+
+<span class="w">    </span><span class="c1">// Node 2: assemble F = H + 2*J - K (depends on J and K)</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="s">"ij &lt;- ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">H</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">axpy</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="n">J</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">axpy</span><span class="p">(</span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Node 3: compute energy (depends on F)</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">parallel_reduce</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"energy"</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">energy</span><span class="p">,</span>
+<span class="w">        </span><span class="p">[]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">&amp;</span><span class="n">acc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">                </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">D</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">F</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">[](</span><span class="kt">double</span><span class="w"> </span><span class="o">&amp;</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">l</span><span class="p">;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Execute: integrals -&gt; assembly -&gt; energy (automatic ordering)</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+
+<span class="c1">// Replay for next SCF iteration (same graph, different data)</span>
+<span class="n">J</span><span class="p">.</span><span class="n">zero</span><span class="p">();</span><span class="w"> </span><span class="n">K</span><span class="p">.</span><span class="n">zero</span><span class="p">();</span><span class="w"> </span><span class="n">F</span><span class="p">.</span><span class="n">zero</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The tensor arguments at the end (<code class="docutils literal notranslate"><span class="pre">&amp;J,</span> <span class="pre">&amp;K</span></code> for parallel_for; <code class="docutils literal notranslate"><span class="pre">&amp;D,</span> <span class="pre">&amp;F</span></code>
+for parallel_reduce) declare tensor dependencies for the graph’s topological
+sort. Without them, the graph cannot know what the body lambda accesses.</p>
+</section>
+<section id="dataflowexecutor">
+<h3>DataflowExecutor<a class="headerlink" href="#dataflowexecutor" title="Link to this heading">#</a></h3>
+<p>For maximum overlap of independent graph nodes, use <code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span><span class="w">  </span><span class="c1">// Independent nodes run concurrently via TaskPool</span>
+</pre></div>
+</div>
+<p>See the TaskPool documentation for full details on <code class="docutils literal notranslate"><span class="pre">submit()</span></code>, <code class="docutils literal notranslate"><span class="pre">then()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">when_all()</span></code>, <code class="docutils literal notranslate"><span class="pre">dataflow()</span></code>, <code class="docutils literal notranslate"><span class="pre">parallel_for()</span></code>, and <code class="docutils literal notranslate"><span class="pre">parallel_reduce()</span></code>.</p>
+</section>
+</section>
+<section id="gpu-offloading">
+<span id="tutorial-compute-graph-gpu"></span><h2>GPU Offloading<a class="headerlink" href="#gpu-offloading" title="Link to this heading">#</a></h2>
+<p>The ComputeGraph can automatically offload operations to the GPU. The user
+writes standard CPU code; the optimization passes handle placement, data
+transfers, and dispatch.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU offload is a work in progress. The GPU passes run only on GPU-enabled
+(or mock) builds, and the transfer and execution backend they target is not
+yet complete.</p>
+</div>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>On MPS, use <code class="docutils literal notranslate"><span class="pre">float</span></code> tensors (MPS only supports float32 GEMM; double stays on
+CPU). CUDA also takes double.</p></li>
+<li><p>The operation must be expensive enough to beat transfer and launch overhead
+under <code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code>’s cost model. A node with no flop estimate falls back to
+a size threshold (default 64 KB of memory traffic).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">PassManager::create_default()</span></code> to include GPU passes</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Write normal code with float tensors</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"my_computation"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Apply all passes including GPU optimization</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+
+<span class="c1">// Execute --- nodes GPUPlacement chose run on the GPU</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The default pass manager includes these GPU-related passes:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code> decides which nodes run on GPU based on a cost model
+comparing estimated CPU time against GPU time plus transfer overhead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TransferInsertion</span></code> adds HostToDevice / DeviceToHost nodes around GPU
+operations. It skips H2D for dead inputs, such as <code class="docutils literal notranslate"><span class="pre">C</span></code> in <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">A*B</span></code> when
+<code class="docutils literal notranslate"><span class="pre">c_prefactor</span> <span class="pre">==</span> <span class="pre">0</span></code>, and inserts a final D2H for user-visible tensors left on
+device so the graph is self-contained.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TransferElimination</span></code> removes redundant transfers when consecutive GPU
+nodes share a tensor. It uses Belady’s optimal eviction under memory pressure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GPUDiagnostics</span></code> logs GPU vs. CPU node counts, transfer bytes, and
+peak device memory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">StreamAssignment</span></code> tags transfer nodes with stream IDs for future async
+overlap.</p></li>
+</ol>
+</section>
+<section id="gpu-pass-control">
+<h3>GPU Pass Control<a class="headerlink" href="#gpu-pass-control" title="Link to this heading">#</a></h3>
+<p>Disable GPU offloading at runtime:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:gpu:disable
+</pre></div>
+</div>
+<p>Disable a specific pass:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:pass:disable<span class="o">=</span>GPUPlacement
+</pre></div>
+</div>
+<p>Or build a custom pass manager without GPU passes:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ConstantFolding</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ScaleAbsorption</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">CSE</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="c1">// No GPU passes</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="tuning-the-cost-model">
+<h3>Tuning the Cost Model<a class="headerlink" href="#tuning-the-cost-model" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code> pass uses a cost model to decide if an operation is worth
+offloading. You can tune the parameters:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">GPUPlacement</span><span class="w"> </span><span class="n">placement</span><span class="p">;</span>
+<span class="n">placement</span><span class="p">.</span><span class="n">cpu_throughput_gflops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">50.0</span><span class="p">;</span><span class="w">    </span><span class="c1">// Your CPU's peak GFLOP/s</span>
+<span class="n">placement</span><span class="p">.</span><span class="n">gpu_throughput_gflops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Your GPU's peak GFLOP/s</span>
+<span class="n">placement</span><span class="p">.</span><span class="n">pcie_bandwidth_gbs</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">12.0</span><span class="p">;</span><span class="w">     </span><span class="c1">// PCIe bandwidth (0 for unified memory)</span>
+<span class="n">placement</span><span class="p">.</span><span class="n">gpu_launch_overhead_us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10.0</span><span class="p">;</span><span class="w">   </span><span class="c1">// Kernel launch latency</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">GPUPlacement</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">placement</span><span class="p">)));</span>
+<span class="c1">// ... add other passes ...</span>
+</pre></div>
+</div>
+</section>
+<section id="interaction-with-constantfolding">
+<h3>Interaction with ConstantFolding<a class="headerlink" href="#interaction-with-constantfolding" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ConstantFolding</span></code> pass pre-computes, on CPU at optimization time, any node
+whose inputs are all graph-owned intermediates (<code class="docutils literal notranslate"><span class="pre">create_tensor()</span></code>) that no node
+in the graph writes. Such a node is replaced with a no-op before
+<code class="docutils literal notranslate"><span class="pre">GPUPlacement</span></code> runs, so it never reaches the GPU.</p>
+<p>User-owned tensors are never treated as constant, since they may change between
+<code class="docutils literal notranslate"><span class="pre">graph.execute()</span></code> calls, so a graph fed from user tensors, like the example
+above, folds nothing.</p>
+<p>If you want to force GPU execution of a folded node for benchmarking or
+demonstration, build a custom <code class="docutils literal notranslate"><span class="pre">PassManager</span></code> that skips <code class="docutils literal notranslate"><span class="pre">ConstantFolding</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="w"> </span><span class="n">pm</span><span class="p">;</span>
+<span class="c1">// Skip ConstantFolding so the GPU handles the computation</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">ScaleAbsorption</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">CSE</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">DeadNodeElimination</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">GPUPlacement</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">TransferInsertion</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">TransferElimination</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">pm</span><span class="p">.</span><span class="n">add</span><span class="o">&lt;</span><span class="n">cg</span><span class="o">::</span><span class="n">passes</span><span class="o">::</span><span class="n">GPUDiagnostics</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="unified-memory-apple-silicon">
+<h3>Unified Memory (Apple Silicon)<a class="headerlink" href="#unified-memory-apple-silicon" title="Link to this heading">#</a></h3>
+<p>On Apple Silicon, the CPU and GPU share physical memory. The ComputeGraph
+detects this via <code class="docutils literal notranslate"><span class="pre">gpu::has_unified_memory</span></code> and skips the actual H2D/D2H
+<code class="docutils literal notranslate"><span class="pre">memcpy</span></code> calls at execution time. The GPU reads tensor data directly from
+host memory through zero-copy MTLBuffer wrappers.</p>
+<p>The transfer nodes still exist in the graph structure, but their execution is a no-op on unified
+memory. This means the graph is portable across backends without code changes.</p>
+</section>
+<section id="graph-visualization">
+<h3>Graph Visualization<a class="headerlink" href="#graph-visualization" title="Link to this heading">#</a></h3>
+<p>After applying GPU passes, <code class="docutils literal notranslate"><span class="pre">print_dot()</span></code> colors nodes by execution target:</p>
+<ul class="simple">
+<li><p>Blue nodes run on GPU.</p></li>
+<li><p>Orange nodes are H2D/D2H transfers.</p></li>
+<li><p>White nodes run on CPU.</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="p">.</span><span class="n">print_dot</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span><span class="w">  </span><span class="c1">// Pipe to: dot -Tpng &gt; graph.png</span>
+</pre></div>
+</div>
+<p>The JSON output (<code class="docutils literal notranslate"><span class="pre">graph.to_json()</span></code>) includes <code class="docutils literal notranslate"><span class="pre">&quot;target&quot;:</span> <span class="pre">&quot;GPU&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;stream_id&quot;</span></code> fields for each node.</p>
+</section>
+</section>
+<section id="custom-operations-and-disk-i-o">
+<h2>Custom Operations and Disk I/O<a class="headerlink" href="#custom-operations-and-disk-i-o" title="Link to this heading">#</a></h2>
+<p>Not every operation has a built-in graph wrapper. Use <code class="docutils literal notranslate"><span class="pre">cg::custom()</span></code> for
+user-defined computations like integral evaluation, and <code class="docutils literal notranslate"><span class="pre">cg::read()</span></code> /
+<code class="docutils literal notranslate"><span class="pre">cg::write()</span></code> for disk I/O:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"scf_iteration"</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">CF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"CF"</span><span class="p">,</span><span class="w"> </span><span class="n">nmo</span><span class="p">,</span><span class="w"> </span><span class="n">nmo</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load integrals from disk</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">read</span><span class="p">(</span><span class="s">"load ERI"</span><span class="p">,</span><span class="w"> </span><span class="s">"integrals.h5"</span><span class="p">,</span><span class="w"> </span><span class="s">"/eri"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">h5file</span><span class="p">.</span><span class="n">read</span><span class="p">(</span><span class="s">"/eri"</span><span class="p">,</span><span class="w"> </span><span class="n">ERI</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Custom computation: build Fock matrix</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">custom</span><span class="p">(</span><span class="s">"build_fock"</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">),</span><span class="w">    </span><span class="c1">// inputs</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">F</span><span class="p">),</span><span class="w">         </span><span class="c1">// outputs</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">build_fock_matrix</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Standard einsums: F_mo = C F C, one pairwise contraction at a time</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"pj &lt;- pi ; ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">CF</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"pq &lt;- pj ; jq"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F_mo</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">CF</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Checkpoint to disk</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="s">"save F_mo"</span><span class="p">,</span><span class="w"> </span><span class="s">"checkpoint.h5"</span><span class="p">,</span><span class="w"> </span><span class="s">"/fock_mo"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F_mo</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">h5file</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"/fock_mo"</span><span class="p">,</span><span class="w"> </span><span class="n">F_mo</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The graph tracks dependencies automatically: <code class="docutils literal notranslate"><span class="pre">build_fock</span></code> waits for
+<code class="docutils literal notranslate"><span class="pre">load</span> <span class="pre">ERI</span></code>, the einsum waits for <code class="docutils literal notranslate"><span class="pre">build_fock</span></code>, and the checkpoint
+waits for the einsum. GPU passes will keep <code class="docutils literal notranslate"><span class="pre">DiskRead</span></code>/<code class="docutils literal notranslate"><span class="pre">DiskWrite</span></code>
+on CPU and insert appropriate transfers around GPU-placed operations.</p>
+<p>The graph cannot see inside a <code class="docutils literal notranslate"><span class="pre">cg::custom</span></code> closure, so it assumes the
+closure may read state the graph does not track, such as a counter captured by
+reference, or act outside the tensors it lists, such as printing or writing a
+file. Such a node is never hoisted out of a loop, never removed because nothing
+reads its outputs, and keeps its place relative to other custom nodes,
+parameter writes, and disk reads and writes. When the closure reads only the
+tensors it lists and does nothing but write the tensors it lists, say so with
+<code class="docutils literal notranslate"><span class="pre">cg::pure</span></code>, and the optimizer treats it like a built-in operation:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">custom</span><span class="p">(</span><span class="n">cg</span><span class="o">::</span><span class="n">pure</span><span class="p">,</span><span class="w"> </span><span class="s">"build_fock"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">F</span><span class="p">),</span>
+<span class="w">    </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">build_fock_matrix</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>From Python, pass <code class="docutils literal notranslate"><span class="pre">pure=True</span></code> to <code class="docutils literal notranslate"><span class="pre">cg.custom</span></code>.</p>
+</section>
+<section id="async-i-o-overlapping-reads-with-compute">
+<h2>Async I/O: Overlapping Reads with Compute<a class="headerlink" href="#async-i-o-overlapping-reads-with-compute" title="Link to this heading">#</a></h2>
+<p>For I/O-bound workflows, use <code class="docutils literal notranslate"><span class="pre">cg::read_async()</span></code> / <code class="docutils literal notranslate"><span class="pre">cg::write_async()</span></code>
+to overlap disk I/O with independent computation. These accept three lambdas:
+<code class="docutils literal notranslate"><span class="pre">start_fn</span></code> (begins I/O), <code class="docutils literal notranslate"><span class="pre">finish_fn</span></code> (waits for completion), and
+<code class="docutils literal notranslate"><span class="pre">sync_fn</span></code> (synchronous fallback).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="w"> </span><span class="n">io_future</span><span class="p">;</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"prefetch_pipeline"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Async read: start kicks off background I/O</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">read_async</span><span class="p">(</span><span class="s">"load ERI"</span><span class="p">,</span><span class="w"> </span><span class="s">"integrals.h5"</span><span class="p">,</span><span class="w"> </span><span class="s">"/eri"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ERI</span><span class="p">,</span>
+<span class="w">        </span><span class="cm">/*start*/</span><span class="w">  </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">io_future</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">async</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">launch</span><span class="o">::</span><span class="n">async</span><span class="p">,</span>
+<span class="w">                       </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]{</span><span class="w"> </span><span class="n">h5file</span><span class="p">.</span><span class="n">read</span><span class="p">(</span><span class="s">"/eri"</span><span class="p">,</span><span class="w"> </span><span class="n">ERI</span><span class="p">);</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="cm">/*finish*/</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">io_future</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="cm">/*sync*/</span><span class="w">   </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">h5file</span><span class="p">.</span><span class="n">read</span><span class="p">(</span><span class="s">"/eri"</span><span class="p">,</span><span class="w"> </span><span class="n">ERI</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Independent computation, runs concurrently with the read</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ik ; kj"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Depends on ERI, waits for async read to finish</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">custom</span><span class="p">(</span><span class="s">"build_fock"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">F</span><span class="p">),</span>
+<span class="w">        </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">build_fock_matrix</span><span class="p">(</span><span class="n">ERI</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// IOPrefetch moves DiskRead to position 0, maximizing overlap window</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+
+<span class="c1">// DataflowExecutor enables the overlap</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">DataflowExecutor</span><span class="w"> </span><span class="n">df</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">df</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="how-it-works">
+<h3>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IOPrefetch</span></code> pass moves the <code class="docutils literal notranslate"><span class="pre">DiskRead</span></code> to the beginning of the schedule</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code> calls <code class="docutils literal notranslate"><span class="pre">async_start</span></code> immediately</p></li>
+<li><p>While I/O runs in the background, the executor runs independent compute (A*B)</p></li>
+<li><p>Right after <code class="docutils literal notranslate"><span class="pre">async_start</span></code>, the executor queues <code class="docutils literal notranslate"><span class="pre">async_finish</span></code> as a task of
+its own, which blocks until the read completes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_fock</span></code> runs with the loaded data once that task has finished</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">SequentialExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">OpenMPExecutor</span></code> call the <code class="docutils literal notranslate"><span class="pre">sync_fn</span></code> fallback so that
+no overlap occurs. Use <code class="docutils literal notranslate"><span class="pre">DataflowExecutor</span></code> for async I/O overlap.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">examples/AsyncIO.cpp</span></code> for a complete working example.</p>
+</section>
+</section>
+<section id="profiler-session-save">
+<h2>Profiler Session Save<a class="headerlink" href="#profiler-session-save" title="Link to this heading">#</a></h2>
+<p>Save the complete profiling session (call tree, timing, annotations, and
+ComputeGraph structure) to a JSON file for offline analysis:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./my_program<span class="w"> </span>--einsums:profile:save<span class="o">=</span>session.json
+</pre></div>
+</div>
+<p>The file is written as the program exits, with or without <code class="docutils literal notranslate"><span class="pre">--einsums:profile:server</span></code>.
+<code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">profiler</span> <span class="pre">--load</span></code> opens it.
+Multiple runs append to the same file, creating a multi-session comparison:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run multiple times; sessions accumulate</span>
+./program<span class="w"> </span>--einsums:profile:save<span class="o">=</span>runs.json
+./program<span class="w"> </span>--einsums:profile:save<span class="o">=</span>runs.json
+
+<span class="c1"># Load all in the viewer</span>
+einsums<span class="w"> </span>profiler<span class="w"> </span>--load<span class="w"> </span>runs.json
+</pre></div>
+</div>
+<p>The saved JSON includes:</p>
+<ul class="simple">
+<li><p>Aggregated profiling data (call tree, exclusive/inclusive times, annotations)</p></li>
+<li><p>ComputeGraph node structure (kind, target, stream, inputs/outputs, timing)</p></li>
+<li><p>Tensor metadata (name, dimensions, dtype)</p></li>
+<li><p>Graph edges (data flow between operations)</p></li>
+</ul>
+</section>
+<section id="runtime-lifecycle">
+<h2>Runtime Lifecycle<a class="headerlink" href="#runtime-lifecycle" title="Link to this heading">#</a></h2>
+<p>The Einsums runtime automatically calls <code class="docutils literal notranslate"><span class="pre">finalize()</span></code> when <code class="docutils literal notranslate"><span class="pre">einsums::start()</span></code>
+returns. The shutdown sequence is:</p>
+<ol class="arabic simple">
+<li><p>The pre-shutdown functions.</p></li>
+<li><p>The shutdown functions, which include each module’s cleanup and any
+user-registered shutdown hooks.</p></li>
+<li><p>Profiler finalize, which writes the <code class="docutils literal notranslate"><span class="pre">--einsums:profile:save</span></code> session file,
+if one was asked for, and the text report if enabled.</p></li>
+<li><p>Teardown of the runtime’s global state.</p></li>
+</ol>
+<p>No explicit <code class="docutils literal notranslate"><span class="pre">finalize()</span></code> call is needed. The <code class="docutils literal notranslate"><span class="pre">Runtime</span></code> destructor handles
+everything when the <code class="docutils literal notranslate"><span class="pre">unique_ptr&lt;Runtime&gt;</span></code> goes out of scope. Calling
+<code class="docutils literal notranslate"><span class="pre">finalize()</span></code> explicitly is safe but redundant.</p>
+</section>
+<section id="workspace-and-deferred-allocation">
+<h2>Workspace and Deferred Allocation<a class="headerlink" href="#workspace-and-deferred-allocation" title="Link to this heading">#</a></h2>
+<p>For distributed-ready code, use <code class="docutils literal notranslate"><span class="pre">declare_tensor()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">create_*_tensor()</span></code>.
+Tensors are declared with their shape but no data is allocated until the
+<code class="docutils literal notranslate"><span class="pre">Materialization</span></code> pass runs during <code class="docutils literal notranslate"><span class="pre">apply(pm)</span></code>. This enables the
+<code class="docutils literal notranslate"><span class="pre">DistributionPlanning</span></code> pass to decide tensor placement before allocation:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Workspace</span><span class="w"> </span><span class="n">ws</span><span class="p">(</span><span class="s">"calculation"</span><span class="p">);</span>
+
+<span class="c1">// No data allocated, just shape + metadata</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">eri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ws</span><span class="p">.</span><span class="n">declare_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"ERI"</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">ws</span><span class="p">.</span><span class="n">declare_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">,</span><span class="w"> </span><span class="n">nmo</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Pipeline</span><span class="w"> </span><span class="n">scf</span><span class="p">(</span><span class="s">"scf"</span><span class="p">);</span>
+<span class="n">scf</span><span class="p">.</span><span class="n">set_workspace</span><span class="p">(</span><span class="n">ws</span><span class="p">);</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scf</span><span class="p">.</span><span class="n">declare_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"F"</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">,</span><span class="w"> </span><span class="n">nao</span><span class="p">);</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scf</span><span class="p">.</span><span class="n">add_stage</span><span class="p">(</span><span class="s">"compute"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">guard</span><span class="p">(</span><span class="n">stage</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij &lt;- ijkl ; kl"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">eri</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">scf</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span><span class="w">   </span><span class="c1">// Distribution + Materialization happens here</span>
+<span class="n">scf</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span><span class="w">    </span><span class="c1">// Tensors allocated just-in-time</span>
+</pre></div>
+</div>
+<p>Three scoping levels:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Workspace</span></code> holds tensors shared across Pipelines, such as the ERI and MO coefficients.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> holds tensors shared across stages, such as the Fock and density matrices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Graph</span></code> holds single-computation intermediates.</p></li>
+</ul>
+<p>See <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/workspace.html#computegraph-workspace"><span class="std std-ref">Workspace and deferred allocation</span></a> for full details.</p>
+</section>
+<section id="distributed-computing">
+<h2>Distributed Computing<a class="headerlink" href="#distributed-computing" title="Link to this heading">#</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">EINSUMS_WITH_MPI=ON</span></code>, the <code class="docutils literal notranslate"><span class="pre">Comm</span></code> module provides MPI-based
+distributed computing. The user writes <code class="docutils literal notranslate"><span class="pre">einsum(C,</span> <span class="pre">A,</span> <span class="pre">B)</span></code> unchanged;
+the ComputeGraph passes handle distribution and communication:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">pm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">();</span>
+<span class="n">scf</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pm</span><span class="p">);</span>
+<span class="c1">// DistributionPlanning: eri (100GB) → block-distributed across ranks</span>
+<span class="c1">//                       F, C (small) → replicated</span>
+<span class="c1">// Materialization: each rank allocates its local eri slice + full F, C</span>
+<span class="c1">// CommunicationInsertion: allreduce after eri contraction</span>
+
+<span class="n">scf</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+<span class="c1">// Each rank computes its portion. Communication handled automatically.</span>
+</pre></div>
+</div>
+<p>Without MPI, the mock backend runs everything on a single rank, meaning the
+same code works in both serial and distributed modes.</p>
+<p>See <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/distributed.html#computegraph-distributed"><span class="std std-ref">Distributed computing</span></a> for full details.</p>
+</section>
+<section id="hardware-aware-optimization">
+<h2>Hardware-Aware Optimization<a class="headerlink" href="#hardware-aware-optimization" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ContractionPlanning</span></code> pass uses a <code class="docutils literal notranslate"><span class="pre">CostModel</span></code> to make
+architecture-specific decisions. Without a measured profile it comes from a
+database of 25+ pre-filled profiles for common CPUs and GPUs, auto-detected at
+runtime:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Automatic detection (runs inside create_default()):</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CostModel</span><span class="o">::</span><span class="n">detect_default</span><span class="p">();</span>
+<span class="c1">// → "Apple M4 Pro" on your machine</span>
+</pre></div>
+</div>
+<p>Measure the machine once for precise numbers. Every later program on it finds
+the profile <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> writes, with no flag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>einsums<span class="w"> </span>tune
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../libs/Einsums/ComputeGraph/docs/hardware_profiles.html#computegraph-hardware-profiles"><span class="std std-ref">Hardware profiles</span></a> for full details.</p>
+</section>
+<section id="what-s-next">
+<h2>What’s Next<a class="headerlink" href="#what-s-next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="optimizer.html#tutorial-optimizer"><span class="std std-ref">Tutorial: The Algebraic Optimizer</span></a> – Annotations, tags, providers, and the rewrites
+that change what a program computes</p></li>
+<li><p><a class="reference internal" href="tutorial_performance.html#tutorial-performance"><span class="std std-ref">Tutorial: Performance Tuning</span></a> – Understanding dispatch and profiler usage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GPUOffload.cpp</span></code> in the ComputeGraph examples — full GPU offloading demo</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SCFSimulation.cpp</span></code> — iterative SCF with custom operations and loops</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AsyncIO.cpp</span></code> — async I/O overlap with DataflowExecutor</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">examples/</span></code> directory in the ComputeGraph module contains full,
+compilable examples for each feature.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial_linalg.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: Linear Algebra</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorial_ccsd.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial: From NumPy to an Optimized CCSD</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-capture-and-execute">Basic Capture and Execute</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-owned-tensors">Graph-Owned Tensors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-operations">Available Operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization-passes">Optimization Passes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#index-space-annotation">Index Space Annotation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-multi-stage-workflows">Pipeline: Multi-Stage Workflows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-flow">Control Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling">Profiling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rebinding-tensors">Rebinding Tensors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#taskpool-integration">TaskPool Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-capturable-parallel-for">Graph-capturable parallel_for</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataflowexecutor">DataflowExecutor</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-offloading">GPU Offloading</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-pass-control">GPU Pass Control</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tuning-the-cost-model">Tuning the Cost Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interaction-with-constantfolding">Interaction with ConstantFolding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-memory-apple-silicon">Unified Memory (Apple Silicon)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-visualization">Graph Visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-operations-and-disk-i-o">Custom Operations and Disk I/O</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-i-o-overlapping-reads-with-compute">Async I/O: Overlapping Reads with Compute</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works">How it works</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiler-session-save">Profiler Session Save</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runtime-lifecycle">Runtime Lifecycle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workspace-and-deferred-allocation">Workspace and Deferred Allocation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distributed-computing">Distributed Computing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-aware-optimization">Hardware-Aware Optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-next">What’s Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

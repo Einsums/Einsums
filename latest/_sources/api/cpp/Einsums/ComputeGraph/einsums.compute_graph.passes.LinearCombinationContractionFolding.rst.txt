@@ -1,0 +1,160 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.LinearCombinationContractionFolding:
+
+===================================================================
+einsums::compute_graph::passes::LinearCombinationContractionFolding
+===================================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/LinearCombinationContractionFolding.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: LinearCombinationContractionFolding : public OptimizerPass
+
+   Fold transpose-paired contractions into one (the CCSD "2J−K" idiom).
+
+   Sibling of ``DistributiveFactoring``. Where DistributiveFactoring sums
+   *different* operands sharing the *same* index pattern, this pass folds
+   contractions that reuse the *same* operand tensor read with *permuted*
+   index patterns. Detects groups of einsum nodes that:
+
+   1. accumulate into the same output (c_prefactor != 0),
+   2. share one operand with an identical index pattern,
+   3. read the *other* operand from the **same tensor** but with index patterns that are permutations of one another.
+
+   Because einsum is linear in each operand,
+   :math:`\sum_k \alpha_k\,\mathrm{einsum}(\text{spec}_k, A, B) = \mathrm{einsum}(\text{spec}_0, A,\; \sum_k \alpha_k\,P_k(B))`,
+   where :math:`P_k` permutes :math:`B` into operand-0's (canonical) layout. The
+   rewrite builds :math:`L = \sum_k \alpha_k P_k(B)` once and runs a single
+   contraction: trading :math:`N` flop-bound contractions for one contraction
+   plus :math:`N-1` cheap memory-bound permute/axpy steps.
+
+   **Example (CCSD spin-adaptation)**
+
+   Before:
+
+   .. code-block:: text
+
+      // Fae[a,e] += 2 * t1[m,f] * ovvv[m,a,f,e]
+      // Fae[a,e] -= 1 * t1[m,f] * ovvv[m,a,e,f]
+
+   After:
+
+   .. code-block:: text
+
+      // L[m,a,f,e] = 2*ovvv[m,a,f,e] - ovvv[m,a,e,f]   (permute + axpy)
+      // Fae[a,e]  += t1[m,f] * L[m,a,f,e]              (single einsum)
+
+   **In the default pipeline**
+
+   Registered in ``PassManager::create_default``, after ElementWiseFusion and
+   BEFORE LoopInvariantHoisting: the fold emits the :math:`L` build as its own node
+   whose only input is the paired operand, so when that operand is loop-invariant
+   -- the common case, an integral block from one-time setup -- hoisting lifts the
+   builder out of the loop and :math:`L` is built once instead of every replay. The
+   structural gates below make it a no-op on graphs without the pattern. Add it
+   explicitly only to run it apart from the default pipeline:
+
+   .. code-block:: text
+
+      cg::PassManager pm; pm.add(std::make_shared<LinearCombinationContractionFolding>());
+      graph.apply(pm);
+
+   ``StreamContractionFusion`` serves the same 2J-K algebra with a single stream
+   of the shared operand and runs first, consuming the pattern this pass would
+   otherwise fold.
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("lccf")
+      with cg.capture(g):
+          # Same operand tensor B read with permuted index patterns, accumulating into Fae.
+          einsums.einsum("ae <- mf ; mafe", Fae, t1, ovvv, c_pf=0.0, ab_pf=2.0)   # seed
+          einsums.einsum("ae <- mf ; maef", Fae, t1, ovvv, c_pf=1.0, ab_pf=-1.0)  # accumulate
+      p = cg.LinearCombinationContractionFolding()
+      pm = cg.PassManager(); pm.add(p)
+      g.apply(pm)
+      # p.num_groups -> 1, p.num_eliminated -> 1  (getters are properties, not methods)
+
+   **Limitations**
+
+   - Members must be **einsum** nodes with two inputs and one output, sharing one operand (same tensor id and index pattern) and reading the *other* operand from the **same** tensor with index patterns that are genuine permutations of one another (at least one member permuted, else it is duplicate-contraction territory, not this pass).
+   - Every non-first member must purely accumulate (`c_prefactor == 1`) so the reassociation is exact; the first member may seed (overwrite or any prefactor). A stray overwrite in the tail rejects the group.
+   - Conjugated einsums (`conj_a`/`conj_b`) are skipped; conjugation is not threaded through the rewrite (they still execute correctly, just unfolded).
+   - Output, shared and non-shared operands must share one dtype; a mixed-dtype triple declines. Each may be a runtime tensor, a typed `Tensor<T,Rank>` or a view: the :math:`L` build and the fused contraction read every operand through its rank-erased geometry, strides included, and the output may be a view the fused contraction writes through.
+   - On a real dtype, every member's `ab_prefactor` and node-0's `c_prefactor` must be real-valued; complex prefactors fold only on complex dtypes.
+   - Interference guard: between the first and last member, no other node may read/write the output or write the shared / non-shared operand; the fused node occupies node-0's slot (never appended) to stay scan-before its consumer.
+   - The operand folded into :math:`L` must not be a backed tensor SlabStreaming would read a slab at a time (``OptimizerPass::streamed_beside``). Building :math:`L` holds it whole, and an :math:`L` the same size beside it; the members are left for SlabStreaming to stream instead.
+
+   **Future improvements**
+
+   - Make the fold conj-aware (thread `conj_a`/`conj_b` through the :math:`L` build) if the conjugated variant shows up hot (see the `TODO` in the source).
+
+
+   .. cpp:function:: LinearCombinationContractionFolding() = default
+
+      @}
+
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      See ``OptimizerPass::understood_features``.
+
+      Not permutation operators: the fused contraction is rebuilt without them. Not redirected slots, which only a loaded file puts on
+      a node the pass sees. Views are understood, read or written: the interference scan compares the buffers the operands land in,
+      and both rebuilt nodes read and write through each operand's own geometry.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Folding a transpose pair into one contraction changes the order the two terms are summed in.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      Safe on loop bodies / conditional branches: a local rewrite within the
+      graph it is handed.
+
+
+   .. cpp:function:: size_t num_groups() const
+
+      Number of fold groups rewritten.
+
+
+   .. cpp:function:: size_t num_eliminated() const
+
+      Total number of einsum nodes eliminated (folded away).
+
+
+   .. cpp:member:: static constexpr Reason BackedOverShare
+
+      The codes this pass records its decisions under (``Decision::code``).
+      @{
+
+
+   .. cpp:member:: static constexpr Reason HeldBeside

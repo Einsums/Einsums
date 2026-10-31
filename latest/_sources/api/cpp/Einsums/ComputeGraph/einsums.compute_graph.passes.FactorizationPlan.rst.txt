@@ -1,0 +1,76 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.FactorizationPlan:
+
+=================================================
+einsums::compute_graph::passes::FactorizationPlan
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/MultiTermFactorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: FactorizationPlan
+
+   What one region's search decided, written so a structurally identical region can replay it.
+
+   Positions and bitmasks, never a ``TensorId`` and never a node. Two graphs that hash the same
+   flatten to the same terms in the same order, so a factor's position identifies it across both,
+   where its tensor id does not: the IR's own dense numbering makes the same argument.
+
+
+   .. cpp:member:: bool rewrites
+
+      Whether the search found anything worth emitting. False is worth caching too: it is the
+      answer that took the whole search to reach.
+
+
+   .. cpp:member:: std::vector<std::array<std::size_t, 2>> retained_for
+
+      Per-consumer inlining, as the consumers a definition was KEPT for.
+
+      Each entry is a ``(definition, consumer)`` pair of statement positions the flattener
+      refused to inline across, so the definition survives as a statement of its own and that
+      consumer reads it. The inlined consumers are the rest of the definition's own set, which a
+      replay re-derives from the structure; recording the refusals is what makes a replay
+      reproduce the CHOICE rather than take the flattening's default. Positions, never a
+      ``TensorId``, for the reason the commits are positions.
+
+
+   .. cpp:member:: std::vector<std::vector<std::array<std::size_t, 3>>> commits
+
+      Committed shared pairs in commit order. Each entry lists its occurrences as
+      ``(term, left factor, right factor)``, in the factor numbering left by the previous commits.
+
+
+   .. cpp:member:: std::vector<Tree> trees
+
+      One entry per term, in the order the region flattens them.
+
+
+   .. cpp:class:: Tree
+
+      One term's contraction tree, as the subset program left it.
+
+
+      .. cpp:member:: bool ok
+
+         Whether a tree was found for this term.
+
+
+      .. cpp:member:: std::vector<std::uint32_t> split
+
+         split[mask] is the left half chosen for that mask.
+
+
+      .. cpp:member:: std::vector<std::uint8_t> resolved
+
+         Whether split[mask] means anything.

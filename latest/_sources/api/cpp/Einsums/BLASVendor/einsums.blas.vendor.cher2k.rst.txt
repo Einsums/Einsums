@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cher2k:
+
+=============================
+einsums::blas::vendor::cher2k
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void cher2k(char uplo, char trans, int_t n, int_t k, std::complex<float> alpha, const std::complex<float> *a, int_t lda, const std::complex<float> *b, int_t ldb, float beta, std::complex<float> *c, int_t ldc)
+
+   Hermitian rank-2k update: C := alpha*A*B^H + conj(alpha)*B*A^H + beta*C. beta is real.

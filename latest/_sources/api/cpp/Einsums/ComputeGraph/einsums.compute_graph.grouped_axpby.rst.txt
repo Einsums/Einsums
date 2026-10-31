@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.grouped_axpby:
+
+=====================================
+einsums::compute_graph::grouped_axpby
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType> requires SameUnderlying<XType, YType> void grouped_axpby(std::vector<double> alphas, std::vector<const XType *> x_list, std::vector<double> betas, std::vector<YType *> y_list)
+
+   One node holding many independent AXPBYs: ``Y_i = alphas[i] * X_i + betas[i] * Y_i`` for every entry.
+
+   The grouped counterpart of ``axpby``, and the accumulating half of the
+   pattern ``grouped_dot`` reduces into: a local-correlation residual computes
+   a scalar per pair or per neighbour and then adds it, scaled, into one element
+   of a shared matrix; this makes that one node.
+
+   Entries run SEQUENTIALLY inside the node, in the order they were passed. That
+   is load-bearing twice over. It makes each entry the same bits the single call
+   would have written, and it makes REPEATED DESTINATIONS legal: a family whose
+   entries all accumulate into one element - a sum over a pair's neighbours, say
+
+   - keeps its term order, because the entries are applied in the order the caller wrote them and no two run at once. So unlike ``grouped_batched_gemm``, which rejects a shared destination because its members may run concurrently, this operation accepts one and defines it.
+
+   The prefactors are per entry, which is the difference from ``axpby`` that
+   makes merging worthwhile: the accumulations a residual wants to merge
+   disagree on their coefficients.
+
+   Outside capture this executes immediately, so the same call works eagerly.
+
+   :param alphas: Per-entry prefactor on X_i.
+   :param x_list: Sources, same length as ``alphas``.
+   :param betas: Per-entry prefactor on Y_i. A non-zero entry means that Y_i is read as well as written, which the node records as a dependency.
+   :param y_list: Destinations, same length as ``alphas``. May repeat.

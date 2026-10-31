@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PackedGemm &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/PackedGemm/docs/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/PackedGemm/docs/index.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Preprocessor" href="../../Preprocessor/docs/index.html" />
+    <link rel="prev" title="Options" href="../../Options/docs/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ComputeGraph/docs/index.html">ComputeGraph</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ComputeGraph/docs/api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">PackedGemm</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="packedgemm">
+<span id="modules-einsums-packedgemm"></span><h1>PackedGemm<a class="headerlink" href="#packedgemm" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">PackedGemm</span></code> module is Einsums’ in-tree BLIS-style packed contraction
+backend for arbitrary-rank tensor contractions. It sits between
+<a class="reference internal" href="../../BLAS/docs/index.html#modules-einsums-blas"><span class="std std-ref">vendor BLAS</span></a>, which only handles matrix-matrix
+multiplies plus one batch index, and the generic loop-nest fallback.</p>
+<section id="why-a-packed-backend">
+<h2>Why a packed backend<a class="headerlink" href="#why-a-packed-backend" title="Link to this heading">#</a></h2>
+<p>Tensor contractions in chemistry codes do not all map directly onto <code class="docutils literal notranslate"><span class="pre">gemm</span></code>.
+A rank-3 <code class="docutils literal notranslate"><span class="pre">ijk,kl-&gt;ijl</span></code> looks like a strided matrix multiply where one
+dimension wraps in a way <code class="docutils literal notranslate"><span class="pre">cblas_dgemm</span></code> cannot express, and the naive fallback
+is a nested loop with no SIMD, no cache blocking, and no vendor BLAS
+acceleration.</p>
+<p>The classical alternative is TTGT, “transpose-transpose-GEMM-transpose”: permute
+each operand into a matrix, call <code class="docutils literal notranslate"><span class="pre">gemm</span></code>, permute the result back. That works,
+but it materializes up to three full tensor-sized copies. PackedGemm fills the
+gap between the two: it reads the operands where they lie, packs only the cache
+tiles it is about to multiply, and never materializes a whole transposed
+operand.</p>
+</section>
+<section id="the-m-n-k-batch-decomposition">
+<h2>The M / N / K / batch decomposition<a class="headerlink" href="#the-m-n-k-batch-decomposition" title="Link to this heading">#</a></h2>
+<p>For a contraction generalised from
+<span class="math notranslate nohighlight">\(C[m,n] = \beta\,C[m,n] + \alpha \sum_k A[m,k]\,B[k,n]\)</span> to arbitrary
+rank, every index falls into exactly one of four groups:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">M</span></code> dimensions</dt><dd><p>Target indices appearing in <code class="docutils literal notranslate"><span class="pre">A</span></code> but not <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">N</span></code> dimensions</dt><dd><p>Target indices appearing in <code class="docutils literal notranslate"><span class="pre">B</span></code> but not <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">K</span></code> dimensions</dt><dd><p>Link indices, appearing in both <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> but not in <code class="docutils literal notranslate"><span class="pre">C</span></code>.</p>
+</dd>
+<dt>Batch dimensions</dt><dd><p>Target indices appearing in <strong>both</strong> <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+</dd>
+</dl>
+<p>Multi-M, multi-N and multi-K are all supported: the group sizes multiply into
+<code class="docutils literal notranslate"><span class="pre">M_total</span></code>, <code class="docutils literal notranslate"><span class="pre">N_total</span></code> and <code class="docutils literal notranslate"><span class="pre">K_total</span></code>. A <a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.PackingPlan.html#_CPPv4N7einsums11packed_gemm11PackingPlanE" title="einsums::packed_gemm::PackingPlan"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">PackingPlan</span></code></a>
+records the sizes and per-tensor strides of each group, in each tensor that
+sees them, plus the batch descriptors.</p>
+<p>Two structural details make the machinery uniform:</p>
+<ul class="simple">
+<li><p><strong>Synthetic unit dims.</strong> A GEMV-shaped contraction has no M or no N group; an
+outer product has no K group. Rather than special-casing them,
+<code class="docutils literal notranslate"><span class="pre">compute_packing_topology</span></code> synthesizes a unit dim (size 1, stride 0) into
+the empty group so the whole GEMM path applies unchanged. The plan flags this
+so the direct-BLAS fast paths, where a zero stride would produce an invalid
+leading dimension, know to stand down.</p></li>
+<li><p><strong>Dim coalescing.</strong> Adjacent dims within a group that tile contiguously are
+merged into one. This is what turns many multi-M/N contractions, which would
+otherwise need the slow scatter path, into plain single-M/N GEMMs. The M and
+N groups merge each tensor on its own: the packers gather whatever their
+operand’s dims describe, so C(Q,a,f,j) fuses f and j even when the operand
+B(j,e,f) cannot, and the tile kernel writes C in place. A C group merges
+only when it is ordered by C’s strides, so when both of C’s groups can merge
+and one has unit stride, the ordering cost model prices C’s walk in the C
+order at that unit stride and keeps the order whole. The vendor GEMM
+shortcuts need A and B single too, and stand down otherwise. The K group,
+read in lockstep by the flatten path, merges only where both operands tile.</p></li>
+</ul>
+</section>
+<section id="when-packedgemm-fires">
+<h2>When PackedGemm fires<a class="headerlink" href="#when-packedgemm-fires" title="Link to this heading">#</a></h2>
+<p>The dispatcher in <a class="reference internal" href="../../TensorAlgebra/docs/index.html#modules-einsums-tensoralgebra"><span class="std std-ref">TensorAlgebra</span></a> tries
+PackedGemm for every contraction that did not match a pure BLAS shape.
+<a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.try_packed_gemm.html#_CPPv4I_18BasicTensorConcept_18BasicTensorConcept_18BasicTensorConceptEN7einsums11packed_gemm15try_packed_gemmEbRK15ContractionSpec10ValueTypeTI5CTypeEP5CType12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BTypebP15ContractionSite" title="einsums::packed_gemm::try_packed_gemm"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">try_packed_gemm</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">true</span></code> when the
+plan was valid and the contraction was executed, and <code class="docutils literal notranslate"><span class="pre">false</span></code> when the caller
+should fall back.</p>
+<p>Before planning, the call declines when:</p>
+<ul class="simple">
+<li><p>The element types of <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> disagree (<code class="docutils literal notranslate"><span class="pre">mixed_dtype</span></code>), or are
+not one of <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>, <code class="docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">unknown_scalar_type</span></code>).</p></li>
+<li><p>A letter is summed out of one operand alone (<code class="docutils literal notranslate"><span class="pre">lone_summed_index</span></code>).</p></li>
+<li><p>The shape is one a direct vendor GEMM handles (<code class="docutils literal notranslate"><span class="pre">defer_to_direct_gemm</span></code>).</p></li>
+</ul>
+<p>A plan is invalid, and the call declines with <code class="docutils literal notranslate"><span class="pre">invalid_topology</span></code>, when:</p>
+<ul class="simple">
+<li><p>The output is a scalar (<code class="docutils literal notranslate"><span class="pre">c_indices</span></code> is empty).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a_indices</span></code>, <code class="docutils literal notranslate"><span class="pre">b_indices</span></code> or <code class="docutils literal notranslate"><span class="pre">c_indices</span></code> repeat a letter, which is a
+diagonal access rather than a contraction.</p></li>
+<li><p>An index appears only in <code class="docutils literal notranslate"><span class="pre">C</span></code> (a broadcast with no operand to read it from).</p></li>
+</ul>
+<p>A valid plan for an outer product with fewer than 768 output elements also
+declines (<code class="docutils literal notranslate"><span class="pre">defer_small_outer_to_generic</span></code>), since the generic loop is faster
+below that size.</p>
+<p>There are also <em>policy</em> declines, which apply only when <code class="docutils literal notranslate"><span class="pre">allow_scatter=false</span></code>.
+Callers pass <code class="docutils literal notranslate"><span class="pre">false</span></code> when they have a faster fallback (the compile-time einsum
+dispatch falls back to Sort+GEMM) and <code class="docutils literal notranslate"><span class="pre">true</span></code> when their only alternative is a
+generic loop (the ComputeGraph runtime string dispatch). With <code class="docutils literal notranslate"><span class="pre">false</span></code>, and only
+when a Sort+GEMM fallback exists, the call declines any scatter-shaped output
+(<code class="docutils literal notranslate"><span class="pre">scatter_defer_to_ttgt</span></code>), including single-M/N ones, and also batch-dot and
+GEMV-shaped contractions (<code class="docutils literal notranslate"><span class="pre">defer_to_generic_batch_dot</span></code>,
+<code class="docutils literal notranslate"><span class="pre">defer_to_generic_gemv_shaped</span></code>). A micro-kernel rung whose scatter path
+actually beats Sort+GEMM, which the SME rung does by a measured 2.3x, advertises
+that in its <a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.MicroKernelShape.html#_CPPv4N7einsums11packed_gemm16MicroKernelShapeE" title="einsums::packed_gemm::MicroKernelShape"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">MicroKernelShape</span></code></a> (<code class="docutils literal notranslate"><span class="pre">fast_scatter</span></code>)
+so callers take the scatter path anyway; <code class="docutils literal notranslate"><span class="pre">fast_scatter</span></code> is ignored when the
+contraction is batched.</p>
+<p>Every decline emits a <code class="docutils literal notranslate"><span class="pre">packed_gemm_skip</span></code> profiler annotation naming the reason,
+and an accepted call emits <code class="docutils literal notranslate"><span class="pre">packed_gemm_path</span></code> instead. Only two declines are
+also logged at INFO (<code class="docutils literal notranslate"><span class="pre">scatter_defer_to_ttgt</span></code> and <code class="docutils literal notranslate"><span class="pre">invalid_topology</span></code>); the
+topology checks behind <code class="docutils literal notranslate"><span class="pre">invalid_topology</span></code> log their detail at TRACE.</p>
+</section>
+<section id="execution-routes">
+<h2>Execution routes<a class="headerlink" href="#execution-routes" title="Link to this heading">#</a></h2>
+<p>A GEMV-shaped contraction can take the <code class="docutils literal notranslate"><span class="pre">stream</span></code> route before any plan is
+built: one streaming pass at a core’s memory bandwidth, used when the axes are
+not laid out as a matrix a vendor GEMV can take, or when the vendor GEMV would
+not thread.</p>
+<p>Within a valid plan, <code class="docutils literal notranslate"><span class="pre">blis_contraction</span></code> picks the cheapest route the shape
+allows, from fastest to most general. <code class="docutils literal notranslate"><span class="pre">last_contraction_route()</span></code> names the one
+taken.</p>
+<dl class="simple">
+<dt><strong>gemm_batch fast path</strong></dt><dd><p>Single-M, single-N, single-K with stride-compatible batch slices. The
+pointer arrays are precomputed and one <code class="docutils literal notranslate"><span class="pre">blas::gemm_batch</span></code> call covers
+every batch at once.</p>
+</dd>
+<dt><strong>Multi-K flatten + GEMM</strong> (<code class="docutils literal notranslate"><span class="pre">flatten_gemm</span></code>, <code class="docutils literal notranslate"><span class="pre">flatten_gemm_hptt</span></code>, <code class="docutils literal notranslate"><span class="pre">flatten_gemm_hptt_chunked</span></code>, <code class="docutils literal notranslate"><span class="pre">flatten_gemm_gather</span></code>)</dt><dd><p>Single-M, single-N with several link dims. The suffix says how the operands
+were made flat: already flat, transposed by HPTT (whole or in chunks), or
+gathered. <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> are flattened
+into contiguous <code class="docutils literal notranslate"><span class="pre">M*K</span></code> and <code class="docutils literal notranslate"><span class="pre">K*N</span></code> buffers, then one BLAS <code class="docutils literal notranslate"><span class="pre">gemm</span></code> runs on
+them. The flatten uses <a class="reference internal" href="../../HPTT/docs/index.html#modules-einsums-hptt"><span class="std std-ref">HPTT</span></a>, so it is
+cache-blocked and vectorized; a scalar gather loop is the fallback where
+HPTT is unavailable or the source is non-contiguous. When both operands are
+already in a usable layout the path is fully <strong>zero-copy</strong>: one <code class="docutils literal notranslate"><span class="pre">gemm</span></code>,
+no packing at all.</p>
+</dd>
+<dt><strong>K loop of GEMMs</strong> (<code class="docutils literal notranslate"><span class="pre">gemm_k_loop</span></code>)</dt><dd><p>A multi-K shape whose operands are GEMM-ready along one link index runs as
+a loop of GEMMs over the remaining link indices, accumulating into <code class="docutils literal notranslate"><span class="pre">C</span></code>
+with no buffer.</p>
+</dd>
+<dt><strong>Single-K GEMM</strong> (<code class="docutils literal notranslate"><span class="pre">single_k_gemm</span></code>)</dt><dd><p>Single-M, single-N, single-K: one strided vendor GEMM, no packing.</p>
+</dd>
+</dl>
+<p>The flatten, K-loop and single-K routes are skipped when packing is preferred:
+a node-scoped thread width or a <code class="docutils literal notranslate"><span class="pre">KernelRoute::Packed</span></code> pin.</p>
+<dl>
+<dt><strong>BLIS-style tiled packing</strong> (<code class="docutils literal notranslate"><span class="pre">packed</span></code>)</dt><dd><p>The general route. <code class="docutils literal notranslate"><span class="pre">A</span></code> is packed <code class="docutils literal notranslate"><span class="pre">MC</span> <span class="pre">x</span> <span class="pre">KC</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> is packed
+<code class="docutils literal notranslate"><span class="pre">KC</span> <span class="pre">x</span> <span class="pre">NC</span></code> into contiguous panels, and the resolved micro-kernel or a
+vendor <code class="docutils literal notranslate"><span class="pre">gemm</span></code> runs per tile, accumulating into <code class="docutils literal notranslate"><span class="pre">C</span></code>.</p>
+<p>Scatter is not a separate route but a write-back mode of <code class="docutils literal notranslate"><span class="pre">packed</span></code>, used
+for multi-M/N outputs and single-M/N layouts where neither output dim is
+unit-stride (batched <code class="docutils literal notranslate"><span class="pre">C</span></code> with a stride-1 batch index, strided views, the
+synthetic unit dims above). Its engines are tile, block_gemm, 3m and 1m.</p>
+</dd>
+</dl>
+<p>Leading dimensions are clamped up to the BLAS minimum on every route. For a
+transposed or size-1 output axis the natural stride can collapse below the row
+count BLAS requires (<code class="docutils literal notranslate"><span class="pre">&quot;nm</span> <span class="pre">&lt;-</span> <span class="pre">mkq</span> <span class="pre">;</span> <span class="pre">kqn&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">=</span> <span class="pre">1</span></code> gives a C stride of 1
+against an M larger than that), which BLAS rejects. The clamp is a no-op
+whenever the real stride already meets the bound.</p>
+</section>
+<section id="cache-aware-blocking">
+<h2>Cache-aware blocking<a class="headerlink" href="#cache-aware-blocking" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.compute_blocking.html#_CPPv4N7einsums11packed_gemm16compute_blockingE7int64_t" title="einsums::packed_gemm::compute_blocking"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">compute_blocking</span></code></a> derives
+<span class="math notranslate nohighlight">\(MC \times KC \times NC\)</span> at runtime from the cache hierarchy that
+<a class="reference internal" href="../../Hardware/docs/index.html#modules-einsums-hardware"><span class="std std-ref">Hardware</span></a> detected, for the element size passed
+in, so <code class="docutils literal notranslate"><span class="pre">double</span></code> (8 bytes) and <code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code> (16 bytes) get
+different blocks from the same code:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">KC</span></code></dt><dd><p>The K tile. Sized so one packed column of A (<code class="docutils literal notranslate"><span class="pre">MR</span> <span class="pre">*</span> <span class="pre">KC</span></code>) fits in roughly
+L1, floored at 64 and rounded down to a multiple of 8.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MC</span></code></dt><dd><p>The M tile. Sized so the whole packed A panel (<code class="docutils literal notranslate"><span class="pre">MC</span> <span class="pre">*</span> <span class="pre">KC</span></code>) fits in half of
+L2, rounded down to a multiple of <code class="docutils literal notranslate"><span class="pre">MR</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NC</span></code></dt><dd><p>The N tile. Sized so the packed B panel (<code class="docutils literal notranslate"><span class="pre">KC</span> <span class="pre">*</span> <span class="pre">NC</span></code>) fits in half of L3,
+rounded down to a multiple of <code class="docutils literal notranslate"><span class="pre">NR</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NR</span></code></dt><dd><p>The N register block, fixed at 6, which LLVM fully unrolls.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">MR</span></code>, the M register block, is <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">VL</span></code>: two full vector registers of
+<code class="docutils literal notranslate"><span class="pre">C</span></code> accumulators per column, where <code class="docutils literal notranslate"><span class="pre">VL</span></code> is the native vector length in
+doubles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A micro-kernel rung may override <code class="docutils literal notranslate"><span class="pre">KC</span></code>. The SME rung raises it, because
+its ZA tile accumulators hold the C block across the whole K loop, so a
+deeper K block means C is read-modify-written and the tiles extracted once
+rather than once per cache-sized K slice. <code class="docutils literal notranslate"><span class="pre">MC</span></code> shrinks to compensate,
+since the packed A panel is capped at a fixed 4 MiB
+(<code class="docutils literal notranslate"><span class="pre">MC</span> <span class="pre">&lt;=</span> <span class="pre">4</span> <span class="pre">MiB</span> <span class="pre">/</span> <span class="pre">(KC</span> <span class="pre">*</span> <span class="pre">sizeof(T))</span></code>).</p>
+</div>
+</section>
+<section id="the-micro-kernel-ladder">
+<h2>The micro-kernel ladder<a class="headerlink" href="#the-micro-kernel-ladder" title="Link to this heading">#</a></h2>
+<p>The tile kernel is compiled once per <a class="reference internal" href="../../SIMD/docs/index.html#modules-einsums-simd"><span class="std std-ref">SIMD dispatch</span></a>
+rung, each copy in its own namespace, and selected at runtime from the highest
+rung the CPU actually supports. PackedGemm builds the <code class="docutils literal notranslate"><span class="pre">baseline</span></code>, <code class="docutils literal notranslate"><span class="pre">v2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">v3</span></code>, <code class="docutils literal notranslate"><span class="pre">v4</span></code> and <code class="docutils literal notranslate"><span class="pre">sme</span></code> rungs. <a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.micro_kernel_entry.html#_CPPv4I0EN7einsums11packed_gemm18micro_kernel_entryE13MicroKernelFnI1TEv" title="einsums::packed_gemm::micro_kernel_entry"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">micro_kernel_entry</span></code></a>
+resolves the entry point once per contraction, and callers hoist it out of the
+tile loops; element types without a per-rung build fall back to an
+ambient-flags header instantiation.</p>
+<p>The rung owns the packing geometry, not just the arithmetic, which is why
+<code class="docutils literal notranslate"><span class="pre">MicroKernelShape</span></code> is queried alongside the kernel. The vector rungs (NEON,
+AVX) use their own vector tile, <code class="docutils literal notranslate"><span class="pre">MR</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">x</span></code> the rung’s native lanes and
+<code class="docutils literal notranslate"><span class="pre">NR</span> <span class="pre">=</span> <span class="pre">6</span></code>, not <code class="docutils literal notranslate"><span class="pre">cpu_config()</span></code>’s <code class="docutils literal notranslate"><span class="pre">MR</span></code>; the SME rung uses ZA-tile blocking,
+<code class="docutils literal notranslate"><span class="pre">MR</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">NR</span> <span class="pre">=</span> <span class="pre">4</span> <span class="pre">x</span></code> the streaming vector length in doubles (16x32 on
+an Apple M4). Panels must be packed in the geometry of the kernel that
+will read them.</p>
+<p>A tile either adds <span class="math notranslate nohighlight">\(\alpha A B\)</span> onto <code class="docutils literal notranslate"><span class="pre">C</span></code> or overwrites <code class="docutils literal notranslate"><span class="pre">C</span></code> with it
+without reading <code class="docutils literal notranslate"><span class="pre">C</span></code>. A zero <span class="math notranslate nohighlight">\(\beta\)</span> uses the second form on the first K
+block and the first form after it, so <code class="docutils literal notranslate"><span class="pre">C</span></code> is never cleared in a separate
+pass and a NaN it held does not survive, as BLAS specifies for
+<span class="math notranslate nohighlight">\(\beta = 0\)</span>. The scratch buffers a scattered <code class="docutils literal notranslate"><span class="pre">C</span></code> is written back from
+are always filled by overwriting tiles, so they need no clearing either.</p>
+<section id="complex-arithmetic">
+<h3>Complex arithmetic<a class="headerlink" href="#complex-arithmetic" title="Link to this heading">#</a></h3>
+<p>Two rung-selectable schemes replace the naive complex GEMM:</p>
+<dl class="simple">
+<dt><strong>1m (Van Zee)</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">A</span></code> packs in the expanded 1e form (<span class="math notranslate nohighlight">\([[a_r, -a_i], [a_i, a_r]]\)</span> per
+element) and <code class="docutils literal notranslate"><span class="pre">B</span></code> packs real and imaginary parts as adjacent K rows (1r),
+so the <strong>real</strong> tile kernel of the underlying real type computes
+interleaved-complex output directly. The working extents double
+(<span class="math notranslate nohighlight">\(M_h = 2M\)</span>, <span class="math notranslate nohighlight">\(K_h = 2K\)</span>). Measured 1.74x over Sort+GEMM for
+<code class="docutils literal notranslate"><span class="pre">complex&lt;double&gt;</span></code> on the M4 SME rung.</p>
+</dd>
+<dt><strong>3m (Karatsuba)</strong></dt><dd><p>On the block-GEMM path: three real vendor GEMMs per block
+(Re*Re, Im*Im, (Re+Im)*(Re+Im)) instead of one complex GEMM. That is 25%
+fewer flops, and the real GEMMs reach matrix hardware, such as Accelerate’s
+AMX, that complex arithmetic may not.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>3m mildly weakens the error bounds relative to conventional complex
+multiplication (Higham’s 3m analysis). A rung enables it only where the win
+has been measured.</p>
+</div>
+</section>
+<section id="choosing-the-scatter-engine">
+<h3>Choosing the scatter engine<a class="headerlink" href="#choosing-the-scatter-engine" title="Link to this heading">#</a></h3>
+<p>On the scatter path a rung picks between one vendor GEMM per cache block into a
+contiguous temporary followed by a scatter, which wins when the vendor library
+reaches hardware the tile kernel cannot (Accelerate’s AMX on M1-M3), and its own
+<code class="docutils literal notranslate"><span class="pre">MR</span> <span class="pre">x</span> <span class="pre">NR</span></code> tile kernel, which wins when the rung has FMOPA micro-tiles (SME).</p>
+</section>
+</section>
+<section id="parallelism-gate">
+<h2>Parallelism gate<a class="headerlink" href="#parallelism-gate" title="Link to this heading">#</a></h2>
+<p>The BLIS loops are OpenMP-parallel, but only above a work threshold.
+<code class="docutils literal notranslate"><span class="pre">CpuConfig::min_parallel_flops</span></code>, taken from
+<a class="reference internal" href="../../../../api/cpp/Einsums/Hardware/einsums.hardware.omp_min_parallel_flops.html#_CPPv4N7einsums8hardware22omp_min_parallel_flopsEv" title="einsums::hardware::omp_min_parallel_flops"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::hardware::omp_min_parallel_flops</span></code></a>, is the flop count below
+which forking a team costs more than the contraction. This is not a
+micro-optimization: a tiled CCSD residual at 50 spin orbitals expands to 3751
+contractions of roughly 295 KFLOP each, and forking for every one of them cost
+71 ms of that replay’s 72 ms of einsum time, against 33 ms with the regions
+declined. See <a class="reference internal" href="../../Hardware/docs/index.html#modules-einsums-hardware"><span class="std std-ref">Hardware</span></a> for how the threshold
+is derived and how to override it for an A/B measurement.</p>
+</section>
+<section id="packingplancache">
+<h2>PackingPlanCache<a class="headerlink" href="#packingplancache" title="Link to this heading">#</a></h2>
+<p>Plans are deterministic functions of the contraction’s index pattern,
+dimensions, and strides, so they cache cleanly.
+<a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.PackingPlanCache.html#_CPPv4N7einsums11packed_gemm16PackingPlanCacheE" title="einsums::packed_gemm::PackingPlanCache"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PackingPlanCache</span></code></a> keys on a
+<a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.ContractionKey.html#_CPPv4N7einsums11packed_gemm14ContractionKeyE" title="einsums::packed_gemm::ContractionKey"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">ContractionKey</span></code></a>, an exact-match digest of
+the call shape, behind a shared mutex. Only the <em>planning</em> is memoized, since
+the pack itself depends on the data and runs every time.</p>
+</section>
+<section id="cpu-configuration">
+<h2>CPU configuration<a class="headerlink" href="#cpu-configuration" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.cpu_config.html#_CPPv4N7einsums11packed_gemm10cpu_configEv" title="einsums::packed_gemm::cpu_config"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cpu_config</span></code></a> returns the cached
+<a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.CpuConfig.html#_CPPv4N7einsums11packed_gemm9CpuConfigE" title="einsums::packed_gemm::CpuConfig"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">CpuConfig</span></code></a> for the local machine: <code class="docutils literal notranslate"><span class="pre">VL</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MR</span></code>, <code class="docutils literal notranslate"><span class="pre">NR</span></code>, the three cache sizes, the measured OpenMP region cost, and the
+parallelism threshold. The hardware <strong>facts</strong> in it come from
+<a class="reference internal" href="../../Hardware/docs/index.html#modules-einsums-hardware"><span class="std std-ref">Einsums_Hardware</span></a>, the single detector shared
+with the ComputeGraph cost model. What stays here is kernel <strong>policy</strong>: the
+<code class="docutils literal notranslate"><span class="pre">MR</span></code>/<code class="docutils literal notranslate"><span class="pre">NR</span></code> register blocking and the BLIS cache blocking are tuning
+decisions that happen to read hardware numbers.</p>
+<p>The resolved configuration is logged at INFO on first use:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[info] cpu_config: rung=sme, VL=2 doubles (compiled width 2), MR=4, NR=6, L1=64K,
+       L2=16384K, L3=8192K shared by 1 cores, omp_region=24.62us, min_parallel_flops=295432
+</pre></div>
+</div>
+</section>
+<section id="future-direction-gpu">
+<h2>Future direction: GPU<a class="headerlink" href="#future-direction-gpu" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">PackingPlan</span></code> abstraction is backend-agnostic by design; only the pack
+kernel and the tile-GEMM emitter need swapping for a GPU backend. See the
+project roadmap for the Ozaki mixed-precision integration plan.</p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.try_packed_gemm.html#_CPPv4I_18BasicTensorConcept_18BasicTensorConcept_18BasicTensorConceptEN7einsums11packed_gemm15try_packed_gemmEbRK15ContractionSpec10ValueTypeTI5CTypeEP5CType12BiggestTypeTIN5AType9ValueTypeEN5BType9ValueTypeEERK5ATypeRK5BTypebP15ContractionSite" title="einsums::packed_gemm::try_packed_gemm"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">try_packed_gemm</span></code></a> - the entry point; returns false when the caller should fall back.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.ContractionSpec.html#_CPPv4N7einsums11packed_gemm15ContractionSpecE" title="einsums::packed_gemm::ContractionSpec"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">ContractionSpec</span></code></a> - the raw index lists plus the derived target/link/loop spaces.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.ContractionKey.html#_CPPv4N7einsums11packed_gemm14ContractionKeyE" title="einsums::packed_gemm::ContractionKey"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">ContractionKey</span></code></a> - exact-match digest of a call shape, the plan-cache key.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.PackingPlan.html#_CPPv4N7einsums11packed_gemm11PackingPlanE" title="einsums::packed_gemm::PackingPlan"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">PackingPlan</span></code></a> - the M/N/K/batch decomposition with per-tensor sizes and strides.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.compute_packing_topology.html#_CPPv4N7einsums11packed_gemm24compute_packing_topologyERK14ContractionKey" title="einsums::packed_gemm::compute_packing_topology"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">compute_packing_topology</span></code></a> - build the plan from a key; sets <code class="docutils literal notranslate"><span class="pre">valid</span></code>.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.PackingPlanCache.html#_CPPv4N7einsums11packed_gemm16PackingPlanCacheE" title="einsums::packed_gemm::PackingPlanCache"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PackingPlanCache</span></code></a> - thread-safe plan memoization.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.compute_blocking.html#_CPPv4N7einsums11packed_gemm16compute_blockingE7int64_t" title="einsums::packed_gemm::compute_blocking"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">compute_blocking</span></code></a> - cache-derived <code class="docutils literal notranslate"><span class="pre">MC</span></code>/<code class="docutils literal notranslate"><span class="pre">KC</span></code>/<code class="docutils literal notranslate"><span class="pre">NC</span></code>/<code class="docutils literal notranslate"><span class="pre">NR</span></code> for an element size.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.CpuConfig.html#_CPPv4N7einsums11packed_gemm9CpuConfigE" title="einsums::packed_gemm::CpuConfig"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">CpuConfig</span></code></a> / <a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.cpu_config.html#_CPPv4N7einsums11packed_gemm10cpu_configEv" title="einsums::packed_gemm::cpu_config"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cpu_config</span></code></a> - vector and cache configuration.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/einsums.packed_gemm.micro_kernel_entry.html#_CPPv4I0EN7einsums11packed_gemm18micro_kernel_entryE13MicroKernelFnI1TEv" title="einsums::packed_gemm::micro_kernel_entry"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">micro_kernel_entry</span></code></a> - resolve the tile kernel for the running CPU’s rung.</p></li>
+</ul>
+<p>See the <a class="reference internal" href="../../../../api/cpp/Einsums/PackedGemm/index.html#modules-einsums-packedgemm-api"><span class="std std-ref">API reference</span></a> of this module for
+the full generated surface.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../Options/docs/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Options</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../Preprocessor/docs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Preprocessor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-a-packed-backend">Why a packed backend</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-m-n-k-batch-decomposition">The M / N / K / batch decomposition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-packedgemm-fires">When PackedGemm fires</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-routes">Execution routes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-aware-blocking">Cache-aware blocking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-micro-kernel-ladder">The micro-kernel ladder</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complex-arithmetic">Complex arithmetic</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-scatter-engine">Choosing the scatter engine</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelism-gate">Parallelism gate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packingplancache">PackingPlanCache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpu-configuration">CPU configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#future-direction-gpu">Future direction: GPU</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

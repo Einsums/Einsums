@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SpaceDim:
+
+================================
+einsums::compute_graph::SpaceDim
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SpaceDim
+
+   One dimension of a declared tensor, given as an index space rather than a number.
+
+   Converts implicitly from ``SpaceId`` so a shape reads as what its axes MEAN
+   (``{occ, virt}``). An axis that is genuinely a fixed size is spelled ``fixed``
+   (``{occ, fixed(3)}``).
+
+   There is deliberately NO implicit conversion from an integer. A braced list of plain
+   numbers must keep selecting the dims-based overload unambiguously, and an all-literal
+   shape means the caller opted out of spaces entirely - ``fixed`` is how they say that
+   about one axis while still naming spaces for the others.
+
+   .. seealso::
+
+      fixed
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: constexpr SpaceDim(SpaceId s) noexcept
+
+      An axis over ``s``, sized from what the graph has learned about it.
+
+      :param s: The index space.
+
+
+   .. cpp:function:: constexpr SpaceDim(std::size_t n, std::nullptr_t tag) noexcept
+
+      An axis of fixed size, with no space attached. Prefer ``fixed``.
+
+      :param n: The extent.
+      :param tag: Disambiguates from the space-taking constructor.
+
+
+   .. cpp:member:: SpaceId space
+
+      The space this axis ranges over, or an invalid id when the axis is a literal.
+
+
+   .. cpp:member:: std::size_t extent
+
+      The extent, when ``space`` is invalid. Meaningless otherwise.

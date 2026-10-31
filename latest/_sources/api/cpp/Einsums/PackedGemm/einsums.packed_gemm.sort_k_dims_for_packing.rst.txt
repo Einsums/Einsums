@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.sort_k_dims_for_packing:
+
+=============================================
+einsums::packed_gemm::sort_k_dims_for_packing
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void sort_k_dims_for_packing(PackingPlan &plan)
+
+   Reorder k_dims_in_a and k_dims_in_b (same permutation) for cache-friendly packing.
+
+   Must be called after fill_strides() so tensor_stride values are populated.

@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Comm_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/Comm/Collectives.hpp``, ``Einsums/Comm/DistributionDescriptor.hpp``, ``Einsums/Comm/DistributionMap.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:enum-class:: DistStrategy
+
+   How a single dimension of a tensor is distributed across ranks.
+
+
+   .. cpp:enumerator:: Replicated
+
+   .. cpp:enumerator:: Blocked
+
+   .. cpp:enumerator:: BlockCyclic
+
+
+.. cpp:enum-class:: GridAxis
+
+   Which axis of the 2D process grid a tensor dimension is distributed along.
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Row
+
+   .. cpp:enumerator:: Col
+
+
+.. cpp:enum-class:: ReduceOp
+
+   Reduction operations for collective communication.
+
+
+   .. cpp:enumerator:: Sum
+
+   .. cpp:enumerator:: Max
+
+   .. cpp:enumerator:: Min
+
+   .. cpp:enumerator:: Prod

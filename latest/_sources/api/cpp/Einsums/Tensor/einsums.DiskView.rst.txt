@@ -1,0 +1,186 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.DiskView:
+
+=================
+einsums::DiskView
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/DiskTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t rank> DiskView final : public tensor_base::DiskTensor, public design_pats::Lockable<std::recursive_mutex>
+
+   Represents a view of a DiskTensor.
+
+   :tparam T: The data type stored by the tensor.
+   :tparam Rank: The rank of the view.
+
+
+   .. cpp:function:: template <size_t BaseRank> DiskView(DiskTensor<T, BaseRank> &parent, const Dim<rank> &dims, hid_t dataset, hid_t dataspace)
+
+      Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+
+
+   .. cpp:function:: template <size_t BaseRank> DiskView(const DiskTensor<T, BaseRank> &parent, const Dim<rank> &dims, hid_t dataset, hid_t dataspace)
+
+      Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+
+
+   .. cpp:function:: template <size_t BaseRank> DiskView(DiskView<T, BaseRank> &parent, const Dim<rank> &dims, hid_t dataset, hid_t dataspace)
+
+      Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+
+
+   .. cpp:function:: template <size_t BaseRank> DiskView(const DiskView<T, BaseRank> &parent, const Dim<rank> &dims, hid_t dataset, hid_t dataspace)
+
+      Construct a view of a tensor with the given dimensions and with the given dataset and dataspace.
+
+
+   .. cpp:function:: DiskView(const DiskView<T, rank> &) = default
+
+      Default copy constructor
+
+
+   .. cpp:function:: DiskView(DiskView<T, rank> &&) noexcept = default
+
+      Default move constructor
+
+
+   .. cpp:function:: ~DiskView()
+
+      Destructor.
+
+
+   .. cpp:function:: void set_read_only(bool readOnly)
+
+      Make the tensor view read only.
+
+
+   .. cpp:function:: DiskView<T, rank> & operator=(const T *other)
+
+      Copy data from a pointer to the view.
+
+      .. attention::
+
+         This is an expert method only. If you are using this, then you must know what you are doing!
+
+
+   .. cpp:function:: template <TensorConcept TType> requires SameUnderlyingAndRank<TType, DiskView<T, rank>> DiskView<T, rank> & operator=(const TType &other)
+
+      Copy a tensor into disk.
+
+
+   .. cpp:function:: BufferTensor<T, rank> & get()
+
+      Gets the underlying tensor holding the data.
+
+
+   .. cpp:function:: const BufferTensor<T, rank> & get() const
+
+      Gets the underlying tensor holding the data.
+
+
+   .. cpp:function:: BufferTensor<T, rank> & get_update()
+
+      Gets the underlying tensor holding the data. If the tensor has already been created,
+      update it with what is stored on disk.
+
+
+   .. cpp:function:: const BufferTensor<T, rank> & get_update() const
+
+      Gets the underlying tensor holding the data. If the tensor has already been created,
+      update it with what is stored on disk.
+
+
+   .. cpp:function:: void unget()
+
+      Writes the buffered tensor's data to the disk then destroys the buffered tensor.
+      There is no const version.
+
+
+   .. cpp:function:: void put()
+
+      Push any changes to the view to the disk.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (NoneOfType<AllT, MultiIndex...> && NoneOfType<Range, MultiIndex...>) const T & operator()(MultiIndex &&... index) const
+
+      Subscript into the tensor.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (NoneOfType<AllT, MultiIndex...> && NoneOfType<Range, MultiIndex...>) T & operator()(MultiIndex &&... index)
+
+      Subscript into the tensor.
+
+
+   .. cpp:function:: template <typename... MultiIndex> requires (count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0) DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(MultiIndex... index)
+
+   .. cpp:function:: template <typename... MultiIndex> requires (count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0) const DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> operator()(MultiIndex... index) const
+
+      This creates a Disk object with its Rank being equal to the number of All{} parameters
+      Range is not inclusive. Range{10, 11} === size of 1
+
+
+   .. cpp:function:: size_t dim(int d) const
+
+      Get the dimension along a given axis.
+
+
+   .. cpp:function:: Dim<rank> dims() const
+
+      Get all the dimensions of the view.
+
+
+   .. cpp:function:: size_t size() const
+
+      Get the size of the view.
+
+
+   .. cpp:function:: const std::string & name() const
+
+      Get the name of the tensor.
+
+
+   .. cpp:function:: void set_name(const std::string &new_name)
+
+      Set the name of the tensor.
+
+
+   .. cpp:function:: operator BufferTensor<T, rank> &()
+
+      Cast the tensor to Tensor<T,ViewRank>.
+
+
+   .. cpp:function:: operator const BufferTensor<T, rank> &() const
+
+      Cast the tensor to Tensor<T,ViewRank>.
+
+
+   .. cpp:function:: void zero()
+
+      Set all of the values of the tensor to zero.
+
+
+   .. cpp:function:: void set_all(T value)
+
+      Set all of the values of the tensor to the passed value.
+
+
+   .. cpp:function:: bool full_view_of_underlying() const
+
+      Gets whether the view is showing the whole tensor.
+
+
+   .. cpp:member:: static constexpr size_t Rank
+
+      The rank of the view.

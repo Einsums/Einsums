@@ -1,0 +1,67 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.LaplaceQuadratureDescriptor:
+
+===================================================
+einsums::compute_graph::LaplaceQuadratureDescriptor
+===================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: LaplaceQuadratureDescriptor
+
+   Metadata for ``OpKind::LaplaceQuadrature`` nodes.
+
+   The node reads one orbital-energy vector per axis, works out the spectral range of the
+   signed sum they form, builds the exponential-grid rule for the reciprocal of that sum, and
+   writes the points, the weights, the measured relative error and one exponential matrix per
+   axis. It exists as a node rather than as a chain of captured element operations because the
+   range is a REDUCTION over bound data and the grid is a transcendental function of it,
+   neither of which the node set can express; and as a node rather than as a closure because a
+   closure has nothing a file can hold.
+
+   Everything here is data, so a graph carrying one saves, loads and REFITS: a bind that moves
+   the energies moves the rule, at the point count this descriptor fixes.
+
+   .. seealso::
+
+      LaplaceQuadrature.hpp for the rule and its error bound
+
+   .. seealso::
+
+      passes::LaplaceTransform for the rewrite that emits one
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: double epsilon
+
+      The relative accuracy the rule was built for. Fixes where the grid is truncated, and
+      therefore what ``points`` buys.
+
+
+   .. cpp:member:: std::int64_t points
+
+      How many quadrature points. STRUCTURE rather than a bind-time decision, because the
+      node set the rewrite emits is sized by it; a bind refits the rule at this count.
+
+
+   .. cpp:member:: std::vector<std::int8_t> signs
+
+      Per axis, whether that axis's energy enters the denominator added (``+1``) or subtracted
+      (``-1``). One entry per input, in operand order.

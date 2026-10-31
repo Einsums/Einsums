@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.lassq:
+
+====================
+einsums::blas::lassq
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void lassq(int_t n, const T *x, int_t incx, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq)
+
+   Compute the sum of the squares of the input vector without roundoff error.
+
+   .. math::
+
+      scale^2 sumsq := \left|\mathbf{x}\right|^2 + scale^2 sumsq
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param n: The number of elements in the vector.
+   :param x: The input vector.
+   :param incx: The skip value for the vector.
+   :param scale: The scale value used to avoid overflow/underflow. It is also used as an input to continue a previous calculation.
+   :param sumsq: The result of the operation, scaled to avoid overflow/underflow. It is also used as an input to continue a previous calculation.

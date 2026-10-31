@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.NodeTimingSample:
+
+========================================
+einsums::compute_graph::NodeTimingSample
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: NodeTimingSample
+
+   One raw timing sample, as a replay records it.
+
+   Deliberately label-free: a replay writes one of these per node, and the
+   label is recoverable from the node id, so copying a label string per
+   node per replay was pure waste in an SCF/CC loop that replays the same
+   graph hundreds of times. ``Graph::timing_report`` attaches the labels once,
+   only if anyone asks for the report.
+
+
+   .. cpp:member:: NodeId id
+
+   .. cpp:member:: OpKind kind
+
+   .. cpp:member:: double duration_ms
+
+      Wall-clock time in milliseconds
+
+
+   .. cpp:member:: unsigned int width
+
+      Thread width the node ACTUALLY ran at, or 0 when the executor did
+      not place it at a chosen width.
+
+      A duration is only meaningful beside the width that produced it.
+      ThreadPlanning consumes a measurement as the node's SERIAL time, so
+      without this a node the previous plan widened reports t(w) as t(1),
+      looks cheaper than it is by its own speedup, drops under the fork
+      floor and gets narrowed - the planner punishing exactly the nodes
+      its last plan widened, and the harder the wider they ran.
+
+      Recorded rather than read back off the node because the node's
+      thread_width says what was PLANNED, not what happened: a stale plan
+      reaches the dataflow executor with widths_active false and every
+      node runs unwrapped with its thread_width still set. Inferring from
+      the node would then correct a measurement that needed no correcting.

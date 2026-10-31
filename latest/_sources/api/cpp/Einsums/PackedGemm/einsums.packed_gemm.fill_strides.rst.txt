@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.fill_strides:
+
+==================================
+einsums::packed_gemm::fill_strides
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void fill_strides(PackingPlan &plan, const ContractionKey &key)
+
+   Fill tensor strides in a PackingPlan from the strides ``key`` records for each operand.
+
+   The same strides `fill_strides(plan, A, B, C)` reads from the tensors, since a key records
+   each tensor's strides in index order.
+
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> void fill_strides(PackingPlan &plan, const AType &A, const BType &B, const CType &C)
+
+   Fill tensor strides in a PackingPlan from the actual runtime tensors.
+
+   Must be called after `compute_packing_topology` returns a valid plan.

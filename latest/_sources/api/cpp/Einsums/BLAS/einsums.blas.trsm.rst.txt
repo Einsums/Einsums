@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.trsm:
+
+===================
+einsums::blas::trsm
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void trsm(char side, char uplo, char transa, char diag, int_t m, int_t n, T alpha, const T *a, int_t lda, T *b, int_t ldb)
+
+   Solve a triangular matrix equation.
+
+   Solves :math:`op(\mathbf{A}) \mathbf{X} = \alpha \mathbf{B}` (side='L') or
+   :math:`\mathbf{X}\, op(\mathbf{A}) = \alpha \mathbf{B}` (side='R') for
+   :math:`\mathbf{X}`, where :math:`\mathbf{A}` is triangular and
+   :math:`op(\mathbf{A})` is :math:`\mathbf{A}`, :math:`\mathbf{A}^T`, or
+   :math:`\mathbf{A}^H` per ``transa``.
+
+   :param side: 'L': A is on the left; 'R': A is on the right.
+   :param uplo: 'U': A is upper triangular; 'L': lower triangular.
+   :param transa: 'N', 'T', or 'C' selecting op(A).
+   :param diag: 'U': A is unit triangular (diagonal assumed 1); 'N': non-unit.
+   :param m: Rows of B.
+   :param n: Columns of B.
+   :param alpha: Scalar multiplier on B.
+   :param a: The triangular matrix A.
+   :param lda: Leading dimension of a.
+   :param b: On entry the right-hand side B; on exit the solution X.
+   :param ldb: Leading dimension of b.

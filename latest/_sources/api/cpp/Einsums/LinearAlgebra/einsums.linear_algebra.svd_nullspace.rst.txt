@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.svd_nullspace:
+
+======================================
+einsums::linear_algebra::svd_nullspace
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> requires (CoreTensorConcept<AType>) Tensor<typename AType::ValueType, 2> svd_nullspace(const AType &_A)
+
+   Computes the nullspace based on the singular value decomposition.
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the matrix to decompose.
+   :param _A: The matrix to decompose.
+   :throws std::invalid_argument: If one of the parameters passed to the internal functions is invalid.
+   :throws std::runtime_error: If the decomposition algorithm did not converge.
+   :returns: The nullspace of the input matrix.

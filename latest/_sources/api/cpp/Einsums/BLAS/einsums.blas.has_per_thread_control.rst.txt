@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.has_per_thread_control:
+
+=====================================
+einsums::blas::has_per_thread_control
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: bool has_per_thread_control()
+
+   Whether the linked BLAS exposes the per-thread control above.
+
+   False means ``set_num_threads_this_thread`` is a no-op, either because the
+   vendor threads through OpenMP (and so is already governed by the OpenMP ICVs)
+   or because it offers no per-thread knob at all. Intended for tests and for
+   reporting the runtime configuration, not for branching in hot code.
+
+   .. versionadded:: 2.0.0

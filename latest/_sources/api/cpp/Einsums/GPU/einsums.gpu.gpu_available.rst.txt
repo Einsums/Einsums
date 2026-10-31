@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.gpu_available:
+
+===========================
+einsums::gpu::gpu_available
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Platform.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:function:: bool gpu_available()
+
+   True when GPU work can actually run right now.
+
+   What gates offload; `has_gpu` is only a build flag.

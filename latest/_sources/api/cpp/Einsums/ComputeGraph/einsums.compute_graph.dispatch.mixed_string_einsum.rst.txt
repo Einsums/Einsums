@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.mixed_string_einsum:
+
+=====================================================
+einsums::compute_graph::dispatch::mixed_string_einsum
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires detail::EinsumElement<typename AType::ValueType> && detail::EinsumElement<typename BType::ValueType> && detail::EinsumElement<typename CType::ValueType> && (!(std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>)) void mixed_string_einsum(const ParsedEinsumSpec &parsed, typename CType::ValueType c_pf, CType *C, detail::PromoteT<typename AType::ValueType, typename BType::ValueType> ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b, const std::vector<std::string> *precomputed_links)
+
+   An einsum whose operands do not all share one element type.
+
+   The products and the sum are formed in the accumulator type promoted from A and B (complex if
+   either is, at the wider precision; see Detail/MixedPrecision.hpp), and the result is rounded to
+   C's type. There are no BLAS or PackedGemm routines over mixed types, so every such call runs the
+   generic loop; the zero-extent rule and the output-aliasing policy are the ones string_einsum
+   applies. Permutation operators are not supported here: their temporary goes through the
+   single-type permute.
+
+   :throws std::invalid_argument: for a spec with permutation operators, or for output aliasing.

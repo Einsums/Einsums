@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ParsedNaryEinsumSpec:
+
+============================================
+einsums::compute_graph::ParsedNaryEinsumSpec
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ParsedNaryEinsumSpec
+
+   The index lists of an einsum over any number of operands.
+
+   ``"i,j,a,b <- Q,a,e ; Q,b,f ; i,j,e,f"`` names the output and three operands. Each operand may be
+   wrapped in ``conj(...)``, and permutation operators may prefix the operands as in a two-operand
+   spec; they act on the output. A letter in the output is kept, and every other letter is summed,
+   whichever operands carry it.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      The output's indices.
+
+
+   .. cpp:member:: std::vector<std::vector<std::string>> operands
+
+      Each operand's indices, in order.
+
+
+   .. cpp:member:: std::vector<bool> conj
+
+      Whether each operand is wrapped in conj(...).
+
+
+   .. cpp:member:: std::vector<PermutationOperator> operators
+
+      Permutation operators prefixing the term.
+
+
+   .. cpp:member:: std::string raw
+
+      The spec as written.

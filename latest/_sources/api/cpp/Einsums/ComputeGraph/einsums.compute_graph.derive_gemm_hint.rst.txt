@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.derive_gemm_hint:
+
+========================================
+einsums::compute_graph::derive_gemm_hint
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::shared_ptr<GemmHint> derive_gemm_hint(packed_gemm::ScalarType dtype, const packed_gemm::ContractionSpec &spec, Graph &graph, TensorId a_id, TensorId b_id, TensorId c_id)
+
+   Derive a node's ``GemmHint``, or decide it has none.
+
+   The one derivation, shared by capture (``cg::einsum``) and
+   ``Graph::make_einsum_node``. A hint describing a product the einsum does not
+   perform stays invisible until GEMMBatching batches it and ``gemm_batch``
+   miscomputes.
+
+   **The gate**
+
+   Three rank-2 operands, two index letters apiece, exactly one link index, and
+   strides that are monotone in each operand's own declared storage order. That
+   last clause is not redundant with the layout flag: a permute_view keeps its
+   parent's flag while presenting reordered strides, so the flag alone does not
+   prove the canonical layout ``gemm_batch`` assumes.
+
+   **The roles clause**
+
+   The batched form is ``C = op(A) * op(B)``, so C's FIRST index must be the one
+   A contributes and its SECOND the one B contributes. ``"ia <- ma ; mi"`` has
+   them swapped - ``i`` comes from B - and m/n/k would then describe a different
+   matrix product. The generic kernel contracts correctly either way and never
+   consults the hint, so a wrong hint stays invisible until a batch forms. Emit
+   no hint rather than a wrong one.
+
+   Never throws: an operand with no resolvable geometry simply yields no hint,
+   because a hint is an optimization and its absence is always legal.
+
+   :param dtype: Element type shared by the three operands.
+   :param spec: The contraction's index lists and link set.
+   :param graph: Graph the operand ids belong to.
+   :param a_id: Left input.
+   :param b_id: Right input.
+   :param c_id: Destination.
+   :returns: The hint, or null when the contraction does not qualify.

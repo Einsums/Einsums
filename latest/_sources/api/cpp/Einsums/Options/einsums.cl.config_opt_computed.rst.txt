@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.config_opt_computed:
+
+================================
+einsums::cl::config_opt_computed
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: template <typename T> constexpr ConfigOption<T> config_opt_computed(std::string_view name, std::string_view help, std::string_view category, T (*provider)(), std::string_view value_name)
+
+   Declare a value option whose default is only knowable at run time, such as
+   the system temporary directory or a name built from the process id.

@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.find_char_with_position:
+
+================================
+einsums::find_char_with_position
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/StringOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename int_type, typename Alloc> void find_char_with_position(const std::string &needles, const std::string &haystack, std::vector<int_type, Alloc> *out)
+
+   Go through the first string and find the index of each character in the second string. Put them in the output vector
+   in the order they show up in the first string.
+
+   .. versionadded:: 2.0.0
+
+   :param needles: The string with the characters being searched for.
+   :param haystack: The string whose characters are being indexed.
+   :param out: The vector containing the indices.

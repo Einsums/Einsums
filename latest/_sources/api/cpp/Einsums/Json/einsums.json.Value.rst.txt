@@ -1,0 +1,159 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.json.Value:
+
+====================
+einsums::json::Value
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:class:: Value
+
+   One JSON value: null, bool, int64, double, string, array or object.
+
+   .. note::
+
+      Exported per-member rather than per-class; see the note on ``Object``.
+      ``Array`` is a ``std::vector<Value>``, so this class holds itself
+      incompletely too.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: Value() = default
+
+   .. cpp:function:: Value(std::nullptr_t)
+
+   .. cpp:function:: Value(bool value)
+
+   .. cpp:function:: Value(std::int64_t value)
+
+   .. cpp:function:: Value(int value)
+
+   .. cpp:function:: Value(std::size_t value)
+
+   .. cpp:function:: Value(double value)
+
+   .. cpp:function:: Value(std::string value)
+
+   .. cpp:function:: Value(const char *value)
+
+   .. cpp:function:: Value(std::string_view value)
+
+   .. cpp:function:: Value(Array value)
+
+   .. cpp:function:: Value(Object value)
+
+   .. cpp:function:: Type type() const noexcept
+
+      The alternative this value holds.
+
+
+   .. cpp:function:: bool is_null() const noexcept
+
+   .. cpp:function:: bool is_bool() const noexcept
+
+   .. cpp:function:: bool is_int() const noexcept
+
+   .. cpp:function:: bool is_double() const noexcept
+
+   .. cpp:function:: bool is_number() const noexcept
+
+      True for either numeric alternative, for a reader that accepts ``1`` where a double is meant.
+
+
+   .. cpp:function:: bool is_string() const noexcept
+
+   .. cpp:function:: bool is_array() const noexcept
+
+   .. cpp:function:: bool is_object() const noexcept
+
+   .. cpp:function:: bool as_bool() const
+
+      The boolean this value holds.
+
+      :returns: The value. Precondition: ``is_bool``.
+
+
+   .. cpp:function:: std::int64_t as_int() const
+
+      The integer this value holds.
+
+      :returns: The value. Precondition: ``is_int``.
+
+
+   .. cpp:function:: double as_double() const
+
+      This value as a double, widening an integer if that is what it holds.
+
+      :returns: The value. Precondition: ``is_number``.
+
+
+   .. cpp:function:: const std::string & as_string() const
+
+      The string this value holds.
+
+      :returns: The value. Precondition: ``is_string``.
+
+
+   .. cpp:function:: const Array & as_array() const
+
+      The array this value holds.
+
+      :returns: The value. Precondition: ``is_array``.
+
+
+   .. cpp:function:: const Object & as_object() const
+
+      The object this value holds.
+
+      :returns: The value. Precondition: ``is_object``.
+
+
+   .. cpp:function:: static std::string_view type_name(Type type) noexcept
+
+      The name of ``type``, for a diagnostic.
+
+      :param type: The type to name.
+      :returns: ``"null"``, ``"bool"``, ``"integer"``, ``"number"``, ``"string"``, ``"array"`` or ``"object"``.
+
+
+   .. cpp:function:: std::string_view type_name() const noexcept
+
+      The name of this value's own type.
+
+
+   .. cpp:member:: Position position
+
+      Where in the parsed text this value began. Default-constructed for a value a writer built.
+
+
+   .. cpp:enum-class:: Type
+
+      Which alternative a value holds.
+
+
+      .. cpp:enumerator:: Null
+
+      .. cpp:enumerator:: Bool
+
+      .. cpp:enumerator:: Int
+
+      .. cpp:enumerator:: Double
+
+      .. cpp:enumerator:: String
+
+      .. cpp:enumerator:: Array
+
+      .. cpp:enumerator:: Object

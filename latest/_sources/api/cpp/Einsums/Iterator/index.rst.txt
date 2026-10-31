@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Iterator_api:
+
+================
+Iterator C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Iterator>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::Zip` - Works like Python's ``zip()`` function.
+- :cpp:any:`~einsums::ZipIter` - An iterator that iterates over several containers simultaneously.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::enumerate` - Mimic Python's enumerate.
+- :cpp:any:`~einsums::for_sequence` - Provides compile-time for loop over a sequence.
+- :cpp:any:`~std::swap` - Overload for swap.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.enumerate
+   einsums.for_sequence
+   einsums.Zip
+   einsums.ZipIter
+   std.swap

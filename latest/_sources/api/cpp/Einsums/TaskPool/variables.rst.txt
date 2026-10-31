@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TaskPool_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/ExecutionPolicy.hpp``.
+
+.. cpp:namespace:: einsums::task_pool::execution
+
+.. cpp:var:: inline constexpr SequentialPolicy seq
+
+   Pre-defined policy instances.

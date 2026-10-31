@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.profile.SpdlogSink:
+
+============================
+einsums::profile::SpdlogSink
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Profile/SpdlogSink.hpp``.
+
+.. cpp:namespace:: einsums::profile
+
+.. cpp:class:: SpdlogSink final : public spdlog::sinks::base_sink<std::mutex>
+
+   An spdlog sink that streams Einsums' log messages to the profiler's viewers.
+
+   Installed for the life of the logger. With no server running each message costs one atomic
+   load, so a server started later still receives every message from then on.
+
+   It must never log through EINSUMS_LOG_*, which would recurse into it.

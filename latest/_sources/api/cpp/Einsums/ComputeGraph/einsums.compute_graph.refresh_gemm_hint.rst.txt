@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.refresh_gemm_hint:
+
+=========================================
+einsums::compute_graph::refresh_gemm_hint
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ExecutorBuilder.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void refresh_gemm_hint(Graph &graph, Node &node)
+
+   Derive an einsum node's GEMM hint again, from its index lists and the operands it lists now.
+
+   The hint is derived data, so a pass that rewrites an einsum in place (its index lists, which
+   tensor it reads, or the layout of one it reads) calls this afterwards. GEMMBatching keys its
+   groups and runs its batched call on the hint, so a stale one multiplies the wrong matrices, and
+   the loader re-derives every saved hint and refuses a file whose hint its operands contradict.
+
+   The operands are read as GEMMBatching reads them: the first two inputs and the one output, with
+   the element type of that output, which is how a saved node records it. A node not shaped that way
+   is left with no hint. Does nothing to a node that is not an einsum.
+
+   :param graph: Graph the node belongs to.
+   :param node: The rewritten node.

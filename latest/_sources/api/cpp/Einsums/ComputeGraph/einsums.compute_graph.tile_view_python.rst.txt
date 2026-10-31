@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.tile_view_python:
+
+========================================
+einsums::compute_graph::tile_view_python
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename ParentT> requires TiledTensorConcept<ParentT> RuntimeTensorView<typename std::remove_cvref_t<ParentT>::ValueType> & tile_view_python(ParentT &parent, const std::vector<int> &coord)
+
+   Record a dense, parent-aliasing view of a single tile.
+
+   The tiled capture-view primitive. A tile is a full-rank dense block, so
+   the returned ``RuntimeTensorView`` feeds the ENTIRE dense op surface -
+   einsum, gemm, permute, axpby, ... - inside capture, which is exactly how
+   tiled workflows iterate (per tile block, the shape TiledExpansion itself
+   lowers to). Element-granular slicing of a tiled tensor is deliberately
+   not offered: a slice crossing tile boundaries has no single buffer.
+
+   The tile is created (deferred, dims fixed by the grid) at capture if
+   absent - value-equivalent, since absent tiles are rigorous zeros and a
+   created tile materializes zeroed. Each replay the executor re-resolves
+   the tile from the LIVE parent and re-emplaces the view, so parents whose
+   storage moves between replays (graph-owned deferred scratch released by
+   FreeInsertion and re-materialized) stay correct.
+
+   The recorded ViewDescriptor carries one constant ``[c, c+1)`` range per
+   axis IN TILE UNITS: the disjointness-aware hazard scan then proves views
+   of distinct tiles non-conflicting, so per-tile writes to one output can
+   be scheduled concurrently. Units stay consistent because element-unit
+   boxes cannot appear on a tiled parent (the dense view entry points do
+   not accept one).
+
+   .. code-block:: text
+
+      with cg.capture(g):
+            for i in range(2):
+                a = cg.tile_view(A, [i, 0])
+                c = cg.tile_view(C, [i, 0])
+                einsums.einsum("ij <- ik ; kj", c, a, B, c_pf=0.0, ab_pf=1.0)

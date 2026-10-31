@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.dot:
+
+=======================
+einsums::gpu::blas::dot
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: template <typename T> T dot(int64_t n, const T *x, int64_t incx, const T *y, int64_t incy)
+
+   Dot product on device memory: result = x . y.
+
+   :param n: Number of elements.
+   :param x: Device pointer to first vector.
+   :param incx: Stride for x.
+   :param y: Device pointer to second vector.
+   :param incy: Stride for y.
+   :returns: The dot product.

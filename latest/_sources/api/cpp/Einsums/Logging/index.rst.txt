@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Logging_api:
+
+===============
+Logging C++ API
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Logging>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::get_log_level` - Return the current runtime log level on the einsums logger.
+- :cpp:any:`~einsums::register_Einsums_Logging_options` - Give the logging options their command-line presence. Idempotent.
+- :cpp:any:`~einsums::set_log_level` - Set the runtime log level on the einsums logger.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::LogDestination` - Where log records go: `cerr`, `cout`, or a file name.
+- :cpp:any:`~einsums::option::LogFormat` - The spdlog pattern each record is rendered with.
+- :cpp:any:`~einsums::option::LogLevel` - spdlog's numeric level: 0=TRACE, 1=DEBUG, 2=INFO, 3=WARN, 4=ERROR.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_DETAIL_DECLARE_SPDLOG` - Create the prototype of a logger.
+- :c:macro:`EINSUMS_DETAIL_DEFINE_SPDLOG` - Create the definition of a logger.
+- :c:macro:`EINSUMS_DETAIL_SPDLOG` - Implementation detail for the log macros.
+- :c:macro:`EINSUMS_DETAIL_SPDLOG_ENABLED` - Checks to see if the logger can handle the given log level.
+- :c:macro:`EINSUMS_LOG` - Log a message at the given level.
+- :c:macro:`EINSUMS_LOG_CRITICAL` - Log an unrecoverable error. Takes a format string and arguments.
+- :c:macro:`EINSUMS_LOG_DEBUG` - Log a debug message. Compiled out in Release builds. Takes a format string and arguments.
+- :c:macro:`EINSUMS_LOG_ENABLED` - Determine if Einsums has the given log level enabled.
+- :c:macro:`EINSUMS_LOG_ERROR` - Log an error, often alongside an exception. Takes a format string and arguments.
+- :c:macro:`EINSUMS_LOG_INFO` - Log an informational message, such as a configuration value. Takes a format string and arguments.
+- :c:macro:`EINSUMS_LOG_TRACE` - Log a trace message, the lowest priority. Compiled out in Release builds. Takes a format string and arguments.
+- :c:macro:`EINSUMS_LOG_WARN` - Log a warning about a recoverable issue. Takes a format string and arguments.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.get_log_level
+   einsums.register_Einsums_Logging_options
+   einsums.set_log_level
+   variables
+   macros

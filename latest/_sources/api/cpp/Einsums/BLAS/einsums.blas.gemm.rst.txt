@@ -1,0 +1,63 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.gemm:
+
+===================
+einsums::blas::gemm
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> void gemm(char transa, char transb, int_t m, int_t n, int_t k, T alpha, const T *a, int_t lda, const T *b, int_t ldb, T beta, T *c, int_t ldc)
+
+   Perform a General Matrix Multiply (GEMM) operation.
+
+   This function computes the product of two matrices,
+
+   .. math::
+
+      \mathbf{C} := \alpha \mathbf{A}\mathbf{B} + \beta\mathbf{C}
+
+   where :math:`\mathbf{A}`, :math:`\mathbf{B}`, and :math:`\mathbf{C}` are matrices, and
+   :math:`\alpha` and :math:`\beta` are scalar values.
+
+   .. note::
+
+      The function performs one of the following matrix operations:
+
+      - If transA is 'N' or 'n' and transB is 'N' or 'n': :math:`\mathbf{C} = \alpha\mathbf{AB} + \beta\mathbf{C}`
+      - If transA is 'N' or 'n' and transB is 'T' or 't': :math:`\mathbf{C} = \alpha\mathbf{A}\mathbf{B}^T + \beta\mathbf{C}`
+      - If transA is 'T' or 't' and transB is 'N' or 'n': :math:`\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B} + \beta\mathbf{C}`
+      - If transA is 'T' or 't' and transB is 'T' or 't': :math:`\mathbf{C} = \alpha\mathbf{A}^T\mathbf{B}^T + \beta\mathbf{C}`
+      - If transA is 'C' or 'c' and transB is 'N' or 'n': :math:`\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B} + \beta\mathbf{C}`
+      - If transA is 'C' or 'c' and transB is 'T' or 't': :math:`\mathbf{C} = \alpha\mathbf{A}^H\mathbf{B}^Y + \beta\mathbf{C}`
+      - etc.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The datatype of the GEMM.
+   :param transa: Whether to transpose matrix a : - 'N' or 'n' for no transpose, - 'T' or 't' for transpose, - 'C' or 'c' for conjugate transpose.
+   :param transb: Whether to transpose matrix b .
+   :param m: The number of rows in matrix A and C.
+   :param n: The number of columns in matrix B and C.
+   :param k: The number of columns in matrix A and rows in matrix B.
+   :param alpha: The scalar alpha.
+   :param a: A pointer to the matrix A with dimensions `(lda, k)` when transa is 'N' or 'n', and `(lda, m)` otherwise.
+   :param lda: Leading dimension of A, specifying the distance between two consecutive columns.
+   :param b: A pointer to the matrix B with dimensions `(ldb, n)` when transB is 'N' or 'n', and `(ldb, k)` otherwise.
+   :param ldb: Leading dimension of B, specifying the distance between two consecutive columns.
+   :param beta: The scalar beta.
+   :param c: A pointer to the matrix C with dimensions `(ldc, n)`.
+   :param ldc: Leading dimension of C, specifying the distance between two consecutive columns.
+   :throws std::invalid_argument: If ``transA`` or ``transB`` are invalid.
+   :throws std::domain_error: If the values of ``m`` , ``n`` , or ``k`` are negative, or the values of ``lda`` , ``ldb`` , or ``ldc`` are invalid.

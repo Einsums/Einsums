@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.indices_to_sentinel_negative_check:
+
+===========================================
+einsums::indices_to_sentinel_negative_check
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/IndexUtilities.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t num_unique_inds, typename... MultiIndex> requires (std::is_integral_v<std::decay_t<MultiIndex>> && ...) size_t indices_to_sentinel_negative_check(const std::array<std::int64_t, num_unique_inds> &unique_strides, const std::array<std::int64_t, num_unique_inds> &dims, MultiIndex &&... indices)
+
+   Converts indices to a sentinel. Checks for negative numbers and converts them.
+
+   Negative indices count from the end. Host only, as it throws.
+
+
+.. cpp:function:: template <typename StorageType1, typename StorageType2, typename StorageType3> requires (!std::is_arithmetic_v<StorageType1> && !std::is_arithmetic_v<StorageType2> && !std::is_arithmetic_v<StorageType3>) size_t indices_to_sentinel_negative_check(const StorageType1 &unique_strides, const StorageType2 &unique_dims, const StorageType3 &inds)
+
+   Converts indices to a sentinel. Checks for negative numbers and converts them.
+
+   Negative indices count from the end. Host only, as it throws.

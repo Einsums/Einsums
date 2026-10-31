@@ -1,0 +1,244 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.MultiTermFactorization:
+
+======================================================
+einsums::compute_graph::passes::MultiTermFactorization
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/MultiTermFactorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: MultiTermFactorization : public RegionRewrite
+
+   Jointly choose contraction orders and shared intermediates over one region.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("mtf");
+      {
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("i,l <- i,k ; k,l", 0.0, &T1, 1.0, A, B);     // whatever order the author wrote
+          cg::einsum("i,j <- i,l ; l,j", 0.0, &R1, 1.0, T1, C);
+          cg::einsum("k,j <- k,l ; l,j", 0.0, &T2, 1.0, B, D);     // the other bracketing
+          cg::einsum("i,j <- i,k ; k,j", 0.0, &R2, 1.0, A, T2);
+      }
+      cg::PassManager pm;
+      auto pass = std::make_shared<cg::passes::MultiTermFactorization>();
+      pass->set_search_enabled(true);      // or set einsums:graph:structural-search
+      pm.add(pass);
+      graph.apply(pm);
+      // Both terms now read one shared (A B), and T2 is gone.
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums.graph as cg
+      mtf = cg.MultiTermFactorization()
+      mtf.set_search_enabled(True)
+      pm = cg.PassManager(); pm.add(mtf); pm.add(cg.Materialization()); pm.run(g)
+      # mtf.num_shared -> 1   (getters are properties, not methods)
+
+   **Limitations**
+
+   - A term's factors are flattened out of the captured chain only through intermediates the region can dissolve: written once, overwritten rather than accumulated, carrying a product prefactor of one, and reading nothing a statement in between overwrites. Anything else stays a factor in its own right, which is correct but hides the products inside it from the search.
+   - A definition several statements consume is inlined into each consumer whose bracketing it improves and KEPT for the rest, which is why a consumer that gains nothing costs nothing. The definition is dissolved only when every consumer took it. At most ``max_readers`` consumers are considered; a definition more of them read is left whole with the reason.
+   - Three node kinds present the product the flattener reads: a contraction, a ``OpKind::DirectProduct`` (the same product with no summed letter) and a ``OpKind::Dot`` (the same product summed over every letter). An amplitude formed by a contraction, scaled by a direct product and reduced by a dot is therefore one product rather than a stored leaf every candidate has to rebuild.
+   - Shared occurrences must be in DIFFERENT terms. Two occurrences of one pair inside one term would have to be applied together under a disjointness check, since applying one moves the other's factor positions and the two may name a factor in common.
+   - Factors are capped at ``max_factors``, because the per-term program is exponential in that number and a cap is the honest way to bound it. The cap is a property of the program a caller brings rather than of the pass, so it comes from ``einsums:graph:factorization-max-factors`` unless ``set_max_factors`` overrides it here.
+   - A factor that repeats an index letter is a diagonal access, whose cost this pass does not model; such a term is declined.
+   - Shared candidates are pairs. See the file note for what that does and does not reach.
+   - A candidate that would leave a term with a single factor is declined: the result would be a copy rather than a contraction, which is `CSE`'s business and not a shape this emits.
+
+
+   .. cpp:function:: MultiTermFactorization() = default
+
+      Default-construct. Explicit so the binding codegen has a constructor to annotate.
+
+
+   .. cpp:function:: std::string name() const override
+
+      The pass name.
+
+      :returns: ``"MultiTermFactorization"``.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Re-bracketing a product changes the order its sums accumulate in. That is what this tier
+      is, and it is why this pass declares a norm-relative bound rather than bit equality.
+
+
+   .. cpp:function:: void set_search_enabled(bool on)
+
+      Run the search on this pipeline whatever ``einsums:graph:structural-search`` says.
+
+      The programmatic half of the option, and it exists for the reason ``PassManager::enable``
+      does: a driver that had only the option would have to mutate process-global configuration
+      to exercise one pipeline, which also makes it unrunnable concurrently. An explicit setting
+      wins over the option in both directions.
+
+      :param on: Whether to search.
+
+
+   .. cpp:function:: bool search_enabled() const
+
+      Whether the search will run, taking the explicit setting over the option.
+
+      :returns: True when this pass will look for anything.
+
+
+   .. cpp:function:: std::size_t max_factors() const
+
+      The largest number of factors a term may have before it is declined.
+
+      Taken from ``einsums:graph:factorization-max-factors`` unless ``set_max_factors`` has
+      stated one for this pipeline, which is the same two-level shape ``search_enabled`` has and
+      exists for the same reason: a driver that had only the option would have to mutate
+      process-global configuration to exercise one pipeline.
+
+      :returns: The cap. The per-term program is ``3^N`` in this number, so fourteen is a few million subset splits and twenty is over three billion; a cap in the twenties is a request to run under ``einsums:graph:optimizer-budget`` and keep the best tree found when it expires.
+
+
+   .. cpp:function:: void set_max_factors(std::size_t cap)
+
+      Set the factor cap for this pipeline, overriding the option.
+
+      :param cap: The new cap, clamped to at least two.
+
+
+   .. cpp:function:: std::size_t max_readers() const
+
+      How many consumers a definition may be inlined into before it is left whole.
+
+      The bound on the other direction the search grows in. A definition several statements read
+      is inlined into each of them that profits and kept for the rest, so a definition with ``k``
+      consumers costs at most ``k`` terms and each of them is capped by ``max_factors`` on its
+      own. Taken from ``einsums:graph:factorization-max-readers`` unless
+      ``set_max_readers`` has stated one for this pipeline.
+
+      :returns: The cap. Search time grows linearly in it, not exponentially.
+
+
+   .. cpp:function:: void set_max_readers(std::size_t cap)
+
+      Set the consumer cap for this pipeline, overriding the option.
+
+      :param cap: The new cap, clamped to at least one.
+
+
+   .. cpp:function:: std::size_t num_rebracketed() const
+
+      How many multi-factor terms the search re-bracketed.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_shared() const
+
+      How many intermediates it introduced for more than one term to share.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_inlined() const
+
+      How many captured intermediates it dissolved into their consumers.
+
+      :returns: The count. A definition kept for one consumer and inlined into another is not dissolved and is counted by ``num_copies`` instead.
+
+
+   .. cpp:function:: std::size_t num_copies() const
+
+      How many times the flattening made a captured value be computed again.
+
+      :returns: The count. A definition every consumer inlined MOVES rather than copies, so the consumer that took its place is not a copy and the others are; a definition a consumer kept is a copy in each of the consumers that took it.
+
+
+   .. cpp:function:: void set_cache_enabled(bool on)
+
+      Keep and replay plans on this pipeline whatever ``einsums:graph:factorization-cache`` says.
+
+      The programmatic half of the option, for the reason ``set_search_enabled`` is: a driver
+      that had only the option would have to mutate process-global configuration to exercise one
+      pipeline. An explicit setting wins over the option in both directions, and switching the
+      cache off does not discard what it already holds; ``clear_cache`` does that.
+
+      :param on: Whether to cache.
+
+
+   .. cpp:function:: bool cache_enabled() const
+
+      Whether plans will be kept, taking the explicit setting over the option.
+
+      :returns: True when this pass will store and replay plans.
+
+
+   .. cpp:function:: void clear_cache()
+
+      Forget every plan this pass has kept.
+
+      The explicit clear the cache is specified to have. Nothing invalidates an entry on its own,
+      because nothing can: an entry is keyed on the content hash of the graph that produced it,
+      so a changed graph misses rather than reading a stale plan.
+
+
+   .. cpp:function:: std::size_t num_cache_hits() const
+
+      How many regions replayed a plan instead of searching, this apply.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_cache_misses() const
+
+      How many regions searched because no plan was held for them, this apply.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t cache_size() const
+
+      How many plans are held.
+
+      :returns: The count, which survives ``reset_stats`` and is zeroed only by ``clear_cache``.
+
+
+   .. cpp:function:: bool was_cut_off() const
+
+      Whether the last run stopped because its wall-clock allowance ran out.
+
+      A report that could not distinguish this from "the graph was already optimal" would be
+      useless in exactly the case a budget exists for, so the pass says which one happened.
+
+      **What a cut-off means for the emitted graph**
+
+      The tree the pass emits becomes a function of how fast the machine is, because the search
+      keeps the best candidate it had reached rather than the best one there is. That costs
+      optimization and not correctness, and a partial plan is never cached, so nothing durable
+      carries the machine in it. A caller that needs the SAME graph out of two runs, a test
+      asserting a shape above all, therefore has to take the allowance away rather than make it
+      generous: ``PassManager::set_optimizer_budget(0)``, which wins over
+      ``einsums:graph:optimizer-budget``, and this getter is then what says the removal took.
+      A generous allowance only moves the point at which the machine decides the answer.
+
+      :returns: True when the search was cut off.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      Zero the per-apply counters.

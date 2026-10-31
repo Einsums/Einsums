@@ -1,0 +1,121 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.BisectDriver:
+
+====================================
+einsums::compute_graph::BisectDriver
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/BisectDriver.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: BisectDriver
+
+   Run a program once per structural pass and report which one moved the answer.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::BisectDriver driver([&](cg::Graph &graph) {
+          // Capture the program. Fresh tensors every call: the driver runs this once per trial and
+          // the trials must not see each other's writes.
+          auto &T = graph.declare_runtime_tensor<double>("T", {n, n}, true);
+          cg::CaptureGuard const capture(graph);
+          cg::einsum("i,j <- i,k ; k,j", 0.0, &T, 1.0, A, B);
+          cg::einsum("i,l <- i,j ; j,l", 0.0, &C, 1.0, T, D);
+      });
+      auto const report = driver.run();
+      if (!report.clean()) {
+          std::cout << report.to_string();
+      }
+
+   **Limitations**
+
+   - The builder must produce an equivalent program on every call, with tensors it does not share between calls. A builder that closes over one output buffer hands every trial the previous trial's answer as its starting state, which reports the FIRST pass as the culprit whatever the truth is.
+   - Only interface outputs are compared. A pass that changes a graph-internal intermediate and leaves every output alone is reported as clean, which is correct: nothing observes it.
+   - A trial that throws is recorded and does not stop the run, because a pass that cannot run is itself a finding and the passes after it are still worth trying.
+
+
+   .. cpp:function:: explicit BisectDriver(std::function<void (Graph &)> builder)
+
+      Construct over the program ``builder`` captures.
+
+      Spelled out rather than as ``Builder``: the documentation extractor renders a parameter's
+      type as written, and Sphinx's C++ domain cannot resolve an alias used in a signature. The
+      alias stays for callers who want to name the type.
+
+      :param builder: Called once per trial. See the class note on what it must guarantee.
+
+
+   .. cpp:function:: explicit BisectDriver(std::function<void (Graph *)> builder)
+
+      The spelling Python gets: the same builder, taking a POINTER.
+
+      The difference is not cosmetic and is not a preference. Handing a C++ object to a Python
+      callable goes through pybind's default conversion, which for an lvalue REFERENCE resolves to
+      copy, and ``Graph`` is deliberately non-copyable; the call fails at run time with a message
+      about a return value policy, on a constructor that bound perfectly. For a POINTER the same
+      default resolves to reference, which is what is wanted: Python gets a non-owning view of the
+      graph the driver owns.
+
+      .. warning::
+
+         The view is valid only for the duration of the call. A Python builder that stashes
+         the graph it was handed is holding a dangling pointer once the trial ends.
+
+      :param builder: Called once per trial with the graph to capture into. Never null.
+
+
+   .. cpp:function:: void set_passes(std::vector<std::shared_ptr<OptimizerPass>> passes)
+
+      Try these passes instead of the default pipeline's structural ones.
+
+      The primary use, rather than an escape hatch: bisecting the pipeline a caller is ACTUALLY
+      running is what answers their question, and ``driver.set_passes(pm.passes())`` is how that
+      is spelled. It is also the only way to reach a pass that is off by default, since a driver
+      that switched one on would be testing a configuration nobody runs.
+
+      :param passes: The passes to try, in the order they would run.
+
+
+   .. cpp:function:: void set_mode(BisectMode mode)
+
+      One pass per trial, or passes one through k. See ``BisectMode``.
+
+      :param mode: The mode.
+
+
+   .. cpp:function:: void set_bound_scale(double scale)
+
+      Multiply every tier bound by ``scale``.
+
+      For the caller whose accumulation is long enough that the default is tight, and for the
+      one who wants to see how much headroom a clean run actually had. Refuses a non-positive
+      scale: a bound of zero would report every re-associating pass as wrong.
+
+      :param scale: The multiplier.
+      :throws std::invalid_argument: If ``scale`` is not positive and finite.
+
+
+   .. cpp:function:: double bound_scale() const
+
+      The bound multiplier. See ``set_bound_scale``.
+
+      :returns: The scale, one by default.
+
+
+   .. cpp:function:: BisectReport run()
+
+      Run the baseline and every trial.
+
+      :returns: The report.

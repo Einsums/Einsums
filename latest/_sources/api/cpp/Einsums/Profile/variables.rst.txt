@@ -1,0 +1,86 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Profile_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Profile/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileAppend
+
+   Append to the report file rather than truncating it.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileDetailed
+
+   Report every zone rather than the summary.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileDisable
+
+   Stop recording zones and annotations; a large speedup for many small operations.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> ProfileFilename
+
+   Where that report goes.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> ProfileMaxDistinctChildren
+
+   Distinct zone names one parent keeps as separate nodes. Past it, a new name joins that parent's
+   "(other)" node, so names built at run time (a graph's, a loop's) cannot grow the tree without
+   bound. Zero means no limit.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> ProfilePort
+
+   The port the profile server listens on.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileReport
+
+   Write the text report at shutdown.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> ProfileSave
+
+   Write the session as JSON for the profile viewer. Empty means do not.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileServer
+
+   Enable the profile server for remote viewing. It is single-threaded and unauthenticated: local use only.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> ProfileSources
+
+   The profiler's optional instruments to turn on, comma-separated. "counters" records each zone's
+   hardware counters (cycles, instructions, ...), at a few hundred nanoseconds a zone. "energy"
+   records each zone's energy from macOS's per-thread estimate, at no cost to the zone. "openmp"
+   records each OpenMP parallel region, each thread's share of it and the barrier waits inside;
+   the OpenMP runtime must support OMPT (LLVM's libomp does, GCC's libgomp does not). "signposts"
+   also emits every zone as an os_signpost interval, for Instruments (macOS).
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> ProfileTrace
+
+   Write every zone to a Perfetto trace at this path, for ui.perfetto.dev; "{pid}" becomes the
+   process id. Empty writes none.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> ProfileWaitForViewer
+
+   Block at startup until a viewer connects.

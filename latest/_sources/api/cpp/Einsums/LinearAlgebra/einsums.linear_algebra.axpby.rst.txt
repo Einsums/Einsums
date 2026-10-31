@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.axpby:
+
+==============================
+einsums::linear_algebra::axpby
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept XType, TensorConcept YType> requires (InSamePlace<XType, YType> && SameUnderlyingAndRank<XType, YType>) void axpby(typename XType::ValueType alpha, const XType &X, typename XType::ValueType beta, YType *Y)
+
+   Scale and add two tensors together.
+
+   .. math::
+
+      \mathbf{y} := \alpha \mathbf{x} + \beta \mathbf{y}
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam XType,YType: The tensor types.
+   :param alpha: The scale factor for the input.
+   :param X: The input tensor.
+   :param beta: The scale factor for the output.
+   :param Y: The output tensor.
+   :throws RankError: If the input tensors do not have the same rank.
+   :throws DimensionError: If the input tensors do not have the same shape.

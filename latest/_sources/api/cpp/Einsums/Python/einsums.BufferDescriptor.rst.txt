@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.BufferDescriptor:
+
+=========================
+einsums::BufferDescriptor
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Python/Protocol.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: BufferDescriptor
+
+   Backend-neutral description of a contiguous or strided buffer.
+
+   Used both ways: returned by the ``data_fn`` of ``APIARY_BUFFER_PROTOCOL_STD`` for export to
+   NumPy, and passed to the ``set_buffer`` helper for import. Strides are in elements.
+
+
+   .. cpp:member:: void *data
+
+   .. cpp:member:: std::vector<std::size_t> shape
+
+   .. cpp:member:: std::vector<std::size_t> strides_in_elements
+
+   .. cpp:member:: ScalarType dtype
+
+   .. cpp:member:: std::size_t element_size
+
+   .. cpp:member:: bool writable
+
+   .. cpp:enum-class:: ScalarType
+
+      Element type, as the backends' format codes name it.
+
+
+      .. cpp:enumerator:: Unknown
+
+      .. cpp:enumerator:: Int8
+
+      .. cpp:enumerator:: Int16
+
+      .. cpp:enumerator:: Int32
+
+      .. cpp:enumerator:: Int64
+
+      .. cpp:enumerator:: UInt8
+
+      .. cpp:enumerator:: UInt16
+
+      .. cpp:enumerator:: UInt32
+
+      .. cpp:enumerator:: UInt64
+
+      .. cpp:enumerator:: Float16
+
+      .. cpp:enumerator:: Float32
+
+      .. cpp:enumerator:: Float64
+
+      .. cpp:enumerator:: Complex64
+
+      .. cpp:enumerator:: Complex128
+
+      .. cpp:enumerator:: Bool

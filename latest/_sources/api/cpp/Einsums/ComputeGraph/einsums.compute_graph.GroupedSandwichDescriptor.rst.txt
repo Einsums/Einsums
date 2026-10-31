@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GroupedSandwichDescriptor:
+
+=================================================
+einsums::compute_graph::GroupedSandwichDescriptor
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GroupedSandwichDescriptor
+
+   Metadata for ``OpKind::GroupedSandwich`` nodes.
+
+   A grouped sandwich is a run of independent
+   ``C_i += sum_q B_q S_i B_q^T`` accumulations with the dressed slice
+   ``B_q = A_i[q] - P_i^T M_i[q]`` built in cache per auxiliary slice, one
+   entry per (pair) member. The per-member extents are recorded so the cost
+   model can price the node as the batched arithmetic it is - the same lesson
+   ``GroupedBatchedGemmDescriptor`` carries - without re-deriving them from
+   the operand lists.
+
+   The parent ``Node`` carries the inputs interleaved
+   A_0, M_0, P_0, S_0, A_1, ... and the outputs in entry order.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: int total
+
+      How many sandwich accumulations the node holds.
+
+
+   .. cpp:member:: std::vector<std::int64_t> nq
+
+      Per-entry auxiliary extent.
+
+
+   .. cpp:member:: std::vector<std::int64_t> nk
+
+      Per-entry dressing (LMO) extent.
+
+
+   .. cpp:member:: std::vector<std::int64_t> na
+
+      Per-entry PNO extent.

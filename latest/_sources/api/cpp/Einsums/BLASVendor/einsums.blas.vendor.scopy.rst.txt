@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.scopy:
+
+============================
+einsums::blas::vendor::scopy
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void scopy(int_t n, const float *x, int_t incx, float *y, int_t incy)
+
+   Copy one vector to another.
+
+   .. versionadded:: 2.0.0
+
+   :param n: The number of elements to copy.
+   :param x: The source vector.
+   :param incx: The skip value for the input. If zero, it will fill the output with the same value. If negative, then the input will be traversed backwards.
+   :param y: The destination vector.
+   :param incy: The skip value for the destination vector. If it is negative, the destination will be traversed backwards.

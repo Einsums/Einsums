@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.TensorDescriptor:
+
+======================================
+einsums::packed_gemm::TensorDescriptor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/ContractionKey.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: TensorDescriptor
+
+   Per-tensor metadata stored in the contraction key for cache lookup.
+
+
+   .. cpp:function:: bool operator==(const TensorDescriptor &o) const
+
+   .. cpp:member:: size_t rank
+
+   .. cpp:member:: ScalarType dtype
+
+   .. cpp:member:: std::vector<int64_t> strides
+
+      Element strides, in index order.
+
+      Part of the key so a cached plan can be stored fully prepared (stride-filled, sorted,
+      coalesced), and a strided view never shares a dense tensor's plan.

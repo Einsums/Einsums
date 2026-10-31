@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PermutationOperator:
+
+===========================================
+einsums::compute_graph::PermutationOperator
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PermutationOperator
+
+   One permutation (antisymmetrizer) operator, as written `P(i/jk)`.
+
+   The operator partitions a set of OUTPUT index letters into two or more
+   disjoint, non-empty, ordered groups, and expands to one term per coset of the
+   Young subgroup :math:`S(g_0) \times \dots \times S(g_{k-1})` in :math:`S(L)`,
+   where :math:`L` is the concatenation of the groups. The term count is
+   :math:`n! / \prod_t |g_t|!` and each term carries the parity of its
+   representative as a sign.
+
+   The expansions, which are the ones the coupled-cluster literature prints:
+
+   - `P(i/j)`, 2 terms: `1 - (ij)`
+   - `P(i/jk)`, 3 terms: `1 - (ij) - (ik)`
+   - `P(ij/k)`, 3 terms: `1 - (ik) - (jk)`
+   - `P(i/j/k)`, 6 terms: the full antisymmetrizer over `ijk`
+   - `P(ij/kl)`, 6 terms: `1 - (ik) - (il) - (jk) - (jl) + (ik)(jl)`
+
+   .. warning::
+
+      A coset contains members of DIFFERENT parity, so which one is chosen
+      changes the value. The operator is well-defined only on a base term that is
+      already antisymmetric within each group, which is what makes the notation
+      legitimate in the coupled-cluster literature and holds wherever it is used
+      there. ``expand_permutation_operators`` documents the representative this
+      implementation picks and why.
+
+   Comma-vs-character mode is decided across the WHOLE operator, not per group:
+   `P(mu,nu/rho)` has to read `rho` as one index, which a per-group rule would
+   char-split into three. `P(ij)` is sugar for `P(i/j)` in character mode only,
+   since `P(mu,nu)` is otherwise ambiguous between one group of two and two
+   groups of one.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: std::string render() const
+
+      The canonical `P(i/j,k)` spelling: slash between groups, comma inside one.
+
+
+   .. cpp:function:: std::vector<std::string> letters() const
+
+      Every letter this operator names, in group-concatenation order.
+
+
+   .. cpp:function:: bool operator==(const PermutationOperator &) const = default
+
+      Same partition, spelled the same way.
+
+
+   .. cpp:member:: std::vector<std::vector<std::string>> groups
+
+      The partition, in source order. `P(i/jk)` gives `{{"i"}, {"j","k"}}`.

@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.on_change:
+
+======================
+einsums::cl::on_change
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: void on_change(ConfigOption<bool> &opt, std::function<void ()> fn)
+
+   Hear about every change to an option's value.
+
+   For state derived from an option. Runs after the store, with no lock held. Register the option first.
+
+   .. versionadded:: 2.0.0

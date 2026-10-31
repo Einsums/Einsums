@@ -1,0 +1,132 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraphTypes_api:
+
+=========================
+ComputeGraphTypes C++ API
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_ComputeGraphTypes>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::compute_graph::AllocDescriptor` - Metadata for memory allocation/deallocation nodes.
+- :cpp:any:`~einsums::compute_graph::BatchedGemmDescriptor` - Metadata for BatchedGemm nodes produced by the GEMMBatching pass.
+- :cpp:any:`~einsums::compute_graph::CommDescriptor` - Metadata for distributed communication nodes (Allreduce, Broadcast, etc.).
+- :cpp:any:`~einsums::compute_graph::ComputeGraphData` - Complete serialized compute graph, as used for profiling and visualization.
+- :cpp:any:`~einsums::compute_graph::DiskIODescriptor` - Metadata for disk I/O nodes (DiskRead / DiskWrite).
+- :cpp:any:`~einsums::compute_graph::ElementTransformDescriptor` - Metadata for ``OpKind::ElementTransform`` nodes whose kernel is NAMED.
+- :cpp:any:`~einsums::compute_graph::EnumNames` - A value-to-spelling table for one enumeration.
+- :cpp:any:`~einsums::compute_graph::GemmGroup` - One shape class inside a ``GroupedBatchedGemmDescriptor``.
+- :cpp:any:`~einsums::compute_graph::GraphEdgeData` - Serialized representation of a data-flow edge in a graph snapshot.
+- :cpp:any:`~einsums::compute_graph::GraphNodeData` - Serialized representation of a computation node in a graph snapshot.
+- :cpp:any:`~einsums::compute_graph::GraphTensorData` - Serialized representation of a tensor in a compute graph snapshot.
+- :cpp:any:`~einsums::compute_graph::GroupedBatchedGemmDescriptor` - Metadata for GroupedBatchedGemm nodes.
+- :cpp:any:`~einsums::compute_graph::GrowthClass` - How a space's extent grows with the size of the system.
+- :cpp:any:`~einsums::compute_graph::IndexSpace` - The semantics of one index space, and nothing else.
+- :cpp:any:`~einsums::compute_graph::InitializeDescriptor` - Metadata for Initialize nodes (zero fill, random fill, disk load).
+- :cpp:any:`~einsums::compute_graph::SpaceId` - Opaque handle to a space held by a ``SpaceRegistry``.
+- :cpp:any:`~einsums::compute_graph::SpacePolicy` - Machine policy attached to a space by name.
+- :cpp:any:`~einsums::compute_graph::SpaceRegistry` - Spaces, the relations declared between them, and the policy table keyed by their names.
+- :cpp:any:`~einsums::compute_graph::TransferDescriptor` - Metadata for GPU memory transfer nodes (HostToDevice / DeviceToHost).
+
+Functions
+---------
+
+- :cpp:any:`~einsums::compute_graph::alloc_state_from_name` - The ``AllocState`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::alloc_state_name` - The name of an allocation state, for diagnostics and the saved form.
+- :cpp:any:`~einsums::compute_graph::blas_scalar_of` - The ``BlasScalar`` tag naming ``T``.
+- :cpp:any:`~einsums::compute_graph::describe_space_conflict` - Name the fields two same-named spaces disagree on, with both values.
+- :cpp:any:`~einsums::compute_graph::init_kind_from_name` - The ``InitKind`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::init_kind_name` - The name of an initialization strategy, for diagnostics and the saved form.
+- :cpp:any:`~einsums::compute_graph::is_collective` - Distributed collective kinds (Allreduce, Broadcast, Allgather, Scatter, Barrier).
+- :cpp:any:`~einsums::compute_graph::is_control_flow` - Control-flow kinds carrying subgraphs (Conditional, Loop, Setup).
+- :cpp:any:`~einsums::compute_graph::is_infrastructure` - Infrastructure kinds that carry no einsum-style data dependency a distribution/communication pass should reason about: collectives plus materialize/initialize, host/device transfers, disk I/O, and control flow.
+- :cpp:any:`~einsums::compute_graph::is_lifecycle` - Lifecycle/bookkeeping kinds that produce no value of their own (Alloc, Free, Materialize, Initialize). Passes counting value-producing nodes or resolving readers/writers skip these; must stay in lockstep with Graph::effective_io.
+- :cpp:any:`~einsums::compute_graph::is_transfer` - Host<->device transfer kinds (HostToDevice, DeviceToHost).
+- :cpp:any:`~einsums::compute_graph::make_index_space` - Build an ``IndexSpace`` from its parts.
+- :cpp:any:`~einsums::compute_graph::op_kind_from_name` - The ``OpKind`` spelled ``name``, if there is one.
+- :cpp:any:`~einsums::compute_graph::op_kind_name` - Convert an OpKind enum value to its string name.
+- :cpp:any:`~einsums::compute_graph::tristate_name` - Name of a ``Tristate`` value.
+
+Operators
+---------
+
+- :cpp:any:`~einsums::compute_graph::operator==` - Compare two growth classes.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::compute_graph::AllocState` - Allocation state of a tensor in the graph.
+- :cpp:any:`~einsums::compute_graph::BlasScalar` - Data-type tag for BatchedGemmDescriptor.
+- :cpp:any:`~einsums::compute_graph::DistributionHint` - How a space's axis should be laid out across ranks. Machine policy, never part of ``IndexSpace``.
+- :cpp:any:`~einsums::compute_graph::InitKind` - Initialization strategy for deferred tensors.
+- :cpp:any:`~einsums::compute_graph::OpKind` - Identifies the kind of operation a node represents.
+- :cpp:any:`~einsums::compute_graph::Residency` - Where a tensor's data currently resides.
+- :cpp:any:`~einsums::compute_graph::StorageHint` - Where a space's data should preferentially live. Machine policy, never part of ``IndexSpace``.
+- :cpp:any:`~einsums::compute_graph::Target` - Where a node should execute.
+- :cpp:any:`~einsums::compute_graph::TensorOwnership` - Ownership level of a tensor (determines declaration scope in code generation).
+- :cpp:any:`~einsums::compute_graph::Tristate` - Answer to a relation query that may simply not be known.
+
+Types
+-----
+
+- :cpp:any:`~einsums::compute_graph::NodeId` - Unique identifier for a node within a computation graph.
+- :cpp:any:`~einsums::compute_graph::TensorId` - Unique identifier for a tensor within a computation graph.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::compute_graph::unassigned_node_id` - The id a node carries until a graph issues it one.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.compute_graph.alloc_state_from_name
+   einsums.compute_graph.alloc_state_name
+   einsums.compute_graph.AllocDescriptor
+   einsums.compute_graph.BatchedGemmDescriptor
+   einsums.compute_graph.blas_scalar_of
+   einsums.compute_graph.CommDescriptor
+   einsums.compute_graph.ComputeGraphData
+   einsums.compute_graph.describe_space_conflict
+   einsums.compute_graph.DiskIODescriptor
+   einsums.compute_graph.ElementTransformDescriptor
+   einsums.compute_graph.EnumNames
+   einsums.compute_graph.GemmGroup
+   einsums.compute_graph.GraphEdgeData
+   einsums.compute_graph.GraphNodeData
+   einsums.compute_graph.GraphTensorData
+   einsums.compute_graph.GroupedBatchedGemmDescriptor
+   einsums.compute_graph.GrowthClass
+   einsums.compute_graph.IndexSpace
+   einsums.compute_graph.init_kind_from_name
+   einsums.compute_graph.init_kind_name
+   einsums.compute_graph.InitializeDescriptor
+   einsums.compute_graph.is_collective
+   einsums.compute_graph.is_control_flow
+   einsums.compute_graph.is_infrastructure
+   einsums.compute_graph.is_lifecycle
+   einsums.compute_graph.is_transfer
+   einsums.compute_graph.make_index_space
+   einsums.compute_graph.op_kind_from_name
+   einsums.compute_graph.op_kind_name
+   einsums.compute_graph.SpaceId
+   einsums.compute_graph.SpacePolicy
+   einsums.compute_graph.SpaceRegistry
+   einsums.compute_graph.TransferDescriptor
+   einsums.compute_graph.tristate_name
+   operators
+   enums
+   types
+   variables

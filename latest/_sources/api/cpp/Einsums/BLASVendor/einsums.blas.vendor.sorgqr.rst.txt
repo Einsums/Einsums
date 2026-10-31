@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sorgqr:
+
+=============================
+einsums::blas::vendor::sorgqr
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sorgqr(int_t m, int_t n, int_t k, float *a, int_t lda, const float *tau)
+
+   Extract the Q matrix from a QR decomposition.
+
+   .. versionadded:: 1.0.0
+
+   :param m: The number of rows in the input matrix.
+   :param n: The number of columns in the input matrix.
+   :param k: The number of elementary reflectors used to decompose the matrix.
+   :param a: The input matrix after being processed by sgeqrf. On exit, it will contain the Q matrix.
+   :param lda: The leading dimension of the matrix.
+   :param tau: The scale factors for the elementary reflectors used in the decomposition.
+   :returns: 0 on success. If negative, one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.

@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sealed.library_layout_fingerprint:
+
+===========================================
+einsums::sealed::library_layout_fingerprint
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Config/ABI.hpp``.
+
+.. cpp:namespace:: einsums::sealed
+
+.. cpp:function:: std::uint64_t library_layout_fingerprint() noexcept
+
+   The layout fingerprint of the library, as opposed to of the caller's
+   headers.
+
+   Defined higher in the module graph, where the measured types are visible. Called lazily by world().

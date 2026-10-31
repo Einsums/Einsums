@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.ger:
+
+============================
+einsums::linear_algebra::ger
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType, VectorConcept XType, VectorConcept YType> requires (SameUnderlying<AType, XType, YType>) void ger(typename AType::ValueType alpha, const XType &X, const YType &Y, AType *A)
+
+   Perform a rank-1 update. Neither vector is conjugated.
+
+   .. math::
+
+      \mathbf{A} := \alpha\mathbf{xy}^T + \mathbf{A}
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam AType: The type for the output matrix.
+   :tparam XType: The type for the left input vector.
+   :tparam YType: The type for the right input vector.
+   :param alpha: The scale factor for the product.
+   :param X: The left vector.
+   :param Y: The right vector.
+   :param A: The output matrix.
+   :throws RankError: If the X and Y tensors are not rank-1 or the A tensor is not rank-2.
+   :throws TensorCompatError: If the number of elements in the X vector is not the same as the number of rows in A, or the number of elements in the Y vector is not the same as the number of columns of A.

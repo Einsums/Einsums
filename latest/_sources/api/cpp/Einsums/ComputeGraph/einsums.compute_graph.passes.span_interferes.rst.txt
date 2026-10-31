@@ -1,0 +1,51 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.span_interferes:
+
+===============================================
+einsums::compute_graph::passes::span_interferes
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/PassUtil.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: bool span_interferes(const Graph &graph, std::size_t first, std::size_t last, const std::vector<bool> &is_member, const std::unordered_set<TensorId> &writes, const std::unordered_set<TensorId> &reads, bool reject_control_flow)
+
+   Interference gate shared by the passes that collapse a run of nodes into one (DistributiveFactoring, LinearCombinationContractionFolding, GEMMBatching).
+
+   These passes move a combined op into the FIRST member's slot, because position
+   is program order in this IR and the combined node has to stay ahead of every
+   consumer of a member's output. That is sound only if nothing between the first
+   and last member disturbs what the group reads or writes. Returns true when
+   some node strictly between positions ``first`` and ``last`` (exclusive), other
+   than the group members flagged in ``is_member``:
+
+   - writes anything the group reads or writes (clobbering a factor, or a partial result, mid-collapse),
+   - reads anything the group writes (observing a partial result before it is complete), or
+   - when ``reject_control_flow`` is set, is a control-flow node whose hidden sub-graph I/O cannot be inspected.
+
+   ``reject_control_flow`` lets DistributiveFactoring and GEMMBatching disqualify
+   a span containing a Loop/Conditional while
+   LinearCombinationContractionFolding keeps its existing (control-flow-agnostic)
+   behavior.
+
+   Tensors are compared by the buffer they occupy (``Graph::buffer_of``), so a
+   write through a view or a redirected slot of something the group touches
+   counts: comparing ids let one slip between two batched members unseen.
+
+   :param graph: The graph whose node list the positions index.
+   :param first: Position of the first group member.
+   :param last: Position of the last group member.
+   :param is_member: Membership mask over ``nodes``.
+   :param writes: Every tensor the group writes.
+   :param reads: Every tensor the group reads.
+   :param reject_control_flow: Whether a control-flow node in the span disqualifies it.

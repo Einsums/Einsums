@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Print_api_operators:
+
+=========
+Operators
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Print.hpp``.
+
+.. cpp:namespace:: einsums::print
+
+.. cpp:function:: constexpr ordinal<unsigned long long> operator""_th(unsigned long long value)
+
+   Creates a literal ordinal.
+
+   .. versionadded:: 2.0.0
+
+   :param value: The value to wrap.

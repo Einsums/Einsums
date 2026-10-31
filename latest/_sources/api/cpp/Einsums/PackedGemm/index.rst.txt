@@ -1,0 +1,253 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_PackedGemm_api:
+
+==================
+PackedGemm C++ API
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_PackedGemm>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::packed_gemm::AOrderFlush` - The M group ordered for A, with C's contiguity still reachable.
+- :cpp:any:`~einsums::packed_gemm::BatchDimSpec` - Describes a batch dimension with positions and strides in all three tensors.
+- :cpp:any:`~einsums::packed_gemm::BlockingParams` - Cache-blocking parameters for BLIS-style GEMM, tuned per element size.
+- :cpp:any:`~einsums::packed_gemm::ContractionKey` - Full cache key uniquely identifying a contraction topology.
+- :cpp:any:`~einsums::packed_gemm::ContractionSite` - Per-call-site memo for a contraction that repeats.
+- :cpp:any:`~einsums::packed_gemm::ContractionSpec` - Describes the topology of a tensor contraction.
+- :cpp:any:`~einsums::packed_gemm::CpuConfig` - CPU vector and cache configuration detected at init time.
+- :cpp:any:`~einsums::packed_gemm::DimSpec` - Describes one dimension of a tensor as seen during packing.
+- :cpp:any:`~einsums::packed_gemm::KSplit` - How a split contraction cuts its contracted extent: along one of the plan's K dims, into ``shares`` contiguous blocks.
+- :cpp:any:`~einsums::packed_gemm::MicroKernelShape` - Register-block shape (MR, NR) the resolved micro-kernel wants.
+- :cpp:any:`~einsums::packed_gemm::OperandLayout` - One operand of a contraction as a caller without the tensor in hand describes it: its index letters, and the extent and element stride of each position.
+- :cpp:any:`~einsums::packed_gemm::PackedBlocking` - The cache blocks a packed contraction ran with: MC rows of A, NC columns of B, KC of the contracted extent, after the C-temporary budget and the thread grid have had their say.
+- :cpp:any:`~einsums::packed_gemm::PackedContractionShape` - What the packed engine would do with a contraction, read from the plan it would run.
+- :cpp:any:`~einsums::packed_gemm::PackingPlan` - Describes how a contraction can be packed as a flat BLIS-style GEMM.
+- :cpp:any:`~einsums::packed_gemm::PackingPlanCache` - Thread-safe cache of filled PackingPlans, keyed by ContractionKey.
+- :cpp:any:`~einsums::packed_gemm::StreamLayout` - Extents and element strides of one strided operand, one entry per axis.
+- :cpp:any:`~einsums::packed_gemm::StreamTerm` - One contraction fed by a stream over a large tensor :math:`S`.
+- :cpp:any:`~einsums::packed_gemm::StridedOperand` - An operand as ``blis_contraction_body`` reads it: an element pointer, extents and strides. A share of a split contraction reads its block of A and B, and writes its partial result, through these.
+- :cpp:any:`~einsums::packed_gemm::TeamBarrier` - A spin barrier for the few threads of one team.
+- :cpp:any:`~einsums::packed_gemm::TeamPanel` - One team member's view of the B panel its team shares (see blis_contraction).
+- :cpp:any:`~einsums::packed_gemm::TeamState` - What one team shares besides its panel: the barrier its members meet at, and the counter they claim M blocks from.
+- :cpp:any:`~einsums::packed_gemm::TensorDescriptor` - Per-tensor metadata stored in the contraction key for cache lookup.
+- :cpp:any:`~einsums::packed_gemm::ThreadGrid` - How blis_contraction's threads divide the output: ``tn`` groups along N, each split ``tm`` ways along M, with N cut into blocks of ``nc_blk`` columns.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::finalize_Einsums_PackedGemm` - Finalize the PackedGemm backend.
+- :cpp:any:`~einsums::initialize_Einsums_PackedGemm` - Initialize the PackedGemm backend.
+- :cpp:any:`~einsums::packed_gemm::bind_thread_local` - Returns ``slot`` through a value the compiler cannot recompute, so it keeps one address in a register or on the stack instead of re-deriving it from the TLS block. See "Thread-local buffers" above.
+- :cpp:any:`~einsums::packed_gemm::blas_addressable` - Whether a vendor GEMM or GEMV can address rank-2 ``t`` as a matrix, in either orientation.
+- :cpp:any:`~einsums::packed_gemm::blis_contraction` - Execute a tensor contraction with the packed engine.
+- :cpp:any:`~einsums::packed_gemm::blis_contraction_body` - The packed engine on all of K: the vendor fast paths when the plan maps onto one GEMM or a batch of them, and otherwise BLIS-style packed loops over the resolved SIMD rung's tile kernel, its threads dividing the output. ``blis_contraction`` runs it once, or once per share of K.
+- :cpp:any:`~einsums::packed_gemm::can_fork_threads` - Whether a parallel region opened here would run on more than one thread: false inside a region already at the deepest active level the runtime allows, where a nested one runs serially and a thread grid planned for it would only cut the work finer for one thread.
+- :cpp:any:`~einsums::packed_gemm::choose_k_split` - Whether a contraction should sum its contracted extent in shares rather than have its threads divide the output, and into how many shares.
+- :cpp:any:`~einsums::packed_gemm::choose_thread_grid` - The thread grid for an M x N contraction with ``threads`` threads, M groups a whole number of ``m_unit`` rows, and N blocks no wider than ``nc_cap``.
+- :cpp:any:`~einsums::packed_gemm::coalesce_plan` - Coalesce adjacent dims within each group when they tile contiguously.
+- :cpp:any:`~einsums::packed_gemm::compute_blocking` - Compute blocking parameters for the given element size in bytes.
+- :cpp:any:`~einsums::packed_gemm::compute_link_indices` - Compute the unique link indices: A intersection B minus C, preserving order from A.
+- :cpp:any:`~einsums::packed_gemm::compute_packing_topology` - Compute the BLIS packing topology for a contraction.
+- :cpp:any:`~einsums::packed_gemm::copy_panel_row` - Gather-pack A[mc:mc+mc_len, kc:kc+kc_len] into column-major MR*KC panels.
+- :cpp:any:`~einsums::packed_gemm::cpu_config` - Return the native CPU vector configuration (computed once, cached).
+- :cpp:any:`~einsums::packed_gemm::describe_packed_contraction` - What the packed engine would do with the contraction ``key`` describes.
+- :cpp:any:`~einsums::packed_gemm::descriptor_matches` - Whether ``td`` still describes ``t``, compared in place so a ContractionSite's per-call check allocates nothing.
+- :cpp:any:`~einsums::packed_gemm::dump_packed_plan` - Print the resolved plan and blocking for one contraction, behind option::PackedGemmDumpPlan. Out of line so ``blis_contraction`` carries only the flag test.
+- :cpp:any:`~einsums::packed_gemm::fill_strides` - Fill tensor strides in a PackingPlan from the strides ``key`` records for each operand.
+- :cpp:any:`~einsums::packed_gemm::flat_to_offset` - Compute the byte offset for a flat index into a multi-dim group.
+- :cpp:any:`~einsums::packed_gemm::flatten_run` - Collapse axes [``begin``, ``end``) of ``t`` into one (extent, stride).
+- :cpp:any:`~einsums::packed_gemm::flush_c_block_transposed` - Write an A-order C block back to C, transposing its runs out.
+- :cpp:any:`~einsums::packed_gemm::gemm_from_strides` - Map one strided M x N x K slice onto a single BLAS gemm.
+- :cpp:any:`~einsums::packed_gemm::get_scalar_type` - Extract the ScalarType from a C++ value type at compile time. Primary template returns Unknown; specializations below map known types.
+- :cpp:any:`~einsums::packed_gemm::hptt_transpose` - Transpose ``src`` into a dense ``dst``, optionally reading a SUB-BLOCK.
+- :cpp:any:`~einsums::packed_gemm::is_concatenation` - True when ``prefix`` ++ ``suffix`` == ``whole``, element for element.
+- :cpp:any:`~einsums::packed_gemm::k_split_width` - The thread count a packed contraction decides whether to cut its contracted extent for: the machine's physical cores, detected once.
+- :cpp:any:`~einsums::packed_gemm::last_contraction_route` - Name of the kernel route the most recent ``blis_contraction`` call on this thread took: "gemm_batch", "flatten_gemm", "flatten_gemm_hptt", "flatten_gemm_hptt_chunked", "flatten_gemm_gather", "single_k_gemm" or "packed". The flatten suffixes say how the operands were made flat: already flat, transposed by HPTT, or gathered.
+- :cpp:any:`~einsums::packed_gemm::last_k_split` - Shares the most recent packed contraction on this thread divided its contracted extent into: 1 when its threads divided only the output, more when each summed a share of K into a buffer of its own and the shares were added into C (see ``choose_k_split``). Test introspection only, like ``last_team_size``.
+- :cpp:any:`~einsums::packed_gemm::last_packed_blocking` - The blocks of the most recent "packed" contraction on this thread. Written only when the route is "packed". Test introspection only, like ``last_packed_engine``.
+- :cpp:any:`~einsums::packed_gemm::last_packed_decision` - Which path the most recent ``try_packed_gemm`` call on this thread chose, or why it declined: "direct_outer_gemm", "direct_ger", "direct_gemv", "stream", "scatter", "single_mn", or a reason for declining such as "defer_small_outer_to_generic". One level above ``last_contraction_route``, which names the kernel route within the scatter and single_mn paths. Empty when the call ended before any decision.
+- :cpp:any:`~einsums::packed_gemm::last_packed_engine` - Which engine the most recent "packed" contraction on this thread ran: "tile", "block_gemm" (one vendor GEMM per cache block, then a scatter), "3m" (the block strategy on three real GEMMs), or "1m" (complex on the real tile kernel). Written only when the route is "packed". Test introspection only.
+- :cpp:any:`~einsums::packed_gemm::last_route_pin` - The route pin the most recent route decision on this thread read. Adaptive means the thread regime decided (``einsums::blas::vendor_call_is_fenced``). Test introspection only.
+- :cpp:any:`~einsums::packed_gemm::last_team_size` - Threads per team in the most recent packed contraction on this thread: 1 when every thread packs its own B panel, the cores sharing an L3 when they share one (see blis_contraction). Test introspection only, like ``last_packed_engine``.
+- :cpp:any:`~einsums::packed_gemm::micro_kernel_entry` - Resolve the micro-kernel for element type T.
+- :cpp:any:`~einsums::packed_gemm::micro_kernel_shape` - The register-block shape of the kernel micro_kernel_entry<T>() resolves to. Query both together and pack panels with this shape.
+- :cpp:any:`~einsums::packed_gemm::min_parallel_flops` - The flop count from which a contraction's loops run on a team.
+- :cpp:any:`~einsums::packed_gemm::mn_roles_should_swap` - Whether this contraction should be packed with the roles of A and B exchanged, as C^T = B^T A^T.
+- :cpp:any:`~einsums::packed_gemm::pack_A_1m_panels` - Pack the 1e-expanded A block into column-major MR x kh_len real micro-panels (the layout the real tile kernels consume).
+- :cpp:any:`~einsums::packed_gemm::pack_A_3m_flat` - Split-pack the complex A block into three real column-major mc_len x kc_len matrices: Re, (signed) Im, and their sum.
+- :cpp:any:`~einsums::packed_gemm::pack_A_flat` - Pack A[mc:mc+mc_len, kc:kc+kc_len] into a plain column-major mc_len x kc_len matrix (element (i, k) at dst[i + k*mc_len]).
+- :cpp:any:`~einsums::packed_gemm::pack_B` - Gather-pack B[kc:kc+kc_len, nc:nc+nc_len] into row-major KC*NR panels.
+- :cpp:any:`~einsums::packed_gemm::pack_B_1m_panels` - Pack the 1r-expanded B block into row-major kh_len x NR real micro-panels: real K row 2q + s carries (s == 0 ? re : im) of complex B link index q.
+- :cpp:any:`~einsums::packed_gemm::pack_B_3m_flat` - Split-pack the complex B block into three real k-major kc_len x nc_len matrices: Re, (signed) Im, and their sum.
+- :cpp:any:`~einsums::packed_gemm::pack_B_flat` - Pack B[kc:kc+kc_len, nc:nc+nc_len] into a plain k-major kc_len x nc_len matrix (element (k, j) at dst[k*nc_len + j]) - i.e. the column-major nc_len x kc_len matrix a vendor GEMM consumes with transB='T'.
+- :cpp:any:`~einsums::packed_gemm::pack_panels_by_k_runs` - Pack panels of ``R`` rows whose rows are K-contiguous within each run.
+- :cpp:any:`~einsums::packed_gemm::pack_transpose_entry` - Resolve the panel transpose for element type T, or nullptr where no per-rung kernel exists (the complex types), for the caller's scalar loop.
+- :cpp:any:`~einsums::packed_gemm::precompute_offsets` - Precompute offsets for a range of flat indices into a multi-dim group.
+- :cpp:any:`~einsums::packed_gemm::prefer_packed_route` - Whether this contraction is to be packed rather than handed to one vendor GEMM.
+- :cpp:any:`~einsums::packed_gemm::prepare_packing_plan` - The plan the packed engine runs the contraction ``key`` describes with: its topology, the strides ``key`` records, the K dims ordered for packing, contiguous dims merged, and the roles of A and B exchanged when the micro-kernel for ``key.spec.scalar_type`` wants them so.
+- :cpp:any:`~einsums::packed_gemm::set_min_parallel_flops_for_tuning` - Replace ``min_parallel_flops`` while measuring the break-even it is derived from.
+- :cpp:any:`~einsums::packed_gemm::site_key_matches` - Whether a memoized ``key`` still describes this contraction.
+- :cpp:any:`~einsums::packed_gemm::sort_k_dims_for_packing` - Reorder k_dims_in_a and k_dims_in_b (same permutation) for cache-friendly packing.
+- :cpp:any:`~einsums::packed_gemm::spec_matches_indices` - Whether ``spec`` already describes this contraction's topology.
+- :cpp:any:`~einsums::packed_gemm::split_k_runs` - Split a K block's element offsets into maximal unit-stride runs.
+- :cpp:any:`~einsums::packed_gemm::stream_contract` - Evaluate every term with one read of :math:`S`, in storage order.
+- :cpp:any:`~einsums::packed_gemm::stream_copy` - Copy ``n`` elements to ``dst`` without first fetching its cache lines.
+- :cpp:any:`~einsums::packed_gemm::stream_gemv_preferred` - Whether a GEMV whose matrix operand has ``elems`` elements should go to the stream route rather than the vendor's gemv. Only where nothing can give that gemv threads: Accelerate's runs on one core however many the process has (the Coulomb J over an 800 MB operand took 12 ms on the M4 at one thread or ten), while the stream reads the operand on every thread (7.9 ms at ten). A vendor that threads through OpenMP (OpenBLAS) or takes a per-thread count (MKL) keeps its gemv, as does a GEMV too small for the stream to use more than one thread. Both einsum engines ask this, so a contraction takes the same route from either.
+- :cpp:any:`~einsums::packed_gemm::stream_inner_entry` - Resolve the best inner-loop kernel for ``T`` at stripes::selected_arch(). Cached on first call; safe to invoke on the hot path but callers should still hoist it out of inner loops.
+- :cpp:any:`~einsums::packed_gemm::stream_tile_entry` - Resolve the best two-loop tile kernel for ``T``, as stream_inner_entry does.
+- :cpp:any:`~einsums::packed_gemm::strided_operand` - ``tensor`` as a ``StridedOperand`` starting ``offset`` elements in, with axis ``axis`` cut to ``length``, or no axis cut when ``axis`` is out of range.
+- :cpp:any:`~einsums::packed_gemm::transposed_plan` - The same contraction with the roles of M and N exchanged.
+- :cpp:any:`~einsums::packed_gemm::try_packed_gemm` - Attempt to execute an einsum contraction via the packed GEMM backend from a runtime-built ContractionSpec.
+- :cpp:any:`~einsums::packed_gemm::unique_ordered` - De-duplicate while preserving first-occurrence order.
+- :cpp:any:`~einsums::register_Einsums_PackedGemm_options` - Give the packed engine's options their command-line presence. Idempotent.
+- :cpp:any:`~einsums::setup_Einsums_PackedGemm` - Registers the initialization and finalization functions with the runtime manager.
+
+Enumerations
+------------
+
+- :cpp:any:`~einsums::packed_gemm::KernelRoute` - Which kernel a contraction is to be run through.
+- :cpp:any:`~einsums::packed_gemm::ScalarType` - Scalar element type enumeration for type selection.
+
+Types
+-----
+
+- :cpp:any:`~einsums::packed_gemm::MicroKernelFn` - Signature of a resolved micro-kernel tile function.
+- :cpp:any:`~einsums::packed_gemm::PackTransposeFn` - Signature of a resolved panel transpose: writes `panel[r + k * ld] = rows[r][k]` for `r < nrows`, `k < kc`.
+- :cpp:any:`~einsums::packed_gemm::StreamInnerFn` - Function-pointer type for one term's innermost stream loop.
+- :cpp:any:`~einsums::packed_gemm::StreamTileFn` - Function-pointer type for one term's two innermost stream loops: m rows of the StreamInnerFn loop, row r offset by (r*dc2, r*ds2, r*dw2).
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::PackedGemmCTempBudget` - Budget, in KiB, for the block-GEMM strategy's M by N temporary of C.
+- :cpp:any:`~einsums::option::PackedGemmComplex1m` - Run complex contractions on x86 through the rung's REAL tile kernel, by the 1m method.
+- :cpp:any:`~einsums::option::PackedGemmCoresPerL3` - Physical cores the engine assumes share one L3, in place of the count read from sysfs.
+- :cpp:any:`~einsums::option::PackedGemmDumpPlan` - Print each packed contraction's resolved plan and blocking to stderr.
+- :cpp:any:`~einsums::option::PackedGemmFlattenBudget` - Cap, in MiB, on the temporary buffers the multi-K flatten route allocates.
+- :cpp:any:`~einsums::option::PackedGemmOuterGemmMax` - Output elements from which a contiguous outer product with a prefactor takes ger and a separate scaling pass rather than a k=1 GEMM.
+- :cpp:any:`~einsums::option::PackedGemmOuterProductFloor` - Output elements below which an outer product is left to the generic loop.
+- :cpp:any:`~einsums::option::PackedGemmStreamElemsPerThread` - Elements of the streamed operand each thread must have before the stream forks another.
+- :cpp:any:`~einsums::option::PackedGemmStreamMinElems` - Elements of the supplying operand below which a GEMV-shaped contraction whose axes do not form a matrix is not streamed: where the stream starts to beat the compiled generic loop.
+- :cpp:any:`~einsums::packed_gemm::BLIS_KC_SPILL_GROWTH` - How far ``compute_blocking`` may grow KC past its machine-derived value when C spills the last-level cache.
+- :cpp:any:`~einsums::packed_gemm::BLIS_NR` - N register-block (fully unrolled by LLVM)
+- :cpp:any:`~einsums::packed_gemm::kFlushRunBytes` - Bytes a C run must cover before the write-back streams it.
+- :cpp:any:`~einsums::packed_gemm::kMaxPanelRows` - Tallest panel pack_A hands the per-rung transpose (a row-pointer table on the stack); the widest tile kernel, AVX-512 float, is 32 rows.
+- :cpp:any:`~einsums::packed_gemm::kMinTransposeRun` - Shortest average K run for which a block made of several runs is packed run by run through the transpose. Each run costs a row-pointer table and a call; below a vector's worth of elements that outweighs the copies it replaces.
+- :cpp:any:`~einsums::packed_gemm::kOuterMinElems` - Outer-product destination size below which no BLAS call is worth making: the call's fixed cost dominates, so the direct paths leave these to the small-outer deferral.
+- :cpp:any:`~einsums::packed_gemm::kStreamRunBytes` - Bytes a C run must cover before the write-back streams it: two cache lines, the peak of a sweep over 1 to 16.
+- :cpp:any:`~einsums::packed_gemm::kSyntheticDimPos` - tensor_pos of a synthesized unit dimension (see compute_packing_topology).
+- :cpp:any:`~einsums::packed_gemm::streams_c_v` - Element types whose C runs stream: those with a streaming store.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_PACKED_GEMM_PATH` - Name the path a packed contraction took, to the profiler and to @ref einsums::packed_gemm::last_packed_decision, which tests and the tune read.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.finalize_Einsums_PackedGemm
+   einsums.initialize_Einsums_PackedGemm
+   einsums.packed_gemm.AOrderFlush
+   einsums.packed_gemm.BatchDimSpec
+   einsums.packed_gemm.bind_thread_local
+   einsums.packed_gemm.blas_addressable
+   einsums.packed_gemm.blis_contraction
+   einsums.packed_gemm.blis_contraction_body
+   einsums.packed_gemm.BlockingParams
+   einsums.packed_gemm.can_fork_threads
+   einsums.packed_gemm.choose_k_split
+   einsums.packed_gemm.choose_thread_grid
+   einsums.packed_gemm.coalesce_plan
+   einsums.packed_gemm.compute_blocking
+   einsums.packed_gemm.compute_link_indices
+   einsums.packed_gemm.compute_packing_topology
+   einsums.packed_gemm.ContractionKey
+   einsums.packed_gemm.ContractionSite
+   einsums.packed_gemm.ContractionSpec
+   einsums.packed_gemm.copy_panel_row
+   einsums.packed_gemm.cpu_config
+   einsums.packed_gemm.CpuConfig
+   einsums.packed_gemm.describe_packed_contraction
+   einsums.packed_gemm.descriptor_matches
+   einsums.packed_gemm.DimSpec
+   einsums.packed_gemm.dump_packed_plan
+   einsums.packed_gemm.fill_strides
+   einsums.packed_gemm.flat_to_offset
+   einsums.packed_gemm.flatten_run
+   einsums.packed_gemm.flush_c_block_transposed
+   einsums.packed_gemm.gemm_from_strides
+   einsums.packed_gemm.get_scalar_type
+   einsums.packed_gemm.hptt_transpose
+   einsums.packed_gemm.is_concatenation
+   einsums.packed_gemm.k_split_width
+   einsums.packed_gemm.KSplit
+   einsums.packed_gemm.last_contraction_route
+   einsums.packed_gemm.last_k_split
+   einsums.packed_gemm.last_packed_blocking
+   einsums.packed_gemm.last_packed_decision
+   einsums.packed_gemm.last_packed_engine
+   einsums.packed_gemm.last_route_pin
+   einsums.packed_gemm.last_team_size
+   einsums.packed_gemm.micro_kernel_entry
+   einsums.packed_gemm.micro_kernel_shape
+   einsums.packed_gemm.MicroKernelShape
+   einsums.packed_gemm.min_parallel_flops
+   einsums.packed_gemm.mn_roles_should_swap
+   einsums.packed_gemm.OperandLayout
+   einsums.packed_gemm.pack_A_1m_panels
+   einsums.packed_gemm.pack_A_3m_flat
+   einsums.packed_gemm.pack_A_flat
+   einsums.packed_gemm.pack_B
+   einsums.packed_gemm.pack_B_1m_panels
+   einsums.packed_gemm.pack_B_3m_flat
+   einsums.packed_gemm.pack_B_flat
+   einsums.packed_gemm.pack_panels_by_k_runs
+   einsums.packed_gemm.pack_transpose_entry
+   einsums.packed_gemm.PackedBlocking
+   einsums.packed_gemm.PackedContractionShape
+   einsums.packed_gemm.PackingPlan
+   einsums.packed_gemm.PackingPlanCache
+   einsums.packed_gemm.precompute_offsets
+   einsums.packed_gemm.prefer_packed_route
+   einsums.packed_gemm.prepare_packing_plan
+   einsums.packed_gemm.set_min_parallel_flops_for_tuning
+   einsums.packed_gemm.site_key_matches
+   einsums.packed_gemm.sort_k_dims_for_packing
+   einsums.packed_gemm.spec_matches_indices
+   einsums.packed_gemm.split_k_runs
+   einsums.packed_gemm.stream_contract
+   einsums.packed_gemm.stream_copy
+   einsums.packed_gemm.stream_gemv_preferred
+   einsums.packed_gemm.stream_inner_entry
+   einsums.packed_gemm.stream_tile_entry
+   einsums.packed_gemm.StreamLayout
+   einsums.packed_gemm.StreamTerm
+   einsums.packed_gemm.strided_operand
+   einsums.packed_gemm.StridedOperand
+   einsums.packed_gemm.TeamBarrier
+   einsums.packed_gemm.TeamPanel
+   einsums.packed_gemm.TeamState
+   einsums.packed_gemm.TensorDescriptor
+   einsums.packed_gemm.ThreadGrid
+   einsums.packed_gemm.transposed_plan
+   einsums.packed_gemm.try_packed_gemm
+   einsums.packed_gemm.unique_ordered
+   einsums.register_Einsums_PackedGemm_options
+   einsums.setup_Einsums_PackedGemm
+   enums
+   types
+   variables
+   macros

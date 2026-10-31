@@ -1,0 +1,53 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.einsum:
+
+===============================
+einsums::tensor_algebra::einsum
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/TensorAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:function:: template <bool ConjA = false, bool ConjB = false, TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices, typename... BIndices> requires (InSamePlace<AType, BType> && (InSamePlace<AType, CType> || !TensorConcept<CType>) && !SmartPointer<CType>) void einsum(const U C_prefactor, const std::tuple<CIndices...> &Cs, CType *C, const U UAB_prefactor, const std::tuple<AIndices...> &As, const AType &A, const std::tuple<BIndices...> &Bs, const BType &B, detail::AlgorithmChoice *algorithm_choice)
+
+   The einsum call. It is the reason this package exists.
+
+   Computes the tensor contraction
+
+   .. math::
+
+      C_{abc\cdots} = \alpha C_{abc\cdots} + \beta A_{def\cdots} B_{ghi\cdots},
+
+   where :math:`\alpha` is the C prefactor and :math:`\beta` is the AB prefactor. Indices and ranks are
+   compile-time; C may be a scalar (empty index tuple), tensors may be smart pointers, and the
+   prefactors default to zero and one. From the indices it picks a BLAS call, PackedGemm, a
+   permute-then-GEMM, or the generic loop.
+
+   :tparam ConjA: If true, use the complex conjugate of the elements of A.
+   :tparam ConjB: If true, use the complex conjugate of the elements of B.
+   :tparam AType: The type of the first input tensor.
+   :tparam BType: The type of the second input tensor.
+   :tparam CType: The type of the output, a tensor or a scalar.
+   :tparam U: The type of the prefactors.
+   :tparam CIndices: The index types of the output tensor.
+   :tparam AIndices: The index types of the A tensor.
+   :tparam BIndices: The index types of the B tensor.
+   :param C_prefactor: The prefactor for mixing in the original value of the output tensor.
+   :param Cs: The indices for the output tensor.
+   :param C: The output tensor. May be a scalar when its index tuple is empty.
+   :param UAB_prefactor: The prefactor for the contraction of A with B.
+   :param As: The indices for the A tensor.
+   :param A: The first input tensor.
+   :param Bs: The indices for the B tensor.
+   :param B: The second input tensor.
+   :param algorithm_choice: If non-null, receives the algorithm the dispatcher selected.

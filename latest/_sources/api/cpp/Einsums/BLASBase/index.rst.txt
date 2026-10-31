@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_BLASBase_api:
+
+================
+BLASBase C++ API
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_BLASBase>` of this module for background and usage guidance.
+
+Types
+-----
+
+- :cpp:any:`~einsums::blas::elong`
+- :cpp:any:`~einsums::blas::euint_t`
+- :cpp:any:`~einsums::blas::int_t`
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   types

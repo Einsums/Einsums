@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.srscl:
+
+============================
+einsums::blas::vendor::srscl
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void srscl(int_t n, float alpha, float *vec, int_t inc)
+
+   Scales a vector by the reciprocal of a real value.
+
+   .. versionadded:: 2.0.0
+
+   :param n: The number of elements in the vector.
+   :param alpha: The denominator for the scale.
+   :param vec: The vector to scale.
+   :param inc: The skip value for the vector.

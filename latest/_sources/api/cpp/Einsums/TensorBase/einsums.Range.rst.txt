@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.Range:
+
+==============
+einsums::Range
+==============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/Common.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: Range : public std::array<std::int64_t, 2>
+
+   Holds two values: a starting value and an ending value.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: constexpr Range() = default
+
+   .. cpp:function:: template <std::integral First, std::integral Second> constexpr explicit Range(First first, Second second)
+
+      Initialize a range.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: bool is_removable() const noexcept
+
+      Check if the range can be treated as a single value if its entries are the same.
+
+      If it is removable and the entries are the same, then the rank of the tensor view created with this range will
+      have a lower rank than the parent tensor. If it is not removable, or the entries are different, then the rank
+      of the view will be the same as the rank of the parent.
+
+      .. versionadded:: 2.0.0

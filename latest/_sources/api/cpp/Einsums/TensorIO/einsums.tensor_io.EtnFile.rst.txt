@@ -1,0 +1,62 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.EtnFile:
+
+===========================
+einsums::tensor_io::EtnFile
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Backing.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:class:: EtnFile
+
+   A ``.etn`` file named once, for the backings of its entries.
+
+   Holds only the path: nothing is opened until a backing is built, and each backing reopens the
+   file by path at every slab as ``etn_backing``'s do. A program that keeps several tensors in one
+   file names it here rather than in every backing.
+
+   .. code-block:: text
+
+      ints = einsums.io.EtnFile("ints.etn")
+      B = graph.declare_tensor("Bvv", backing=ints.entry("Bvv"))
+      T = graph.declare_tensor("T2", dims, backing=ints.entry("T2", write=True))
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: explicit EtnFile(std::string path)
+
+      Name the file.
+
+      :param path: The file, stored as given; see ``etn_backing``.
+
+
+   .. cpp:function:: const std::string & path() const noexcept
+
+      The file's path.
+
+      :returns: The path, as given.
+
+
+   .. cpp:function:: compute_graph::TensorBacking entry(std::string entry, bool write, std::vector<std::size_t> order, bool update) const
+
+      The backing for one entry of this file: ``etn_backing`` with this file's path.
+
+      :param entry: The entry's name within the file.
+      :param write: False for an input the graph reads, true for a tensor it produces and stores.
+      :param order: For a write backing, the order to store a new entry's axes in.
+      :param update: True for a tensor the graph reads and writes, which updates the entry at every replay; see ``etn_backing``.
+      :throws std::runtime_error: As ``etn_backing``.
+      :throws std::invalid_argument: As ``etn_backing``.
+      :returns: The backing.

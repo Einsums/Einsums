@@ -1,0 +1,57 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.tier_bound:
+
+==================================
+einsums::compute_graph::tier_bound
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: double tier_bound(PassTier tier, double epsilon)
+
+   The norm-relative gap a pass of ``tier`` may open, at a dtype whose machine epsilon is ``epsilon``.
+
+   **Why a tier needs a number at all**
+
+   ``PassTier`` was a label until something had to ACT on it. A bisect driver reporting "the first
+   pass whose output diverges past its tier's declared bound" cannot read a label, and the numbers
+   that existed lived in comments in a test table. This is that table's claim, stated where a
+   program can consult it.
+
+   **Where the number comes from, and why a constant is honest here**
+
+   ``PassTier::BitwiseExact`` and ``PassTier::Tuning`` promise the same arithmetic in the same
+   order, so their bound is zero, with the one qualification ``PassTier::BitwiseExact`` already
+   carries about non-finite inputs.
+
+   ``PassTier::ReAssociating`` sums the same products in a different order, and the error that
+   opens is ``O(n)`` in the length of the re-associated sum, which is a property of the problem
+   rather than of the pass. So no constant is exactly right. What makes a constant sufficient is
+   the SEPARATION it has to detect: every measured member of this tier sits between 4.6e-17 and
+   6.5e-16 norm-relative (that is, at most about three epsilon), while a pass that computes the
+   wrong thing produces an error of order one. Twelve orders of magnitude lie between those, so
+   the bound's job is to sit somewhere in the gap rather than to be tight, and a multiple of
+   epsilon generous enough for a long accumulation is still nowhere near a wrong answer.
+
+   ``PassTier::Lossy`` has no constant, and returning one would be a lie: a lossy pass declares
+   its own tolerance and records it, so its bound is ``Graph::approximation_tolerance`` and this
+   function reports infinity to say the question belongs elsewhere.
+
+   .. seealso::
+
+      BisectDriver.hpp, the consumer that made this a number
+
+   :param tier: The tier being held to its promise.
+   :param epsilon: The element type's machine epsilon.
+   :returns: The largest norm-relative difference from the unoptimized answer that is still the tier behaving as described. Zero for the tiers that promise the same arithmetic.

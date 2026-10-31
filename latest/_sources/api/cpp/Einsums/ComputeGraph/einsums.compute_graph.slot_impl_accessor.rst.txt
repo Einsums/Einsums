@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.slot_impl_accessor:
+
+==========================================
+einsums::compute_graph::slot_impl_accessor
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <typename TensorType> constexpr SlotImplAccessor slot_impl_accessor()
+
+   The ``TensorSlot::impl_of`` accessor for one static tensor type.
+
+   Kept here, beside the field it fills, so ``Graph::get_or_create_slot`` and
+   ``Graph::rebind`` derive it the same way rather than each open-coding the
+   ``if constexpr``.
+
+   :tparam TensorType: The type the slot's ``TensorSlot::ptr`` addresses.
+   :returns: A stateless function pointer, or null for a type with no single ``impl()`` (tile-wise sparse tensors).

@@ -1,0 +1,22 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_PackedGemm_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. c:macro:: EINSUMS_PACKED_GEMM_PATH(key, value)
+
+   Name the path a packed contraction took, to the profiler and to @ref
+   einsums::packed_gemm::last_packed_decision, which tests and the tune read.

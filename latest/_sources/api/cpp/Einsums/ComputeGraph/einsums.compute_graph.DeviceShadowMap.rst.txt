@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DeviceShadowMap:
+
+=======================================
+einsums::compute_graph::DeviceShadowMap
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DeviceShadowMap.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DeviceShadowMap
+
+   Manages device (GPU) shadow allocations for tensors.
+
+   When the graph executor needs to run GPU nodes, it creates device shadows
+   for each tensor used by GPU operations. This class tracks the mapping
+   from TensorId to device pointer and handles allocation/deallocation.
+
+   On mock backend, device_malloc returns real heap memory, so shadows are
+   genuine separate buffers that exercise the full H2D → compute → D2H path.
+
+
+   .. cpp:function:: void * ensure(TensorId tid, size_t bytes)
+
+      Allocate a device shadow for a tensor if not already allocated.
+      Returns the device pointer, or nullptr when the device is out of memory.
+
+
+   .. cpp:function:: void * get(TensorId tid) const
+
+      Get the device pointer for a tensor, or nullptr if not allocated.
+
+
+   .. cpp:function:: bool has(TensorId tid) const
+
+      Check if a shadow exists for the given tensor.
+
+
+   .. cpp:function:: void free_all()
+
+      Free all device shadows.
+
+
+   .. cpp:function:: size_t size() const
+
+      Number of allocated shadows.

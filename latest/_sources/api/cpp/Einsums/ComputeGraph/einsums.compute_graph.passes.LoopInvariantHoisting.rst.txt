@@ -1,0 +1,105 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.LoopInvariantHoisting:
+
+=====================================================
+einsums::compute_graph::passes::LoopInvariantHoisting
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/LoopInvariantHoisting.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: LoopInvariantHoisting : public OptimizerPass
+
+   Loop invariant hoisting: moves body operations whose inputs never change across iterations to run once before the loop.
+
+   For each Loop node, identifies body operations whose every input is loop-invariant -- not written by any node anywhere in the
+   loop subtree (including nested conditional branches and inner loops), or produced by an already-hoisted node -- and lifts them
+   into the enclosing graph, wiring their outputs as inputs of the Loop so the scheduler keeps the writer->reader edge. Invariance
+   is transitive, so a producer chain (`T = XᵀH`, then `F = TX`) hoists together. Descent is innermost-first: an invariant lifted
+   from an inner loop into its enclosing body may be lifted again by the outer sweep, one level per composed single-level hoist.
+
+   In the default pipeline (populate_default, after ElementWiseFusion). Not in the O1 cleanup cluster of PassManager::create_for.
+
+   **Example (C++)**
+
+   .. code-block:: text
+
+      cg::Graph graph("lih");
+      {
+          auto &body = graph.add_loop("loop", niter, [](size_t it) { return it + 1 < niter; });
+          cg::CaptureGuard const guard(body);
+          cg::einsum("ij <- ki ; kj", 0.0, &T, 1.0, X, H);   // X, H never change -> invariant, sole writer of T
+          cg::einsum("ij <- ik ; kj", 0.0, &F, 1.0, T, X);   // depends only on invariants -> invariant
+          cg::axpy(1.0, F, &acc);                            // acc += F changes each iteration -> stays in loop
+      }
+      cg::PassManager pm; pm.add<cg::passes::LoopInvariantHoisting>();
+      graph.apply(pm);                                        // or PassManager::create_default()
+      // The T- and F-producing einsums now sit before the loop; only the acc update remains in the body.
+
+   **Example (Python)**
+
+   .. code-block:: py
+
+      import einsums, einsums.graph as cg
+      g = cg.Graph("lih")
+      body = g.add_loop("loop", niter, lambda it: it + 1 < niter)
+      with cg.capture(body):
+          einsums.einsum("ij <- ki ; kj", T, X, H)           # invariant, sole writer of T
+          einsums.einsum("ij <- ik ; kj", F, T, X)           # invariant (transitive)
+          einsums.linalg.axpy(1.0, F, acc)                    # acc += F varies -> stays in loop
+      lih = cg.LoopInvariantHoisting()
+      pm = cg.PassManager(); pm.add(lih)
+      g.apply(pm)                                                # or cg.default_pass_manager()
+      # lih.num_hoisted -> 2   (getter is a property, not a method)
+
+   **Limitations**
+
+   - Hoists out of **Loop bodies only**. Conditional branches are never descended and no node is moved across a branch boundary in either direction (lifting a branch-guarded op would run it unconditionally and change semantics).
+   - Never hoists a **self-modifying** node: the always-accumulating ops (scale/axpy/axpby/element-transform), any einsum/ permute/batched-gemm with a nonzero destination prefactor, or any node that lists the same tensor as both input and output.
+   - A candidate's output must have **exactly one** value-writer in the loop subtree; if another node also writes it, or its single-writer status can't be proven, the hoist is refused (removing the per-iteration write would change which write wins).
+   - A producer whose output is read by an *earlier* body node is loop-carried through it and is not hoisted; reads by *later* body nodes are fine.
+   - A node whose effects its tensor lists do not show (``NodeEffects``; a ``cg::custom`` closure not declared pure) is not hoisted: it may read state the loop changes, or be meant to run once per iteration.
+   - A node that reads a parameter or disk dataset another body node writes, or writes one another body node reads or writes, is not hoisted: the order between them travels through that resource, not through a tensor.
+   - **No cost model**: hoisting a cheap producer of a huge tensor extends that tensor's live range across the whole loop, which can cost more memory than the recomputation it saves. The pass hoists whenever it is legal, not whenever it is profitable.
+
+   **Future improvements**
+
+   - Add a cost/benefit test (recomputation cost vs. the extended live range) so a large-tensor producer is hoisted only when it actually pays off, per the caveat in `hoist_one_level()`.
+
+
+   .. cpp:function:: LoopInvariantHoisting() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      Every feature: this pass moves, schedules, allocates or deletes nodes by dataflow and never reads their arithmetic.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Computing an invariant once rather than each iteration performs the same arithmetic on the same inputs.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: size_t num_hoisted() const

@@ -1,0 +1,76 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TiledRuntimeTensorView:
+
+===============================
+einsums::TiledRuntimeTensorView
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledRuntimeTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T> TiledRuntimeTensorView : public tensor_base::CoreTensor, public tensor_base::TiledTensorNoExtra
+
+   A non-owning, per-irrep-sliced view of a ``TiledRuntimeTensor``.
+
+   Produced by ``TiledRuntimeTensor::view`` with one ``IndexSpace`` per axis.
+   It does not own data: each populated tile is exposed as a
+   ``RuntimeTensorView`` sub-block of the parent tile (via
+   ``RuntimeTensor::at_view``), so a view like ``A[o, v, o, v]`` over an MO
+   tensor selects the occ/vir sub-blocks of every symmetry-allowed tile with no
+   copies. The parent must outlive the view.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The data type stored in each tile.
+
+
+   .. cpp:function:: TiledRuntimeTensorView() = default
+
+   .. cpp:function:: TiledRuntimeTensorView(TiledRuntimeTensor<T> &parent, std::vector<IndexSpace> spaces, std::string name)
+
+      Build a view of ``parent`` selecting ``spaces[k]`` along axis ``k``. One
+      IndexSpace per axis, each covering every irrep on that axis. Computes the
+      reduced per-axis tile sizes and global dims; no data is touched.
+
+
+   .. cpp:function:: std::size_t rank() const noexcept
+
+   .. cpp:function:: std::vector<std::size_t> dims() const
+
+   .. cpp:function:: std::size_t dim(int d) const
+
+   .. cpp:function:: const std::vector<std::vector<int>> & tile_sizes() const noexcept
+
+      Per-axis, per-irrep sizes of the selected sub-blocks.
+
+
+   .. cpp:function:: bool has_tile(const std::vector<int> &coord) const
+
+      The view shares the parent's sparsity pattern (same populated coords).
+
+
+   .. cpp:function:: std::size_t num_filled_tiles() const noexcept
+
+   .. cpp:function:: const std::string & name() const noexcept
+
+   .. cpp:function:: RuntimeTensorView<T> tile_view(const std::vector<int> &coord)
+
+      Sub-view of the parent's tile at ``coord``, restricted to this view's
+      per-axis ranges for that tile's irreps. The result is a live
+      ``RuntimeTensorView`` onto the parent tile's storage.
+
+
+   .. cpp:member:: static constexpr int Rank
+
+      Compile-time rank sentinel; the real rank is the number of axes (== the
+      number of IndexSpaces). See ``einsums::dynamic_rank``.

@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.split_k_runs:
+
+==================================
+einsums::packed_gemm::split_k_runs
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void split_k_runs(const std::vector<int64_t> &k_offsets, int64_t kc_len, std::vector<std::pair<int64_t, int64_t>> &runs)
+
+   Split a K block's element offsets into maximal unit-stride runs.
+
+   A run is a stretch of K over which the operand is contiguous: k_offsets[k + 1]
+   == k_offsets[k] + 1. Written as (first k_local, length) pairs. A K that
+   fuses several indices (Q,f with Q contiguous) is one run per Q segment.

@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.derive_key:
+
+=======================
+einsums::cl::derive_key
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: std::string derive_key(std::string_view long_name)
+
+   The config key derived from a command-line long name.
+
+   Drop a leading `einsums:` and turn `:` into `-`: `einsums:log:level` keys on `log-level`.

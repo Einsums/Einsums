@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.reverse:
+
+================
+einsums::reverse
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/StringUtil/StringOps.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::string reverse(const std::string &str)
+
+   Reverses a string.
+
+   .. versionadded:: 2.0.0
+
+   :param str: The string to reverse.
+   :returns: The input string reversed.

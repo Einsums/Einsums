@@ -1,0 +1,43 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.parse_einsum_spec:
+
+=========================================
+einsums::compute_graph::parse_einsum_spec
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EinsumSpec.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<ParsedEinsumSpec, GraphError> parse_einsum_spec(std::string_view spec)
+
+   Parse an einsum specification string.
+
+   Supports both arrow (`<-`) and NumPy (`->`) notation. Auto-detects
+   single-char vs multi-char index mode based on presence of commas.
+
+   **Examples**
+
+   .. code-block:: text
+
+      auto s1 = parse_einsum_spec("ij <- ik ; kj");
+      // s1.c_indices = {"i", "j"}, s1.a_indices = {"i", "k"}, s1.b_indices = {"k", "j"}
+
+      auto s2 = parse_einsum_spec("mu,nu <- mu,rho ; rho,nu");
+      // s2.c_indices = {"mu", "nu"}, s2.a_indices = {"mu", "rho"}, s2.b_indices = {"rho", "nu"}
+
+      auto s3 = parse_einsum_spec("ik;kj -> ij");
+      // s3.c_indices = {"i", "j"}, s3.a_indices = {"i", "k"}, s3.b_indices = {"k", "j"}
+
+   :param spec: The specification string (e.g., "ij <- ik ; kj").
+   :throws std::invalid_argument: If the string is malformed.
+   :returns: Parsed specification with separated index lists.

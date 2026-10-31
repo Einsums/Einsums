@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.convert_array:
+
+======================
+einsums::convert_array
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Tuple.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename NewT, typename OldT, size_t N> requires (std::is_convertible_v<OldT, NewT>) constexpr std::array<std::remove_cv_t<NewT>, N> convert_array(const std::array<std::remove_cv_t<OldT>, N> &arr)
+
+   Converts the elements of an array to a new type.
+
+   .. versionadded:: 1.1.0
+
+   :tparam NewT: The new type to convert to.
+   :tparam OldT: The type of the elements in the input array.
+   :tparam N: The number of elements.
+   :param arr: The array to cast.
+   :returns: A new array whose elements have been cast from the input array.

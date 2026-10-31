@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.live_conj_b:
+
+===================================
+einsums::compute_graph::live_conj_b
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool live_conj_b(const EinsumDescriptor &desc) noexcept
+
+   Whether an einsum will actually conjugate its second operand.
+
+   :param desc: The descriptor to read.
+   :returns: The live flag, or the snapshot when the node carries no params block.

@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.DistributionDescriptor:
+
+=====================================
+einsums::comm::DistributionDescriptor
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/DistributionDescriptor.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:class:: DistributionDescriptor
+
+   Type-erased distribution descriptor for a tensor on a 2D process grid.
+
+   Stored in TensorHandle::distribution_info.
+
+   For a GEMM C[i,j] = A[i,k] * B[k,j] on a 2×2 grid:
+
+   - C: dim_to_axis = {Row, Col}, global_dims = {M, N}
+   - A: dim_to_axis = {Row, None}, global_dims = {M, K}
+   - B: dim_to_axis = {None, Col}, global_dims = {K, N}
+
+   Each rank holds local partitions determined by its grid coordinates.
+
+
+   .. cpp:function:: bool is_fully_replicated() const
+
+      Check if this tensor is fully replicated (no distributed dimensions).
+
+
+   .. cpp:function:: std::pair<size_t, size_t> local_range(size_t dim, int rank) const
+
+      Compute the local range [start, end) for a given rank along dimension ``dim``.
+      Uses balanced blocking: distributes remainder evenly across first processes.
+      For N=41, P=4: {11, 11, 10, 9} instead of {11, 11, 11, 8}.
+
+
+   .. cpp:function:: std::vector<size_t> local_dims_for(int rank) const
+
+      Compute local dimensions for a given rank.
+
+
+   .. cpp:function:: bool is_dim_distributed(size_t dim) const
+
+      Check if a specific dimension is distributed (Row or Col).
+
+
+   .. cpp:member:: std::vector<GridAxis> dim_to_axis
+
+      Per tensor dimension: which grid axis
+
+
+   .. cpp:member:: std::vector<size_t> global_dims
+
+      Original (global) sizes before partitioning
+
+
+   .. cpp:member:: const ProcessGrid *grid
+
+      Process grid (not owned)
+
+
+   .. cpp:member:: bool summa
+
+      True if this tensor participates in a SUMMA contraction

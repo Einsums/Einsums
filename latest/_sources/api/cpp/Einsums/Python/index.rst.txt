@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Python_api:
+
+==============
+Python C++ API
+==============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Python>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::BufferDescriptor` - Backend-neutral description of a contiguous or strided buffer.
+- :cpp:any:`~einsums::SliceSpec` - One slot in a Python-style index expression.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_DETAIL_STAGE_STR2` - The compiler of THIS translation unit, not `world().compiler_id`, which is the library's.
+- :c:macro:`EINSUMS_STAGE_MODULE` - Perform the stage-module handshake on pybind11 module ``m`` under ``name``.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.BufferDescriptor
+   einsums.SliceSpec
+   macros

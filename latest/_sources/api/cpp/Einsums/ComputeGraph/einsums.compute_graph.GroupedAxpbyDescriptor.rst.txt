@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GroupedAxpbyDescriptor:
+
+==============================================
+einsums::compute_graph::GroupedAxpbyDescriptor
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GroupedAxpbyDescriptor
+
+   Metadata for ``OpKind::GroupedAxpby`` nodes.
+
+   The prefactors are PER ENTRY, which is the whole difference from
+   ``AxpbyDescriptor``: a grouped call exists to merge accumulations that
+   disagree on their coefficients. Snapshots only, and there is deliberately no
+   shared-params handle: ScaleAbsorption and friends fold a scale into a single
+   axpby by rewriting one live scalar, and doing that to one entry of a run would
+   need the pass to know which entry, which no pass does yet.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: int total
+
+      How many axpby operations the node holds.
+
+
+   .. cpp:member:: std::vector<PrefactorScalar> alphas
+
+      Per-entry alpha, in entry order.
+
+
+   .. cpp:member:: std::vector<PrefactorScalar> betas
+
+      Per-entry beta, in entry order.

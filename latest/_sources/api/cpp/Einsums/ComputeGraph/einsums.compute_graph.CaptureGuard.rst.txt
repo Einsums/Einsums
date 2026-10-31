@@ -1,0 +1,71 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CaptureGuard:
+
+====================================
+einsums::compute_graph::CaptureGuard
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CaptureContext.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CaptureGuard
+
+   RAII guard for graph capture.
+
+   Creates a capture scope: operations called between construction and destruction
+   are recorded into the graph instead of executing immediately.
+
+   **Example**
+
+   .. code-block:: text
+
+      cg::Graph graph("example");
+      {
+          cg::CaptureGuard guard(graph);
+          cg::einsum(...);  // Recorded, not executed
+          cg::scale(...);   // Recorded, not executed
+      }
+      // guard destroyed → capture ends, graph is topologically sorted
+      graph.execute();  // NOW the operations run
+
+   .. note::
+
+      Not copyable or movable. Nested captures are not supported.
+
+   .. seealso::
+
+      CaptureContext for the underlying state machine
+
+
+   .. cpp:function:: explicit CaptureGuard(Graph &g)
+
+      Begin capturing operations into the given graph.
+
+      :param g: The graph to capture into.
+
+
+   .. cpp:function:: CaptureGuard(const CaptureGuard &) = delete
+
+   .. cpp:function:: CaptureGuard(CaptureGuard &&) = delete
+
+   .. cpp:function:: ~CaptureGuard()
+
+      End capture and finalize the graph. Swallows exceptions: a throwing
+      destructor would call ``std::terminate`` if we were unwinding from a
+      captured op that itself threw. Callers who want to see finalization
+      errors should call ``end_capture()`` explicitly.
+
+
+   .. cpp:function:: CaptureGuard & operator=(const CaptureGuard &) = delete
+
+   .. cpp:function:: CaptureGuard & operator=(CaptureGuard &&) = delete

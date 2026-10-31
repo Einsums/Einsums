@@ -1,0 +1,94 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Decision:
+
+================================
+einsums::compute_graph::Decision
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Decision.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Decision
+
+   One thing a pass did, declined or said, as a record.
+
+   What ``OptimizerPass::explain`` and ``OptimizerPass::skip_reasons`` print is rendered from
+   these; a program reads the fields instead. A record from a call a pass has not yet given a
+   ``Reason`` has an empty ``code`` and carries its words in ``reason`` and ``text``.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: double fact(std::string_view name) const
+
+      The value of the fact named ``name``.
+
+      :param name: The fact's name.
+      :returns: Its value, or 0 when the decision carries no such fact.
+
+
+   .. cpp:member:: DecisionKind kind
+
+   .. cpp:member:: std::string pass_name
+
+      The pass that made it.
+
+
+   .. cpp:member:: std::string code
+
+      The stable code of its ``Reason``; empty for a call that gave only words.
+
+
+   .. cpp:member:: std::string reason
+
+      The shape-independent phrase: what ``OptimizerPass::skip_reasons`` counts for a decline.
+
+
+   .. cpp:member:: std::string detail
+
+      The specifics: which tensor, which node, the numbers that decided it.
+
+
+   .. cpp:member:: std::string text
+
+      The line a person reads, as the pass's report prints it.
+
+
+   .. cpp:member:: std::string graph
+
+      The name of the graph or body it was made in.
+
+
+   .. cpp:member:: NodeId node
+
+      The node it is about, 0 when it is about none.
+
+
+   .. cpp:member:: std::string node_label
+
+      That node's label.
+
+
+   .. cpp:member:: std::vector<std::string> tensors
+
+      The tensors it is about, by name.
+
+
+   .. cpp:member:: std::vector<Fact> facts
+
+      The quantities it carries.
+
+
+   .. cpp:member:: int level
+
+      The verbosity at which the report shows it.

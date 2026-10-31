@@ -1,0 +1,92 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.gemv:
+
+=============================
+einsums::linear_algebra::gemv
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U> requires (SameUnderlying<AType, XType, YType> && std::convertible_to<U, typename AType::ValueType>) void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y)
+
+   General matrix-vector multiplication.
+
+   This function performs one of the matrix-vector operations
+
+   .. math::
+
+      y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+
+   where alpha and beta are scalars, z and y are vectors and A is an
+   :math:`m` by :math:`n` matrix.
+
+   All operands must share the same stored type, one of `float`, `double`, `std::complex<float>`, or
+   `std::complex<double>`. The following tensor type combinations are supported.
+
+   - `BasicTensor * BasicTensor = BasicTensor`
+   - `BlockTensor * BasicTensor = BasicTensor`
+   - `TiledTensor * BasicTensor = BasicTensor`
+   - `TiledTensor * TiledTensor = BasicTensor`
+   - `TiledTensor * BasicTensor = TiledTensor`
+   - `TiledTensor * TiledTensor = TiledTensor`
+   - `OtherTensor * OtherTensor = OtherTensor`
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Can now handle non-unit strides and both row- and colum-major layouts.
+
+   :tparam TransA: Transpose matrix A? true or false
+   :tparam AType: The type of the matrix A
+   :tparam XType: The type of the vector z
+   :tparam YType: The type of the vector y
+   :tparam U: The type for the scale factors.
+   :param alpha: Scaling factor for the product of A and z
+   :param A: Matrix A
+   :param z: Vector z
+   :param beta: Scaling factor for the output vector y
+   :param y: Output vector y
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.
+
+
+.. cpp:function:: template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U> requires (SameUnderlying<AType, XType, YType> && std::convertible_to<U, typename AType::ValueType>) void gemv(char transA, const U alpha, const AType &A, const XType &z, const U beta, YType *y)
+
+   General matrix-vector multiplication.
+
+   This function performs one of the matrix-vector operations
+
+   .. math::
+
+      y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+
+   where alpha and beta are scalars, z and y are vectors and A is an
+   :math:`m` by :math:`n` matrix.
+
+   .. versionadded:: 2.0.0
+
+   :tparam AType: The type of the matrix A
+   :tparam XType: The type of the vector z
+   :tparam YType: The type of the vector y
+   :tparam U: The type for the scale factors.
+   :param transA: Whether to transpose A. Case insensitive. Can be 'n', 't', or 'c'.
+   :param alpha: Scaling factor for the product of A and z
+   :param A: Matrix A
+   :param z: Vector z
+   :param beta: Scaling factor for the output vector y
+   :param y: Output vector y
+   :throws RankError: If all of the tensors are not rank-2. Only happens when the inputs do not have compile-time rank.
+   :throws TensorCompatError: If the tensors have incompatible dimensions.
+   :throws std::invalid_argument: If the transpose character is invalid.

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.save_graph:
+
+==================================
+einsums::compute_graph::save_graph
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/GraphIR.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<void, GraphError> save_graph(const Graph &graph, const std::string &path, const SaveOptions &options)
+
+   Write ``graph`` to ``path`` as ``einsums_graph_ir``.
+
+   Refuses rather than writing something partial. A graph with blockers comes
+   back as a ``GraphError::Kind::Validation`` error whose message is the whole
+   serializability report, node by node, so the answer to "why can this not be
+   saved" is in the failure itself.
+
+   .. versionadded:: 2.0.0
+
+   :param graph: The graph to write. Must be fully reconstructible; see ``Graph::serializability_report``.
+   :param path: Destination file.
+   :param options: Layout and provenance; see ``SaveOptions``.
+   :returns: Nothing on success, or the reason it refused.

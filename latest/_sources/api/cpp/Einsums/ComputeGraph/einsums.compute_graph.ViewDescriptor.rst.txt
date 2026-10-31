@@ -1,0 +1,56 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ViewDescriptor:
+
+======================================
+einsums::compute_graph::ViewDescriptor
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ViewDescriptor
+
+   Metadata for ``View`` nodes, non-owning slice/alias of another tensor.
+
+   The output tensor's ``TensorHandle::aliases`` is set to ``parent_id``.
+   Each iteration the executor resolves the per-axis ``BoundExpr`` values
+   against the active Pipeline's ``ParamTable`` and rebuilds the underlying
+   Einsums TensorView, rebinding the output handle's data/strides/dims.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: TensorId parent_id
+
+      The tensor being sliced.
+
+
+   .. cpp:member:: std::vector<ViewAxis> axes
+
+      One entry per parent-tensor axis.
+
+
+   .. cpp:member:: size_t result_rank
+
+      parent.rank - count(Drop). Cached for passes.
+
+
+   .. cpp:member:: std::vector<size_t> permutation
+
+      Axis permutation: result axis ``i`` reads parent axis ``permutation[i]``
+      (and ``axes[i]`` slices that parent axis). Empty == identity (no
+      transpose). Used to express ``.T`` / transpose-via-view as a
+      graph-registered, parent-aliasing view.

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contractions &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howto/contractions';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/howto/contractions.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Views and Slicing" href="views.html" />
+    <link rel="prev" title="How-To Guides" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Using Einsums</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Contractions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphs.html">Compute Graphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Building a method</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ccsd.html">Build a Spin-Orbital CCSD</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Porting existing code</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="from_numpy.html">Porting from NumPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="from_psi4.html">Working with psi4</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Extending Einsums</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="add_an_option.html">Add a Runtime Option</a></li>
+<li class="toctree-l1"><a class="reference internal" href="add_a_module.html">Add a Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="expose_to_python.html">Expose a Type to Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="write_a_pass.html">Write an Optimization Pass</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-To Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Contractions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="contractions">
+<span id="howto-contractions"></span><h1>Contractions<a class="headerlink" href="#contractions" title="Link to this heading">#</a></h1>
+<p>Recipes for writing a contraction and for the index patterns that are easy to get wrong.
+<a class="reference internal" href="../user/tutorial_einsum.html"><span class="doc">Tutorial: Einstein Summation</span></a> introduces the notation; this page assumes you have it and answers specific questions.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#write-the-spec" id="id1">Write the spec</a></p></li>
+<li><p><a class="reference internal" href="#scale-the-result-or-accumulate-into-it" id="id2">Scale the result, or accumulate into it</a></p></li>
+<li><p><a class="reference internal" href="#get-a-single-number-out" id="id3">Get a single number out</a></p></li>
+<li><p><a class="reference internal" href="#repeated-indices-traces-and-transposes" id="id4">Repeated indices, traces, and transposes</a></p></li>
+<li><p><a class="reference internal" href="#conjugate-a-complex-operand" id="id5">Conjugate a complex operand</a></p></li>
+<li><p><a class="reference internal" href="#write-into-a-tensor-you-are-also-reading" id="id6">Write into a tensor you are also reading</a></p></li>
+<li><p><a class="reference internal" href="#contract-tensors-with-a-zero-length-dimension" id="id7">Contract tensors with a zero-length dimension</a></p></li>
+<li><p><a class="reference internal" href="#find-out-which-kernel-ran" id="id8">Find out which kernel ran</a></p></li>
+<li><p><a class="reference internal" href="#next" id="id9">Next</a></p></li>
+</ul>
+</nav>
+<section id="write-the-spec">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Write the spec</a><a class="headerlink" href="#write-the-spec" title="Link to this heading">#</a></h2>
+<p>A spec names the indices of each operand and of the result.
+The two operands are separated by a semicolon, which is the one piece of syntax that catches people arriving from NumPy.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph/Operations.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/RuntimeTensor.hpp&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensor</span><span class="p">;</span>
+
+<span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">});</span>
+<span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">});</span>
+<span class="n">RuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">});</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">einsums</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
+
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Both languages also accept the arrow-left spelling, <code class="docutils literal notranslate"><span class="pre">&quot;ij</span> <span class="pre">&lt;-</span> <span class="pre">ik</span> <span class="pre">;</span> <span class="pre">kj&quot;</span></code>, which some people find reads closer to the mathematics.
+Whitespace around the separators is ignored.</p>
+<p>In C++ the spec is parsed by a <code class="docutils literal notranslate"><span class="pre">consteval</span></code> constructor, so a string literal that is not a valid spec fails to compile:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>error: call to consteval function 'EinsumFormatString' is not a constant expression
+note: subexpression not valid in a constant expression
+    throw "Invalid einsum format string: must contain exactly one '&lt;-' or '-&gt;' and exactly one ';'";
+</pre></div>
+</div>
+<p>That is the error you get from writing NumPy’s comma.
+In Python the same mistake is a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when the call runs.</p>
+</section>
+<section id="scale-the-result-or-accumulate-into-it">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Scale the result, or accumulate into it</a><a class="headerlink" href="#scale-the-result-or-accumulate-into-it" title="Link to this heading">#</a></h2>
+<p>The four-argument form overwrites the output.
+The six-argument form takes a prefactor for the output and a prefactor for the product, computing
+<span class="math notranslate nohighlight">\(C = \alpha C + \beta A B\)</span>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">              </span><span class="c1">// C = AB</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">    </span><span class="c1">// C = C + AB</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">    </span><span class="c1">// C = 2C + 3AB</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>                        <span class="c1"># C = AB</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">c_pf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ab_pf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>   <span class="c1"># C = C + AB</span>
+<span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">c_pf</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">ab_pf</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>   <span class="c1"># C = 2C + 3AB</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Accumulating is how you build a quantity from several contractions without allocating a temporary for each one.
+For complex tensors the prefactors may themselves be complex, and they survive capture and replay without narrowing.</p>
+</section>
+<section id="get-a-single-number-out">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Get a single number out</a><a class="headerlink" href="#get-a-single-number-out" title="Link to this heading">#</a></h2>
+<p>A spec with an empty output, such as <code class="docutils literal notranslate"><span class="pre">&quot;i;i-&gt;&quot;</span></code> into a rank-0 tensor, contracts to a scalar through a dot product (route <code class="docutils literal notranslate"><span class="pre">dot_runtime</span></code>).
+When you want a plain number rather than a tensor, use the dot product, which writes through a pointer.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The pointer-writing form is the one to use inside a graph capture.
+Returning forms such as <code class="docutils literal notranslate"><span class="pre">dot(A,</span> <span class="pre">B)</span></code> throw during capture by design, because a captured operation has no value to return until the graph runs.</p>
+</section>
+<section id="repeated-indices-traces-and-transposes">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Repeated indices, traces, and transposes</a><a class="headerlink" href="#repeated-indices-traces-and-transposes" title="Link to this heading">#</a></h2>
+<p>A letter repeated within one operand means diagonal access.
+<code class="docutils literal notranslate"><span class="pre">&quot;ii;i-&gt;i&quot;</span></code> reads the diagonal of a matrix and multiplies it elementwise by a vector.
+The diagonal is read as a strided view of the operand, without a copy, and the rest of the contraction takes the same routes as any other, so <code class="docutils literal notranslate"><span class="pre">&quot;iik;kj-&gt;ij&quot;</span></code> runs as a packed matrix multiplication (route <code class="docutils literal notranslate"><span class="pre">diagonal:packed_gemm</span></code>).</p>
+<p>A letter that appears in only one input and not in the output is summed over, which is how you write a trace.
+That input is summed over the letter first, and the smaller contraction left over takes the same routes, so <code class="docutils literal notranslate"><span class="pre">&quot;ikm;j-&gt;ij&quot;</span></code> is one pass over the first operand and a rank-1 update.
+Only an input whose letters are all summed this way, such as the <code class="docutils literal notranslate"><span class="pre">k</span></code> in <code class="docutils literal notranslate"><span class="pre">&quot;k;ij-&gt;ij&quot;</span></code>, still runs on the generic loop.</p>
+<p>A generalized transpose is <code class="docutils literal notranslate"><span class="pre">cg::permute</span></code> rather than an einsum:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="s">"ij-&gt;ji"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span><span class="w">        </span><span class="c1">// T = A transposed</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="s2">"ij-&gt;ji"</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Einsums does not make permuted copies of operands to force a contraction into a BLAS call.
+It will use the transposition flags a BLAS call already offers, so <code class="docutils literal notranslate"><span class="pre">&quot;ji;kj-&gt;ik&quot;</span></code> still reaches a single GEMM, and a pattern that would need a physical permutation, such as <code class="docutils literal notranslate"><span class="pre">&quot;ikj;kl-&gt;ijl&quot;</span></code>, goes to the packed-GEMM backend, which folds the permutation into its packing step.
+Only a few shapes, such as a lone summed operand, fall back to the generic loop.</p>
+</section>
+<section id="conjugate-a-complex-operand">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Conjugate a complex operand</a><a class="headerlink" href="#conjugate-a-complex-operand" title="Link to this heading">#</a></h2>
+<p>Conjugation is a flag on the call rather than something spelled in the spec.
+It conjugates elements only, so a conjugate transpose is the flag combined with transposed index placement.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="n">cd</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">cd</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="p">,</span>
+<span class="w">           </span><span class="cm">/*conj_a=*/</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="cm">/*conj_b=*/</span><span class="nb">false</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+Python</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">einsums</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ik;kj-&gt;ij"</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">conj_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For real dtypes the flags are accepted and do nothing, so a routine written once for both does not need two code paths.</p>
+</section>
+<section id="write-into-a-tensor-you-are-also-reading">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Write into a tensor you are also reading</a><a class="headerlink" href="#write-into-a-tensor-you-are-also-reading" title="Link to this heading">#</a></h2>
+<p>An output that overlaps an input is rejected unless the aliased operand’s index list is identical to the output’s.
+The identical case is a pure elementwise update in place, which is well defined; anything else would read elements the same call has already overwritten.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij;ij-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">     </span><span class="c1">// allowed: elementwise, in place</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">     </span><span class="c1">// throws std::invalid_argument</span>
+</pre></div>
+</div>
+<p>The check fires only on provable overlap, meaning both regions are contiguous or the base pointers are identical.
+Two disjoint column-major slices of one parent tensor interleave in memory without sharing any element, so they are not rejected and must not be.</p>
+<p>The two input operands may always share a tensor.
+<code class="docutils literal notranslate"><span class="pre">cg::einsum(&quot;ik;kj-&gt;ij&quot;,</span> <span class="pre">&amp;C,</span> <span class="pre">A,</span> <span class="pre">A)</span></code> is fine.</p>
+</section>
+<section id="contract-tensors-with-a-zero-length-dimension">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Contract tensors with a zero-length dimension</a><a class="headerlink" href="#contract-tensors-with-a-zero-length-dimension" title="Link to this heading">#</a></h2>
+<p>A zero extent is valid input, not an error to guard against.
+An empty contraction contributes nothing, and the output is still scaled by its own prefactor exactly once:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">Z</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="cm">/* 4 x 0 */</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">Z2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* 0 x 4 */</span><span class="p">;</span>
+<span class="n">C</span><span class="p">.</span><span class="n">set_all</span><span class="p">(</span><span class="mf">7.0</span><span class="p">);</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">Z2</span><span class="p">);</span>
+<span class="c1">// C is now filled with 14.0, not 7.0 and not 0.0</span>
+</pre></div>
+</div>
+<p>This matters most when extents come from a screening step that can legitimately select nothing.
+Code that special-cases the empty result usually gets the prefactor wrong.</p>
+</section>
+<section id="find-out-which-kernel-ran">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Find out which kernel ran</a><a class="headerlink" href="#find-out-which-kernel-ran" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">einsum</span></code> chooses between a BLAS call, the packed-GEMM backend, and a generic loop.
+<a class="reference internal" href="../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.dispatch.last_dispatch_route.html#_CPPv4N7einsums13compute_graph8dispatch19last_dispatch_routeEv" title="einsums::compute_graph::dispatch::last_dispatch_route"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">last_dispatch_route</span></code></a> names the route the most recent string contraction took on this thread.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/ComputeGraph/StringDispatch.hpp&gt;</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ik;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">"%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">dispatch</span><span class="o">::</span><span class="n">last_dispatch_route</span><span class="p">());</span><span class="w">   </span><span class="c1">// gemm_direct_runtime</span>
+</pre></div>
+</div>
+<p>These are the routes for the common shapes, as measured with <a class="reference internal" href="../api/cpp/Einsums/Tensor/types.html#_CPPv4I0EN7einsums13RuntimeTensorE" title="einsums::RuntimeTensor"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">einsums::RuntimeTensor</span></code></a> operands:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Spec</p></th>
+<th class="head"><p>Route</p></th>
+<th class="head"><p>What ran</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ik;kj-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemm_direct_runtime</span></code></p></td>
+<td><p>one GEMM</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ji;kj-&gt;ik</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemm_direct_runtime</span></code></p></td>
+<td><p>one GEMM, using its transpose flags</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ij;j-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemv_mat_vec_runtime</span></code></p></td>
+<td><p>one GEMV</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">j;ij-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gemv_vec_mat_runtime</span></code></p></td>
+<td><p>one GEMV, transposed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i;j-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ger_runtime</span></code></p></td>
+<td><p>rank-1 update</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ij;ij-&gt;ij</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">direct_product_runtime</span></code></p></td>
+<td><p>elementwise</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ii;i-&gt;i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">diagonal:direct_product_runtime</span></code></p></td>
+<td><p>the diagonal as a strided view, then elementwise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ijkl;klmn-&gt;ijmn</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">packed_gemm</span></code></p></td>
+<td><p>cache-blocked packed contraction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Statically ranked operands produce the same names without the <code class="docutils literal notranslate"><span class="pre">_runtime</span></code> suffix.
+A contraction with a repeated letter names the route its folded form took, prefixed with <code class="docutils literal notranslate"><span class="pre">diagonal:</span></code>, and one with a letter summed over a single input is prefixed with <code class="docutils literal notranslate"><span class="pre">lone_reduced:</span></code>.
+Contractions with a zero extent report <code class="docutils literal notranslate"><span class="pre">empty_input_scale_only</span></code> or <code class="docutils literal notranslate"><span class="pre">empty_output_noop</span></code>.</p>
+<p>Two cautions.
+The value is thread-local and is written only by string contractions, so reading it after a call that is not one, such as <code class="docutils literal notranslate"><span class="pre">cg::dot</span></code>, returns whatever the previous contraction left behind.
+And it exists for test introspection rather than for steering execution: assert on it in a test that means to pin a fast path, and do not branch on it in a calculation.</p>
+<p>For where the time actually goes, rather than which kernel was picked, see <a class="reference internal" href="../user/tutorial_performance.html"><span class="doc">Tutorial: Performance Tuning</span></a>.</p>
+</section>
+<section id="next">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Next</a><a class="headerlink" href="#next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="views.html#howto-views"><span class="std std-ref">Views and Slicing</span></a> for contracting sub-blocks without copying them.</p></li>
+<li><p><a class="reference internal" href="graphs.html#howto-graphs"><span class="std std-ref">Compute Graphs</span></a> for capturing a sequence of contractions and optimizing it as a unit.</p></li>
+<li><p><a class="reference internal" href="../user/tutorial_best_practices.html"><span class="doc">Tutorial: Performance Best Practices</span></a> for structuring code so the time goes to arithmetic.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">How-To Guides</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="views.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Views and Slicing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-the-spec">Write the spec</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scale-the-result-or-accumulate-into-it">Scale the result, or accumulate into it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-a-single-number-out">Get a single number out</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeated-indices-traces-and-transposes">Repeated indices, traces, and transposes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conjugate-a-complex-operand">Conjugate a complex operand</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-into-a-tensor-you-are-also-reading">Write into a tensor you are also reading</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contract-tensors-with-a-zero-length-dimension">Contract tensors with a zero-length dimension</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-out-which-kernel-ran">Find out which kernel ran</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

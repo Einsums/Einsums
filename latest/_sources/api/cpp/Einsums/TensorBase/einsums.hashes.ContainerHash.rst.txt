@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hashes.ContainerHash:
+
+==============================
+einsums::hashes::ContainerHash
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/HashFunctions.hpp``.
+
+.. cpp:namespace:: einsums::hashes
+
+.. cpp:class:: template <typename ContainerType> ContainerHash
+
+   Hashes an arbitrary container object. Containers need to be iterable.
+
+   Examples of allowed containers include std::array, std::vector, std::queue, etc.
+
+   The default implementation is a PJW hash, based on the Wikipedia page.
+
+   .. versionadded:: 1.0.0
+
+   :tparam ContainerType: The type of container.
+
+
+   .. cpp:function:: ContainerHash() = default
+
+   .. cpp:function:: virtual ~ContainerHash() = default
+
+   .. cpp:function:: size_t operator()(const ContainerType &cont) const
+
+      Hashes the contents of a container.
+
+      .. versionadded:: 1.0.0
+
+      :param cont: The container to hash.
+      :returns: The container's hash.

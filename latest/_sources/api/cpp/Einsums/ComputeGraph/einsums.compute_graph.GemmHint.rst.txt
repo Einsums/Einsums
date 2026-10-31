@@ -1,0 +1,84 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GemmHint:
+
+================================
+einsums::compute_graph::GemmHint
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GemmHint
+
+   BLAS-level batching hint for 2D×2D→2D einsums.
+
+   Populated when a contraction matches the GEMM pattern (two rank-2 inputs,
+   one rank-2 output, one link index, and strides agreeing with each operand's
+   declared layout). The GEMMBatching pass reads this to decide which einsums
+   can be collapsed into a single `blas::gemm_batch` call, and ThreadPlanning
+   reads m/n/k to size a node. Non-GEMM contractions leave
+   ``gemm_hint == nullptr``.
+
+   Every field is DATA, so an einsum node stays reconstructible
+   (``is_reconstructible``). The batched executor resolves live geometry
+   through the graph's slots, so ``rebind`` and ``redirect_slot`` are honored.
+
+   .. seealso::
+
+      derive_gemm_hint, the single derivation both capture and
+      ``Graph::make_einsum_node`` use.
+
+
+   .. cpp:member:: BlasScalar scalar
+
+      Element type for gemm_batch dispatch.
+
+
+   .. cpp:member:: int m
+
+      Rows of C (and A if trans_a=='N').
+
+
+   .. cpp:member:: int n
+
+      Cols of C (and B if trans_b=='N').
+
+
+   .. cpp:member:: int k
+
+      Link dimension.
+
+
+   .. cpp:member:: char trans_a
+
+      Transpose flag for A derived from its index order.
+
+
+   .. cpp:member:: char trans_b
+
+      Transpose flag for B.
+
+
+   .. cpp:member:: GemmOperand a
+
+      Left input.
+
+
+   .. cpp:member:: GemmOperand b
+
+      Right input.
+
+
+   .. cpp:member:: GemmOperand c
+
+      Destination.

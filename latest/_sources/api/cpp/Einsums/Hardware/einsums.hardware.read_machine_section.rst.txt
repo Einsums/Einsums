@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.read_machine_section:
+
+=======================================
+einsums::hardware::read_machine_section
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::optional<MachineIdentity> read_machine_section(const json::Object &section, std::string &error)
+
+   Read an identity back from a ``machine`` section.
+
+   Every key the section must have is consumed, and the fingerprint is left for the caller, which
+   compares it with the one it recomputes.
+
+   .. versionadded:: 2.0.0
+
+   :param section: The section.
+   :param error: Why the section is unreadable, when it is.
+   :returns: The identity, or nothing when a field is missing or of the wrong type.

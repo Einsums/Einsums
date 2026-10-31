@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_SIMD_api:
+
+============
+SIMD C++ API
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_SIMD>` of this module for background and usage guidance.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::apply_SIMD_options` - Pass --einsums:simd:arch and a log handler to Stripes. Called once options and logging are up, before anything dispatches.
+- :cpp:any:`~einsums::register_Einsums_SIMD_options` - Give the dispatch ladder's options their command-line presence. Idempotent.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::option::SimdArch` - Cap the SIMD dispatch rung. Empty leaves the choice to Stripes (STRIPES_ARCH, else the best the machine runs). It can only lower the rung: an unsupported rung falls to the next one below, with a warning (see stripes::resolve_arch()). The rung is fixed at the first dispatch, so set this on the command line or in the environment.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.apply_SIMD_options
+   einsums.register_Einsums_SIMD_options
+   variables

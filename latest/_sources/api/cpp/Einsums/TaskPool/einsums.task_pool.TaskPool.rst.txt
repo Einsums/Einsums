@@ -1,0 +1,188 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.TaskPool:
+
+============================
+einsums::task_pool::TaskPool
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/TaskPool.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: TaskPool
+
+   Work-stealing thread pool with HPX-inspired continuations and dataflow.
+
+   Provides fine-grained task parallelism for data-parallel workloads like
+   quantum chemistry integral generation. Key features:
+
+   - **Work-stealing**: Lock-free Chase-Lev deques per worker for load balancing
+   - **Continuations**: TaskHandle::then() chains, when_all() fan-in
+   - **Dataflow**: Tasks declare input futures and run only when all are ready
+   - **parallel_for / parallel_reduce**: Data-parallel patterns with chunking
+   - **Profiler integration**: Each task is a named profiler region
+
+   **Example**
+
+   .. code-block:: text
+
+      auto& pool = TaskPool::get_singleton();
+
+      auto a = pool.submit("compute_a", []() { return 42; });
+      auto b = pool.submit("compute_b", []() { return 3.14; });
+      auto c = pool.dataflow("combine", [](int x, double y) {
+          return x + y;
+      }, a, b);
+
+      double result = c.get();  // 45.14
+
+
+   .. cpp:function:: TaskPool(PrivateConstructorStuff)
+
+   .. cpp:function:: TaskPool(const TaskPool &) = delete
+
+   .. cpp:function:: TaskPool(TaskPool &&) = delete
+
+   .. cpp:function:: static TaskPool & get_singleton()
+
+   .. cpp:function:: size_t num_workers() const
+
+      Number of worker threads.
+
+
+   .. cpp:function:: template <typename F> TaskHandle<std::invoke_result_t<F>> submit(std::string name, F &&callable)
+
+      Submit a named task. Returns a TaskHandle for the result.
+
+
+   .. cpp:function:: template <typename F> TaskHandle<std::invoke_result_t<F>> submit(F &&callable)
+
+      Submit an unnamed task.
+
+
+   .. cpp:function:: template <typename F> void submit_detached(std::string name, F &&callable)
+
+      Fire-and-forget submission: no TaskHandle, no SharedState.
+
+      For callers that track completion themselves, sparing a handle allocation per task. The task
+      still gets a profiler zone. An escaping exception is logged and dropped.
+
+
+   .. cpp:function:: void submit_bare(std::function<void ()> task)
+
+      Submit a bare callable: no name, no wrapper, no handle.
+
+      The leanest path: no wrapper, so a callable that fits std::function's inline buffer is not
+      allocated at all. It MUST NOT throw, as nothing catches it, and gets no profiler zone.
+
+
+   .. cpp:function:: void submit_bare_batch(std::vector<std::function<void ()>> &tasks)
+
+      Submit several bare callables at once, same contract as ``submit_bare``.
+
+      One lock and one wakeup for the whole batch rather than per task.
+
+      ``tasks`` is emptied.
+
+
+   .. cpp:function:: TaskGroup submit_group(std::string name, std::vector<std::function<void ()>> tasks)
+
+      Submit a group of tasks with a collective barrier.
+
+
+   .. cpp:function:: template <typename F> void parallel_for(execution::Policy policy, const std::string &name, size_t begin, size_t end, F &&callable)
+
+      Data-parallel for with execution policy.
+
+
+   .. cpp:function:: template <typename F> void parallel_for(std::string name, size_t begin, size_t end, F &&callable)
+
+      Data-parallel for with default parallel policy.
+
+
+   .. cpp:function:: template <typename Acc, typename InitFactory, typename Body, typename Combiner> Acc parallel_reduce(std::string name, size_t begin, size_t end, InitFactory &&init_factory, Body &&body, Combiner &&combiner)
+
+      Parallel reduce with thread-local accumulation and sequential merge.
+
+
+   .. cpp:function:: template <typename F, typename... Ts> TaskHandle<std::invoke_result_t<F, Ts...>> dataflow(std::string name, F &&callable, TaskHandle<Ts>... inputs)
+
+      Dataflow: submit a task that runs when all typed input handles are ready.
+
+      The callable takes the inputs' results and is submitted once all complete. Never blocks.
+
+
+   .. cpp:function:: template <typename F> TaskHandle<std::invoke_result_t<F>> dataflow(std::string name, F &&callable, const TaskHandle<void> &input)
+
+      Dataflow specialization for void inputs.
+
+
+   .. cpp:function:: void shutdown()
+
+      Shutdown the pool, joining all worker threads.
+
+
+   .. cpp:function:: bool is_worker_thread() const
+
+      Check if the calling thread is a TaskPool worker.
+
+
+   .. cpp:function:: static int current_worker_id()
+
+      Get the current worker ID (or -1 if not a worker thread).
+
+
+   .. cpp:function:: void wake_workers()
+
+      Wake all parked workers. Called from handle wait loops.
+
+
+   .. cpp:function:: Metrics snapshot_metrics() const
+
+      Take a snapshot of the pool's aggregate metrics.
+
+
+   .. cpp:function:: ~TaskPool()
+
+   .. cpp:function:: void help_until(const std::function<bool ()> &predicate)
+
+      Run pool work on the calling thread until ``predicate`` holds, so a waiter helps rather than parks.
+
+
+   .. cpp:member:: Acc acc
+
+   .. cpp:member:: std::thread thread
+
+   .. cpp:member:: WorkStealingDeque<std::function<void ()>> deque
+
+   .. cpp:member:: WorkerContext context
+
+   .. cpp:member:: std::atomic<size_t> tasks_executed
+
+   .. cpp:member:: std::atomic<size_t> tasks_stolen
+
+   .. cpp:class:: Metrics
+
+      Aggregate metrics for profiling.
+
+
+      .. cpp:member:: size_t total_submitted
+
+      .. cpp:member:: size_t total_completed
+
+      .. cpp:member:: size_t total_steals
+
+      .. cpp:member:: size_t active_workers
+
+      .. cpp:member:: std::vector<size_t> per_worker_executed
+
+      .. cpp:member:: std::vector<size_t> per_worker_stolen

@@ -1,0 +1,161 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.print.ordinal:
+
+=======================
+einsums::print::ordinal
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Print.hpp``.
+
+.. cpp:namespace:: einsums::print
+
+.. cpp:class:: template <std::integral IntType> ordinal
+
+   Wraps an integer that prints with its ordinal suffix (1st, 2nd, ...), negatives included:
+
+   .. code-block:: text
+
+      fmt::format("Error with the {} argument", print::ordinal{arg_num});
+
+   It supports in-place arithmetic like the integer it wraps, and has a ``_th`` literal suffix:
+
+   .. code-block:: text
+
+      fmt::format("Error with the {} argument", 3_th);
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Added the literal suffix operator.
+
+   :tparam IntType: The integer type the ordinal will wrap.
+
+
+   .. cpp:function:: constexpr ordinal() = default
+
+   .. cpp:function:: constexpr ordinal(const ordinal<IntType> &other) = default
+
+      Copy constructor.
+
+      .. versionadded:: 1.0.0
+
+      :param other: The ordinal to copy.
+
+
+   .. cpp:function:: constexpr ordinal(ordinal<IntType> &&other) noexcept
+
+      Move constructor.
+
+      .. versionadded:: 1.0.0
+
+      :param other: The ordinal to move. On exit, this may be invalidated.
+
+
+   .. cpp:function:: constexpr ordinal(const IntType &value)
+
+      Cast constructor.
+
+      .. versionadded:: 1.0.0
+
+      :param value: The integer to wrap.
+
+
+   .. cpp:function:: constexpr ~ordinal() = default
+
+      Destructor.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: constexpr ordinal<IntType> & operator=(const ordinal<IntType> &other) = default
+
+      Copy assignment.
+
+      .. versionadded:: 1.0.0
+
+      :param other: The ordinal to copy.
+
+
+   .. cpp:function:: constexpr ordinal<IntType> & operator=(ordinal<IntType> &&other) noexcept
+
+      Move assignment.
+
+      .. versionadded:: 1.0.0
+
+      :param other: The ordinal to move. On exit, this may be invalidated.
+
+
+   .. cpp:function:: constexpr operator IntType() const
+
+      Cast to underlying integer type.
+
+
+   .. cpp:function:: constexpr operator IntType &()
+
+      Cast to reference of the underlying integer type.
+
+      .. versionadded:: 1.0.0
+
+      :returns: A reference to the storage member.
+
+
+   .. cpp:function:: template <typename T> constexpr operator T() const
+
+      Cast to arbitrary type.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator+=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator+=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator-=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator-=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator*=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator*=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator/=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator/=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator%=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator%=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator<<=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator<<=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator>>=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator>>=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator^=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator^=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator&=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator&=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator|=(const ordinal<OtherType> &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr ordinal<IntType> & operator|=(const OtherType &other)
+
+   .. cpp:function:: template <std::integral OtherType> constexpr bool operator==(const ordinal<OtherType> &other) const
+
+   .. cpp:function:: template <std::integral OtherType> constexpr bool operator==(const OtherType &other) const

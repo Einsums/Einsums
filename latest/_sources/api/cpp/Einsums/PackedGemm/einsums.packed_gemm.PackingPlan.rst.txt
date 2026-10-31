@@ -1,0 +1,118 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.PackingPlan:
+
+=================================
+einsums::packed_gemm::PackingPlan
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: PackingPlan
+
+   Describes how a contraction can be packed as a flat BLIS-style GEMM.
+
+   For a contraction C[m,n] = beta*C[m,n] + alpha * Sum_k A[m,k] * B[k,n]
+   (generalised to arbitrary tensor rank with multiple M, N, and K dims):
+
+   m_dims      : target dims in A (not B)                 -> M_total = product(sizes)
+   n_dims      : target dims in B (not A)                 -> N_total = product(sizes)
+   k_dims_in_a : link dims ordered by link_indices order  -> K_total = product(sizes) (in A)
+   k_dims_in_b : link dims ordered by link_indices order  -> K_total = product(sizes) (in B)
+   c_m_dims    : m_dims as seen in C (same logical index, C position/stride)
+   c_n_dims    : n_dims as seen in C
+
+   Each group's vectors start parallel, entry d naming the same logical index in
+   both tensors. coalesce_plan() merges the M and N groups' vectors separately,
+   so afterwards they still enumerate one flat coordinate in the same order but
+   may differ in length: C(Q,a,f,j) fuses (f, j) into one dim while B(j,e,f)
+   keeps two. The K group is merged jointly and stays parallel.
+
+   `valid` is true only when all validity conditions are met.
+
+
+   .. cpp:member:: bool valid
+
+   .. cpp:member:: std::vector<DimSpec> m_dims
+
+      Target dims in A only (M group)
+
+
+   .. cpp:member:: std::vector<DimSpec> n_dims
+
+      Target dims in B only (N group)
+
+
+   .. cpp:member:: std::vector<DimSpec> k_dims_in_a
+
+      Link dims, A positions/strides (link_indices order)
+
+
+   .. cpp:member:: std::vector<DimSpec> k_dims_in_b
+
+      Link dims, B positions/strides (link_indices order)
+
+
+   .. cpp:member:: std::vector<DimSpec> c_m_dims
+
+      m_dims as seen in C
+
+
+   .. cpp:member:: std::vector<DimSpec> c_n_dims
+
+      n_dims as seen in C
+
+
+   .. cpp:member:: int64_t M_total
+
+   .. cpp:member:: int64_t N_total
+
+   .. cpp:member:: int64_t K_total
+
+   .. cpp:member:: std::vector<BatchDimSpec> batch_dims
+
+      Batch dimensions (target indices in both A and B).
+      Empty for non-batched contractions.
+
+
+   .. cpp:member:: int64_t batch_total
+
+      Product of all batch dim sizes
+
+
+   .. cpp:member:: bool coalesced
+
+      True when coalesce_plan() merged at least one pair of dims. Merged
+      DimSpecs have meaningless tensor_pos values, so the HPTT flatten path
+      (which rebuilds axis permutations from tensor_pos) must be skipped.
+
+
+   .. cpp:member:: bool synthetic
+
+      True when compute_packing_topology() synthesized a unit dim for an
+      empty M/N/K group (GEMV- or outer-product-shaped contraction).
+
+      The direct BLAS fast paths (gemm_batch, single-K, multi-K flatten) must
+      be skipped: a synthetic stride of 0 maps to invalid leading
+      dimensions there. The tiled/block scatter paths handle it naturally.
+
+
+   .. cpp:member:: bool swap_ab
+
+      True when this plan describes the contraction with the roles of A and B
+      exchanged - its M group is B's target group and its K dims are mirrored
+      to match (see ``transposed_plan``).
+
+      The consumer's only obligation is to feed the packers B where the plan
+      says A, and to swap the conjugation flags with them. Everything else the
+      plan says is already stated in the exchanged roles.

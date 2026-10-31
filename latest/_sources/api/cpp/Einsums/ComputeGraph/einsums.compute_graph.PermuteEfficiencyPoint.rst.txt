@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PermuteEfficiencyPoint:
+
+==============================================
+einsums::compute_graph::PermuteEfficiencyPoint
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PermuteEfficiencyPoint
+
+   A single measured permute (tensor transpose) data point.
+
+   `gbps` is the achieved TRAFFIC rate, counting the source read and the
+   destination write, so it is directly comparable with @ref
+   DeviceProfile::mem_bandwidth_gbps from the copy benchmark.
+
+
+   .. cpp:member:: size_t bytes
+
+      Size of the permuted tensor (one side, not the traffic)
+
+
+   .. cpp:member:: size_t rank
+
+      Rank of the permuted tensor
+
+
+   .. cpp:member:: double gbps
+
+      Achieved (read + write) bandwidth

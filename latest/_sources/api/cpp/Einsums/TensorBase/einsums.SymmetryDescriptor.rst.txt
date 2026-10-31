@@ -1,0 +1,109 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.SymmetryDescriptor:
+
+===========================
+einsums::SymmetryDescriptor
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/SymmetryDescriptor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: SymmetryDescriptor
+
+   Describes the symmetry of a tensor as a set of generators.
+
+   The group is the generators' closure; only the generators are stored (ERIs need three).
+
+   **Common patterns**
+
+   - ``SymmetryDescriptor::symmetric_pair(i, j)``: ``T(..,i,..,j,..) = T(..,j,..,i,..)``.
+   - ``SymmetryDescriptor::antisymmetric_pair(i, j)``: negated on swap.
+   - ``SymmetryDescriptor::hermitian_pair(i, j)``: symmetric plus complex conjugate.
+   - ``SymmetryDescriptor::eri_8fold()``: 8-fold ERI symmetry in chemists' notation.
+   - ``SymmetryDescriptor::ccsd_t2()``: antisym in (0,1) and antisym in (2,3).
+
+   **Tolerance**
+
+   Floating-point arithmetic drifts away from exact symmetry. ``tolerance``
+   is the maximum absolute element-wise deviation that ``check_symmetry()``
+   accepts as "still symmetric."
+
+
+   .. cpp:function:: SymmetryDescriptor() = default
+
+   .. cpp:function:: explicit SymmetryDescriptor(std::vector<SymmetryOp> gens, double tol)
+
+      A descriptor from its generators, and the deviation ``tolerance`` accepts.
+
+
+   .. cpp:function:: bool empty() const noexcept
+
+      Whether there are no generators, which describes no symmetry.
+
+
+   .. cpp:function:: std::size_t size() const noexcept
+
+      How many generators there are.
+
+
+   .. cpp:function:: SymmetryDescriptor & add(SymmetryOp op)
+
+      Append another generator to this descriptor (mutates in place).
+
+
+   .. cpp:function:: bool operator==(const SymmetryDescriptor &other) const noexcept
+
+   .. cpp:function:: static SymmetryDescriptor symmetric_pair(int a, int b)
+
+      Symmetric in a single index pair: ``T(..,a,..,b,..) = T(..,b,..,a,..)``.
+
+
+   .. cpp:function:: static SymmetryDescriptor antisymmetric_pair(int a, int b)
+
+      Antisymmetric in a single index pair: ``T(..,a,..,b,..) = -T(..,b,..,a,..)``.
+
+
+   .. cpp:function:: static SymmetryDescriptor hermitian_pair(int a, int b)
+
+      Hermitian in a single index pair (complex tensors):
+      ``T(..,a,..,b,..) = conj(T(..,b,..,a,..))``.
+
+
+   .. cpp:function:: static SymmetryDescriptor anti_hermitian_pair(int a, int b)
+
+      Anti-Hermitian / skew-Hermitian: ``T(..,a,..,b,..) = -conj(T(..,b,..,a,..))``.
+
+
+   .. cpp:function:: static SymmetryDescriptor eri_8fold()
+
+      8-fold symmetry of real two-electron integrals in chemists' notation
+      ``(μν|λσ) = (νμ|λσ) = (μν|σλ) = (νμ|σλ) = (λσ|μν) = (σλ|μν) = (λσ|νμ) = (σλ|νμ)``.
+      The three generators are: swap(0,1), swap(2,3), group_swap({0,1},{2,3}).
+
+
+   .. cpp:function:: static SymmetryDescriptor eri_4fold()
+
+      4-fold symmetry of complex two-electron integrals: two real-pair swaps,
+      no bra/ket swap (which would also complex-conjugate).
+
+
+   .. cpp:function:: static SymmetryDescriptor ccsd_t2()
+
+      CCSD T2 amplitudes ``T[a,b,i,j]``: antisym in virtual pair (0,1) and
+      antisym in occupied pair (2,3), so ``T[a,b,i,j] = -T[b,a,i,j] =
+      -T[a,b,j,i] = T[b,a,j,i]``.
+
+
+   .. cpp:member:: std::vector<SymmetryOp> ops
+
+   .. cpp:member:: double tolerance

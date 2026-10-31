@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.CodedError:
+
+===================
+einsums::CodedError
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename ErrorClass, int ErrorCode> CodedError : public ErrorClass
+
+   Distinguishes several throws of the same error type from one function: catch the base class to
+   handle them together, or a specific CodedError to handle one. The TiledTensor gemm, for
+   instance, throws TensorCompatError for both an incompatible output grid and an incompatible
+   inner grid. Both at once:
+
+   .. code-block:: text
+
+      TiledTensor<double, 2> A, B, C;
+      try {
+          gemm<false, false>(1.0, A, B, 0.0, &C);
+      } catch(TensorCompatError &exc) {
+          // Handle both errors.
+      }
+
+   Or each individually:
+
+   .. code-block:: text
+
+      try {
+          gemm<false, false>(1.0, A, B, 0.0, &C);
+      } catch(CodedError<TensorCompatError, 0> &exc) {
+          // Output doesn't have a compatible grid, so fix that.
+      } catch(CodedError<TensorCompatError, 1> &exc) {
+          // Input doesn't have a compatible grid, so fix that.
+      }
+
+   .. versionadded:: 1.0.0
+
+   :tparam ErrorClass: The kind of error the object wraps.
+   :tparam ErrorCode: The identifier for the error.
+
+
+   .. cpp:function:: constexpr int get_code() const
+
+      Get the error code for this exception
+
+      .. versionadded:: 1.0.0

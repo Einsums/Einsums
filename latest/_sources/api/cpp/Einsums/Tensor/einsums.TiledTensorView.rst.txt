@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TiledTensorView:
+
+========================
+einsums::TiledTensorView
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, size_t Rank> TiledTensorView final : public tensor_base::TiledTensor<T, Rank, TensorView<T, Rank>>, public tensor_base::CoreTensor
+
+   Tensors of this class hold views of the tiles of a tiled tensor.
+
+   Conceptually, this is a view of a TiledTensor. Practically, it stores a view of each of the tiles, allowing
+   different slices to be taken from each. Since views of block tensors are not guaranteed to be truly block
+   diagonal, TiledTensorViews also hold views of BlockTensors when the view is not hypersquare.
+
+
+   .. cpp:function:: TiledTensorView() = default
+
+   .. cpp:function:: template <typename... Sizes> TiledTensorView(std::string name, Sizes &&... sizes)
+
+      Create an empty view with the given name and grid specification.
+
+      One collection of tile sizes per axis, or a single one applied to every axis.
+
+      :param name: The name of the tensor.
+      :param sizes: The grids for the axes. There must either only be one, or the number must be the same as the rank.
+
+
+   .. cpp:function:: TiledTensorView(const TiledTensorView<T, Rank> &other) = default
+
+      Copy constructor.
+
+      On exit, the structure of the copied tensor is copied. This means that the new tensor will view the same tensor
+      as the tensor being copied. Modifications to one will modify the other.
+
+      :param other: The tensor view to copy.
+
+
+   .. cpp:function:: ~TiledTensorView() override = default
+
+   .. cpp:function:: bool full_view_of_underlying() const override
+
+      Checks to see if the view sees all of the data in the tensor.
+
+
+   .. cpp:function:: void insert_tile(std::array<int, Rank> pos, TensorView<T, Rank> &view)
+
+      Add a tile to the view.
+
+      This does not add a tile to the viewed tensor, only to the view.
+
+
+   .. cpp:function:: void insert_tile(std::array<int, Rank> pos, const TensorView<T, Rank> &view)
+
+      Add a tile to the view.
+
+      This does not add a tile to the viewed tensor, only to the view.

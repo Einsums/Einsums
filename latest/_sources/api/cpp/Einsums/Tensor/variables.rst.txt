@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Tensor_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/Options.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> DeleteHdf5Files
+
+   Remove the per-process scratch file on exit.
+
+   On by default, or files accumulate and a reused PID inherits a stale one.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> Hdf5FileName
+
+   The scratch file's name. Defaults to einsums.[pid].h5, where [pid] is the
+   process id, so a second process does not adopt the first one's file.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::string> ScratchDir
+
+   Where the scratch file for disk-backed tensors lives.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> TensorHugePages
+
+   Back large tensor buffers with transparent huge pages.
+
+   `madvise(MADV_HUGEPAGE)` before first touch, for buffers of a few huge pages or more. Off by
+   default: +10-23% on TCB intensli shapes, but -16-31% where strides are multiples of 32 KB, which
+   then alias in DRAM channels and L2 sets. Linux with THP only.

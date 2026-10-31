@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.orgqr:
+
+====================
+einsums::blas::orgqr
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t orgqr(int_t m, int_t n, int_t k, T *a, int_t lda, const T *tau)
+
+   Extract the Q matrix after a call to geqrf.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this function handles.
+   :param m: The number of rows of the input matrix.
+   :param n: The number of columns in the input matrix.
+   :param k: The number of elementary reflectors used in the calculation.
+   :param a: The input matrix after being processed by geqrf.
+   :param lda: The leading dimension of the input matrix.
+   :param tau: The scales for the elementary reflectors from geqrf.
+   :returns: 0 on success. If negative, then one of the inputs had an invalid value, and the absolute value indicates which parameter it is.

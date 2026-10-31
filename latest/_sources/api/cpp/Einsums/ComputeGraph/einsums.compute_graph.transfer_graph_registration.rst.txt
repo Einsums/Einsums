@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.transfer_graph_registration:
+
+===================================================
+einsums::compute_graph::transfer_graph_registration
+===================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void transfer_graph_registration(const Graph *from, Graph *to)
+
+   Point the registry entry for ``from`` at ``to``, for a graph that moved.
+
+   Unlike an unregister followed by a register, nothing is cached for ``from``, whose contents
+   now live in ``to``, and a graph captured but never executed stays listed. A no-op when ``from``
+   is not registered.
+
+   :param from: The graph's address before the move.
+   :param to: Its address after.

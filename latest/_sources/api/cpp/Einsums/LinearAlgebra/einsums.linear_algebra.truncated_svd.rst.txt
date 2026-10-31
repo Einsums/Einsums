@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.truncated_svd:
+
+======================================
+einsums::linear_algebra::truncated_svd
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> requires (CoreTensorConcept<AType>) std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>, Tensor<typename AType::ValueType, 2>> truncated_svd(const AType &_A, size_t k)
+
+   Perform the truncated singular value decomposition of a matrix.
+
+   Randomized SVD with a fixed over-sampling factor of 5: the algorithm
+   draws an ``n x (k+5)`` sketch and runs a small dense SVD against it,
+   which requires ``A.dim(0) >= k + 5``. Calling with ``m < k + 5`` will
+   trip an out-of-range access inside the projection step. (See Halko,
+   Martinsson & Tropp, 2011, for the over-sampling rationale.)
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the matrix.
+   :param _A: The matrix to decompose. Must have ``_A.dim(0) >= k + 5``.
+   :param k: The number of singular values to use.
+   :throws std::invalid_argument: If a parameter passed to one of the internal calls is invalid.
+   :returns: A tuple containing the vectors and singular values.

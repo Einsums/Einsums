@@ -1,0 +1,50 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EinsumParams:
+
+====================================
+einsums::compute_graph::EinsumParams
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorSlot.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EinsumParams
+
+   Mutable scalar parameters for einsum operations.
+
+   Stored in a shared_ptr so the executor lambda captures it by shared
+   ownership. Updating the values changes the computation on next execute().
+
+   Both prefactors are ``PrefactorScalar`` variants, they hold one of
+   float/double/complex<float>/complex<double>. The executor extracts the
+   concrete scalar via ``as<T>`` when dispatching to typed BLAS.
+
+
+   .. cpp:member:: PrefactorScalar c_pf
+
+      C prefactor
+
+
+   .. cpp:member:: PrefactorScalar ab_pf
+
+      AB prefactor
+
+
+   .. cpp:member:: bool conj_a
+
+      Conjugate A (complex; no-op for real)
+
+
+   .. cpp:member:: bool conj_b
+
+      Conjugate B (complex; no-op for real)

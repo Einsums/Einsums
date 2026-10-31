@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.omp_min_parallel_elements:
+
+============================================
+einsums::hardware::omp_min_parallel_elements
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/CpuInfo.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::size_t omp_min_parallel_elements()
+
+   Elements below which an elementwise loop should not be parallelized.
+
+   The region cost at a conservative one element per nanosecond.
+   ``--einsums:hardware:omp-min-parallel-elements`` pins it.

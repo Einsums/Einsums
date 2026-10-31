@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.profile_header:
+
+=================================
+einsums::hardware::profile_header
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: json::Object profile_header()
+
+   The header a profile for this machine and build starts with.
+
+   ``einsums_profile``, ``machine`` and ``software``, in that order; a tune adds ``measured`` and its
+   sections after them.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The header.

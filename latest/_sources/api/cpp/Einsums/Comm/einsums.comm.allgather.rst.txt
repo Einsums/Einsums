@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.allgather:
+
+========================
+einsums::comm::allgather
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Collectives.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:function:: template <Communicable T> expected<void, CommError> allgather(std::span<const T> send, std::span<T> recv, const Communicator &comm)
+
+   All-gather: each rank contributes a piece, all receive the whole.

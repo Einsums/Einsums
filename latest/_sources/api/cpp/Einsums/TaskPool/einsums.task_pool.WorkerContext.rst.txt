@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.WorkerContext:
+
+=================================
+einsums::task_pool::WorkerContext
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/WorkerContext.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: WorkerContext
+
+   Per-worker thread context.
+
+   Passed to tasks that need to know which worker they run on.
+
+
+   .. cpp:member:: int worker_id
+
+      Index of this worker (0..N-1). -1 for the submitting thread.
+
+
+   .. cpp:member:: void *user_data
+
+      Opaque user data slot for thread-local scratch buffers.
+
+
+   .. cpp:member:: int rank
+
+      MPI rank (0 for now; populated when MPI support lands).

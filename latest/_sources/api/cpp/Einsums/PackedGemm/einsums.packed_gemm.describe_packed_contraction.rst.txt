@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.describe_packed_contraction:
+
+=================================================
+einsums::packed_gemm::describe_packed_contraction
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Describe.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: PackedContractionShape describe_packed_contraction(const ContractionKey &key)
+
+   What the packed engine would do with the contraction ``key`` describes.
+
+   ``key`` carries the spec, the three operands' strides in elements and the target and link
+   extents, as ``try_packed_gemm`` builds it; ``key.spec.scalar_type`` picks the micro-kernel.
+
+
+.. cpp:function:: PackedContractionShape describe_packed_contraction(const OperandLayout &C, const OperandLayout &A, const OperandLayout &B, ScalarType type)
+
+   What the packed engine would do with C = A B on operands laid out as ``C``, ``A`` and ``B``, of element type ``type``.
+
+   Builds the key ``try_packed_gemm`` would build from tensors of these layouts. Invalid when a
+   layout's three vectors disagree in length, or when the engine has no plan.

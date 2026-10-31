@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.syev_eig:
+
+================================
+einsums::compute_graph::syev_eig
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, RuntimeRankTensorConcept AType> requires NotComplex<AType> std::tuple<GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>, GeneralRuntimeTensor<typename AType::ValueType, std::allocator<typename AType::ValueType>>> syev_eig(const AType &A)
+
+   Real symmetric eigendecomposition (returning): ``(V, W) = syev_eig(A)``.
+
+   Allocates fresh tensors for the eigenvectors and eigenvalues and
+   returns them as a tuple. Cannot be used during graph capture; for
+   the in-graph form use the in-place ``cg::syev(A, W)`` with
+   pre-allocated outputs. ``A`` is left unmodified.

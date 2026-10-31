@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.get_max_threads:
+
+==================================
+einsums::hardware::get_max_threads
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/CpuInfo.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: int get_max_threads()
+
+   The OpenMP runtime's current ceiling on a parallel region's team size.
+
+   ``omp_get_max_threads()``: what is in effect now, not what ``OMP_NUM_THREADS`` requested.
+   1 without OpenMP.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The team size a parallel region would get right now.

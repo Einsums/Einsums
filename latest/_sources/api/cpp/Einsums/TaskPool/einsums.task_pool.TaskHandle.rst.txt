@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.TaskHandle:
+
+==============================
+einsums::task_pool::TaskHandle
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/TaskHandle.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: template <typename T> TaskHandle
+
+   Future-like handle with continuation support.
+
+   Inspired by HPX's hpx::future. Supports:
+
+   - get() / wait() / ready() for synchronization
+   - then() for continuation chaining
+   - when_all() for fan-in
+
+
+   .. cpp:function:: TaskHandle() = default
+
+   .. cpp:function:: explicit TaskHandle(std::shared_ptr<detail::SharedState<T>> state)
+
+   .. cpp:function:: T get()
+
+      Block until the task completes and return the result.
+
+      :throws Rethrows: any exception from the task.
+
+
+   .. cpp:function:: void wait()
+
+      Block until the task completes.
+
+
+   .. cpp:function:: bool ready() const
+
+      Non-blocking check if the task has completed.
+
+
+   .. cpp:function:: bool valid() const
+
+      Check if this handle is valid (has shared state).
+
+
+   .. cpp:function:: template <typename F> TaskHandle<std::invoke_result_t<F, T>> then(F &&next_fn)
+
+      Register a continuation that runs when this task completes.
+
+      The continuation takes this task's result; its own result comes back as a TaskHandle. It is
+      submitted to the TaskPool, not run inline (defined in TaskPool.hpp).
+
+
+   .. cpp:function:: template <typename F> TaskHandle<std::invoke_result_t<F, T>> then(std::string name, F &&next_fn)
+
+      Named continuation (for profiler visibility).
+
+
+   .. cpp:function:: const std::shared_ptr<detail::SharedState<T>> & state() const
+
+      Access shared state (internal use by TaskPool).

@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.batched_gemm_blocked:
+
+============================================
+einsums::compute_graph::batched_gemm_blocked
+============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType> requires (std::is_same_v<typename AType::ValueType, typename BType::ValueType> && std::is_same_v<typename AType::ValueType, typename CType::ValueType>) void batched_gemm_blocked(double alpha, std::vector<const AType *> a_list, std::vector<const BType *> b_list, double beta, CType *c_base, const std::vector<size_t> &c_offsets, size_t c_rows, size_t c_cols, bool trans_a, bool trans_b)
+
+   ``batched_gemm`` where the destinations are uniform-shaped blocks of a
+   single tensor, described by their offsets rather than enumerated as views.
+
+   The list form needs one tensor object per member, and building those is not
+   free: a caller whose destinations are column ranges of one store has to
+   materialize a view apiece, which in a local-correlation method is tens of
+   thousands of them. On the DLPNO port's overlap build that is 32948 view
+   constructions on the Python side and 32948 more slot registrations here,
+   together about half the phase, and none of it is arithmetic.
+
+   ``c_offsets`` gives each block's first element as an offset into ``c_base``,
+   in elements. Every block is ``c_rows`` by ``c_cols`` and inherits the base's
+   leading dimension, which is what makes them expressible this way: a column
+   range of a column-major tensor has the parent's ``lda``.
+
+   A and B stay lists, because the callers that want this have destinations
+   that repeat one tensor and sources that do not. Passing a list of existing
+   tensors is cheap; it is *constructing* the views that is not.
+
+   One further difference from the list form, and it is a correctness one: the
+   node declares a single output, ``c_base`` itself, so a later read of the whole
+   base is ordered against this write. The list form declares the views, and
+   the graph does not know a view write touches its parent, so that ordering
+   has to be forced with a graph boundary.

@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_HPTT_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/HPTT/Files.hpp``, ``Einsums/HPTT/Options.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:var:: inline constexpr char plan_file_format
+
+   Format version written to ``FileHeader::version[2]``.
+
+   Version 0 files carry no PlanTarget. They are refused on read, because nothing in them says
+   what vector width the plan's loop increments were built for.
+
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::string> HpttSelectionMethod
+
+   How hard HPTT looks for a good transpose plan: estimate, measure, patient,
+   or crazy, in increasing order of search effort.

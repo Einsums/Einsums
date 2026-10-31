@@ -1,0 +1,62 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.MemoryPoolEpoch:
+
+========================
+einsums::MemoryPoolEpoch
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/MemoryPool.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: MemoryPoolEpoch
+
+   RAII scope whose carves are released together when it closes.
+
+   Each epoch gets a heap of its own inside the pool's arena, so closing it
+   bulk-frees every carve made inside it, including ones nothing tracked.
+   Epochs nest and must close in reverse order of opening.
+
+   If a keepalive token carved in the scope is still held, ``close`` throws (Python's ``with`` takes
+   this path), while the destructor logs an error and moves the surviving blocks to the pool's base
+   heap, where they stay valid until their tokens die.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: MemoryPoolEpoch() = default
+
+      A default-constructed epoch owns no scope and closing it is a no-op.
+
+
+   .. cpp:function:: MemoryPoolEpoch(MemoryPoolEpoch &&other) noexcept
+
+   .. cpp:function:: MemoryPoolEpoch(const MemoryPoolEpoch &) = delete
+
+   .. cpp:function:: MemoryPoolEpoch & operator=(MemoryPoolEpoch &&other) noexcept
+
+   .. cpp:function:: MemoryPoolEpoch & operator=(const MemoryPoolEpoch &) = delete
+
+   .. cpp:function:: ~MemoryPoolEpoch()
+
+   .. cpp:function:: void close()
+
+      Close the scope, releasing everything carved inside it.
+
+      .. versionadded:: 2.0.0
+
+      :throws std::runtime_error: if a keepalive token from this scope is still held, or if an inner epoch is still open.
+
+
+   .. cpp:function:: bool is_open() const noexcept
+
+      True until ``close`` or the destructor runs.

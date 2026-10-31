@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.register_default_pass:
+
+=============================================
+einsums::compute_graph::register_default_pass
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Optimizer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void register_default_pass(std::string_view anchor, PassAnchor where, std::function<std::shared_ptr<OptimizerPass> ()> factory, std::string_view owner)
+
+   Run a pass from outside the library in every default pipeline that holds its anchor.
+
+   Every list built from the default pipeline gets a fresh pass from ``factory`` beside the pass
+   named ``anchor``: ``PassManager::create_default``, the phase-filtered managers (a registered
+   pass goes wherever its own phase puts it), ``PassManager::create_for`` at O1 and O2, and so
+   Pipeline, the bisect driver and ``Graph::optimize``. A list that does not hold the anchor, as the
+   GPU and distributed blocks are missing from a build without those backends and most passes are
+   missing from O1, does not get the pass. Passes registered on one anchor and side keep the order
+   they were registered in, and a registered pass may itself be an anchor.
+
+   A registered pass runs under the same checks as the library's own: destination sync, the
+   structural checks, and verification after each pass when enabled.
+
+   Call it explicitly, before building any pass manager, typically from the outside library's own
+   registration function, rather than from a static initializer whose order nothing fixes.
+   Registration is thread-safe and permanent for the process.
+
+   :param anchor: The name of a pass in the default pipeline, the library's or a registered one.
+   :param where: Which side of ``anchor`` the pass runs on.
+   :param factory: Makes a new pass each time a list is built; called once here to learn its name.
+   :param owner: Names the registering library in diagnostics.
+   :throws std::invalid_argument: When ``factory`` is empty or returns null, when ``owner`` is empty, when ``anchor`` names no default pass of any build, or when the pass's name is already taken by one of the library's default passes or a registered one.

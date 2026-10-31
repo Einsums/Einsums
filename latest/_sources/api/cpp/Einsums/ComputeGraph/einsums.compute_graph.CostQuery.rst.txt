@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CostQuery:
+
+=================================
+einsums::compute_graph::CostQuery
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CostQuery
+
+   What a ``cost`` hook is asked about: the node, its graph, and the device it is priced on.
+
+
+   .. cpp:member:: const Graph &graph
+
+   .. cpp:member:: const Node &node
+
+   .. cpp:member:: const DeviceProfile &profile
+
+   .. cpp:member:: Target target

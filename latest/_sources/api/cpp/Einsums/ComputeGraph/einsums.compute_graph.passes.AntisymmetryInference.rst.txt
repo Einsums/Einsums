@@ -1,0 +1,111 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.AntisymmetryInference:
+
+=====================================================
+einsums::compute_graph::passes::AntisymmetryInference
+=====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/AntisymmetryInference.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: AntisymmetryInference : public OptimizerPass
+
+   Tag the output of a permutation operator with the antisymmetry it unconditionally has.
+
+   A node whose spec names a permutation operator (``PermutationOperator``)
+   produces a tensor with structure, and this records what that structure is so a
+   later pass can rewrite arithmetic against it. Today the consumer is
+   ``AntisymmetrizerFolding``.
+
+   **The rule, and the narrow case it covers**
+
+   For an operator whose groups are all SINGLETONS, the expansion is
+   :math:`P = \sum_\sigma \mathrm{sign}(\sigma)\,\sigma` over the whole symmetric
+   group on its letters, so :math:`\tau P = \mathrm{sign}(\tau) P` for every
+   transposition and the output is antisymmetric in those axes whatever the
+   operand was.
+
+   For an operator with a group of two or more this is FALSE, and measurably so.
+   `P(i/jk)` applied to arbitrary rank-3 data is antisymmetric under none of
+   `(ij)`, `(ik)` or `(jk)`: a coset form carries the antisymmetry only when its
+   operand already has it within each group, which is the same precondition the
+   operator's well-definedness rests on. Those operators are DECLINED here rather
+   than tagged, and reaching them needs a fact about the operand that this pass
+   has no way to establish. See `DESIGN-permutation-operator-folding.md`.
+
+   **Soundness**
+
+   Three gates, all load-bearing:
+
+   - the destination prefactor must be ZERO, since with a nonzero one the result is the previous contents plus an antisymmetric part, which is not antisymmetric;
+   - the tensor must have exactly one writer in this graph and no reference from a child sub-graph, which is ``EscapeAnalysis``, shared with ``SymmetryPropagation`` rather than re-derived;
+   - only graph-owned intermediates are tagged, never a user's tensor.
+
+   **Ordering**
+
+   Before ``AntisymmetrizerExpansion``, which strips the operator and so destroys
+   the evidence this rule reads. That is also why this is a separate pass from
+   ``SymmetryPropagation``, which runs after Materialization for a different
+   purpose and would find nothing left to infer from.
+
+   Writes only ``TensorHandle::symmetry_hint``, which is graph metadata, so it
+   needs no backing storage and can run before anything is materialized.
+
+
+   .. cpp:function:: AntisymmetryInference() = default
+
+   .. cpp:function:: std::string name() const override
+
+   .. cpp:function:: PassPhase phase() const override
+
+      See ``OptimizerPass::phase``.
+
+      Annotation only; never rewrites the node set.
+
+
+   .. cpp:function:: std::optional<NodeFeatures> understood_features() const override
+
+      Every feature: an analysis pass annotates and never rewrites a node, which the pass manager enforces.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Changes no arithmetic at all.
+
+
+   .. cpp:function:: std::vector<std::string> explain() const override
+
+      See ``OptimizerPass::explain``.
+
+
+   .. cpp:function:: void reset_stats() override
+
+   .. cpp:function:: bool recurse_into_subgraphs() const override
+
+      A CCSD residual is a loop body, and the guard above is what makes
+      recursing into one safe.
+
+
+   .. cpp:function:: std::size_t num_candidates() const
+
+      WRITES a rule examined, across every kind the rules cover. A plain
+      contraction counts: R3 asks of every einsum whether its operands carry an
+      antisymmetry it could pass on, and asking is what makes it a candidate.
+
+
+   .. cpp:function:: std::size_t num_tagged() const
+
+      TENSORS tagged antisymmetric. A tensor rather than a write, because a
+      tensor built by accumulation is settled by all of its writes together.

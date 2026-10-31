@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.read:
+
+============================
+einsums::compute_graph::read
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType, typename F> void read(std::string label, std::string file_path, std::string dataset, TensorType *output, F &&executor)
+
+   Record a disk read operation: load tensor data from a file.
+
+   The executor should read data from the specified file into the tensor.
+   The graph tracks the output dependency so downstream operations wait
+   for the read to complete.
+
+   .. code-block:: text
+
+      cg::read("load integrals", "integrals.h5", "/eri", &ERI, [&]() {
+          h5file.read("/eri", ERI);
+      });
+
+   :param label: Human-readable name.
+   :param file_path: Path to the file.
+   :param dataset: Dataset/key name within the file (for HDF5).
+   :param output: Tensor to populate with data from disk.
+   :param executor: Lambda that performs the actual read.

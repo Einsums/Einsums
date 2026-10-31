@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.DimensionError:
+
+=======================
+einsums::DimensionError
+=======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Errors/Error.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: DimensionError : public std::invalid_argument
+
+   Indicates that the dimensions of some tensor arguments are not compatible with the given operation.
+   For instance, you can only take the determinant of a square matrix, so passing a matrix that is not
+   square to linear_algebra::det will result in this error.
+
+   .. versionadded:: 1.0.0

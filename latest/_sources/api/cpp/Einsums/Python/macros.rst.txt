@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Python_api_macros:
+
+======
+Macros
+======
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Python/StageModule.hpp``.
+
+.. c:macro:: EINSUMS_DETAIL_STAGE_STR2(x)
+
+   The compiler of THIS translation unit, not `world().compiler_id`, which is the library's.
+
+
+.. c:macro:: EINSUMS_STAGE_MODULE(m, name)
+
+   Perform the stage-module handshake on pybind11 module ``m`` under ``name``.
+
+   ``name`` must be the module's importable name, since that is the key
+   `einsums.sealed` looks up. Call once, first, in the module body.

@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.register_graph:
+
+======================================
+einsums::compute_graph::register_graph
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Graph.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: void register_graph(Graph *graph)
+
+   Register a graph for profiler visibility.
+
+   Called automatically by Graph::execute() on the first execution of each
+   graph. The profiler viewer can then request and display the graph's
+   structure via the "get_compute_graphs" server handler.
+
+   Graphs are stored by name; re-registering with the same name replaces
+   the old entry. Normally not needed by user code, graphs auto-register.
+
+   :param graph: Pointer to the graph. Must remain valid until unregistered.

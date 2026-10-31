@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.symm_gemm:
+
+=================================
+einsums::compute_graph::symm_gemm
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <bool TransA, bool TransB, MatrixOperand AType, MatrixOperand BType, MatrixOperand CType> requires InSamePlace<AType, BType, CType> && SameUnderlying<AType, BType, CType> void symm_gemm(const AType &A, const BType &B, CType *C, bool conjugate)
+
+   Graph-aware ``C = op(B)^T op(A) op(B)``, or ``op(B)^H op(A) op(B)`` with ``conjugate``. A, B and C
+   may be compile-time-rank matrices or runtime-rank tensors, as in ``gemm``.

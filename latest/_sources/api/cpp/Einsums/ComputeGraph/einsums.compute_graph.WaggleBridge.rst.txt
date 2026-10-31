@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.WaggleBridge:
+
+====================================
+einsums::compute_graph::WaggleBridge
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Observer.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: WaggleBridge : public ExecutionObserver
+
+   An observer that labels the profiler's zones with what the graph was doing in them.
+
+   Every executor opens a zone per node while the profiler records. This adds to it the graph and
+   the node it belongs to, and each read, write and publish of a backing the node made, with its
+   bytes (``read t2``, ``write t2_next``), so the live viewer and the saved profile name the graph
+   node behind a zone and the storage traffic inside it. Without the profiler recording, it does
+   nothing.
+
+   .. code-block:: text
+
+      g.set_observer(cg.WaggleBridge())
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: WaggleBridge() = default
+
+      A bridge to the profiler this process records with.
+
+
+   .. cpp:function:: void on_node_start(const ExecutionEvent &event) override
+
+   .. cpp:function:: void on_io(const ExecutionEvent &event) override

@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.PureTag:
+
+===============================
+einsums::compute_graph::PureTag
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: PureTag
+
+   Tag that declares a ``custom`` operation pure.
+
+   The graph cannot see inside a custom closure. It may read state the graph does not
+   track (a variable captured by reference, a loop parameter, a file) or act outside the
+   tensors it writes (print, store, signal), so a custom node is recorded with
+   ``opaque_effects``: it is never hoisted out of a loop, never removed because nothing
+   reads its outputs, and keeps its place relative to other custom nodes, parameter
+   writes, and disk reads and writes. Passing
+   ``cg::pure`` first declares that the closure reads only the tensors it lists and does
+   nothing but write the tensors it lists, which gives those optimizations back.
+
+   .. code-block:: text
+
+      cg::custom(cg::pure, "build_fock", std::tie(ERI, D), std::tie(F), [&]() { build_fock_matrix(ERI, D, F); });
+
+
+   .. cpp:function:: explicit PureTag() = default

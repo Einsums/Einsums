@@ -1,0 +1,45 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.dispatch.generic_string_einsum:
+
+=======================================================
+einsums::compute_graph::dispatch::generic_string_einsum
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/StringDispatch.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::dispatch
+
+.. cpp:function:: template <BasicTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType> requires detail::EinsumElement<typename AType::ValueType> && detail::EinsumElement<typename BType::ValueType> && detail::EinsumElement<typename CType::ValueType> && detail::storable_v<detail::PromoteT<typename AType::ValueType, typename BType::ValueType>, typename CType::ValueType> void generic_string_einsum(const ParsedEinsumSpec &parsed, const std::vector<std::string> &links, typename CType::ValueType c_pf, CType *C, detail::PromoteT<typename AType::ValueType, typename BType::ValueType> ab_pf, const AType &A, const BType &B, bool conj_a, bool conj_b)
+
+   Generic runtime nested-loop contraction for arbitrary rank/pattern.
+
+   Handles any contraction pattern by iterating over all target index
+   combinations (outer loops) and link index combinations (inner summation).
+
+   Performance note: This is O(product(target_dims) * product(link_dims)),
+   with no BLAS optimization. Use for patterns not covered by specialized
+   BLAS dispatch (rank-3+, multi-link, etc.).
+
+   Everything that does not vary per element is hoisted: each index carries the
+   SUM of its strides in each operand (which is what makes a repeated letter a
+   diagonal walk) and its slot number, and the loops are odometers stepping those
+   strides rather than rebuilding an offset per element. Recomputing offsets
+   inside the loop cost this routine roughly 25 ns an element -- on a
+   ``ijab <- ia ; jb`` outer product over a 26-orbital CCSD residual, 0.63 ms for
+   51 kflop.
+
+   The TARGET axes are then ordered by their step through C and merged where
+   they compose, so the fastest-moving loop walks C's narrowest stride instead
+   of whichever index the caller happened to spell last. The link axes keep the
+   caller's order: the sum accumulates exactly as it did, so the result is
+   bit-for-bit what it was even though the order C's elements are visited in is
+   now decided by the strides rather than by the spec.

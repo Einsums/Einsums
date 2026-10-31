@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraphTypes_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Ids.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:var:: inline constexpr NodeId unassigned_node_id
+
+   The id a node carries until a graph issues it one.
+
+   A pass building or importing a node sets this; the graph then issues a fresh id. Ids never cross graphs.

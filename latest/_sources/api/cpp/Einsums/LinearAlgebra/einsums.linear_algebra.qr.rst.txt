@@ -1,0 +1,41 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.qr:
+
+===========================
+einsums::linear_algebra::qr
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType> requires (CoreTensorConcept<AType>) std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 2>> qr(const AType &A)
+
+   Perform QR decomposition.
+
+   .. math::
+
+      \mathbf{A} = \mathbf{QR}
+
+   Here, :math:`\mathbf{A}` is a matrix, :math:`\mathbf{Q}` is a unitary matrix, and :math:`\mathbf{R}` is an upper triangular matrix.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      This function no longer returns the output of geqrf. It now returns the Q and R matrices. This means that the old q function
+      no longer needs to exist.
+
+   :tparam AType: The matrix type.
+   :param A: The matrix to decompose.
+   :throws std::invalid_argument: If one of the parameters passed to the internal functions is invalid.
+   :returns: The Q and R matrices.

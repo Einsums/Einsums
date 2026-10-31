@@ -1,0 +1,152 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_PackedGemm_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/PackedGemm/Options.hpp``, ``Einsums/PackedGemm/PackedGemm.hpp``, ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmCTempBudget
+
+   Budget, in KiB, for the block-GEMM strategy's M by N temporary of C.
+
+   Zero derives it: four times the L1 (the M4 optimum), floored at 512 KiB (for Zen+'s 32 KiB L1).
+   Speed and memory only. For sweeps.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> PackedGemmComplex1m
+
+   Run complex contractions on x86 through the rung's REAL tile kernel, by the 1m method.
+
+   Changes the engine, not which contractions reach the packed loops. SME always uses 1m; rungs
+   below x86-64-v2 and non-x86 rungs have no 1m route and ignore it.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmCoresPerL3
+
+   Physical cores the engine assumes share one L3, in place of the count read from sysfs.
+
+   Zero detects it (from sysfs on Linux, else 1). It sizes the per-L3 teams that share a packed B
+   panel, never the result. Tests pin it.
+
+
+.. cpp:var:: inline cl::ConfigOption<bool> PackedGemmDumpPlan
+
+   Print each packed contraction's resolved plan and blocking to stderr.
+
+   Group dims and strides, register and cache blocks, and the write-back taken. For diagnosis.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmFlattenBudget
+
+   Cap, in MiB, on the temporary buffers the multi-K flatten route allocates.
+
+   The route transposes whole operands (448 MiB on ccsd's `ab-cad-dcb`) into buffers that only grow.
+   A cap transposes a chunk of K at a time instead, costing 2-12% on that shape depending on the
+   cap and precision. Zero, the default, means no cap.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmOuterGemmMax
+
+   Output elements from which a contiguous outer product with a prefactor takes ger and a separate
+   scaling pass rather than a k=1 GEMM.
+
+   ger has no beta, so a prefactor costs a pass over C; the k=1 GEMM folds it in, and wins until
+   its blocking overhead outgrows that pass. Measured between 65k and 332k elements on an Apple M4.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmOuterProductFloor
+
+   Output elements below which an outer product is left to the generic loop.
+
+   The packed passes cost a fixed setup that a small outer product does not repay. Where the
+   generic loop stops winning depends on the machine and moves whenever that loop does; the
+   default was measured on an Apple M4, and ``einsums-tune`` measures it on the machine at hand.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmStreamElemsPerThread
+
+   Elements of the streamed operand each thread must have before the stream forks another.
+
+   Below it the region's fork and the per-thread buffers cost more than the elements they would
+   share. Measured on an Apple M4: 16384 forked too early and was slower at every mid size. A GEMV
+   the vendor cannot thread is streamed from two threads' worth.
+
+
+.. cpp:var:: inline cl::ConfigOption<std::int64_t> PackedGemmStreamMinElems
+
+   Elements of the supplying operand below which a GEMV-shaped contraction whose axes do not form a
+   matrix is not streamed: where the stream starts to beat the compiled generic loop.
+
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:var:: inline constexpr int64_t BLIS_KC_SPILL_GROWTH
+
+   How far ``compute_blocking`` may grow KC past its machine-derived value when C spills the last-level cache.
+
+   A memory guard, not a tuning knob (performance is flat from ~4x up): bounds the packed B block.
+
+
+.. cpp:var:: inline constexpr int64_t BLIS_NR
+
+   N register-block (fully unrolled by LLVM)
+
+
+.. cpp:var:: inline constexpr int64_t kFlushRunBytes
+
+   Bytes a C run must cover before the write-back streams it.
+
+   Restates ``einsums::packed_gemm::kStreamRunBytes``, which coalesce_plan needs earlier.
+
+
+.. cpp:var:: inline constexpr int64_t kMaxPanelRows
+
+   Tallest panel pack_A hands the per-rung transpose (a row-pointer table on
+   the stack); the widest tile kernel, AVX-512 float, is 32 rows.
+
+
+.. cpp:var:: inline constexpr int64_t kMinTransposeRun
+
+   Shortest average K run for which a block made of several runs is packed run
+   by run through the transpose. Each run costs a row-pointer table and a call;
+   below a vector's worth of elements that outweighs the copies it replaces.
+
+
+.. cpp:var:: constexpr size_t kOuterMinElems
+
+   Outer-product destination size below which no BLAS call is worth making: the call's fixed cost
+   dominates, so the direct paths leave these to the small-outer deferral.
+
+
+.. cpp:var:: inline constexpr int64_t kStreamRunBytes
+
+   Bytes a C run must cover before the write-back streams it: two cache lines, the peak of a sweep
+   over 1 to 16.
+
+
+.. cpp:var:: inline constexpr size_t kSyntheticDimPos
+
+   tensor_pos of a synthesized unit dimension (see compute_packing_topology).
+
+   GEMV-shaped (no M or no N indices) and outer-product-shaped (no link
+   indices) contractions get a unit dim (size 1, stride 0) in the empty
+   group so the whole GEMM machinery applies unchanged. The sentinel pos
+   marks entries that must never be used to index a real tensor axis.
+
+
+.. cpp:var:: template <typename T> inline constexpr bool streams_c_v
+
+   Element types whose C runs stream: those with a streaming store.

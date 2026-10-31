@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.hooked_output_extents:
+
+=============================================
+einsums::compute_graph::hooked_output_extents
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<ExtentList> hooked_output_extents(const Graph &graph, const Node &node)
+
+   The extents ``node's`` registered ``output_extents`` hook gives for its inputs' current extents in ``graph``, or empty when it has no such hook or the hook cannot say.

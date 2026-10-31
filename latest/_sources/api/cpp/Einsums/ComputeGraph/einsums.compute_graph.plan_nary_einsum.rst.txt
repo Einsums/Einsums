@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.plan_nary_einsum:
+
+========================================
+einsums::compute_graph::plan_nary_einsum
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/NaryEinsum.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<NaryEinsumStep> plan_nary_einsum(std::string spec, std::vector<std::vector<std::size_t>> dims, std::size_t max_intermediate_elements)
+
+   The cheapest order to contract an einsum over several operands two at a time.
+
+   The order is the binary tree whose arithmetic, priced at these extents, is least: the same
+   search and the same ranking the graph's ``MultiTermFactorization`` uses on a captured product.
+   Each partial product keeps only the letters a later step or the output still needs, so an index
+   shared by the first two operands alone is summed when they are contracted.
+
+   .. versionadded:: 2.0.0
+
+   :param spec: The spec, three or more operands; two are planned too, as one step.
+   :param dims: Each operand's extents, in the spec's order.
+   :param max_intermediate_elements: The most elements a partial product may hold, or zero for no limit. When no order keeps every partial product within it, the limit is dropped and the cheapest order is returned.
+   :throws std::invalid_argument: when the spec is malformed, names a different number of operands than ``dims`` holds, gives an operand the wrong rank, or a letter two different extents.
+   :returns: The steps, in the order to run them.

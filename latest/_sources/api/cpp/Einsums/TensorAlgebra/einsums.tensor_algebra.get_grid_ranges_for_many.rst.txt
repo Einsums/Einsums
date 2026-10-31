@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.get_grid_ranges_for_many:
+
+=================================================
+einsums::tensor_algebra::get_grid_ranges_for_many
+=================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Permute.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:function:: template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices, typename... AllUniqueIndices> auto get_grid_ranges_for_many(const CType &C, const std::tuple<CIndices...> &C_indices, const AType &A, const std::tuple<AIndices...> &A_indices, const std::tuple<AllUniqueIndices...> &all_unique_indices)
+
+   Finds the tile grid dimensions for the requested indices.
+
+   :param C: The C tensor.
+   :param C_indices: The indices for the C tensor.
+   :param A: The A tensor.
+   :param A_indices: The indices for the A tensor.
+   :param all_unique_indices: The list of all indices with duplicates removed. Only its type is used.

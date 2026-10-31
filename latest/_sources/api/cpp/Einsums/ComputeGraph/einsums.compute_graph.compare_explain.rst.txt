@@ -1,0 +1,102 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.compare_explain:
+
+=======================================
+einsums::compute_graph::compare_explain
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: PolyComparison compare_explain(const SymbolicPoly &lhs, const SymbolicPoly &rhs, const ComparisonContext &ctx)
+
+   Order two cost polynomials, always, and report which rung decided.
+
+   **The fallback chain**
+
+   Each rung runs only when the previous one could not decide, and only a STRICT ordering counts as
+   a decision. A rung that finds the two equal hands the question down rather than answering it,
+   which is what makes ``equal`` come out of the last rung alone, and therefore makes
+   ``compare(a,b)`` == equal exactly equivalent to ``a`` == b.
+
+   1. ``CompareRung::ScaleOrder``, asymptotic dominance. See below.
+   2. ``CompareRung::TypicalExtent``, numeric comparison after substituting @ref IndexSpace::typical_extent for every variable. A polynomial substitutes only when every variable in it is a space variable with a positive typical extent, so a single anonymous variable blocks it. When both substitute, their values are compared. When only ONE substitutes, that one is ranked below the other, which is a deliberate split into a numeric class and a structural one: interleaving a numeric verdict with the structural verdict the last rung gives an unsubstitutable polynomial is exactly what would let the chain contradict itself. When neither substitutes the rung passes.
+   3. ``CompareRung::BoundExtent``, the same with ``ComparisonContext::bound_extent``, on the polynomials the previous rung left together.
+   4. ``CompareRung::Lexicographic``, a walk over the canonical form: term by term, comparing the monomial key first and then the coefficient, with a shorter term list ordering before a longer one that starts the same way. This rung always decides, and returns ``equal`` only for identical canonical forms.
+
+   **The dominance rule of rung 1**
+
+   Extents are assumed to be at least one, which is what lets extra factors only ever increase a
+   value. For monomials, ``m1`` <= ``m2`` when each variable of ``m1``, repeated by its exponent, can be
+   matched INJECTIVELY to a distinct variable occurrence of ``m2`` that is the same variable or is
+   declared smaller by ``SpaceRegistry::is_less``. The matching is a complete bipartite matching, so
+   the rule misses nothing expressible in those terms. For polynomials, ``a`` <= ``b`` when every term
+   of ``a`` is dominated by some term of ``b`` in that sense; ``a`` is then ranked below ``b`` when
+   ``a`` <= ``b`` holds and ``b`` <= ``a`` does not.
+
+   The design's own example works out: with ``o`` declared smaller than ``v``, the monomial o^3 v^3
+   sorts below o^2 v^4, because the occurrence list o,o,o,v,v,v matches into o,o,v,v,v,v but not
+   the reverse.
+
+   **Limits of the dominance rule**
+
+   - It abstains when either polynomial carries a non-positive coefficient or a negative exponent, because a subtraction can cancel a leading term and the rule has no way to see that.
+   - It ignores coefficients entirely, so 1000 o ranks below ``v`` whenever ``o`` is declared below ``v``, however the extents actually compare. That is what asymptotic means, and it is also why the numeric rungs sit below this one rather than above it.
+   - It uses only DECLARED relations. Two spaces the registry cannot relate make it indecisive, and an anonymous variable relates to nothing but itself.
+   - It does not consult ``GrowthClass``. A growth exponent describes how an extent scales with system size, which is a different question from which of two extents is larger.
+   - A space whose extent is exactly one is a degenerate case where the rule reports a strict ordering between quantities that are in fact equal. Harmless for ranking, worth knowing.
+   - It abstains on a monomial that expands to more than 64 variable occurrences, which keeps a pathological exponent from turning a comparison into a large matching problem.
+
+   **Order properties**
+
+   The result is antisymmetric and complete by construction, and ``equal`` holds only for identical
+   canonical forms, so the comparison is usable directly as a strict weak ordering.
+
+   Transitivity needs the rungs not to contradict each other, and the class split at rung 2 is what
+   buys most of that: a partially annotated program cannot produce a triple where a numeric verdict
+   and a structural one disagree, which is the failure a mixed set of polynomials would otherwise hit
+   immediately. Note that the dominance rung can never rank an unsubstitutable polynomial below a
+   substitutable one, because a variable matches only itself or a declared-smaller space, so
+   dominance agrees with the class split rather than fighting it. Three conditions on the inputs
+   close the rest, and all three are properties of the registry and the caller, not of the
+   comparison:
+
+   - Typical extents respect the declared scale order.
+   - Either every space carries a typical extent, or none of the spaces a declared order relates does. A space that is declared small but carries no extent sits in the structural class while the space above it sits in the numeric one, and dominance then disagrees with the split.
+   - No coefficient is large enough to invert a declared scale relation at those extents, so that the asymptotic rung and the numeric one rank the same pairs the same way. Cost polynomials built by ``symbolic_cost_for`` carry coefficients of one and two, which is nowhere near enough to matter.
+
+   A ``ComparisonContext::bound_extent`` table wants the same discipline: it should resolve whole
+   polynomials rather than an arbitrary subset of variables. Violating any of these is a
+   configuration bug, and the cure is to fix the configuration, because a rung cannot both honour a
+   declared order and contradict it.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :param ctx: What the comparison may consult.
+   :returns: The ordering and the deciding rung.
+
+
+.. cpp:function:: CostComparison compare_explain(const SymbolicCost &lhs, const SymbolicCost &rhs, const ComparisonContext &ctx)
+
+   Order two cost bundles, always, and report what decided.
+
+   Flops are the primary key: the whole fallback chain of ``compare_explain`` runs on @ref
+   SymbolicCost::flops first, and because that chain returns ``equal`` only for identical canonical
+   forms, traffic is consulted only when the two flop polynomials are literally the same polynomial.
+   ``SymbolicCost::resident`` breaks the remaining tie on the same terms. Two bundles compare equal
+   only when all three polynomials are identical.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :param ctx: What the comparison may consult.
+   :returns: The ordering, the deciding rung and the deciding component.

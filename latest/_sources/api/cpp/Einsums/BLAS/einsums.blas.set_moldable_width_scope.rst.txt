@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.set_moldable_width_scope:
+
+=======================================
+einsums::blas::set_moldable_width_scope
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: void set_moldable_width_scope(bool active)
+
+   Mark the calling thread as holding a node-scoped OpenMP width.
+
+   Set by the moldable scheduler's `WidthGuard` while it raises the thread's OpenMP ICV for a task.
+   einsums' own kernels may fork from that ICV, but an OpenMP OpenBLAS (through at least 0.3.34)
+   corrupts results or deadlocks when concurrent callers present different widths. So while set,
+   the vendor wrappers clamp the ICV to one thread, which keeps at most one width above 1 ever
+   reaching the vendor (a width-1 caller skips its global sync).
+
+   .. versionadded:: 2.0.0
+
+   :param active: True on entering a node-scoped width, false on leaving.

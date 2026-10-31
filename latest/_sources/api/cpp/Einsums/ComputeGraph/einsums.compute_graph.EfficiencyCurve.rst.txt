@@ -1,0 +1,65 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.EfficiencyCurve:
+
+=======================================
+einsums::compute_graph::EfficiencyCurve
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: EfficiencyCurve
+
+   Measured speedup against thread count for one kernel family at one size class.
+
+   `speedup[i]` is `t(1) / t(widths[i])`, so `widths[0] == 1` and
+   `speedup[0] == 1` by construction. The width rungs are powers of two up to
+   `P`, plus `P` itself when it is not a power of two (a 10-core machine gets
+   1, 2, 4, 8, 10): calibration cost scales with the rung count, and the
+   executor resizes hot teams on every distinct width.
+
+   The rungs are stored rather than implied because a profile is written on one
+   machine and read on another, and a curve whose rungs were guessed from the
+   reader's core count would be read off at the wrong widths.
+
+
+   .. cpp:function:: bool valid() const
+
+      A curve is usable when it has at least one rung and the two vectors agree.
+
+
+   .. cpp:function:: double speedup_at(unsigned int width) const
+
+      Speedup at ``width``, interpolated linearly in log2(width).
+
+      Widths between rungs interpolate; widths outside the measured range snap
+      to the nearest end rung, so asking for more threads than were calibrated
+      predicts the widest measured behaviour rather than extrapolating. A
+      width of 0 is read as 1.
+
+      Never returns zero or a negative number, whatever the file says, because
+      callers divide by it.
+
+
+   .. cpp:member:: KernelFamily family
+
+   .. cpp:member:: SizeClass size_class
+
+   .. cpp:member:: std::vector<std::uint32_t> widths
+
+      Ascending, first entry 1
+
+
+   .. cpp:member:: std::vector<double> speedup
+
+      Parallel to ``widths``

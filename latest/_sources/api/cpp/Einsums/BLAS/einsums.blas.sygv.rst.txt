@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.sygv:
+
+===================
+einsums::blas::sygv
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> int_t sygv(int_t itype, char jobz, char uplo, int_t n, T *a, int_t lda, T *b, int_t ldb, T *w)
+
+   Generalized symmetric-definite eigenvalue problem.
+
+   Solves one of :math:`\mathbf{A}\mathbf{x} = \lambda \mathbf{B}\mathbf{x}`
+   (itype=1), :math:`\mathbf{A}\mathbf{B}\mathbf{x} = \lambda \mathbf{x}`
+   (itype=2), or :math:`\mathbf{B}\mathbf{A}\mathbf{x} = \lambda \mathbf{x}`
+   (itype=3). :math:`\mathbf{A}` must be symmetric and :math:`\mathbf{B}`
+   symmetric POSITIVE DEFINITE (B is Cholesky-factored internally).
+
+   :param itype: Problem form, 1-3 as above.
+   :param jobz: 'N': eigenvalues only; 'V': eigenvalues and eigenvectors.
+   :param uplo: Which triangles of A and B are stored ('U' or 'L').
+   :param n: Order of A and B.
+   :param a: On entry the matrix A; on exit the eigenvectors when jobz='V'.
+   :param lda: Leading dimension of a.
+   :param b: On entry the matrix B; on exit overwritten by its Cholesky factor.
+   :param ldb: Leading dimension of b.
+   :param w: Output: the eigenvalues in ascending order.
+   :returns: 0 on success; i in [1, n] if the algorithm failed to converge; i > n if the leading minor of order i-n of B is not positive definite.

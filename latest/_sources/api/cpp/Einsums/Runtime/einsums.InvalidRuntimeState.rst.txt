@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.InvalidRuntimeState:
+
+============================
+einsums::InvalidRuntimeState
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/Runtime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: InvalidRuntimeState : public std::runtime_error
+
+   Indicates that the code is handling data that is uninitialized.
+
+   .. versionadded:: 1.0.0

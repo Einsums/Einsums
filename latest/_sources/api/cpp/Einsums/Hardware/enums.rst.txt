@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Hardware_api_enums:
+
+============
+Enumerations
+============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:enum-class:: ProfileState
+
+   What became of a profile file.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:enumerator:: None
+
+   .. cpp:enumerator:: Loaded
+
+   .. cpp:enumerator:: LoadedForeign
+
+   .. cpp:enumerator:: Foreign
+
+   .. cpp:enumerator:: Stale
+
+   .. cpp:enumerator:: Invalid

@@ -1,0 +1,34 @@
+..
+    Copyright (c) The Einsums Developers. All rights reserved.
+    Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+.. _modules_Einsums_BufferAllocator:
+
+===============
+BufferAllocator
+===============
+
+This module contains an allocator that keeps track of how much memory has been allocated for buffers.
+The allocator is controlled by global configuration options.
+
+See the :ref:`API reference <modules_Einsums_BufferAllocator_api>` of this module for more
+details.
+
+.. cpp:namespace:: einsums
+
+Interacting with the Allocator
+------------------------------
+
+To modify the allocator's maximum size, write a memory string to the ``einsums::option::BufferSize`` option, either
+with ``einsums::config::set`` or on the command line. A memory string is a number, possibly a decimal, followed by an optional prefix and unit.
+The understood prefixes are `k`, `M`, `G`, and `T`, all case insensitive. The units can either be `B`, `W`, or `o`,
+also case insensitive. The `B` and `o` units represent bytes, with the `o` provided for people who use the
+octet convention. The `W` unit currently divides the byte count by the size of `size_t` rather than multiplying,
+so on a 64-bit system `6kW` is 768 bytes, not 6 kilowords; use `B` to be safe. The command-line spelling is
+`--einsums:buffer-size`. The limit applies per process and is shared by all threads in it.
+
+The :cpp:class:`BufferAllocator` is a normal allocator. As such, it can be used in C++ containers and can be interacted
+with in the same way as other C++ allocators. Users must be careful when resizing allocations, though, as in order to
+resize an allocation, the full size of the final allocation will be requested before the original amount is freed, which
+can cause an out of memory exception. There are a few extra methods provided as well, though these are considered to be
+best for internal use.

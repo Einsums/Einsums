@@ -1,0 +1,163 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TensorBacking:
+
+=====================================
+einsums::compute_graph::TensorBacking
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorBacking.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TensorBacking
+
+   The storage behind a tensor the graph reads, or writes, but never holds whole.
+
+   ``kind`` and ``location`` are what a saved graph records, with ``write``. ``dims`` and
+   ``dtype`` describe what the storage holds and are checked against the tensor when the backing
+   is annotated, so a mismatch is reported where it is made rather than at the first replay.
+   ``read_slab`` and ``write_slab`` are rebuilt at load by the registered ``BackingKind`` and
+   never written to a file.
+
+   A READ backing names storage that already holds the tensor: an input the graph only reads. A
+   WRITE backing names storage the graph fills: the tensor is an output the graph produces, and
+   may read back after producing it. A write backing is completed by the tensor it is annotated
+   on, through ``prepare``, since the storage may not exist yet to describe it. An UPDATE backing
+   is a write backing whose storage also holds the value each replay starts from: the graph reads
+   the tensor, writes its next value, and the storage is switched to that value at the end of the
+   replay (``update``, ``publish``), together with every other update backing of the graph that
+   shares its ``publish_scope``.
+
+   Built by the module that knows the storage, as ``tensor_io::etn_backing`` builds one for a
+   ``.etn`` entry, and handed to ``Graph::annotate_backing``.
+
+   .. seealso::
+
+      Graph::annotate_backing
+
+   .. seealso::
+
+      register_backing_kind
+
+
+   .. cpp:function:: std::optional<std::string> dtype_name() const
+
+      The stored tensor's element type by name, as a ``dtype=`` argument spells it.
+
+      .. versionadded:: 2.0.0
+
+      :returns: ``"float32"``, ``"float64"``, ``"complex64"`` or ``"complex128"``; nothing for a write backing not yet completed by its tensor, whose storage has no type to give.
+
+
+   .. cpp:function:: std::string describe() const
+
+      The kind and location in one phrase, for diagnostics.
+
+      :returns: Text such as ``tensor_io.etn (entry=B_vv, path=ints.etn)``.
+
+
+   .. cpp:member:: std::string kind
+
+      The registered kind's name, qualified as in ``"tensor_io.etn"``.
+
+
+   .. cpp:member:: std::vector<std::pair<std::string, std::string>> location
+
+      Key/value pairs that name the storage within its kind, sorted by key, as in
+      ``{{"entry", "B_vv"}, {"path", "ints.etn"}}``.
+
+
+   .. cpp:member:: std::vector<std::size_t> dims
+
+      The stored tensor's extents.
+
+
+   .. cpp:member:: packed_gemm::ScalarType dtype
+
+      The stored tensor's element type.
+
+
+   .. cpp:member:: bool write
+
+      Whether the graph writes the storage (an output it produces) rather than only reading it.
+
+
+   .. cpp:member:: bool update
+
+      Whether the graph also reads the value the storage holds when a replay starts: an UPDATE
+      backing, set with ``write``. ``read_slab`` reads that value, ``write_slab`` writes the
+      next one beside it, and ``publish`` makes the next one current once the replay has made
+      every access. A crash before the publish leaves the storage holding the previous value.
+
+
+   .. cpp:member:: std::function<void (const std::vector<const TensorBacking *> &)> publish
+
+      Makes what ``write_slab`` wrote the value ``read_slab`` reads, in one step that survives a
+      crash, for every backing in ``group`` at once: the update backings of one graph that share
+      this one's ``publish_scope``, this one among them, or this one alone when it has none. Run
+      by the graph once per replay, after every access of every storage the graph names. Set on an
+      update backing only.
+
+
+   .. cpp:member:: std::string publish_scope
+
+      Which update backings publish together: those of one graph with the same non-empty scope
+      are published by one call, so a crash leaves all of them at the values the replay started
+      from or all at the values it wrote. A kind sets it to what one atomic step can cover, as
+      ``tensor_io.etn`` sets the file's path. Empty: published alone.
+
+
+   .. cpp:member:: std::shared_ptr<BackingCounters> counters
+
+      What the storage has moved, attached by ``Graph::annotate_backing``; null on a backing
+      no graph has accepted. See ``RunMetrics``.
+
+
+   .. cpp:member:: SlabReader read_slab
+
+      Reads a slab of the stored tensor; see ``SlabReader``.
+
+
+   .. cpp:member:: SlabWriter write_slab
+
+      Writes a slab of the stored tensor; see ``SlabWriter``. Set on a write backing only.
+
+
+   .. cpp:member:: std::function<std::vector<std::size_t> ()> stored_order
+
+      The order the storage holds the tensor's axes in: the declared axis at each stored
+      position, ``0, 1, ..., rank - 1`` for the declared order. Unset for a kind that stores only
+      the declared order. The slabs ``read_slab`` and ``write_slab`` move are in the declared
+      order whatever this is; it decides only which slabs are long contiguous runs of the storage.
+
+
+   .. cpp:member:: std::function<bool (const std::vector<std::size_t> &)> reorder
+
+      Store the tensor's axes in ``order`` from now on. Returns false, changing nothing, when the
+      storage's order is no longer the graph's to choose: storage this graph did not create, an
+      order its creator fixed, or storage a slab has already been written to. Set on a write
+      backing whose kind can store another order.
+
+
+   .. cpp:member:: std::function<bool ()> order_open
+
+      Whether ``reorder`` would change the order now: what a pass choosing how to move the tensor
+      asks, to know whether the order it has to work with is the one stored or the one it wants.
+      Unset reads as false.
+
+
+   .. cpp:member:: std::function<TensorBacking (const std::vector<std::size_t> &, packed_gemm::ScalarType)> prepare
+
+      Completes a write backing for the tensor it is annotated on: given the tensor's extents
+      and element type, makes the storage hold a tensor of that shape and returns the backing
+      with ``dims``, ``dtype``, ``read_slab`` and ``write_slab`` filled in. Throws when the
+      storage already holds something of another shape or type. Set on a write backing only.

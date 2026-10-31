@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.escape_reason:
+
+=====================================
+einsums::compute_graph::escape_reason
+=====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EscapeAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::string_view escape_reason(Escape reason)
+
+   A short, shape-independent phrase for ``reason``, suitable for ``note_skip``.
+
+   Shape-independent on purpose: `OptimizerPass::note_skip` aggregates by reason
+   string, so a phrase carrying a tensor name would produce one line per
+   candidate instead of one line with a count.
+
+   :param reason: The verdict to name.
+   :returns: The phrase, e.g. ``"a node outside the region reads it"``.

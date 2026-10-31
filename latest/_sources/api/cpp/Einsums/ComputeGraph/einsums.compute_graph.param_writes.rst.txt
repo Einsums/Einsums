@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.param_writes:
+
+====================================
+einsums::compute_graph::param_writes
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::vector<std::string> param_writes(const Node &node)
+
+   Names of ``ParamTable`` entries this node WRITES - the parameter analogue of ``Node::outputs``.
+
+   A ``WriteParam`` node's entire effect is this write. It travels through the
+   parameter table rather than through any tensor, so a TensorId-keyed
+   dependency scan cannot see it, and in the callback form the node carries no
+   tensor operands at all - which reads to an unguarded pass as "no inputs,
+   therefore unconditionally movable". Schedulers pair this with
+   ``param_reads`` to order parameter writes against their consumers. A registered descriptor
+   adds the writes its ``accesses`` hook reports (DescriptorHooks.hpp).

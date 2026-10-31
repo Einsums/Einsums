@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.CpuConfig:
+
+===============================
+einsums::packed_gemm::CpuConfig
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: CpuConfig
+
+   CPU vector and cache configuration detected at init time.
+
+
+   .. cpp:member:: int VL
+
+      SIMD vector length in doubles: SSE=2, AVX=4, AVX-512=8
+
+
+   .. cpp:member:: int MR
+
+      M register-block: 2*VL (two vector registers per j-column)
+
+
+   .. cpp:member:: int NR
+
+      N register-block: 6 (LLVM unroll threshold; fixed across CPUs)
+
+
+   .. cpp:member:: int64_t l1_cache_size
+
+      L1 data cache size in bytes (per core)
+
+
+   .. cpp:member:: int64_t l2_cache_size
+
+      L2 cache size in bytes (per core)
+
+
+   .. cpp:member:: int64_t l3_cache_size
+
+      L3 cache size in bytes (shared)
+
+
+   .. cpp:member:: double omp_region_cost_ns
+
+      Cost in ns of an OpenMP region at the default thread count; zero without OpenMP or threads.
+
+
+   .. cpp:member:: int64_t min_parallel_flops
+
+      Work, in flops, below which parallelizing is a net loss.
+
+      See ``einsums::hardware::omp_min_parallel_flops``.
+
+
+   .. cpp:member:: int cores_per_l3
+
+      Physical cores sharing one L3 (a Zen CCX, say), 1 where the topology cannot be read.
+
+      Team size for sharing one packed B panel per L3 (27.5 GF/s per core against 20.7 with private
+      panels on a Zen+ CCX).

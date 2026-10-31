@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.cherk:
+
+============================
+einsums::blas::vendor::cherk
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void cherk(char uplo, char trans, int_t n, int_t k, float alpha, const std::complex<float> *a, int_t lda, float beta, std::complex<float> *c, int_t ldc)
+
+   Hermitian rank-k update: C := alpha*A*A^H + beta*C  or  alpha*A^H*A + beta*C. alpha and beta are real.

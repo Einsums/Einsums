@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.config_flag:
+
+========================
+einsums::cl::config_flag
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Get.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:function:: constexpr ConfigOption<bool> config_flag(std::string_view name, std::string_view help, std::string_view category, bool default_value)
+
+   Declare a boolean option. Registration also generates the `--no-` spelling,
+   so a default-true flag needs no hand-written negation.

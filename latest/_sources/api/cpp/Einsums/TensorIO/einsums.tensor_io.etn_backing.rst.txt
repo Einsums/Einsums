@@ -1,0 +1,46 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_io.etn_backing:
+
+===============================
+einsums::tensor_io::etn_backing
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorIO/Backing.hpp``.
+
+.. cpp:namespace:: einsums::tensor_io
+
+.. cpp:function:: compute_graph::TensorBacking etn_backing(std::string path, std::string entry, bool write, std::vector<std::size_t> order, bool update)
+
+   The backing for one entry of a ``.etn`` file.
+
+   Each read or write opens the file, checks that the entry still has the extents and element
+   type it had when the backing was built, and moves the slab: a file rewritten between replays
+   is used afresh, and one rewritten with a different shape is refused rather than read or
+   written as the wrong elements.
+
+   .. code-block:: text
+
+      auto &B = graph.declare_runtime_tensor<double>("B_vv", {naux, nvir, nvir});
+      graph.annotate_backing(B, tensor_io::etn_backing("ints.etn", "B_vv"));         // an input
+      auto &T = graph.declare_runtime_tensor<double>("T2", {nocc, nocc, nvir, nvir});
+      graph.annotate_backing(T, tensor_io::etn_backing("amps.etn", "T2", true));     // produced and stored
+
+   .. versionadded:: 2.0.0
+
+   :param path: The file. Stored as given: a relative path is resolved against the working directory each time the graph reads or writes it, and again when a saved graph is loaded.
+   :param entry: The entry's name within the file.
+   :param write: False (the default) for an input the graph reads: the entry must exist, and its extents and element type are read from it now. True for a tensor the graph produces and stores: the file and entry are created, or reused when the entry already holds a tensor of the same shape and type, when the backing is annotated on its tensor, which supplies that shape and type.
+   :param order: For a write backing, the order to store a new entry's axes in: the declared axis at each stored position (see ``TensorEntry::stored_order``). Empty, the default, leaves it to the graph, which stores a new entry so the boxes it moves are long contiguous runs of the file. Give it when another run will read the entry in boxes of its own. An entry that already exists has to be stored in this order to be reused.
+   :param update: True for a tensor the graph both reads and writes, whose entry it updates at every replay: the entry must exist, and its extents and element type are read from it now. The tensor starts each replay holding what the entry holds, its writes go to the scratch entry ``<entry>.next``, and at the end of the replay that entry replaces ``entry`` in one commit, so the file holds the previous replay's value until then. Not with ``write`` or ``order``.
+   :throws std::runtime_error: when a read backing's file cannot be opened or holds no such entry.
+   :throws std::invalid_argument: when a read backing's entry holds integers, which no graph tensor does, or, at annotation, when a write backing's entry already holds another shape or type, or is stored in another order than ``order`` asks for; or when ``update`` is given with ``write`` or ``order``, or ``entry`` is too long to name its scratch entry.
+   :returns: The backing, for ``compute_graph::Graph::annotate_backing``.

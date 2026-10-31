@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.evaluate_profile:
+
+===================================
+einsums::hardware::evaluate_profile
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: ProfileStatus evaluate_profile(const json::Value &document, const std::string &path, const MachineIdentity &machine, const SoftwareIdentity &software, bool named, ProfileOptionCheck option_check)
+
+   Decide what a profile document means here.
+
+   Pure, so every rule can be tested without a file: the format, the known top-level keys, the
+   machine (whose stored fingerprint must also match its fields), the software, and the
+   ``options`` section, whose values must be scalars and whose names ``option_check`` must accept.
+
+   .. versionadded:: 2.0.0
+
+   :param document: The parsed file.
+   :param path: Where it came from, for the status.
+   :param machine: This machine.
+   :param software: This build and BLAS.
+   :param named: Whether the user named the file, which makes another machine a warning rather than a refusal.
+   :param option_check: Whether the ``options`` section may set each option; null refuses all.
+   :returns: The verdict.

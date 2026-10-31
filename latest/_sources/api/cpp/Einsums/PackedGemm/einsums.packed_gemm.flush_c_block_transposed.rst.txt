@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.flush_c_block_transposed:
+
+==============================================
+einsums::packed_gemm::flush_c_block_transposed
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void flush_c_block_transposed(T *C_data, const T *Cb, int64_t mc, int64_t mc_len, int64_t nb, int64_t nb_cur, const std::vector<int64_t> &c_m_offsets, const std::vector<int64_t> &c_n_offsets, int64_t xa, int64_t xc, bool store_c, bool may_stream_c, bool &streamed_c)
+
+   Write an A-order C block back to C, transposing its runs out.
+
+   The flat M coordinate was ordered for the packing operand, so block row i holds coordinate i %
+   ``xa`` of the fastest index and i / ``xa`` of C's: a run of C is a column of the block at stride
+   ``xa``. It is read back a strip at a time, one cache line wide in the fastest coordinate, so each
+   block line is consumed whole and the staged transpose stays in L1. What reaches memory is the
+   same sequential run of C the composed write-back sends.
+
+   Out of line: inlined, it slowed contractions that never take this path.
+
+   ``Cb`` is the mc_len x nb_cur block in column-major order, ``c_m_offsets`` is indexed by
+   block-local flat M and ``c_n_offsets`` by N block position.

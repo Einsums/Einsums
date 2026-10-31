@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.lange:
+
+====================
+einsums::blas::lange
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:function:: template <typename T> RemoveComplexT<T> lange(char norm_type, int_t m, int_t n, const T *A, int_t lda, RemoveComplexT<T> *work)
+
+   Computes various matrix norms. The available norms are the 1-norm, Frobenius norm, Max-abs norm, and the infinity norm.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: The type this matrix handles.
+   :param norm_type: The norm to compute. It is case insensitive. For the 1-norm, it should be '1' or 'o'. For the Frobenius norm it should be 'f' or 'e'. For the max-abs norm it should be 'm'. For the infinity norm, it should be 'i'.
+   :param m: The number of rows in the matrix.
+   :param n: The number of columns in the matrix.
+   :param A: The matrix.
+   :param lda: The leading dimension of the matrix.
+   :param work: A work array. Only needed for the infinity norm.

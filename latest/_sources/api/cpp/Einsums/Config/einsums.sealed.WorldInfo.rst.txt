@@ -1,0 +1,72 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.sealed.WorldInfo:
+
+==========================
+einsums::sealed::WorldInfo
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Config/ABI.hpp``.
+
+.. cpp:namespace:: einsums::sealed
+
+.. cpp:class:: WorldInfo
+
+   Everything one copy of libEinsums knows about itself.
+
+   Compared field by field, so a mismatch names the field. Extend by appending; `struct_size` tells
+   older readers the record is longer.
+
+
+   .. cpp:member:: std::size_t struct_size
+
+      Size of this struct as the *writer* understood it.
+
+
+   .. cpp:member:: const void *identity
+
+      Address of a function-local static inside the library. Equal for two
+      callers exactly when they resolved to the same copy.
+
+
+   .. cpp:member:: std::uint64_t config_fingerprint
+
+      Fold of the build toggles this library was compiled with. See
+      config_fingerprint().
+
+
+   .. cpp:member:: std::uint64_t layout_fingerprint
+
+      Fold of the sizes and alignments of the types that cross the boundary.
+      See layout_fingerprint(), which lives higher up the module graph.
+
+
+   .. cpp:member:: int version_major
+
+   .. cpp:member:: int version_minor
+
+   .. cpp:member:: int version_patch
+
+   .. cpp:member:: const char *version_string
+
+      Version, git commit, and compiler, as NUL-terminated literals owned by
+      the library. Valid for the process lifetime.
+
+
+   .. cpp:member:: const char *git_commit
+
+   .. cpp:member:: const char *compiler_id
+
+   .. cpp:member:: int compiler_major
+
+   .. cpp:member:: const char *library_path
+
+      Path of the library this record came from, or "" when the platform cannot answer.

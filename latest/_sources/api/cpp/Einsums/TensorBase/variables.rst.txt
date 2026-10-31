@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TensorBase_api_variables:
+
+=========
+Variables
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/TensorBase/Common.hpp``, ``Einsums/TensorBase/Options.hpp``, ``Einsums/TensorBase/SymmetryDescriptor.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:var:: struct AllT All
+
+   Implementation of AllT .
+
+   .. versionadded:: 1.0.0
+
+
+.. cpp:var:: inline constexpr int dynamic_rank
+
+   Sentinel value for ``Tensor::Rank`` on tensor types whose rank is not known at compile time (e.g. ``GeneralRuntimeTensor``).
+
+   Rank-comparing concepts treat it as a wildcard; runtime-rank checks are the caller's job.
+
+
+.. cpp:var:: inline constexpr int kMaxSymmetryRank
+
+   Maximum rank a symmetry operation can describe; smaller ranks are padded.
+
+
+.. cpp:namespace:: einsums::option
+
+.. cpp:var:: inline cl::ConfigOption<bool> RowMajor
+
+   Build tensors row-major rather than the column-major default.

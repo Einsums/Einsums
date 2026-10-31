@@ -1,0 +1,185 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.CostModel:
+
+=================================
+einsums::compute_graph::CostModel
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: CostModel
+
+   Target-aware cost model built from CPU and GPU device profiles.
+
+   Every estimate dispatches to the profile for the requested ``Target``, so
+   GPUPlacement and ContractionPlanning compare CPU and GPU alternatives against
+   one consistent model rather than each inventing its own constants.
+
+   The measured hardware facts this is built from live elsewhere: cache sizes and
+   OpenMP region cost come from ``einsums::hardware::cpu_info``, and the
+   per-device performance table from ``DeviceProfileDB`` or a calibration file.
+   What this type adds is the modelling on top - roofline GEMM time, ring
+   allreduce, binomial-tree broadcast.
+
+
+   .. cpp:function:: bool has_gpu() const
+
+   .. cpp:function:: const DeviceProfile & device(Target target) const
+
+      Select the device profile for a given target.
+
+
+   .. cpp:function:: double estimate_gemm_time_us(size_t M, size_t N, size_t K, Target target, unsigned int threads) const
+
+      Estimate GEMM time on a specific target, at ``threads`` threads.
+
+
+   .. cpp:function:: double estimate_memory_time_us(size_t bytes, Target target, unsigned int threads) const
+
+      Estimate memory transfer time on a specific target.
+
+
+   .. cpp:function:: double estimate_permute_time_us(size_t bytes, size_t rank, Target target, unsigned int threads) const
+
+      Estimate the time to permute a tensor of ``bytes`` at ``rank``.
+
+
+   .. cpp:function:: double parallel_speedup(KernelFamily family, size_t bytes, unsigned int width, Target target) const
+
+      `s(w)` for a kernel family and working set on a specific target. This is
+      the primitive a width planner reads: `t(w) = t(1) / s(w)`.
+
+
+   .. cpp:function:: double parallel_efficiency(KernelFamily family, size_t bytes, unsigned int width, Target target) const
+
+      `e(w) = s(w)/w` for a kernel family and working set on a specific target.
+
+
+   .. cpp:function:: double transfer_bandwidth_gbps() const
+
+      Host-device transfer bandwidth in GB/s: the GPU's PCIe bandwidth, or the CPU's memory bandwidth where the profile names none.
+
+      A unified-memory device has no PCIe link, and its profile, measured or loaded, leaves the
+      field at zero; the host and device then share the memory bus. Every transfer estimate reads
+      the bandwidth here, so none of them divides by that zero.
+
+
+   .. cpp:function:: double estimate_transfer_time_us(size_t bytes) const
+
+      Estimate host-device transfer time (via PCIe or unified memory bus).
+
+
+   .. cpp:function:: double estimate_total_gemm_time_us(size_t M, size_t N, size_t K, size_t element_size, Target target) const
+
+      Estimate total GEMM time (roofline) on a specific target.
+
+
+   .. cpp:function:: double node_overhead_us(Target target) const
+
+      What it costs merely to BE a node, before any work happens.
+
+      The dispatch plus the per-call allocation the executor pays whatever the
+      operation is. It is the figure a lowering weighs when deciding how finely
+      to split work: below it, an operation spends more getting invoked than
+      running.
+
+
+   .. cpp:function:: double estimate_allreduce_time_us(size_t bytes, int num_ranks) const
+
+      Estimate allreduce time using ring algorithm model.
+
+      Ring allreduce: 2*(p-1)/p * bytes/bandwidth + 2*(p-1) * latency.
+
+      :param bytes: Total data size in bytes.
+      :param num_ranks: Number of MPI ranks participating.
+      :returns: Estimated time in microseconds.
+
+
+   .. cpp:function:: double estimate_broadcast_time_us(size_t bytes, int num_ranks) const
+
+      Estimate broadcast time using binomial tree model.
+
+
+   .. cpp:function:: double estimate_allgather_time_us(size_t bytes_per_rank, int num_ranks) const
+
+      Estimate allgather time using ring algorithm model.
+
+
+   .. cpp:function:: static CostModel detect_default()
+
+      This machine's hardware profile when one applies, else ``built_in``.
+
+
+   .. cpp:function:: static CostModel built_in()
+
+      The built-in device table's model for this machine, with detected cache levels.
+
+      What ``detect_default`` returns when no hardware profile applies, and where a tune starts
+      from, so that a new measurement never inherits an older one's numbers.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The model.
+
+
+   .. cpp:function:: static CostModel flop_count()
+
+      A model that prices a GEMM by its flop count alone, identical on every machine.
+
+      Every GEMM runs at a nominal 1 GFLOP/s with no launch, allocation or memory
+      cost, and there is no GPU, so an estimate is `2 M N K / 1000` nominal
+      microseconds and only comparable with another estimate from this model.
+      This is the textbook matrix-chain price. A decision made against it does
+      not move with the hardware a program happens to run on, which is what a
+      test asserting that a pass rewrote something needs.
+
+
+   .. cpp:function:: static expected<CostModel, GraphError> load_json(const std::string &path)
+
+      Load from a JSON file. Returns error if file cannot be read or parsed.
+
+
+   .. cpp:function:: expected<void, GraphError> save_json(const std::string &path) const
+
+      Save to a JSON file. Returns error if file cannot be written.
+
+
+   .. cpp:function:: static CostModel from_json(const json::Object &object)
+
+      Read a model from the object ``to_json`` writes.
+
+      Lenient by design, unlike the graph IR: a row this build cannot price is dropped rather
+      than failing the load, since a model is a machine measurement that may have been written by
+      an older build or by hand.
+
+      .. versionadded:: 2.0.0
+
+      :param object: The model.
+      :returns: The model.
+
+
+   .. cpp:function:: json::Object to_json() const
+
+      The model as the object a file and a hardware profile's ``cost_model`` section hold.
+
+      .. versionadded:: 2.0.0
+
+      :returns: The object.
+
+
+   .. cpp:member:: DeviceProfile cpu
+
+   .. cpp:member:: DeviceProfile gpu
+
+   .. cpp:member:: std::string source

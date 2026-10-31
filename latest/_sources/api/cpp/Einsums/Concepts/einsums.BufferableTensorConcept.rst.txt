@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.BufferableTensorConcept:
+
+================================
+einsums::BufferableTensorConcept
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D> BufferableTensorConcept
+
+   Checks to see if a tensor's data can be buffered.
+
+   This checks for tensors that don't store their data in-core, but can have their data be brought in-core.
+   For instance, DiskTensors can have their data read into an internal buffer for use, while a FunctionTensor
+   can be evaluated at several points and the results put into a buffer.
+
+   .. versionadded:: 2.0.0

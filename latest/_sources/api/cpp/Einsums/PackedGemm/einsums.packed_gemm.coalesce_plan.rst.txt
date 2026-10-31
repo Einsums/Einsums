@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.coalesce_plan:
+
+===================================
+einsums::packed_gemm::coalesce_plan
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void coalesce_plan(PackingPlan &plan, int64_t elem_size)
+
+   Coalesce adjacent dims within each group when they tile contiguously.
+
+   Each group is a pair of parallel DimSpec vectors describing the same logical
+   indices in two tensors (M: A and C; N: B and C; K: A and B). The group is
+   first reordered by descending stride in one of the two tensors (the same
+   permutation is applied to the other so flat-index enumeration stays
+   consistent), then neighbouring dims are merged whenever
+   slow.stride == fast.stride * fast.size. This converts e.g. col-major
+   C(a,b,i,j) = A(a,b,e,f) * B(e,f,i,j) from a multi-M/N/K plan (scatter path)
+   into a single-M/N/K plan that maps to one strided BLAS GEMM with no copies.
+
+   The M and N groups merge each tensor's vector on its own. The packers gather
+   whatever their own vector describes and the C side walks only C's, so a pair
+   that is contiguous in C but split in the operand still gives C a single dim,
+   and C is written directly instead of through a scratch block. The K group's
+   vectors are both read in lockstep by the flatten path, so it merges a pair
+   only when it is contiguous in both.
+
+   Must be called after fill_strides() (and after sort_k_dims_for_packing(),
+   which it may re-permute). Sets plan.coalesced when any merge happened.

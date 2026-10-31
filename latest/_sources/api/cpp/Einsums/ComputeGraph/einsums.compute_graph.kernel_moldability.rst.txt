@@ -1,0 +1,53 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.kernel_moldability:
+
+==========================================
+einsums::compute_graph::kernel_moldability
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Moldability.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: bool kernel_moldability(const Node &node)
+
+   Whether this node's kernel will actually see the width it is planned at.
+
+   The executor's wrap sets the OpenMP ICV and the vendor BLAS thread count
+   around the node, so the question is whether the kernel the node runs consumes
+   one of those. Everything einsums threads itself - HPTT, the elementwise
+   kernels, the packed-GEMM loops, the batched-GEMM entry loop - forks from the
+   ICV and so is always moldable; a node whose work is a vendor BLAS call is
+   moldable only where the vendor can be told (``blas_route_is_moldable``).
+
+   Three kinds sit on the einsums-threaded side of that line for reasons worth
+   stating.
+
+   A contraction routes through PackedGemm, whose engine declines to hand the
+   work to a single vendor GEMM when the caller holds a node width the wrappers'
+   fence would clamp; it packs and runs its own tiled loops instead, forking
+   from the ICV the width raised. Not every einsum shape does: GEMV- and
+   dot-shaped specs still end in a fenced vendor call and merely waste the width
+   they were given. That is the conservative direction being spent rather than
+   saved, and the planner's own size floors keep small nodes at width 1 anyway,
+   so what is wasted is a share of the budget on a node too big to be free.
+
+   The two batched-GEMM kinds are einsums' own OpenMP loops over the batch, with
+   the vendor called nested-serial inside them. They fork from the ICV on every
+   vendor, which is why their wrappers carry no fence, and they have consumed
+   their caller's width since before widths were planned.
+
+   A registered descriptor's ``threading`` hook answers for its node: only
+   ``Threading::Moldable`` may be widened (DescriptorHooks.hpp).
+
+   Intended for a width-planning pass, which is the only caller that has to
+   choose; the executor honors whatever width it finds without asking.

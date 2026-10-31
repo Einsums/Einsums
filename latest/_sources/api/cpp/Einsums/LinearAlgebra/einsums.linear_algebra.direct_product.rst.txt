@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.direct_product:
+
+=======================================
+einsums::linear_algebra::direct_product
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T> requires (SameRank<AType, BType, CType>) void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C)
+
+   Compute the direct product between two tensors and accumulate them into another. This is the element-wise (Hadamard)
+   product of the two tensors.
+
+   .. math::
+
+      c_i := \alpha a_i b_i + \beta c_i
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the A tensor.
+   :tparam BType: The type of the B tensor.
+   :tparam CType: The type of the C tensor.
+   :tparam T: The type of the scale factors.
+   :param alpha: The scale factor for the product.
+   :param A,B: The tensors being multiplied.
+   :param beta: The scale factor for the output.
+   :param C: The output tensor.

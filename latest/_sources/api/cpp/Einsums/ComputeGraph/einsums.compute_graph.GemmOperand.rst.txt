@@ -1,0 +1,52 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GemmOperand:
+
+===================================
+einsums::compute_graph::GemmOperand
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GemmOperand
+
+   One operand of a GEMM-shaped einsum, recorded as data.
+
+   **Why the leading dimension is only a hint**
+
+   ``leading_dim`` is a SNAPSHOT, taken when the hint was derived. It exists
+   so a planning pass can compare operand layouts across candidate nodes
+   *before* anything executes, which is what ``passes::GEMMBatching`` does to
+   decide whether one ``gemm_batch`` call can address a whole group.
+
+   It is never what the batch actually runs on. ``Graph::rebind`` accepts any
+   tensor of matching rank and dims, so a rebind to a column slice of a larger
+   store legitimately changes the leading dimension without changing anything
+   the hint records; the batched executor therefore re-derives every leading
+   dimension from the live ``TensorImpl`` at execute time and the snapshot is
+   not consulted again. A rebind that changes an lda *after* a batch was formed
+   consequently still computes correctly, because the group's descriptor is
+   rebuilt from the live values on the next replay.
+
+   The identity that survives a rebind is ``id``, which is why the operand is
+   recorded as an id rather than as a pointer or a closure over one.
+
+
+   .. cpp:member:: TensorId id
+
+      The operand's tensor id. Resolution happens at execute, through the graph's slot.
+
+
+   .. cpp:member:: int leading_dim
+
+      Capture-time leading dimension. A PLANNING HINT; see the class note.

@@ -1,0 +1,60 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SpaceId:
+
+===============================
+einsums::compute_graph::SpaceId
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SpaceId
+
+   Opaque handle to a space held by a ``SpaceRegistry``.
+
+   Stable for the life of the registry that issued it, meaningless anywhere else. A
+   default-constructed id is invalid and every registry query rejects it.
+
+
+   .. cpp:function:: constexpr SpaceId() noexcept = default
+
+      Construct an invalid id.
+
+
+   .. cpp:function:: constexpr bool valid() const noexcept
+
+      Whether this id refers to a registered space.
+
+      :returns: True unless the id is default-constructed.
+
+
+   .. cpp:function:: constexpr std::uint32_t value() const noexcept
+
+      The underlying registry-local index.
+
+      :returns: The index, or ``invalid_value`` for an invalid id. For debugging and hashing only.
+
+
+   .. cpp:function:: constexpr bool equals(SpaceId other) const noexcept
+
+      Whether two ids name the same space of the same registry.
+
+      ``operator==`` as a named method, bound as Python's ``__eq__``.
+
+      :param other: The id to compare against.
+      :returns: True when both wrap the same registry-local index.
+
+
+   .. cpp:member:: static constexpr std::uint32_t invalid_value
+
+      Sentinel stored by an invalid id.

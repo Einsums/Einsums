@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.zher2k:
+
+=============================
+einsums::blas::vendor::zher2k
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: void zher2k(char uplo, char trans, int_t n, int_t k, std::complex<double> alpha, const std::complex<double> *a, int_t lda, const std::complex<double> *b, int_t ldb, double beta, std::complex<double> *c, int_t ldc)
+
+   See ``cher2k``.

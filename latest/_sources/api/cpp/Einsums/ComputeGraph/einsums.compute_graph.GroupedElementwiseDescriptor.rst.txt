@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GroupedElementwiseDescriptor:
+
+====================================================
+einsums::compute_graph::GroupedElementwiseDescriptor
+====================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: GroupedElementwiseDescriptor
+
+   Metadata for the grouped element-wise kinds: @ref OpKind::GroupedPermute, ``OpKind::GroupedDirectProduct`` and @ref OpKind::GroupedDirectDivision.
+
+   One type for the three because the cost model prices them the same way -
+   every member touches its operands once, so the node's serial time is the
+   traffic the parent ``Node``'s operand lists already describe. What is
+   recorded here is what those lists cannot carry: how many members there are
+   and the per-member prefactors, so a pass can read the node instead of
+   re-deriving it from the closure.
+
+   Deliberately distinct from ``GroupedAxpbyDescriptor`` even though the two
+   hold the same fields. A pass that probes ``get_if<GroupedAxpbyDescriptor>``
+   without checking the node kind would otherwise find a permute and reason
+   about it as an AXPBY over one buffer.
+
+   The parent ``Node`` carries the inputs interleaved per member and the
+   outputs in member order.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: int total
+
+      How many members the node holds.
+
+
+   .. cpp:member:: std::vector<PrefactorScalar> alphas
+
+      Per-member prefactor on the sources.
+
+
+   .. cpp:member:: std::vector<PrefactorScalar> betas
+
+      Per-member prefactor on the destination.
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Output index names, e.g. ``{"j","i"}``.
+
+
+   .. cpp:member:: std::vector<std::string> a_indices
+
+      Input index names, e.g. ``{"i","j"}``.

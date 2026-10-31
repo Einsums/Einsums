@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.duplicate_materializations:
+
+==========================================================
+einsums::compute_graph::passes::duplicate_materializations
+==========================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/Materialization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: std::vector<std::string> duplicate_materializations(const Graph &graph)
+
+   Tensors with more than one Materialize node, anywhere in ``graph's`` tree.
+
+   A tensor's storage is allocated once. Two lifecycles for one buffer survive only because
+   ``materialize_fn`` happens to be idempotent, which is a property of today's hook rather than a
+   contract, and the extra node carries a dependency edge that serializes work against itself for
+   nothing. Two passes each emitting one is how it happens, and no numeric oracle can see it: both
+   allocations produce the same buffer and the answer does not move.
+
+   Keyed by NAME rather than by id, because a sub-graph carries its own id for the parent's buffer
+   and a name is the one handle both spellings share, which is what ``already_materialized_in``
+   inside the pass already relies on.
+
+   :param graph: The graph to audit; loop bodies, conditional branches and setup bodies are included.
+   :returns: The names, sorted, of every tensor named by more than one Materialize node.

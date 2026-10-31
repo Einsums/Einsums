@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ContainerOrInitializer:
+
+===============================
+einsums::ContainerOrInitializer
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/NamedRequirements.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename T> ContainerOrInitializer
+
+   Checks that a type satisfies the Container requirement or is an initializer list.
+
+   .. versionadded:: 1.1.0
+
+   :tparam T: The type to check

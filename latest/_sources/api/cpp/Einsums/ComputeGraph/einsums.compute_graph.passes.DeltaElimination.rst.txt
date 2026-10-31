@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.passes.DeltaElimination:
+
+================================================
+einsums::compute_graph::passes::DeltaElimination
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Passes/DeltaElimination.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:class:: DeltaElimination : public RegionRewrite
+
+   Eliminate contractions against a tagged Kronecker delta by index substitution.
+
+   The first real client of the region rewrite framework: unlike ``RegionIdentity`` it changes
+   the statement list, and unlike a peephole it decides what to do with the result by asking the
+   escape analysis whether the delta contraction's output can be dissolved.
+
+
+   .. cpp:function:: DeltaElimination() = default
+
+      Default-construct. Explicit so the binding codegen has a constructor to annotate.
+
+
+   .. cpp:function:: std::string name() const override
+
+      The pass name.
+
+      :returns: ``"DeltaElimination"``.
+
+
+   .. cpp:function:: PassTier tier() const override
+
+      See ``OptimizerPass::tier``.
+
+      Index substitution against a Kronecker delta removes multiplications by one; it does not reorder a sum.
+      This pass is the reason PassTier::BitwiseExact carries its non-finite qualification: removing a multiply also
+      removes its ability to produce a NaN, and that difference is one-directional.
+
+
+   .. cpp:function:: std::size_t num_eliminated() const
+
+      How many delta contractions the last run removed.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_dissolved() const
+
+      How many of those also dissolved their output tensor entirely.
+
+      :returns: The count.
+
+
+   .. cpp:function:: std::size_t num_zero_blocks() const
+
+      How many contractions summed over provably disjoint spaces and so were reduced to their destination's own prefactor.
+
+      :returns: The count.
+
+
+   .. cpp:function:: void reset_stats() override
+
+      Zero the per-apply counters.

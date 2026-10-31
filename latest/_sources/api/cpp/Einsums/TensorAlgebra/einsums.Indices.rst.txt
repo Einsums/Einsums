@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.Indices:
+
+================
+einsums::Indices
+================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Detail/Index.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename... Args> requires (std::is_base_of_v<v1::index::LabelBase, Args> && ... && true) Indices : public std::tuple<Args...>
+
+   Identifier for providing index labels to the the einsum function.
+
+   A variable passed here is a compile error; on a name clash, prefix the indices with ``einsums::index``.
+
+   :tparam Args: The indices to pass.
+
+
+   .. cpp:function:: Indices(Args... args)
+
+      Construct a new Indices object using the given indices.

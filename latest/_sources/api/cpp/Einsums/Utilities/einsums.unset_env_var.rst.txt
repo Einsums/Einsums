@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.unset_env_var:
+
+======================
+einsums::unset_env_var
+======================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/SetEnv.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: void unset_env_var(const std::string &name)
+
+   Remove an environment variable, portably.
+
+   std::getenv returns nullptr afterwards on both platforms. Same warning as set_env_var().
+
+   :param name: The variable name.

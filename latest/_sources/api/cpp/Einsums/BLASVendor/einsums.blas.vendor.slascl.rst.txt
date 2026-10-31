@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.slascl:
+
+=============================
+einsums::blas::vendor::slascl
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t slascl(char type, int_t kl, int_t ku, float cfrom, float cto, int_t m, int_t n, float *vec, int_t lda)
+
+   Advanced matrix scaling operation that scales a matrix by ``cto/cfrom`` without overflow/underflow.
+
+   .. versionadded:: 2.0.0
+
+   :param type: The kind of matrix being processed. Case insensitive. Can be either 'g', 'l', 'u', 'h', 'b', 'q', or 'z'.
+   :param kl: The lower bandwidth of the matrix.
+   :param ku: The upper bandwidth of the matrix.
+   :param cfrom: The denominator for the scale.
+   :param cto: The numerator for the scale.
+   :param m: The number of rows in the matrix.
+   :param n: The number of columns in the matrix.
+   :param vec: The matrix to scale.
+   :param lda: The leading dimension of the matrix.
+   :returns: 0 on success. If negative, then one of the parameters had an invalid value. The absolute value indicates which parameter was invalid.

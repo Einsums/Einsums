@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.InitParams:
+
+===================
+einsums::InitParams
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/InitRuntime.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: InitParams
+
+   Allows users to add functions to run at startup and shutdown.
+
+   .. versionadded:: 1.0.0
+
+
+   .. cpp:member:: StartupFunctionType startup
+
+      A function to add to the startup list.
+
+      .. versionadded:: 1.0.0
+
+
+   .. cpp:member:: ShutdownFunctionType shutdown
+
+      A function  to add to the shutdown list.
+
+      .. versionadded:: 1.0.0

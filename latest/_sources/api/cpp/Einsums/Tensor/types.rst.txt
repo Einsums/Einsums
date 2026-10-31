@@ -1,0 +1,77 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Tensor_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TensorForward.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:type:: template <typename T> BufferRuntimeTensor
+
+.. cpp:type:: template <typename T, size_t Rank> BufferTensor
+
+.. cpp:type:: template <typename T, size_t Rank> GPUTensor
+
+   GPU-resident tensor using the gpu:: abstraction layer.
+   On the mock backend, with no GPU, it uses std::malloc with the same
+   behavior, so it is testable anywhere.
+
+
+.. cpp:type:: template <typename T> RuntimeGPUTensor
+
+   GPU-resident runtime-rank tensor using the gpu:: abstraction layer.
+
+   Not exposed to Python, where GPUPlacement makes the device decision. std::malloc on the mock.
+
+
+.. cpp:type:: template <typename T> RuntimeTensor
+
+   Runtime-rank in-core tensor: GeneralRuntimeTensor with the standard
+   allocator. Mostly used for communication with the Python interface.
+
+
+.. cpp:type:: template <typename T> ShapeVector
+
+   Storage for a tensor's dimensions, strides and index coordinates.
+
+   Deliberately NOT ``BufferVector``, and the distinction is the point.
+   ``BufferAllocator`` enforces a global ceiling (``--einsums:buffer-size``,
+   default 64MB) whose purpose is to bound transient contraction WORKSPACE, so
+   that out-of-core algorithms can size their chunks against a declared budget
+   and a runaway temporary throws a named error instead of exhausting the
+   machine. LAPACK's ``work`` and ``iwork`` arrays are the model consumer, and
+   they still use ``BufferVector``.
+
+   Shape metadata is a different population. Every tensor and every VIEW holds
+   dims and strides, so the total scales with how many tensors are ALIVE rather
+   than with how large they are - and a deferred-execution graph manufactures
+   views by the hundred thousand and keeps them for the life of the graph.
+   Charging those against the workspace ceiling let metadata crowd out the
+   workspace the ceiling exists to bound: a captured DLPNO-CCSD iteration
+   (212,000 nodes at ethanol/cc-pVTZ) exhausted the then-4MB default outright, and
+   every coupled-cluster entry point had to raise it by two or three orders of
+   magnitude to run at all. The failures read as leaks and were not; the
+   accounting was balanced, the population was simply the wrong one.
+
+   .. versionadded:: 1.1.1
+
+
+.. cpp:type:: template <typename T, size_t Rank> Tensor
+
+   The standard in-core tensor: GeneralTensor with the standard allocator.
+   The data is stored contiguously in memory.
+
+
+.. cpp:type:: template <typename T> VectorData

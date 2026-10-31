@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.linear_algebra.solve_continuous_lyapunov:
+
+==================================================
+einsums::linear_algebra::solve_continuous_lyapunov
+==================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/LinearAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::linear_algebra
+
+.. cpp:function:: template <MatrixConcept AType, MatrixConcept QType> requires (CoreTensorConcept<AType> && CoreTensorConcept<QType> && SameUnderlying<AType, QType>) Tensor<typename AType::ValueType, 2> solve_continuous_lyapunov(const AType &A, const QType &Q)
+
+   Solves a continuous Lyapunov equation.
+
+   .. math::
+
+      \mathbf{AX} + \mathbf{XA}^H + \mathbf{Q} = 0
+
+   .. versionadded:: 1.0.0
+
+   :tparam AType: The type of the A matrix.
+   :tparam QType: The type of the Q matrix.
+   :param A: The A matrix.
+   :param Q: The Q matrix.
+   :throws DimensionError: If the input matrices are not square.
+   :throws TensorCompatError: If the input matrices do not have the same size.
+   :returns: The solution to the equation.

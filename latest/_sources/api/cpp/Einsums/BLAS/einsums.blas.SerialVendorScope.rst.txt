@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.SerialVendorScope:
+
+================================
+einsums::blas::SerialVendorScope
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLAS/ThreadControl.hpp``.
+
+.. cpp:namespace:: einsums::blas
+
+.. cpp:class:: SerialVendorScope
+
+   Present ONE thread to the vendor, and to anything einsums forks from the OpenMP ICV, for as long as it exists.
+
+   Makes reductions deterministic (a threaded ``dot's`` last bits depend on its thread count) and
+   speeds small level-1 calls, where a fork costs more than the arithmetic. Width one is always safe
+   to present (see ``set_moldable_width_scope``). Calling thread only; nests; restores on destruction.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: SerialVendorScope()
+
+   .. cpp:function:: SerialVendorScope(const SerialVendorScope &) = delete
+
+   .. cpp:function:: SerialVendorScope(SerialVendorScope &&) = delete
+
+   .. cpp:function:: ~SerialVendorScope()
+
+   .. cpp:function:: SerialVendorScope & operator=(const SerialVendorScope &) = delete
+
+   .. cpp:function:: SerialVendorScope & operator=(SerialVendorScope &&) = delete

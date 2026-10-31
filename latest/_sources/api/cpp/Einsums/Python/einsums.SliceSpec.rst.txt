@@ -1,0 +1,68 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.SliceSpec:
+
+==================
+einsums::SliceSpec
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Python/Protocol.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: SliceSpec
+
+   One slot in a Python-style index expression.
+
+   Only the members for the active ``kind`` are meaningful. From Python syntax:
+
+   - ``t[i]`` becomes ``{Index, index = i}``
+   - ``t[i:j:k]`` becomes ``{Range, start = i, stop = j, step = k}``
+   - ``t[:]`` or ``t[...]`` becomes ``{Full}``
+
+   Negative indices are normalized against the dimension before the helper sees them.
+
+
+   .. cpp:member:: Kind kind
+
+      Active-member discriminant. Defaults to ``Full``.
+
+
+   .. cpp:member:: std::int64_t index
+
+      Single index. Valid only when ``kind == Index``. Normalized to ``[0, dim)``.
+
+
+   .. cpp:member:: std::int64_t start
+
+      Range start, inclusive. Valid only when ``kind == Range``. Normalized to ``[0, dim]``.
+
+
+   .. cpp:member:: std::int64_t stop
+
+      Range stop, exclusive. Valid only when ``kind == Range``. Normalized to ``[0, dim]``.
+
+
+   .. cpp:member:: std::int64_t step
+
+      Range step. Valid only when ``kind == Range``. Defaults to 1 and is never zero.
+
+
+   .. cpp:enum-class:: Kind
+
+      Which of the members below are valid.
+
+
+      .. cpp:enumerator:: Index
+
+      .. cpp:enumerator:: Range
+
+      .. cpp:enumerator:: Full

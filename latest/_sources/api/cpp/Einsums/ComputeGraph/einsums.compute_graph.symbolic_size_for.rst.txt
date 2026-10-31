@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.symbolic_size_for:
+
+=========================================
+einsums::compute_graph::symbolic_size_for
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: SymbolicPoly symbolic_size_for(const std::vector<std::string> &indices, const LetterVars &vars)
+
+   The symbolic element count of a tensor with the given index list.
+
+   A repeated letter counts ONCE, so an operand indexed i,i contributes i rather than i^2. The quantity
+   measured is therefore the number of distinct elements the operation touches, which is what matches
+   the loop structure of a diagonal access, not the allocated footprint of the tensor holding them.
+   For an intermediate, whose letters are distinct by construction, the two agree.
+
+   :param indices: The index letters, in tensor order, possibly with repeats.
+   :param vars: The letter lookup.
+   :returns: The product of the DISTINCT letters' variables, with coefficient one. An empty index list yields the constant one, which is right for a scalar.

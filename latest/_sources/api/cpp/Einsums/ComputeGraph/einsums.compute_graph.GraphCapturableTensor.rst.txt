@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.GraphCapturableTensor:
+
+=============================================
+einsums::compute_graph::GraphCapturableTensor
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:concept:: template <typename D> GraphCapturableTensor
+
+   A tensor the graph can capture into a handle.
+
+   Either a dense, in-core basic tensor (GeneralTensor, TensorView,
+   RuntimeTensor, ...) or a tile-wise sparse in-core tensor
+   (TiledRuntimeTensor). The latter does not satisfy BasicTensorConcept (a
+   tiled tensor isn't a single-buffer tensor), but it still exposes the metadata
+   surface make_handle needs, name/rank/dim/stride/data (with data() null for
+   the multi-tile case), so we admit it explicitly here.

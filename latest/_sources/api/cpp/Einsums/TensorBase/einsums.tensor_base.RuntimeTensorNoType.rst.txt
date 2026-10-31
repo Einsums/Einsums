@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_base.RuntimeTensorNoType:
+
+=========================================
+einsums::tensor_base::RuntimeTensorNoType
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorBase/TensorBase.hpp``.
+
+.. cpp:namespace:: einsums::tensor_base
+
+.. cpp:class:: RuntimeTensorNoType
+
+   Tag base of every runtime-rank tensor and view, whatever its element type.
+   Test for one with ``std::is_base_of_v<tensor_base::RuntimeTensorNoType, T>``.

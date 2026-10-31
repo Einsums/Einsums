@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.RankBlockTensor:
+
+========================
+einsums::RankBlockTensor
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/TensorConcepts.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename D, size_t Rank, typename T> RankBlockTensor
+
+   Requires that a tensor is a block tensor, stores the required type, and has the required rank.
+
+   .. versionadded:: 1.0.0
+
+   :tparam D: The tensor to check.
+   :tparam Rank: The rank of the tensor.
+   :tparam T: The type that should be stored.

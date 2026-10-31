@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.device_memset:
+
+===========================
+einsums::gpu::device_memset
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/Runtime.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:function:: void device_memset(void *ptr, int value, size_t bytes)
+
+   Set device memory.

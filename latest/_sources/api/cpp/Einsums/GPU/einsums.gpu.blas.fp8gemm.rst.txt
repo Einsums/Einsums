@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.fp8gemm:
+
+===========================
+einsums::gpu::blas::fp8gemm
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: void fp8gemm(char transa, char transb, int64_t m, int64_t n, int64_t k, float alpha, const fp8_t *a, int64_t lda, const fp8_t *b, int64_t ldb, float beta, float *c, int64_t ldc)
+
+   FP8 GEMM: C(fp32) = alpha * A(fp8) * B(fp8) + beta * C(fp32)

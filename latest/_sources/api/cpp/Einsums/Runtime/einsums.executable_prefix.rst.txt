@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.executable_prefix:
+
+==========================
+einsums::executable_prefix
+==========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Runtime/RuntimeConfiguration.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: std::string executable_prefix()
+
+   Returns the id of the calling process. The directory Einsums was installed into, derived from the running executable's path.
+
+   ``getpid`` on POSIX, ``_getpid`` on Windows.
+
+   .. versionadded:: 2.0.0
+
+   .. versionadded:: 2.0.0
+
+   :returns: The process id.

@@ -1,0 +1,48 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.TeamPanel:
+
+===============================
+einsums::packed_gemm::TeamPanel
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: template <typename T> TeamPanel
+
+   One team member's view of the B panel its team shares (see blis_contraction).
+
+
+   .. cpp:member:: T *bp
+
+      the team's packed B panel; null for a team of one, which packs its own
+
+
+   .. cpp:member:: TeamState *state
+
+      the team's barrier and block counter; null for a team of one
+
+
+   .. cpp:member:: int member
+
+      this thread's index within the team
+
+
+   .. cpp:member:: int size
+
+      threads in the team
+
+
+   .. cpp:member:: int64_t *base
+
+      where this member's view of the current K block's blocks begins

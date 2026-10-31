@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.not_in:
+
+===============
+einsums::not_in
+===============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/InCollection.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, detail::IsTupleOrArray Haystack> constexpr bool not_in(T &&needle, const Haystack &haystack)
+
+   Check to see if an element is not contained in a container or tuple.
+
+   .. versionadded:: 1.1.0
+
+
+.. cpp:function:: template <typename T, Container Haystack> requires (!detail::IsTupleOrArray<Haystack>) constexpr bool not_in(T &&needle, const Haystack &haystack)
+
+   Check to see if an element is not contained in a container.
+
+   .. versionadded:: 1.1.0
+
+
+.. cpp:function:: template <typename T> constexpr bool not_in(T &&needle, std::initializer_list<std::decay_t<T>> haystack)
+
+   Check to see if an element is not contained in an initializer list.
+
+   .. versionadded:: 1.1.0

@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_transform_named_python:
+
+======================================================
+einsums::compute_graph::element_transform_named_python
+======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept TensorType> void element_transform_named_python(TensorType *C, const std::string &op_name)
+
+   Python-friendly NAMED element_transform: the registry's kernel, chosen by name.
+
+   The same operation the ``string_view`` overload above records, reachable from
+   Python. Worth having as more than a convenience: a node built from a
+   registered name says WHAT it computes, where a node holding a Python callable
+   says only that something is applied to every element. A pass that has to
+   recognize a reciprocal can read the first and not the second, and
+   `LaplaceTransform` is one, so a caller who wants their denominator
+   recognized needs this spelling rather than a lambda.
+
+   Parameterized ops are not reachable here yet; nothing in the Python surface
+   needs one, and adding the policy number is a second overload rather than a
+   default argument.
+
+   :param C: The tensor to transform in place.
+   :param op_name: Name of the kernel in the process's element-op registry.

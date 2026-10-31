@@ -1,0 +1,73 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.Registry:
+
+=====================
+einsums::cl::Registry
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: Registry
+
+   Process-wide list of every declared option.
+
+   Options add themselves on construction and remove themselves on destruction.
+
+   .. warning::
+
+      Neither the registry nor the option state it points at is
+      synchronized. Declare options and call ``parse`` from one thread.
+
+
+   .. cpp:function:: static Registry & instance()
+
+   .. cpp:function:: void add_option(OptionBase *o)
+
+   .. cpp:function:: void add_category(OptionCategory *c)
+
+   .. cpp:function:: void add_exclusion(ExclusiveCategory *c)
+
+   .. cpp:function:: void ensure_option(OptionBase *o)
+
+      Register only if absent. The built-ins are a singleton, so they are
+      constructed once but may need re-adding after clear_for_tests().
+
+
+   .. cpp:function:: void ensure_category(OptionCategory *c)
+
+   .. cpp:function:: void remove_option(OptionBase *o)
+
+   .. cpp:function:: void remove_category(OptionCategory *c)
+
+   .. cpp:function:: void remove_exclusion(ExclusiveCategory *c)
+
+   .. cpp:function:: void set_env_prefix(std::string prefix)
+
+      Turn on automatic environment variable names for every option.
+
+      Options without their own variable derive one (see ``derive_env_name``): with prefix
+      `EINSUMS`, `einsums:log:level` reads `EINSUMS_LOG_LEVEL`. An empty prefix disables this.
+
+      :param prefix: The variable-name prefix, without a trailing underscore.
+
+
+   .. cpp:function:: const std::string & get_env_prefix() const noexcept
+
+   .. cpp:function:: void clear_for_tests()
+
+   .. cpp:member:: std::vector<OptionBase *> options
+
+   .. cpp:member:: std::vector<OptionCategory *> categories
+
+   .. cpp:member:: std::vector<ExclusiveCategory *> exclusions

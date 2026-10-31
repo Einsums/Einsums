@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.micro_kernel_entry:
+
+========================================
+einsums::packed_gemm::micro_kernel_entry
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/MicroKernel.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> MicroKernelFn<T> micro_kernel_entry()
+
+   Resolve the micro-kernel for element type T.
+
+   For float, double, and their complex forms the specializations (defined in
+   src/MicroKernelDispatch.cpp) return the entry of the highest SIMD-dispatch
+   rung the CPU supports; the result is cached, so callers should still hoist
+   the call out of tile loops. Any other element type gets the ambient-flags
+   header instantiation.

@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.reshape:
+
+===============================
+einsums::compute_graph::reshape
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <CoreBasicTensorConcept ResultType, CoreBasicTensorConcept AType> requires std::is_same_v<typename ResultType::ValueType, typename AType::ValueType> void reshape(ResultType *out, const AType &A, bool row_major)
+
+   Graph-aware reshape: copy ``A`` into ``out``, which has the same number of
+   elements in a different shape.
+
+   ``row_major`` picks which linear order the elements are walked in, and it is
+   NOT a formality. Einsums tensors are column major, so the natural order here
+   is column major (``row_major = false``); numpy's ``reshape`` defaults to row
+   major, and code ported from it means the other one. Getting it wrong
+   silently transposes blocks rather than failing, so the argument is required
+   and has no default.
+
+   This copies. It is not a view: a reshape that could alias would have to
+   reason about strides, and the callers here are assembling operands for BLAS
+   which wants a fresh contiguous buffer anyway.

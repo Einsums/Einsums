@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Expose a Type to Python &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'howto/expose_to_python';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/howto/expose_to_python.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Write an Optimization Pass" href="write_a_pass.html" />
+    <link rel="prev" title="Add a Module" href="add_a_module.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Using Einsums</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contractions.html">Contractions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Views and Slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphs.html">Compute Graphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Building a method</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ccsd.html">Build a Spin-Orbital CCSD</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Porting existing code</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="from_numpy.html">Porting from NumPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="from_psi4.html">Working with psi4</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Extending Einsums</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="add_an_option.html">Add a Runtime Option</a></li>
+<li class="toctree-l1"><a class="reference internal" href="add_a_module.html">Add a Module</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Expose a Type to Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="write_a_pass.html">Write an Optimization Pass</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">How-To Guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Expose a Type to Python</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="expose-a-type-to-python">
+<span id="howto-expose-to-python"></span><h1>Expose a Type to Python<a class="headerlink" href="#expose-a-type-to-python" title="Link to this heading">#</a></h1>
+<p>Einsums’ Python bindings are generated from the C++ headers by apiary, a standalone libclang tool.
+You annotate a declaration and the binding, the <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> stub, and the documentation entry follow from it.
+There is no hand-written glue to keep in step, which is the whole point of the arrangement.</p>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#build-with-bindings-on" id="id1">Build with bindings on</a></p></li>
+<li><p><a class="reference internal" href="#expose-a-function-or-a-class" id="id2">Expose a function or a class</a></p></li>
+<li><p><a class="reference internal" href="#the-annotations-you-will-reach-for" id="id3">The annotations you will reach for</a></p></li>
+<li><p><a class="reference internal" href="#expose-a-template-over-concrete-types" id="id4">Expose a template over concrete types</a></p></li>
+<li><p><a class="reference internal" href="#the-traps" id="id5">The traps</a></p></li>
+<li><p><a class="reference internal" href="#check-your-work" id="id6">Check your work</a></p></li>
+<li><p><a class="reference internal" href="#next" id="id7">Next</a></p></li>
+</ul>
+</nav>
+<section id="build-with-bindings-on">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Build with bindings on</a><a class="headerlink" href="#build-with-bindings-on" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-GNinja<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>RelWithDebInfo<span class="w"> </span>-DEINSUMS_BUILD_PYTHON<span class="o">=</span>ON
+</pre></div>
+</div>
+<p>That one switch brings in the apiary codegen tool, the bindings, and the Python tests.
+The module you are annotating also needs <code class="docutils literal notranslate"><span class="pre">PYBIND</span></code> on its <code class="docutils literal notranslate"><span class="pre">einsums_add_module</span></code> call, which the skeleton generator adds when you pass <code class="docutils literal notranslate"><span class="pre">--python</span></code>.</p>
+</section>
+<section id="expose-a-function-or-a-class">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Expose a function or a class</a><a class="headerlink" href="#expose-a-function-or-a-class" title="Link to this heading">#</a></h2>
+<p>The annotations are attributes on the declaration.
+<code class="docutils literal notranslate"><span class="pre">APIARY_EXPOSE</span></code> is the one that makes something appear at all, and <code class="docutils literal notranslate"><span class="pre">APIARY_MODULE</span></code> says which Python submodule it lands in:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Python/Annotations.hpp&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">APIARY_EXPOSE</span><span class="w"> </span><span class="n">APIARY_MODULE</span><span class="p">(</span><span class="s">"graph"</span><span class="p">)</span><span class="w"> </span><span class="n">APIARY_NOCOPY</span><span class="w"> </span><span class="n">APIARY_NOMOVE</span>
+<span class="w">    </span><span class="n">EINSUMS_EXPORT</span><span class="w"> </span><span class="n">Graph</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">APIARY_EXPOSE</span><span class="w"> </span><span class="n">APIARY_RELEASE_GIL</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">execute</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">APIARY_EXPOSE</span><span class="w"> </span><span class="n">APIARY_GETTER</span><span class="p">(</span><span class="s">"explain"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">[[</span><span class="na">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">&amp;</span><span class="n">explain</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">_last_optimize_report</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>On a non-Clang compiler the macros expand to nothing, so annotations never affect the build itself.</p>
+</section>
+<section id="the-annotations-you-will-reach-for">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">The annotations you will reach for</a><a class="headerlink" href="#the-annotations-you-will-reach-for" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 66.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Annotation</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_EXPOSE</span></code></p></td>
+<td><p>Bind this declaration. Nothing is bound without it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_MODULE(&quot;name&quot;)</span></code></p></td>
+<td><p>Place it in that Python submodule.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_RENAME(&quot;name&quot;)</span></code></p></td>
+<td><p>Use a different Python name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_GETTER(&quot;name&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_SETTER(&quot;name&quot;)</span></code></p></td>
+<td><p>Bind as a property rather than a method.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_RELEASE_GIL</span></code></p></td>
+<td><p>Drop the GIL for the call. Use for anything that computes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_HOLDER(std::shared_ptr)</span></code></p></td>
+<td><p>Set the pybind11 holder type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_NOCOPY</span></code> / <code class="docutils literal notranslate"><span class="pre">APIARY_NOMOVE</span></code></p></td>
+<td><p>Do not bind copy or move.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_RVP(policy)</span></code></p></td>
+<td><p>Set the return value policy, for example <code class="docutils literal notranslate"><span class="pre">reference_internal</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_KEEP_ALIVE(nurse,</span> <span class="pre">patient)</span></code></p></td>
+<td><p>Tie one object’s lifetime to another’s.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_BUFFER_PROTOCOL</span></code></p></td>
+<td><p>Expose the buffer protocol, which is what makes <code class="docutils literal notranslate"><span class="pre">np.asarray</span></code> work.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_EXCEPTION</span></code></p></td>
+<td><p>Translate this type as a Python exception.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIARY_HIDE</span></code></p></td>
+<td><p>Exclude something that would otherwise be picked up.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A getter bound with <code class="docutils literal notranslate"><span class="pre">APIARY_GETTER</span></code> becomes a property, so it is read without parentheses in Python.
+This catches people out: <code class="docutils literal notranslate"><span class="pre">Graph.explain</span></code> is a property while <code class="docutils literal notranslate"><span class="pre">PassManager.explain</span></code> is a method, because they are annotated differently.</p>
+</section>
+<section id="expose-a-template-over-concrete-types">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Expose a template over concrete types</a><a class="headerlink" href="#expose-a-template-over-concrete-types" title="Link to this heading">#</a></h2>
+<p>Templates cannot be bound directly, so you list the instantiations you want.
+<code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_AS</span></code> gives them all one Python name, and the generator folds them into a single dtype-dispatched entry point:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">APIARY_EXPOSE</span>
+<span class="n">APIARY_INSTANTIATE_AS</span><span class="p">(</span><span class="s">"scale"</span><span class="p">,</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">GeneralRuntimeTensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">,</span><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">allocator</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&gt;</span><span class="p">)</span>
+<span class="n">APIARY_INSTANTIATE_AS</span><span class="p">(</span><span class="s">"scale"</span><span class="p">,</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">GeneralRuntimeTensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">allocator</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">)</span>
+<span class="n">APIARY_INSTANTIATE_AS</span><span class="p">(</span><span class="s">"scale"</span><span class="p">,</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensorView</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">APIARY_INSTANTIATE_AS</span><span class="p">(</span><span class="s">"scale"</span><span class="p">,</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">RuntimeTensorView</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">AType</span><span class="o">&gt;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">scale</span><span class="p">(</span><span class="k">typename</span><span class="w"> </span><span class="nc">AType</span><span class="o">::</span><span class="n">ValueType</span><span class="w"> </span><span class="n">factor</span><span class="p">,</span><span class="w"> </span><span class="n">AType</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>To support a new operand type, add instantiation lines.
+That is the whole change: the codegen folds them into the existing Python entry and regenerates the stubs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/ComputeGraph/include/Einsums/ComputeGraph/Operations.hpp</span></code> is the reference for this pattern and worth reading before adding your own.</p>
+<p>The related forms are <code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_MEMBER_AS</span></code> for member functions, <code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_TEMPLATE</span></code> for generating one Python name per instantiation, and <code class="docutils literal notranslate"><span class="pre">APIARY_INSTANTIATE_BOOLS</span></code> for expanding boolean template parameters.</p>
+</section>
+<section id="the-traps">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">The traps</a><a class="headerlink" href="#the-traps" title="Link to this heading">#</a></h2>
+<p><strong>Missing ``EINSUMS_EXPORT`` breaks ``_core.so`` and nothing else.</strong>
+A symbol without it can link fine in every C++ test and still make importing <code class="docutils literal notranslate"><span class="pre">einsums</span></code> fail at dlopen.
+If the C++ side builds and tests pass but the Python module will not import, this is the first thing to check.</p>
+<p><strong>A brace default emits uncompilable code.</strong>
+A parameter defaulted with <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">{}</span></code> produces a <code class="docutils literal notranslate"><span class="pre">py::arg</span></code> the compiler rejects.
+Give it an explicit default instead.</p>
+<p><strong>Flush standard output.</strong>
+A binding that prints must call <code class="docutils literal notranslate"><span class="pre">std::cout.flush()</span></code>, or pytest’s <code class="docutils literal notranslate"><span class="pre">capfd</span></code> sees nothing.</p>
+<p><strong>Avoid Python keywords in parameter names.</strong>
+The stub generator copies parameter names verbatim, so a parameter named <code class="docutils literal notranslate"><span class="pre">pass</span></code> produces a <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> that pyright cannot parse.
+<code class="docutils literal notranslate"><span class="pre">PassManager::add</span></code> names its parameter <code class="docutils literal notranslate"><span class="pre">optimizer_pass</span></code> for exactly this reason.</p>
+<p><strong>An exposed aggregate gets no constructor.</strong>
+If you expose a plain struct and want to build one from Python, declare a constructor and annotate it.
+This is why several classes in the tree carry an explicitly defaulted constructor with <code class="docutils literal notranslate"><span class="pre">APIARY_EXPOSE</span></code> on it.</p>
+</section>
+<section id="check-your-work">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Check your work</a><a class="headerlink" href="#check-your-work" title="Link to this heading">#</a></h2>
+<p>Build, then import and look:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>build/lib<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import einsums; print(einsums.MyThing)"</span>
+</pre></div>
+</div>
+<p>Add a Python test next to the module, as <code class="docutils literal notranslate"><span class="pre">libs/Einsums/&lt;Module&gt;/tests/unit/test_*_python.py</span></code>, and register it with <code class="docutils literal notranslate"><span class="pre">einsums_add_python_unit_test</span></code>.
+Parametrize over <code class="docutils literal notranslate"><span class="pre">einsums.testing</span></code>’s <code class="docutils literal notranslate"><span class="pre">ALL_DTYPES</span></code> rather than testing one dtype.</p>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> stubs are worth reading once after a change.
+They are what editors and type checkers see, and a binding that looks right from Python can still produce a stub that does not type check.</p>
+</section>
+<section id="next">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Next</a><a class="headerlink" href="#next" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="add_a_module.html#howto-add-a-module"><span class="std std-ref">Add a Module</span></a> for creating a module with <code class="docutils literal notranslate"><span class="pre">--python</span></code> from the start.</p></li>
+<li><p><a class="reference internal" href="../user/python.html"><span class="doc">Einsums in Python</span></a> for the Python surface as a user sees it.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="add_a_module.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Add a Module</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="write_a_pass.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Write an Optimization Pass</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-with-bindings-on">Build with bindings on</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expose-a-function-or-a-class">Expose a function or a class</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-annotations-you-will-reach-for">The annotations you will reach for</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#expose-a-template-over-concrete-types">Expose a template over concrete types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-traps">The traps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-your-work">Check your work</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next">Next</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

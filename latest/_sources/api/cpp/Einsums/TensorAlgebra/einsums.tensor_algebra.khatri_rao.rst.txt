@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.khatri_rao:
+
+===================================
+einsums::tensor_algebra::khatri_rao
+===================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/TensorAlgebra.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:function:: template <bool ConjA = false, bool ConjB = false, TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices> requires (InSamePlace<AType, BType> && AType::Rank == sizeof...(AIndices) && BType::Rank == sizeof...(BIndices)) BasicTensorLike<AType, typename AType::ValueType, 2> khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tuple<BIndices...> &, const BType &B)
+
+   Computes the Khatri-Rao product of tensors A and B.
+
+   Example:
+   Tensor<2> result = khatri_rao(Indices{I, r}, A, Indices{J, r}, B);
+
+   Result is described as {(I,J), r}. If multiple common indices are provided they will be collapsed into a single index in the result.

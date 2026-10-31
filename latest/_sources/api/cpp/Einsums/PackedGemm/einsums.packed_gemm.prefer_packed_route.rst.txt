@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.prefer_packed_route:
+
+=========================================
+einsums::packed_gemm::prefer_packed_route
+=========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: bool prefer_packed_route(const ContractionSite *site)
+
+   Whether this contraction is to be packed rather than handed to one vendor GEMM.
+
+   A pinned site answers from its pin. Otherwise the thread regime decides: under a node-scoped
+   width the vendor calls are clamped to one thread (``einsums::blas::vendor_call_is_fenced``),
+   while the packed loops fork from the widened ICV and get all of it.

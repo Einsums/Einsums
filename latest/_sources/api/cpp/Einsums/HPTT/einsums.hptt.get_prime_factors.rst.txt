@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.get_prime_factors:
+
+================================
+einsums::hptt::get_prime_factors
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Utils.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:function:: template <typename T> void get_prime_factors(T n, std::list<T> &primeFactors)
+
+   Gets the prime factors of a number. If zero or one is passed, the prime
+   factors output will be empty.
+
+   :param n: The number to factor.
+   :param primeFactors: The list of factors.

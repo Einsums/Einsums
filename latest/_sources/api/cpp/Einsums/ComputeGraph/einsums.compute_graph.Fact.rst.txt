@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Fact:
+
+============================
+einsums::compute_graph::Fact
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Decision.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Fact
+
+   A named quantity a decision carries: a block size, a byte count, a run count.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: std::string name
+
+      What it is, as in ``"block"``.
+
+
+   .. cpp:member:: double value
+
+   .. cpp:member:: std::string unit
+
+      ``"B"`` for bytes, empty for a count.

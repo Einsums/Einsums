@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.comm.allreduce:
+
+========================
+einsums::comm::allreduce
+========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Comm/Collectives.hpp``.
+
+.. cpp:namespace:: einsums::comm
+
+.. cpp:function:: template <Communicable T> expected<void, CommError> allreduce(std::span<const T> send, std::span<T> recv, ReduceOp op, const Communicator &comm)
+
+   All-reduce: combine values from all ranks using ``op``.
+
+   Every rank contributes ``send`` and receives the reduced result in ``recv``.
+
+   :param send: Source buffer (one element per count entry).
+   :param recv: Destination buffer (same size as send). May alias send for in-place.
+   :param op: Reduction operation.
+   :param comm: Communicator.

@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.TiledPermuteDescriptor:
+
+==============================================
+einsums::compute_graph::TiledPermuteDescriptor
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: TiledPermuteDescriptor
+
+   Metadata for a TILED permute node (``OpKind::Custom``).
+
+   A tiled ``C = beta*C + alpha*P(A)`` records as Custom and executes through
+   ``detail::tiled_permute``; this descriptor is what lets TiledExpansion lower
+   it into per-tile dense Permute nodes instead of treating the node as an
+   opaque closure (which strands every tensor it touches out of expansion).
+
+   A distinct type from ``PermuteDescriptor`` for the same reason the tiled
+   einsum has its own: passes probe ``get_if<PermuteDescriptor>`` without
+   checking the node kind and then reason about a single dense buffer, which a
+   tiled operand does not have. The scalars are snapshots matching the baked
+   executor, exactly as the dense permute capture stores them.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: std::vector<std::string> c_indices
+
+      Output index names
+
+
+   .. cpp:member:: std::vector<std::string> a_indices
+
+      Input index names
+
+
+   .. cpp:member:: PrefactorScalar alpha
+
+      Source prefactor
+
+
+   .. cpp:member:: PrefactorScalar beta
+
+      Destination prefactor (0 = overwrite)

@@ -1,0 +1,47 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.BatchDimSpec:
+
+==================================
+einsums::packed_gemm::BatchDimSpec
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: BatchDimSpec
+
+   Describes a batch dimension with positions and strides in all three tensors.
+
+
+   .. cpp:member:: int64_t size
+
+   .. cpp:member:: size_t a_pos
+
+      Position of this dim in A's raw index list
+
+
+   .. cpp:member:: size_t b_pos
+
+      Position of this dim in B's raw index list
+
+
+   .. cpp:member:: size_t c_pos
+
+      Position of this dim in C's raw index list
+
+
+   .. cpp:member:: int64_t a_stride
+
+   .. cpp:member:: int64_t b_stride
+
+   .. cpp:member:: int64_t c_stride

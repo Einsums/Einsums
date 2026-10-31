@@ -1,0 +1,66 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Errors_api:
+
+==============
+Errors C++ API
+==============
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_Errors>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::AccessDenied` - Indicates that an operation was stopped due to access restrictions, mostly in the HDF5 code: writing read-only data, or accessing a file without permission.
+- :cpp:any:`~einsums::BadLogic` - Means the same as std::logic_error, but can be caught without catching everything derived from it.
+- :cpp:any:`~einsums::CodedError` - Distinguishes several throws of the same error type from one function: catch the base class to handle them together, or a specific CodedError to handle one. The TiledTensor gemm, for instance, throws TensorCompatError for both an incompatible output grid and an incompatible inner grid. Both at once:
+- :cpp:any:`~einsums::ComplexConversionError` - Thrown when converting a complex number to a real one. Take the magnitude or real part instead, as suits the operation.
+- :cpp:any:`~einsums::DimensionError` - Indicates that the dimensions of some tensor arguments are not compatible with the given operation. For instance, you can only take the determinant of a square matrix, so passing a matrix that is not square to linear_algebra::det will result in this error.
+- :cpp:any:`~einsums::EnumError` - Indicates that an invalid enum value was passed to a function.
+- :cpp:any:`~einsums::NotEnoughArgs` - Indicates that a function did not receive enough arguments. Child of NumArgumentError .
+- :cpp:any:`~einsums::NotImplemented` - Indicates that a certain code path is not implemented.
+- :cpp:any:`~einsums::NumArgumentError` - Indicates that a function received the wrong number of arguments, or an array of them of the wrong size, as in RuntimeTensor subscripts. See NotEnoughArgs and TooManyArgs.
+- :cpp:any:`~einsums::RankError` - Indicates that the rank of some tensor arguments are not compatible with the given operation.
+- :cpp:any:`~einsums::SystemError` - Indicates that an error happened when making a system call, or that some system utility failed. For instance, it can be thrown when trying to find a file that doesn't exist.
+- :cpp:any:`~einsums::TensorCompatError` - Indicates that two or more tensors are not compatible with each other for the requested operation, such as a gemm whose inner dimensions differ.
+- :cpp:any:`~einsums::TodoError` - Indicates that a certain code path is not yet finished.
+- :cpp:any:`~einsums::TooManyArgs` - Indicates that a function received too many arguments. Child of NumArgumentError .
+- :cpp:any:`~einsums::UninitializedError` - Indicates that the code is handling data that is uninitialized. This is usually thrown when Einsums was not initialized.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_THROW_CODED_EXCEPTION` - Throws an exception with a code to distinguish between exceptions of the same type within the same function. It can also have a custom error message, and it will report the location in the code.
+- :c:macro:`EINSUMS_THROW_EXCEPTION` - Throws an exception with a formatted error message. It will also report its location.
+- :c:macro:`EINSUMS_THROW_NESTED` - This will throw a nested exception.
+- :c:macro:`EINSUMS_THROW_NOT_IMPLEMENTED` - This will throw a NotImplemented exception.
+- :c:macro:`EINSUMS_THROW_STD_EXCEPTION` - Throws an exception without a message string. Only reports its location.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.AccessDenied
+   einsums.BadLogic
+   einsums.CodedError
+   einsums.ComplexConversionError
+   einsums.DimensionError
+   einsums.EnumError
+   einsums.NotEnoughArgs
+   einsums.NotImplemented
+   einsums.NumArgumentError
+   einsums.RankError
+   einsums.SystemError
+   einsums.TensorCompatError
+   einsums.TodoError
+   einsums.TooManyArgs
+   einsums.UninitializedError
+   macros

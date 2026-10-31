@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.cl.Builtins:
+
+=====================
+einsums::cl::Builtins
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Options/Declare.hpp``.
+
+.. cpp:namespace:: einsums::cl
+
+.. cpp:class:: Builtins
+
+   The always-available `--help` and `--version` options.
+
+   A singleton, as it must outlive every ``parse``.
+
+
+   .. cpp:function:: Builtins()
+
+   .. cpp:member:: OptionCategory cat
+
+   .. cpp:member:: Flag help
+
+   .. cpp:member:: Flag version

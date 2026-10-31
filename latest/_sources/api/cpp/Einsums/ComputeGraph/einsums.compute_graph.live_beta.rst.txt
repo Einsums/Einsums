@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.live_beta:
+
+=================================
+einsums::compute_graph::live_beta
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: const PrefactorScalar & live_beta(const AxpbyDescriptor &desc) noexcept
+
+   The destination prefactor an axpby will actually apply.
+
+   :param desc: The descriptor to read.
+   :returns: The live value, or the snapshot when the node carries no params block.
+
+
+.. cpp:function:: const PrefactorScalar & live_beta(const ElementwiseBinaryDescriptor &desc) noexcept
+
+   The destination prefactor a direct product / division will actually apply.
+
+   :param desc: The descriptor to read.
+   :returns: The live value, or the snapshot when the node carries no params block.

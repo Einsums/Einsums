@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ThreadSweepOptions:
+
+==========================================
+einsums::compute_graph::ThreadSweepOptions
+==========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ThreadSweepOptions
+
+   Knobs for ``measure_thread_efficiency``. The defaults are what
+   `einsums-tune` runs; the caps are what keep it to tens of seconds.
+
+
+   .. cpp:member:: size_t warmup
+
+      Untimed runs before each timed set
+
+
+   .. cpp:member:: size_t repeats
+
+      Timed runs per point; the median is kept
+
+
+   .. cpp:member:: unsigned int max_threads
+
+      Widest rung; 0 asks the hardware
+
+
+   .. cpp:member:: size_t max_bytes
+
+      Cap on any cell's working set
+
+
+   .. cpp:member:: size_t max_gemm_extent
+
+      Cap on a square GEMM's extent
+
+
+   .. cpp:member:: size_t batch_entries
+
+      Entries in the batched-GEMM cell

@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.permute_view_python:
+
+===========================================
+einsums::compute_graph::permute_view_python
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/View.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <RuntimeRankTensorConcept ParentT> RuntimeTensorView<typename std::remove_cvref_t<ParentT>::ValueType> & permute_view_python(ParentT &parent, const std::vector<size_t> &perm)
+
+   Python-friendly transpose / axis-permutation view.
+
+   Records a graph View whose result axis ``i`` aliases parent axis
+   ``perm[i]`` (``perm`` must be a permutation of ``[0, rank)``). The returned
+   view is graph-owned and aliases the parent. Unlike the raw
+   ``RuntimeTensor.transpose_view()``, which shares the parent's data pointer
+   and is invisible to the graph, a transposed tensor here can be fed to captured
+   gemm/axpy/etc. ops. This is what backs the capture-aware ``A.T``.
+
+   .. code-block:: text
+
+      with cg.capture(g):
+            At = einsums.graph.permute_view(A, [1, 0])   # A.T, graph-registered
+            einsums.linalg.gemm(1.0, At, B, 0.0, C)

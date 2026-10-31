@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Hardware_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:type:: ProfileOptionCheck = std::string (*)(std::string_view)
+
+   Decide whether a profile may set an option.
+
+   Returns an empty string when it may, and otherwise why not. The option parser registers one at
+   start-up, since the registry of options lives above this module; until it does, a profile may
+   set no option.
+
+   .. versionadded:: 2.0.0

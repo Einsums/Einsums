@@ -1,0 +1,34 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.heev:
+
+============================
+einsums::compute_graph::heev
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Operations.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, MatrixOperand AType, VectorOperand WType> requires (InSamePlace<AType, WType> && Complex<AType> && NotComplex<WType> && std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>) void heev(AType *A, WType *W)
+
+   Hermitian eigendecomposition (in-place): ``A = V * diag(W) * V^H``.
+
+   Complex analogue of ``syev``. On return ``A`` holds eigenvectors as
+   columns (when ``compute_eigenvectors=True``); ``W`` holds the
+   eigenvalues in ascending order. ``W`` is real even though ``A`` is
+   complex.
+
+
+.. cpp:function:: template <bool ComputeEigenvectors = true, TiledTensorConcept AType, TiledTensorConcept WType> requires (IsComplexV<typename AType::ValueType> && std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>) void heev(AType *A, WType *W)
+
+   Tiled Hermitian eigendecomposition (complex analogue of the tiled syev). W
+   holds the real eigenvalues.

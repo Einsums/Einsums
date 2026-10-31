@@ -1,0 +1,29 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.measure_region_cost_section:
+
+==============================================
+einsums::hardware::measure_region_cost_section
+==============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Profile.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: json::Object measure_region_cost_section()
+
+   Measure the OpenMP region cost at every team size, as the ``omp_region_cost_ns`` section.
+
+   Team sizes 1 to ``omp_get_max_threads()``, a few milliseconds each; the team size is restored.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The section, keyed by team size.

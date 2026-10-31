@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DestinationUse:
+
+======================================
+einsums::compute_graph::DestinationUse
+======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/DescriptorHooks.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DestinationUse
+
+   Whether a node reads the tensor it writes, and how its input list says so.
+
+   The destination rule (DestinationRead.hpp) lists a node's operands first and its destination
+   once, trailing, exactly when the node reads it. A node with one output that gives
+   ``operand_count`` is held to that rule: its input list is brought into line at capture and
+   after every pass, and ``Graph::verify`` reports a node that breaks it.
+
+
+   .. cpp:member:: bool reads
+
+      Reads the prior contents of its destination (accumulates into it, or updates it in place).
+
+
+   .. cpp:member:: bool overwrites_all
+
+      Writes every element of its destination, so any earlier write to it is dead.
+
+
+   .. cpp:member:: std::optional<std::size_t> operand_count
+
+      Operand inputs listed before the destination, for a node with one output. Empty leaves the
+      node outside the rule, listing its inputs as it chooses.

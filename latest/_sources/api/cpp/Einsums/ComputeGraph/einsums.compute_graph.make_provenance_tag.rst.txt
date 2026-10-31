@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_provenance_tag:
+
+===========================================
+einsums::compute_graph::make_provenance_tag
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: ProvenanceTag make_provenance_tag(std::string name, std::vector<std::pair<std::string, std::string>> attributes)
+
+   Build a ``ProvenanceTag``.
+
+   A named constructor rather than a real one, for the same reason ``make_index_space`` is one:
+   ``ProvenanceTag`` stays an aggregate so the library's designated-initializer construction
+   sites keep working, and this is what a caller with no aggregate initialization builds one
+   through.
+
+   Both parameters are required rather than the second defaulted, which is a binding constraint
+   rather than a preference: the codegen renders a ``= {}`` default as a bare brace-init that
+   pybind's ``py::arg`` cannot be assigned from. The Python-side helper in ``einsums.graph``
+   supplies the empty list, so a caller there still writes just the name.
+
+   .. versionadded:: 2.0.0
+
+   :param name: The vocabulary name.
+   :param attributes: Key/value pairs, possibly empty. Sorted by ``Graph::annotate_tag`` on the way in, so the order given here does not matter.
+   :returns: The tag.

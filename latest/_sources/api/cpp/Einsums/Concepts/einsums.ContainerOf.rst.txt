@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.ContainerOf:
+
+====================
+einsums::ContainerOf
+====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Concepts/NamedRequirements.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:concept:: template <typename T, typename Holds> ContainerOf
+
+   Check to see if a type satisfies the Container requirement and stores values of a certain type.
+
+   .. versionadded:: 2.0.0
+
+   :tparam T: The type to check.
+   :tparam Holds: The type of objects the container should hold.

@@ -1,0 +1,44 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hptt.PlanTarget:
+
+=========================
+einsums::hptt::PlanTarget
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/HPTT/Files.hpp``.
+
+.. cpp:namespace:: einsums::hptt
+
+.. cpp:class:: PlanTarget
+
+   The machine geometry a plan was built for; follows the FileHeader from format version 1 on.
+
+   A plan's increments are four vectors of the writer's register width, so a reader refuses a plan
+   whose vector_bits or element_size differ from its own. The rung is for the message only.
+
+
+   .. cpp:member:: uint16_t vector_bits
+
+      Register width, in bits, of the rung that wrote the plan.
+
+
+   .. cpp:member:: uint8_t element_size
+
+      sizeof the element type the plan was built for.
+
+
+   .. cpp:member:: uint8_t rung
+
+      stripes::InstructionSet of the writing rung.
+
+
+   .. cpp:member:: uint32_t pad

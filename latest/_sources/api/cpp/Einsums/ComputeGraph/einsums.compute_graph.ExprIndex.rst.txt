@@ -1,0 +1,39 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ExprIndex:
+
+=================================
+einsums::compute_graph::ExprIndex
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/TensorExpr.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ExprIndex
+
+   One index of a term, with the space it ranges over.
+
+   The space may be invalid, which means the slot this letter met carried no
+   annotation. That is not an error and must not be treated as one: a partially
+   annotated program yields partial spaces rather than no expression, exactly as
+   ``SymbolicVar``'s anonymous flavour yields a weaker comparison rather than no
+   comparison.
+
+
+   .. cpp:member:: std::string letter
+
+      The index letter, used verbatim including a multi-character name.
+
+
+   .. cpp:member:: SpaceId space
+
+      The space this letter ranges over here, or an invalid id.

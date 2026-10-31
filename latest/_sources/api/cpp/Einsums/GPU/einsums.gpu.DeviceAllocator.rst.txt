@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.DeviceAllocator:
+
+=============================
+einsums::gpu::DeviceAllocator
+=============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/DeviceVector.hpp``.
+
+.. cpp:namespace:: einsums::gpu
+
+.. cpp:class:: template <typename T> DeviceAllocator
+
+   As GeneralTensor's Alloc parameter, switches its storage to DeviceVector<T>.

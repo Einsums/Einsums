@@ -1,0 +1,74 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.DeviceProfileDB:
+
+=======================================
+einsums::compute_graph::DeviceProfileDB
+=======================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/CostModel.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: DeviceProfileDB
+
+   Database of device profiles for known CPUs and GPUs.
+
+   At runtime, the database matches the detected CPU brand string and GPU
+   device name against stored profiles to select the best match. This avoids
+   requiring every user to run the calibration tool.
+
+
+   .. cpp:function:: static expected<DeviceProfileDB, GraphError> load_json(const std::string &path)
+
+      Load the shipped database from a JSON file.
+
+
+   .. cpp:function:: static DeviceProfileDB load_defaults()
+
+      Create a database with built-in default entries.
+
+
+   .. cpp:function:: const DeviceProfile & match_cpu() const
+
+      Match the detected CPU brand against database entries.
+
+
+   .. cpp:function:: const DeviceProfile & match_gpu() const
+
+      Match the detected GPU name against database entries.
+
+
+   .. cpp:function:: CostModel build_cost_model() const
+
+      Build a CostModel from the best-matching CPU and GPU entries.
+
+
+   .. cpp:function:: void upsert(DeviceProfile profile)
+
+      Add or replace a profile entry (matched by brand_family).
+
+
+   .. cpp:function:: expected<void, GraphError> save_json(const std::string &path) const
+
+      Save the database to a JSON file.
+
+
+   .. cpp:function:: const std::vector<DeviceProfile> & profiles() const
+
+   .. cpp:function:: static std::string detect_cpu_brand()
+
+      Detect the CPU brand string at runtime: ``hardware::cpu_brand``.
+
+
+   .. cpp:function:: static std::string detect_gpu_name()
+
+      Detect the GPU device name at runtime.

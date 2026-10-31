@@ -1,0 +1,152 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraph_api_operators:
+
+=========
+Operators
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in headers ``Einsums/ComputeGraph/ElementOps.hpp``, ``Einsums/ComputeGraph/NodeFeatures.hpp``, ``Einsums/ComputeGraph/Passes/ScalingAnalysis.hpp``, ``Einsums/ComputeGraph/SymbolicCost.hpp``, ``Einsums/ComputeGraph/TensorHandle.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: SymbolicPoly operator*(SymbolicPoly lhs, const SymbolicPoly &rhs)
+
+   Multiply two polynomials.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: The canonical product.
+
+
+.. cpp:function:: SymbolicPoly operator*(SymbolicPoly lhs, double rhs)
+
+   Scale a polynomial.
+
+   :param lhs: The polynomial.
+   :param rhs: The scalar.
+   :returns: The scaled polynomial.
+
+
+.. cpp:function:: SymbolicPoly operator*(double lhs, SymbolicPoly rhs)
+
+   Scale a polynomial.
+
+   :param lhs: The scalar.
+   :param rhs: The polynomial.
+   :returns: The scaled polynomial.
+
+
+.. cpp:function:: SymbolicPoly operator+(SymbolicPoly lhs, const SymbolicPoly &rhs)
+
+   Add two polynomials.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: The canonical sum.
+
+
+.. cpp:function:: bool operator==(const SymbolicVar &lhs, const SymbolicVar &rhs) = default
+
+   Compare two variables for identity.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when both flavour and payload match.
+
+
+.. cpp:function:: bool operator==(const SymbolicFactor &lhs, const SymbolicFactor &rhs) = default
+
+   Compare two factors field by field.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when variable and exponent both match.
+
+
+.. cpp:function:: bool operator==(const SymbolicTerm &lhs, const SymbolicTerm &rhs) = default
+
+   Compare two terms field by field.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when coefficients and factor lists match exactly.
+
+
+.. cpp:function:: bool operator==(const SymbolicPoly &lhs, const SymbolicPoly &rhs) = default
+
+   Structural equality on the canonical form.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when the term sequences match exactly, coefficients included.
+
+
+.. cpp:function:: bool operator==(const SymbolicCost &lhs, const SymbolicCost &rhs) = default
+
+   Structural equality on all three polynomials.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when all three match exactly.
+
+
+.. cpp:function:: bool operator==(const ProvenanceTag &lhs, const ProvenanceTag &rhs) = default
+
+   Structural equality, which the sorted attribute order makes meaningful.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when the names and the attribute lists match exactly.
+
+
+.. cpp:function:: constexpr NodeFeatures operator|(NodeFeature a, NodeFeature b)
+
+   The union of two features.
+
+   :param a: One feature.
+   :param b: Another.
+   :returns: The set holding both.
+
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:function:: bool operator==(const ElementOpSignature &lhs, const ElementOpSignature &rhs) noexcept
+
+   Compare two signatures for the identity check.
+
+   The default parameter IS compared, because it is what an old file's
+   absent value resolves to: two registrations differing only there compute
+   different things for the same node.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when arity, domain and the parameter contract match. The description is prose and deliberately not compared.
+
+
+.. cpp:namespace:: einsums::compute_graph::passes
+
+.. cpp:function:: bool operator==(const NodeCost &lhs, const NodeCost &rhs) = default
+
+   Compare two node costs field by field.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when graph, id, label and all three polynomials match.
+
+
+.. cpp:function:: bool operator==(const IntermediateSize &lhs, const IntermediateSize &rhs) = default
+
+   Compare two intermediate sizes field by field.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when graph, id, name and polynomial match.

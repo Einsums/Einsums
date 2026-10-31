@@ -1,0 +1,38 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.compare:
+
+===============================
+einsums::compute_graph::compare
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::strong_ordering compare(const SymbolicPoly &lhs, const SymbolicPoly &rhs, const ComparisonContext &ctx)
+
+   Order two cost polynomials, always.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :param ctx: What the comparison may consult.
+   :returns: The ordering. See ``compare_explain`` for the rules.
+
+
+.. cpp:function:: std::strong_ordering compare(const SymbolicCost &lhs, const SymbolicCost &rhs, const ComparisonContext &ctx)
+
+   Order two cost bundles, always.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :param ctx: What the comparison may consult.
+   :returns: The ordering. See the ``SymbolicCost`` overload of ``compare_explain`` for the rules.

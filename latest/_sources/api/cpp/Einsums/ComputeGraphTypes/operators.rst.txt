@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraphTypes_api_operators:
+
+=========
+Operators
+=========
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Spaces.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: constexpr bool operator==(const GrowthClass &lhs, const GrowthClass &rhs) noexcept = default
+
+   Compare two growth classes.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when the exponents are identical.
+
+
+.. cpp:function:: bool operator==(const IndexSpace &lhs, const IndexSpace &rhs) = default
+
+   Compare two index spaces field by field.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when name, scale symbol, dim symbol, typical extent and growth all match.
+
+
+.. cpp:function:: constexpr bool operator==(const SpaceId &lhs, const SpaceId &rhs) noexcept = default
+
+   Compare two ids.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when both name the same space of the same registry.
+
+
+.. cpp:function:: constexpr bool operator==(const SpacePolicy &lhs, const SpacePolicy &rhs) noexcept = default
+
+   Compare two policies.
+
+   :param lhs: Left operand.
+   :param rhs: Right operand.
+   :returns: True when both hints match.

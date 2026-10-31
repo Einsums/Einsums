@@ -1,0 +1,37 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.enumerate:
+
+==================
+einsums::enumerate
+==================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Iterator/Enumerate.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, typename Iter> constexpr auto enumerate(T &&iterable, ptrdiff_t start)
+
+   Mimic Python's enumerate.
+
+   .. versionadded:: 1.0.0
+
+   .. versionchanged:: 2.0.0
+
+      Added the start parameter to match Python.
+
+   :tparam T: The iterable type.
+   :tparam Iter: The iterator type for the iterable.
+   :param iterable: The iterable to iterate over.
+   :param start: The starting value for the number element. Defaults to zero. Does not affect the start point in the iterator.
+
+
+   Requires ``requires (T iterable) { { std::end(iterable) } -> std::same_as<Iter>; }``.

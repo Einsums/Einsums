@@ -1,0 +1,35 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_ComputeGraphTypes_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraphTypes/Ids.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:type:: NodeId = uint64_t
+
+   Unique identifier for a node within a computation graph.
+
+   Issued sequentially by the graph that holds the node. Keys update_prefactors,
+   timing samples, the dot and JSON exports and the pass program-order validator.
+
+
+.. cpp:type:: TensorId = uint64_t
+
+   Unique identifier for a tensor within a computation graph.
+
+   Each tensor registered with a Graph receives a unique TensorId.
+   These IDs are used in Node::inputs and Node::outputs to express
+   data dependencies between operations.

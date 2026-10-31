@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_Json_api_types:
+
+=====
+Types
+=====
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Json/Json.hpp``.
+
+.. cpp:namespace:: einsums::json
+
+.. cpp:type:: Array
+
+   An ordered list of values, which is what a JSON array holds.
+
+   Declared here rather than as a member of ``Value`` because ``Value``'s own
+   storage needs it: a ``std::vector`` of an incomplete type is legal, and the
+   element type completes before anything indexes one.

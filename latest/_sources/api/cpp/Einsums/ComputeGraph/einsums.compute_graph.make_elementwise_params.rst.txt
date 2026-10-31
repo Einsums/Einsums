@@ -1,0 +1,32 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.make_elementwise_params:
+
+===============================================
+einsums::compute_graph::make_elementwise_params
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::shared_ptr<ElementwiseParams> make_elementwise_params(const PrefactorScalar &alpha, const PrefactorScalar &beta)
+
+   A fresh scalar block holding ``alpha`` and ``beta``.
+
+   One function for axpby, scale and the dense element-wise kinds, which is
+   possible because ``AxpbyParams`` and ``ElementwiseParams`` are one type.
+
+   .. versionadded:: 2.0.0
+
+   :param alpha: Prefactor on the source operand(s).
+   :param beta: Prefactor on the destination. Defaults to the pure-overwrite 0 that ``ElementwiseParams`` itself defaults to, which is what a scale wants: it reads ``alpha`` only.
+   :returns: The block.

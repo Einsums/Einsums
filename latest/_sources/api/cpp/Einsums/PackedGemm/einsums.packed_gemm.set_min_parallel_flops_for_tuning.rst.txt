@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.set_min_parallel_flops_for_tuning:
+
+=======================================================
+einsums::packed_gemm::set_min_parallel_flops_for_tuning
+=======================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: void set_min_parallel_flops_for_tuning(int64_t flops)
+
+   Replace ``min_parallel_flops`` while measuring the break-even it is derived from.
+
+   Only for ``einsums-tune``. Not a setting: a program pins the threshold with
+   ``--einsums:hardware:omp-min-parallel-flops``.
+
+   .. versionadded:: 2.0.0
+
+   :param flops: The threshold, or a negative value to return to the configured one.

@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.pooled_reserved_bytes:
+
+==============================
+einsums::pooled_reserved_bytes
+==============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BufferAllocator/MemoryPool.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: size_t pooled_reserved_bytes()
+
+   Arena bytes currently charged against einsums:max-memory: every live
+   pool, plus dead PINNED pools, whose pages stay resident. A dead unpinned
+   pool's pages purge, so it stops counting when it dies.

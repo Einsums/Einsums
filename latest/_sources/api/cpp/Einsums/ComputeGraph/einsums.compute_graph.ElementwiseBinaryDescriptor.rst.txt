@@ -1,0 +1,59 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.ElementwiseBinaryDescriptor:
+
+===================================================
+einsums::compute_graph::ElementwiseBinaryDescriptor
+===================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: ElementwiseBinaryDescriptor
+
+   Metadata for the DENSE element-wise binary kinds, ``OpKind::DirectProduct`` and ``OpKind::DirectDivision``.
+
+   Both compute ``C = alpha * (A op B) + beta * C`` over three operands of one
+   shape, differing only in the per-element operation, which ``Node::kind``
+   already names. One descriptor for the two rather than a near-duplicate pair,
+   for the same reason ``GroupedElementwiseDescriptor`` serves three grouped
+   kinds: there is nothing to record beyond the scalars, and a second type
+   would only be a second thing to keep in step.
+
+   The cost of sharing is the usual one: a pass that probes
+   ``get_if<ElementwiseBinaryDescriptor>`` without also checking
+   ``Node::kind`` cannot tell a product from a quotient. Check the kind.
+
+   The TILED direct division is a different node despite sharing the kind: it
+   carries a ``TiledElementwiseDescriptor``, because its operands have no
+   single contiguous buffer. ``build_executor`` rejects it, and
+   ``Graph::serializability_report`` names it.
+
+
+   .. cpp:member:: static constexpr std::string_view descriptor_name
+
+      The descriptor's name: its identity inside an ``OpData`` and in a saved graph.
+
+
+   .. cpp:member:: PrefactorScalar alpha
+
+      Prefactor on the A-op-B product (at-capture snapshot).
+
+
+   .. cpp:member:: PrefactorScalar beta
+
+      Prefactor on the destination (0 = overwrite).
+
+
+   .. cpp:member:: std::shared_ptr<ElementwiseParams> params
+
+      Live scalars the executor reads each call.

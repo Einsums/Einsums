@@ -1,0 +1,187 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.Node:
+
+============================
+einsums::compute_graph::Node
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Node.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: Node
+
+   A single operation node in the computation graph.
+
+   Each node represents one captured operation (einsum, scale, gemm, etc.).
+   It contains:
+
+   - A type-erased executor lambda that performs the actual computation
+   - Input/output tensor IDs expressing data dependencies
+   - Operation metadata for optimization passes
+
+   Nodes are created automatically by the graph-aware operation wrappers
+   in the einsums::compute_graph namespace during capture.
+
+   .. seealso::
+
+      Graph::add_node()
+
+   .. seealso::
+
+      CaptureContext::record()
+
+
+   .. cpp:member:: NodeId id
+
+      Unique within its graph, issued by the graph (see ``unassigned_node_id``)
+
+
+   .. cpp:member:: OpKind kind
+
+      Operation type for pattern matching
+
+
+   .. cpp:member:: Target target
+
+      Execution target (set by GPUPlacement pass)
+
+
+   .. cpp:member:: std::uint16_t thread_width
+
+      Threads this node's kernel is to execute with; 0 means unplanned and is executed exactly as width 1.
+
+      ``DataflowExecutor`` guarantees a node with a width above 1 sees exactly
+      that many threads in ``omp_get_max_threads()``, for the duration of the
+      node and on whichever thread runs it. The vendor BLAS sees the width
+      only where the vendor supports per-caller widths (MKL); an
+      OpenMP-threaded OpenBLAS does not, so vendor calls made under the width
+      are clamped back to one thread (see ``blas::set_moldable_width_scope``)
+      and the planner never assigns such a node a width to begin with
+      (``blas_route_is_moldable``).
+      ``SequentialExecutor`` and ``OpenMPExecutor`` ignore the field, so a
+      graph carrying widths behaves exactly as an unplanned one under them.
+
+      A width is a tuning artifact of one machine and one process: it is chosen
+      against the thread count the plan was made for and is deliberately never
+      serialized with the graph. Sits in the padding after ``target`` rather
+      than beside the other scheduling metadata so it costs the node nothing.
+
+
+   .. cpp:member:: std::int64_t admission_priority
+
+      Admission urgency: the longest remaining path from this node to a sink, in estimated NANOSECONDS under the planned widths.
+
+      ``DataflowExecutor`` admits ready nodes in decreasing order of this,
+      ties broken by node position. 0 means unplanned, and then the executor
+      derives a structural hop count instead, which is the same ordering
+      without the times.
+
+      Nanoseconds rather than a double because the budget's ordering key is an
+      integer and an exact comparison is what makes admission order a function
+      of the graph rather than of rounding. Written by the ThreadPlanning pass
+      alongside ``thread_width``, and never serialized for the same reason.
+
+
+   .. cpp:member:: std::string label
+
+      Human-readable label for profiling and debugging
+
+
+   .. cpp:member:: std::function<void ()> execute
+
+      Type-erased executor that performs the captured operation.
+
+      This lambda captures the fully-resolved template call at capture time.
+      All template parameters (types, ranks, indices) are baked into the lambda.
+      On execution, it simply calls the captured function, no re-dispatch needed.
+
+      .. warning::
+
+         The lambda captures tensor references. All referenced tensors must
+         outlive the graph. Use Graph::create_tensor() for intermediates.
+
+
+   .. cpp:member:: std::function<void ()> cpu_fallback
+
+      The CPU executor of a node GPUPlacement placed.
+
+      GPUPlacement copies ``execute`` here when it sets the target to GPU and
+      leaves ``execute`` as it was, so the two are the same callable. The
+      serial replay runs ``execute`` when its GPU dispatch declines; nothing
+      reads this field to execute.
+
+      Empty for CPU nodes and transfer nodes.
+
+
+   .. cpp:member:: std::function<void ()> async_start
+
+      Asynchronous start phase for I/O nodes.
+
+      When set, the DataflowExecutor calls async_start to begin an
+      asynchronous operation (e.g., initiate a disk read) as soon as
+      predecessors complete. Independent compute nodes can then overlap
+      with the I/O. The async_finish lambda is called before any consumer
+      of this node runs.
+
+      Empty for non-async nodes. SequentialExecutor and OpenMPExecutor
+      ignore this field and call the synchronous execute lambda instead.
+
+
+   .. cpp:member:: std::function<void ()> async_finish
+
+      Asynchronous finish/synchronize phase for I/O nodes.
+
+      When set, waits for the operation started by async_start to complete.
+      Called by the DataflowExecutor before any consumer of this node runs.
+
+      Empty for non-async nodes.
+
+
+   .. cpp:member:: std::vector<TensorId> inputs
+
+      TensorIds of tensors read by this operation
+
+
+   .. cpp:member:: std::vector<TensorId> outputs
+
+      TensorIds of tensors written by this operation
+
+
+   .. cpp:member:: OpData op_data
+
+      Operation-specific metadata for optimization passes.
+
+      Contains EinsumDescriptor, ScaleDescriptor, PermuteDescriptor, or
+      empty for operations without special metadata.
+
+
+   .. cpp:member:: size_t estimated_flops
+
+      Estimated floating-point operations (for cost modeling)
+
+
+   .. cpp:member:: size_t estimated_bytes
+
+      Estimated memory traffic in bytes (for cost modeling)
+
+
+   .. cpp:member:: int stream_id
+
+      Stream assignment for async execution (set by StreamAssignment pass).
+      0 = default/compute stream, 1 = transfer stream.
+
+
+   .. cpp:member:: NodeEffects effects
+
+      What the node does beyond its tensor lists. Library operations keep the default;
+      ``cg::custom`` records ``opaque_effects`` unless declared pure.

@@ -1,0 +1,33 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.TensorPrintOptions:
+
+===========================
+einsums::TensorPrintOptions
+===========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Tensor/TensorForward.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: TensorPrintOptions
+
+   Represents options and default options for printing tensors.
+
+
+   .. cpp:member:: int width
+
+      How many columns of tensor data are printed per line.
+
+
+   .. cpp:member:: bool full_output
+
+      Print the tensor data (true) or just name and data span information (false).

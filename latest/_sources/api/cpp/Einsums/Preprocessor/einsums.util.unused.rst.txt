@@ -1,0 +1,24 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.util.unused:
+
+=====================
+einsums::util::unused
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Preprocessor/Unused.hpp``.
+
+.. cpp:namespace:: einsums::util
+
+.. cpp:function:: template <typename... T> constexpr void unused(T &&...) noexcept
+
+   Marks its arguments as used, silencing unused warnings. Binds references only, so it compiles
+   to nothing.

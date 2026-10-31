@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Symmetry-Aware Tensors &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/symmetry';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/symmetry.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Tiled Tensors in the Graph" href="tiled.html" />
+    <link rel="prev" title="GEMM Batching" href="gemm_batching.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Symmetry-Aware Tensors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="symmetry-aware-tensors">
+<h1>Symmetry-Aware Tensors<a class="headerlink" href="#symmetry-aware-tensors" title="Link to this heading">#</a></h1>
+<p>Einsums supports declaring tensor symmetries as first-class metadata. A
+<code class="docutils literal notranslate"><span class="pre">SymmetryDescriptor</span></code> attached to a tensor tells the library “this tensor
+satisfies the invariant <code class="docutils literal notranslate"><span class="pre">T(i,j,...)</span> <span class="pre">=</span> <span class="pre">±T(permutation(i,j,...))</span></code>.” The
+information is consumed in three places:</p>
+<ol class="arabic simple">
+<li><p><strong>Rank-2 BLAS dispatch</strong>: <code class="docutils literal notranslate"><span class="pre">gemm()</span></code> on a symmetric tensor routes to
+<code class="docutils literal notranslate"><span class="pre">symm</span></code>, or <code class="docutils literal notranslate"><span class="pre">hemm</span></code> for Hermitian complex matrices, which does half
+the work of the general kernel.</p></li>
+<li><p><strong>ComputeGraph propagation</strong>: the <code class="docutils literal notranslate"><span class="pre">SymmetryPropagation</span></code> pass walks
+a captured graph and tags intermediates whose symmetry can be proven
+from their inputs. Graph execution does not use the <code class="docutils literal notranslate"><span class="pre">symm</span></code> dispatch
+yet: captured Gemm and Einsum nodes run on the general kernels.</p></li>
+<li><p><strong>Symmetry-exploiting passes</strong>: <code class="docutils literal notranslate"><span class="pre">AntisymmetryInference</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AntisymmetrizerFolding</span></code>, and <code class="docutils literal notranslate"><span class="pre">LayoutAssignment</span></code> read the descriptor
+to make their decisions, and <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> computes only half of a
+contraction whose result it can prove pair-symmetric.</p></li>
+</ol>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#declaring-symmetry" id="id1">Declaring Symmetry</a></p></li>
+<li><p><a class="reference internal" href="#enforcing-and-verifying" id="id2">Enforcing and Verifying</a></p></li>
+<li><p><a class="reference internal" href="#rank-2-blas-dispatch" id="id3">Rank-2 BLAS Dispatch</a></p></li>
+<li><p><a class="reference internal" href="#computegraph-propagation" id="id4">ComputeGraph Propagation</a></p></li>
+<li><p><a class="reference internal" href="#higher-rank-coverage" id="id5">Higher-Rank Coverage</a></p></li>
+<li><p><a class="reference internal" href="#computing-half-a-pair-symmetric-contraction" id="id6">Computing Half a Pair-Symmetric Contraction</a></p></li>
+<li><p><a class="reference internal" href="#python-api" id="id7">Python API</a></p></li>
+<li><p><a class="reference internal" href="#design-notes" id="id8">Design Notes</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id9">See Also</a></p></li>
+</ul>
+</nav>
+<section id="declaring-symmetry">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Declaring Symmetry</a><a class="headerlink" href="#declaring-symmetry" title="Link to this heading">#</a></h2>
+<p>Every <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> can optionally carry a <code class="docutils literal notranslate"><span class="pre">SymmetryDescriptor</span></code>. Build one
+from a named factory and attach it with <code class="docutils literal notranslate"><span class="pre">set_symmetry</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/Tensor/Tensor.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Einsums/TensorBase/SymmetryDescriptor.hpp&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"F"</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="n">F</span><span class="p">.</span><span class="n">set_symmetry</span><span class="p">(</span><span class="n">einsums</span><span class="o">::</span><span class="n">SymmetryDescriptor</span><span class="o">::</span><span class="n">symmetric_pair</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The named factories cover the patterns chemistry codes reach for most
+often:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 36.0%" />
+<col style="width: 64.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Factory</p></th>
+<th class="head"><p>Invariant</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">symmetric_pair(a,</span> <span class="pre">b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T(..,a,..,b,..)</span> <span class="pre">=</span> <span class="pre">T(..,b,..,a,..)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">antisymmetric_pair(a,</span> <span class="pre">b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T(..,a,..,b,..)</span> <span class="pre">=</span> <span class="pre">-T(..,b,..,a,..)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hermitian_pair(a,</span> <span class="pre">b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T(..,a,..,b,..)</span> <span class="pre">=</span> <span class="pre">conj(T(..,b,..,a,..))</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">anti_hermitian_pair(a,</span> <span class="pre">b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T(..,a,..,b,..)</span> <span class="pre">=</span> <span class="pre">-conj(T(..,b,..,a,..))</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">eri_8fold()</span></code></p></td>
+<td><p>Real two-electron-integral 8-fold: <code class="docutils literal notranslate"><span class="pre">(μν|λσ)</span> <span class="pre">=</span> <span class="pre">(νμ|λσ)</span> <span class="pre">=</span> <span class="pre">(μν|σλ)</span> <span class="pre">=</span> <span class="pre">(λσ|μν)</span></code> and permutations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">eri_4fold()</span></code></p></td>
+<td><p>Complex ERI 4-fold (inner-pair swaps, no bra/ket swap)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ccsd_t2()</span></code></p></td>
+<td><p>CCSD T2 amplitudes: antisym in virtual pair (0,1) and occupied pair (2,3)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For uncommon patterns, build a descriptor directly from generators:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SymmetryDescriptor</span><span class="w"> </span><span class="n">desc</span><span class="p">;</span>
+<span class="n">desc</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">SymmetryOp</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="cm">/*sign=*/</span><span class="o">+</span><span class="mi">1</span><span class="p">));</span>
+<span class="n">desc</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">SymmetryOp</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="cm">/*sign=*/</span><span class="mi">-1</span><span class="p">));</span>
+<span class="n">desc</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">SymmetryOp</span><span class="o">::</span><span class="n">group_swap</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="cm">/*sign=*/</span><span class="o">+</span><span class="mi">1</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The descriptor stores the generators of the invariance group, not the
+full group. The 8-element ERI group fits in three generators, and consumers
+apply the generators directly; nothing builds the full group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The descriptor is metadata only. Attaching it does not rearrange
+the stored data or reduce memory. Storage stays dense, and the benefit
+comes from BLAS dispatch and graph-level reasoning that trust the
+declared invariant.</p>
+</div>
+</section>
+<section id="enforcing-and-verifying">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Enforcing and Verifying</a><a class="headerlink" href="#enforcing-and-verifying" title="Link to this heading">#</a></h2>
+<p>Symmetry declarations are load-bearing: downstream kernels assume the
+invariant actually holds. Two helpers make that safe:</p>
+<p><code class="docutils literal notranslate"><span class="pre">symmetrize(T)</span></code> mutates <code class="docutils literal notranslate"><span class="pre">T</span></code> in place so it exactly satisfies its
+declared descriptor. For symmetric: averages each <code class="docutils literal notranslate"><span class="pre">(T[i,j],</span> <span class="pre">T[j,i])</span></code>
+pair. For antisymmetric: subtract-and-halve, zeroing the diagonal. For
+Hermitian: averages with the conjugate partner and enforces real
+diagonals.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_random_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="n">A</span><span class="p">.</span><span class="n">set_symmetry</span><span class="p">(</span><span class="n">SymmetryDescriptor</span><span class="o">::</span><span class="n">symmetric_pair</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span>
+<span class="n">symmetrize</span><span class="p">(</span><span class="n">A</span><span class="p">);</span><span class="w">                </span><span class="c1">// make it actually symmetric</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">check_symmetry(T,</span> <span class="pre">tolerance)</span></code> returns <code class="docutils literal notranslate"><span class="pre">true</span></code> iff the stored data
+satisfies the declared descriptor within <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> (defaults to the
+descriptor’s own tolerance, <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>). Use this for debugging or in
+defensive asserts:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">REQUIRE</span><span class="p">(</span><span class="n">check_symmetry</span><span class="p">(</span><span class="n">A</span><span class="p">));</span><span class="w">   </span><span class="c1">// should be true after symmetrize()</span>
+</pre></div>
+</div>
+<p>Both functions are rank-N generic. They visit every index pair, apply each
+generator’s permutation, and either average (<code class="docutils literal notranslate"><span class="pre">symmetrize</span></code>) or compare
+(<code class="docutils literal notranslate"><span class="pre">check_symmetry</span></code>).</p>
+</section>
+<section id="rank-2-blas-dispatch">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Rank-2 BLAS Dispatch</a><a class="headerlink" href="#rank-2-blas-dispatch" title="Link to this heading">#</a></h2>
+<p>Once a rank-2 tensor carries a matching descriptor, <code class="docutils literal notranslate"><span class="pre">linear_algebra::gemm</span></code>
+routes to a specialized BLAS kernel:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Kernel picked</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Symmetric A, any trans</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">symm(side='L')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Symmetric B, any trans</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">symm(side='R')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Hermitian A, trans <code class="docutils literal notranslate"><span class="pre">'n'</span></code> or <code class="docutils literal notranslate"><span class="pre">'c'</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hemm(side='L')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Hermitian B, trans <code class="docutils literal notranslate"><span class="pre">'n'</span></code> or <code class="docutils literal notranslate"><span class="pre">'c'</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hemm(side='R')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Anything else</p></td>
+<td><p>Falls through to <code class="docutils literal notranslate"><span class="pre">gemm</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For Hermitian matrices, <code class="docutils literal notranslate"><span class="pre">'t'</span></code> (transpose without conjugation) has no
+shortcut and falls through. Both row-major and column-major storage work;
+the dispatch adjusts argument order to match BLAS’s column-major
+semantics.</p>
+<p>The win is the usual factor of about 2 from computing only one triangle of
+the symmetric product, plus the cache-friendly layout <code class="docutils literal notranslate"><span class="pre">symm</span></code> uses. The
+dispatch happens at the user-facing <code class="docutils literal notranslate"><span class="pre">gemm()</span></code> entry, so callers do not need
+to know which kernel fires.</p>
+<p>Coverage today: the <code class="docutils literal notranslate"><span class="pre">symm</span></code> / <code class="docutils literal notranslate"><span class="pre">hemm</span></code> dispatch is CPU vendor BLAS only. The
+GPU backends have no <code class="docutils literal notranslate"><span class="pre">symm</span></code>, <code class="docutils literal notranslate"><span class="pre">hemm</span></code>, <code class="docutils literal notranslate"><span class="pre">syrk</span></code>, or <code class="docutils literal notranslate"><span class="pre">potrf</span></code>; their solver
+set is <code class="docutils literal notranslate"><span class="pre">syev</span></code>, <code class="docutils literal notranslate"><span class="pre">heev</span></code>, <code class="docutils literal notranslate"><span class="pre">gesv</span></code>, <code class="docutils literal notranslate"><span class="pre">getrf</span></code>, <code class="docutils literal notranslate"><span class="pre">getri</span></code>, and <code class="docutils literal notranslate"><span class="pre">gesvd</span></code>. Packed
+storage (<code class="docutils literal notranslate"><span class="pre">spsv</span></code>, <code class="docutils literal notranslate"><span class="pre">spev</span></code>) is deferred; dense storage with a flag is used
+throughout.</p>
+</section>
+<section id="computegraph-propagation">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">ComputeGraph Propagation</a><a class="headerlink" href="#computegraph-propagation" title="Link to this heading">#</a></h2>
+<p>If you capture a graph that computes, say, <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">Aᵀ·A</span></code> as an
+intermediate and then uses <code class="docutils literal notranslate"><span class="pre">C</span></code> in subsequent operations, the
+<code class="docutils literal notranslate"><span class="pre">SymmetryPropagation</span></code> pass recognizes that <code class="docutils literal notranslate"><span class="pre">C</span></code> must be symmetric and
+tags it for you. The tag is visible to the passes that read descriptors; the
+graph’s own Gemm and Einsum nodes still run the general kernels, so today the
+<code class="docutils literal notranslate"><span class="pre">symm</span></code> fast path is reached only through the eager <code class="docutils literal notranslate"><span class="pre">gemm()</span></code> entry points.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="p">(</span><span class="s">"example"</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"C"</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">create_zero_tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"D"</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ki;kj-&gt;ij"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span><span class="w">   </span><span class="c1">// AᵀA — propagation tags C symmetric</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">einsum</span><span class="p">(</span><span class="s">"ij;jk-&gt;ik"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span><span class="w">    </span><span class="c1">// D = C·B, general kernel</span>
+<span class="p">}</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cg</span><span class="o">::</span><span class="n">PassManager</span><span class="o">::</span><span class="n">create_default</span><span class="p">());</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The pass is registered in <code class="docutils literal notranslate"><span class="pre">PassManager::create_default()</span></code>, right after
+<code class="docutils literal notranslate"><span class="pre">Materialization</span></code> (so all tensors exist) and before the GPU placement
+block. No user action is needed beyond using the default pipeline.</p>
+<p><strong>Rules</strong> the pass currently applies:</p>
+<ul class="simple">
+<li><p><strong>Scale</strong>: <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">α·A</span></code> inherits A’s descriptor.</p></li>
+<li><p><strong>Axpy / Axpby</strong>: <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">α·A</span> <span class="pre">+</span> <span class="pre">β·B</span></code> where A and B share a descriptor
+inherits that descriptor.</p></li>
+<li><p><strong>Rank-2 self-contraction</strong>: <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">einsum(&quot;ki;kj-&gt;ij&quot;,</span> <span class="pre">A,</span> <span class="pre">A)</span></code> (or any
+rank-2 × rank-2 → rank-2 einsum with exactly one link index and the
+same tensor in both slots) yields a symmetric <code class="docutils literal notranslate"><span class="pre">C</span></code>. For complex
+tensors with one operand conjugated, <code class="docutils literal notranslate"><span class="pre">C</span></code> is Hermitian.</p></li>
+<li><p><strong>Permute of rank-2 symmetric</strong>: a <code class="docutils literal notranslate"><span class="pre">permute</span></code> with β=0 acting on a
+symmetric tensor produces a symmetric output.</p></li>
+</ul>
+<p>Rules are conservative: only cases that provably hold are tagged.
+Everything else is left untagged and falls through to general dispatch.</p>
+<p><strong>Scope</strong>: propagation only tags graph-owned intermediates, those created by
+<code class="docutils literal notranslate"><span class="pre">graph.create_tensor&lt;T&gt;()</span></code>. User-owned tensors passed into the graph
+are never mutated.</p>
+</section>
+<section id="higher-rank-coverage">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Higher-Rank Coverage</a><a class="headerlink" href="#higher-rank-coverage" title="Link to this heading">#</a></h2>
+<p>The BLAS dispatch covers rank 2 exhaustively. Higher-rank
+symmetries are declared and verified today, since the descriptor type and
+<code class="docutils literal notranslate"><span class="pre">symmetrize</span></code> / <code class="docutils literal notranslate"><span class="pre">check_symmetry</span></code> are rank-N generic, but vendor BLAS
+has no direct support for them: no <code class="docutils literal notranslate"><span class="pre">spmm</span></code> for 4-index symmetric, no
+batched <code class="docutils literal notranslate"><span class="pre">syrk</span></code>. Two paths are available when needed:</p>
+<ol class="arabic simple">
+<li><p><strong>Dense storage with custom kernels</strong>: write the specialized loop by
+hand, as production CC codes do for 8-fold ERI contractions.</p></li>
+<li><p><strong>Expand-on-demand</strong>: call general <code class="docutils literal notranslate"><span class="pre">gemm</span></code> or <code class="docutils literal notranslate"><span class="pre">gemm_batch</span></code> on the
+dense storage and accept paying for the redundant work.</p></li>
+</ol>
+<p>Packed storage for big higher-rank tensors such as compact ERI or antisym T2
+is future work. The memory savings are real, roughly 8 times for 8-fold ERI,
+but require either custom kernels or per-access canonicalization.</p>
+</section>
+<section id="computing-half-a-pair-symmetric-contraction">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Computing Half a Pair-Symmetric Contraction</a><a class="headerlink" href="#computing-half-a-pair-symmetric-contraction" title="Link to this heading">#</a></h2>
+<p>The closed-shell CCSD amplitude is unchanged when the two electrons trade
+places, <code class="docutils literal notranslate"><span class="pre">t2[i,j,a,b]</span> <span class="pre">=</span> <span class="pre">t2[j,i,b,a]</span></code>: a swap of the axis pair <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">2)</span></code> with
+the pair <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">3)</span></code>. Declared on the tensor, it lets <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> prove that a
+contraction’s result has the same symmetry, slice that result over two
+exchangeable axes, compute only the blocks on and above the diagonal, and write
+each off-diagonal block’s mirror from it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t2</span><span class="o">.</span><span class="n">set_symmetry</span><span class="p">(</span><span class="n">einsums</span><span class="o">.</span><span class="n">SymmetryDescriptor</span><span class="p">([</span><span class="n">einsums</span><span class="o">.</span><span class="n">SymmetryOp</span><span class="o">.</span><span class="n">group_swap</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])]))</span>
+</pre></div>
+</div>
+<p>The triangle needs all of the following, and the report names the first one
+that fails:</p>
+<ul class="simple">
+<li><p>Two sliced axes of the same extent and block, in a region that writes one of
+the caller’s tensors and neither reduces nor sums into a tensor
+(<code class="docutils literal notranslate"><span class="pre">axis-tiling.triangle-shape</span></code>).</p></li>
+<li><p>A contribution provably unchanged when the two axes are exchanged, from the
+declared symmetries of the operands (<code class="docutils literal notranslate"><span class="pre">axis-tiling.not-exchangeable</span></code>).</p></li>
+<li><p>An output that is not backed by storage, since a mirrored block lands
+outside the box the block streams (<code class="docutils literal notranslate"><span class="pre">axis-tiling.triangle-backed</span></code>).</p></li>
+<li><p>A block of two or more that fits beside the scratch block the mirror is
+computed into (<code class="docutils literal notranslate"><span class="pre">axis-tiling.triangle-fit</span></code>).</p></li>
+<li><p>When the region has nothing to stream and would otherwise run as captured, a
+cost-model price for the triangle below the price of running it whole
+(<code class="docutils literal notranslate"><span class="pre">axis-tiling.triangle-price</span></code>).</p></li>
+</ul>
+<p>A declaration is a promise the triangle relies on, so the tiling checks it: a
+node before the loop runs <code class="docutils literal notranslate"><span class="pre">check_symmetry</span></code> on the declared tensor at every
+replay, and throws if its values no longer have the declared symmetry.</p>
+<p>Whether the triangle pays depends on how much of the iteration the
+contraction is, and on the block. A small block runs more contractions and
+packs their operands more often; a large one computes more of the diagonal
+twice. <code class="docutils literal notranslate"><span class="pre">AxisTiling</span></code> prices each candidate block as the contraction engine
+would run its tiles, from the hardware profile <code class="docutils literal notranslate"><span class="pre">einsums</span> <span class="pre">tune</span></code> writes or from
+a built-in table, and takes the cheapest. On benzene in cc-pVDZ, where the
+particle ladder dominates, the triangle took a CCSD iteration to 0.69 to 0.72
+of the time without it. On water in cc-pVTZ it picks blocks of 7 x 7 and makes
+an iteration 18% faster, and 4% faster with the integrals in files, where
+reading them takes much of the iteration whatever the ladder does. <a class="reference internal" href="../../../../user/tutorial_ccsd.html#tutorial-ccsd"><span class="std std-ref">Tutorial: From NumPy to an Optimized CCSD</span></a> shows the
+declaration and those measurements.</p>
+<p>A symmetry declared on a tensor the graph declared, such as one backed by a
+file, may be set after the declaration or after the capture: every pass
+pipeline reads the declarations again before its first pass.</p>
+</section>
+<section id="python-api">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Python API</a><a class="headerlink" href="#python-api" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code> has <code class="docutils literal notranslate"><span class="pre">set_symmetry</span></code>, <code class="docutils literal notranslate"><span class="pre">has_symmetry</span></code> and
+<code class="docutils literal notranslate"><span class="pre">clear_symmetry</span></code>. <code class="docutils literal notranslate"><span class="pre">einsums.SymmetryDescriptor</span></code> is built from a list of
+<code class="docutils literal notranslate"><span class="pre">einsums.SymmetryOp</span></code> generators (<code class="docutils literal notranslate"><span class="pre">swap</span></code>, <code class="docutils literal notranslate"><span class="pre">group_swap</span></code>, <code class="docutils literal notranslate"><span class="pre">identity</span></code>) or
+from the same named factories as in C++ (<code class="docutils literal notranslate"><span class="pre">symmetric_pair</span></code>, <code class="docutils literal notranslate"><span class="pre">eri_8fold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ccsd_t2</span></code> and the rest). There is no getter for the descriptor itself. The
+propagation pass is <code class="docutils literal notranslate"><span class="pre">einsums.graph.SymmetryPropagation</span></code>, which reports
+<code class="docutils literal notranslate"><span class="pre">num_inferred</span></code>.</p>
+</section>
+<section id="design-notes">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Design Notes</a><a class="headerlink" href="#design-notes" title="Link to this heading">#</a></h2>
+<p><strong>Independent copy semantics.</strong> The descriptor is stored as a
+<code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> so tensor copies produce independent descriptors.
+Modifying one tensor’s symmetry never silently affects an aliased tensor.
+8 bytes overhead per tensor when no descriptor is attached.</p>
+<p><strong>Floating-point drift.</strong> Operations on a “symmetric” tensor can produce
+slight numerical asymmetry (<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">Aᵀ</span></code> drifts by machine ε). The
+descriptor’s <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> field controls how much drift
+<code class="docutils literal notranslate"><span class="pre">check_symmetry</span></code> accepts; the default <code class="docutils literal notranslate"><span class="pre">1e-12</span></code> is generous enough for
+double-precision BLAS workloads.</p>
+<p><strong>Descriptor as source of truth.</strong> BLAS dispatch and ComputeGraph
+passes trust the declared descriptor and do not re-verify at every
+call; the one exception is the triangle above, which checks it at every
+replay. If you attach a symmetric descriptor to a non-symmetric matrix,
+you will get silently wrong results. Use <code class="docutils literal notranslate"><span class="pre">symmetrize()</span></code> on ingest when in
+doubt.</p>
+<p><strong>Views don’t inherit symmetry.</strong> <code class="docutils literal notranslate"><span class="pre">TensorView</span></code> always reports
+<code class="docutils literal notranslate"><span class="pre">symmetry()</span> <span class="pre">==</span> <span class="pre">nullptr</span></code>. Reasoning about which slice of a symmetric
+tensor is itself symmetric is future work; for now views fall through to
+general dispatch.</p>
+</section>
+<section id="see-also">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="optimization_passes.html"><span class="doc">Optimization Passes</span></a>: catalog of every pass in the default pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/TensorBase/include/Einsums/TensorBase/SymmetryDescriptor.hpp</span></code>:
+the descriptor type with inline documentation on each factory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/Tensor/include/Einsums/Tensor/SymmetryOps.hpp</span></code>:
+<code class="docutils literal notranslate"><span class="pre">symmetrize</span></code> and <code class="docutils literal notranslate"><span class="pre">check_symmetry</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/LinearAlgebra/include/Einsums/LinearAlgebra/SymmetryDispatch.hpp</span></code>:
+the gemm to symm/hemm dispatcher.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/ComputeGraph/src/Passes/SymmetryPropagation.cpp</span></code>:
+the propagation pass’s rule implementations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/Tensor/tests/unit/Symmetry.cpp</span></code>: descriptor and
+symmetrize/check_symmetry test coverage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/LinearAlgebra/tests/unit/symm_dispatch.cpp</span></code>: BLAS
+dispatch correctness parity.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libs/Einsums/ComputeGraph/tests/unit/Pass_SymmetryPropagation.cpp</span></code>:
+propagation rule coverage.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="gemm_batching.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">GEMM Batching</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tiled.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tiled Tensors in the Graph</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-symmetry">Declaring Symmetry</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enforcing-and-verifying">Enforcing and Verifying</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rank-2-blas-dispatch">Rank-2 BLAS Dispatch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computegraph-propagation">ComputeGraph Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#higher-rank-coverage">Higher-Rank Coverage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-half-a-pair-symmetric-contraction">Computing Half a Pair-Symmetric Contraction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-api">Python API</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-notes">Design Notes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

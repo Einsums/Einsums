@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Views, Aliasing, and Pipeline Parameters &#8212; Einsums main documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/einsums.css?v=72d65620" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../../_static/documentation_options.js?v=a8da1a53"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'libs/Einsums/ComputeGraph/docs/views';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://einsums.github.io/Einsums/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://einsums.github.io/Einsums/latest/libs/Einsums/ComputeGraph/docs/views.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Graph Update / Rebind" href="rebind.html" />
+    <link rel="prev" title="Tensor Lifetime Management" href="tensor_lifetime.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.0.0" />
+    <meta name="docbuild:last-update" content="Oct 31, 2026"/>
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../howto/index.html">
+    How-To Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../building/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../contributors/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelogs/index.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/8GvtkyWZUv" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/style.html">Coding Style</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/documenting.html">Documenting the Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/create_module_skeleton.html">Creating Module Skeletons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors/einsums_command.html">The einsums Command</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library internals</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../overview.html">Library Modules</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../Assertion/docs/index.html">Assertion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLAS/docs/index.html">BLAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASBase/docs/index.html">BLASBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BLASVendor/docs/index.html">BLASVendor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../BufferAllocator/docs/index.html">BufferAllocator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../CXX23/docs/index.html">CXX23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Comm/docs/index.html">Comm</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">ComputeGraph</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="string_einsum.html">String-Based Einsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Graph-Aware Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control_flow.html">Control Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executor.html">Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="workspace.html">Workspace and Deferred Tensor Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed.html">Distributed Computing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hardware_profiles.html">Hardware Profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optimization_passes.html">Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performance_tuning.html">Performance Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gemm_batching.html">GEMM Batching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="symmetry.html">Symmetry-Aware Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tiled.html">Tiled Tensors in the Graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor_lifetime.html">Tensor Lifetime Management</a></li>
+<li class="toctree-l3 current active"><a aria-current="page" class="current reference internal" href="#">Views, Aliasing, and Pipeline Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rebind.html">Graph Update / Rebind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ComputeGraphTypes/docs/index.html">ComputeGraphTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Concepts/docs/index.html">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Config/docs/index.html">Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Debugging/docs/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Errors/docs/index.html">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../FFT/docs/index.html">FFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../GPU/docs/index.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../HPTT/docs/index.html">HPTT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Hardware/docs/index.html">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Iterator/docs/index.html">Iterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Json/docs/index.html">Einsums Json</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../LinearAlgebra/docs/index.html">Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Logging/docs/index.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Options/docs/index.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../PackedGemm/docs/index.html">PackedGemm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Preprocessor/docs/index.html">Preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Print/docs/index.html">Print</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Profile/docs/index.html">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Python/docs/index.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Runtime/docs/index.html">Runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../SIMD/docs/index.html">SIMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../StringUtil/docs/index.html">StringUtil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TaskPool/docs/index.html">TaskPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Tensor/docs/index.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorAlgebra/docs/index.html">TensorAlgebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorBase/docs/index.html">TensorBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorIO/docs/index.html">TensorIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorImpl/docs/index.html">TensorImpl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorPermute/docs/index.html">TensorPermute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TensorUtilities/docs/index.html">TensorUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TypeSupport/docs/index.html">TypeSupport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Utilities/docs/index.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../Version/docs/index.html">Version</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../contributors/index.html" class="nav-link">Developer Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../overview.html" class="nav-link">Library Modules</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">ComputeGraph</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Views, Aliasing, and Pipeline Parameters</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="views-aliasing-and-pipeline-parameters">
+<h1>Views, Aliasing, and Pipeline Parameters<a class="headerlink" href="#views-aliasing-and-pipeline-parameters" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">cg::view()</span></code> operation records a non-owning slice of a tensor inside a
+graph. Like Einsums’ <code class="docutils literal notranslate"><span class="pre">TensorView</span></code>, it shares storage with the parent, with no
+copy. Slice bounds can be statically known, runtime-resolvable from a named
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ParamTable.html#_CPPv4N7einsums13compute_graph10ParamTableE" title="einsums::compute_graph::ParamTable"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Pipeline</span> <span class="pre">parameter</span></code></a>, or
+arbitrary callbacks evaluated at execute time.</p>
+<p>This page also covers <a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.write_param.html#_CPPv4I0EIQNSt15is_arithmetic_vI1TEEEN7einsums13compute_graph11write_paramEvNSt6stringER1T" title="einsums::compute_graph::write_param"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cg::write_param</span></code></a> for graph-driven parameter
+updates between iterations.</p>
+<section id="when-to-use-cg-view">
+<h2>When to use <code class="docutils literal notranslate"><span class="pre">cg::view</span></code><a class="headerlink" href="#when-to-use-cg-view" title="Link to this heading">#</a></h2>
+<p>Use a graph view when you want a slice of a tensor to participate in the
+graph’s optimization passes, particularly when:</p>
+<ul class="simple">
+<li><p>The slice’s lifetime should be tied to the parent’s, but tracked
+independently for scheduling.</p></li>
+<li><p>Slice bounds change between iterations of an SCF, CG, or CCSD loop, for
+example the occupation number, current rank, or search-space size, without
+rebuilding the graph.</p></li>
+<li><p>Multiple downstream ops consume the slice, and you want the dependency
+scheduler to see the alias relationship, so a write to the parent and a
+read through the slice cannot be reordered or parallelized.</p></li>
+</ul>
+<p>If the slice is a constant cut that never changes between executions, you can
+also build a plain <code class="docutils literal notranslate"><span class="pre">TensorView</span></code> outside the graph and pass it as input. The
+graph won’t know about the aliasing, but the simpler form may be sufficient.</p>
+</section>
+<section id="basic-example">
+<h2>Basic example<a class="headerlink" href="#basic-example" title="Link to this heading">#</a></h2>
+<p>Slicing a constant range, the first 2 rows of a 4×4 matrix:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">einsums</span><span class="o">::</span><span class="nn">compute_graph</span><span class="p">;</span>
+
+<span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+<span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dst</span><span class="p">(</span><span class="s">"dst"</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+
+<span class="n">cg</span><span class="o">::</span><span class="n">Pipeline</span><span class="w"> </span><span class="n">pipe</span><span class="p">(</span><span class="s">"example"</span><span class="p">);</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pipe</span><span class="p">.</span><span class="n">add_stage</span><span class="p">(</span><span class="s">"s"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">stage</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// slice = A[0:2, :]   (rank-preserving)</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">slice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">view</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">A</span><span class="p">,</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">full</span><span class="p">());</span>
+
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">permute</span><span class="p">(</span><span class="s">"ij &lt;- ij"</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">slice</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">pipe</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The returned reference is a graph-owned <code class="docutils literal notranslate"><span class="pre">TensorView&lt;double,</span> <span class="pre">2&gt;</span></code> you can pass
+to any <code class="docutils literal notranslate"><span class="pre">cg::*</span></code> operation that accepts a tensor input. The view is rebuilt
+every time the View node executes, so its data pointer always reflects the
+parent’s current backing buffer plus the resolved slice offsets.</p>
+</section>
+<section id="dynamic-slice-bounds-via-pipeline-parameters">
+<h2>Dynamic slice bounds via Pipeline parameters<a class="headerlink" href="#dynamic-slice-bounds-via-pipeline-parameters" title="Link to this heading">#</a></h2>
+<p>The HF SCF case: <code class="docutils literal notranslate"><span class="pre">C_occ</span> <span class="pre">=</span> <span class="pre">C[:,</span> <span class="pre">0:n_occ]</span></code>, where <code class="docutils literal notranslate"><span class="pre">n_occ</span></code> is determined
+once at runtime (per molecule) and never changes during the loop:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">Pipeline</span><span class="w"> </span><span class="n">pipe</span><span class="p">(</span><span class="s">"scf"</span><span class="p">);</span>
+<span class="n">pipe</span><span class="p">.</span><span class="n">set_param</span><span class="p">(</span><span class="s">"n_occ"</span><span class="p">,</span><span class="w"> </span><span class="n">n_electrons</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pipe</span><span class="p">.</span><span class="n">add_loop</span><span class="p">(</span><span class="s">"scf_iter"</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="cm">/* condition */</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">iter</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// ... fock build, syev populates C ...</span>
+
+<span class="w">    </span><span class="c1">// C_occ aliases C[:, 0:n_occ], re-resolved each iteration.</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C_occ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">view</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">C</span><span class="p">,</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">full</span><span class="p">(),</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">"n_occ"</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// D = C_occ * C_occᵀ</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">gemm</span><span class="p">(</span><span class="cm">/*transA=*/</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="cm">/*transB=*/</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">C_occ</span><span class="p">,</span><span class="w"> </span><span class="n">C_occ</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">D</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">pipe</span><span class="p">.</span><span class="n">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">BoundExpr</span></code> constructed from a string literal (<code class="docutils literal notranslate"><span class="pre">&quot;n_occ&quot;</span></code>) becomes a
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.BoundExpr.html#_CPPv4N7einsums13compute_graph9BoundExprE" title="einsums::compute_graph::BoundExpr"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Param</span></code></a> reference. The View
+executor calls <code class="docutils literal notranslate"><span class="pre">params.get(&quot;n_occ&quot;)</span></code> each iteration; updating <code class="docutils literal notranslate"><span class="pre">n_occ</span></code> via
+<code class="docutils literal notranslate"><span class="pre">pipe.set_param(&quot;n_occ&quot;,</span> <span class="pre">new_value)</span></code> between executions takes effect on the
+next execute.</p>
+</section>
+<section id="mid-iteration-parameter-updates-cg-write-param">
+<h2>Mid-iteration parameter updates: <code class="docutils literal notranslate"><span class="pre">cg::write_param</span></code><a class="headerlink" href="#mid-iteration-parameter-updates-cg-write-param" title="Link to this heading">#</a></h2>
+<p>When the parameter must change during the loop, as in the Maximum Overlap
+Method (MOM), level shifting, or integer-occupation excited-state SCF, use
+<a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.write_param.html#_CPPv4I0EIQNSt15is_arithmetic_vI1TEEEN7einsums13compute_graph11write_paramEvNSt6stringER1T" title="einsums::compute_graph::write_param"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cg::write_param</span></code></a>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pipe</span><span class="p">.</span><span class="n">add_loop</span><span class="p">(</span><span class="s">"scf_iter"</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">condition</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">CaptureGuard</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">iter</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// ... compute new occupation index from MO energies ...</span>
+<span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">n_occ_new</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">custom</span><span class="p">(</span><span class="s">"compute_mom_n_occ"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tie</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">eps</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;&gt;</span><span class="p">{},</span>
+<span class="w">               </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]{</span><span class="w"> </span><span class="n">n_occ_new</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">compute_mom</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">eps</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Push the new value into the param table; this is an explicit dataflow edge:</span>
+<span class="w">    </span><span class="c1">//   compute_mom_n_occ → write_param → C_occ view</span>
+<span class="w">    </span><span class="n">cg</span><span class="o">::</span><span class="n">write_param</span><span class="p">(</span><span class="s">"n_occ"</span><span class="p">,</span><span class="w"> </span><span class="n">n_occ_new</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C_occ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">view</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">C</span><span class="p">,</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">full</span><span class="p">(),</span>
+<span class="w">        </span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">"n_occ"</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// ... downstream ops using C_occ ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Two forms:</p>
+<ul class="simple">
+<li><p><strong>Scalar source</strong> (<code class="docutils literal notranslate"><span class="pre">cg::write_param(name,</span> <span class="pre">int64_var)</span></code>): the graph
+captures <code class="docutils literal notranslate"><span class="pre">&amp;int64_var</span></code> and reads its current value at execute time. If
+some upstream graph op writes to that same scalar address, registered via
+<code class="docutils literal notranslate"><span class="pre">ctx.get_or_register_scalar(&amp;int64_var,</span> <span class="pre">…)</span></code>, the dependency edge from
+producer to <code class="docutils literal notranslate"><span class="pre">write_param</span></code> is automatic, so the scheduler correctly
+orders the producer before any downstream View that reads <code class="docutils literal notranslate"><span class="pre">Param(name)</span></code>.</p></li>
+<li><p><strong>Callback source</strong> (<code class="docutils literal notranslate"><span class="pre">cg::write_param(name,</span> <span class="pre">std::function&lt;int64_t()&gt;)</span></code>):
+the callback is invoked at execute time. Use this when the value comes
+from external, non-graph state, for example a <code class="docutils literal notranslate"><span class="pre">LoopCondition</span></code> lambda that
+recomputes <code class="docutils literal notranslate"><span class="pre">n_occ</span></code> from C++ state outside the graph. No dataflow edge
+is created.</p></li>
+</ul>
+</section>
+<section id="aliasing-semantics">
+<h2>Aliasing semantics<a class="headerlink" href="#aliasing-semantics" title="Link to this heading">#</a></h2>
+<p>The output of <code class="docutils literal notranslate"><span class="pre">cg::view</span></code> aliases its parent: they share storage. Writing
+to the slice mutates the parent in place, and freeing the parent invalidates the
+slice. The graph passes are aware of this:</p>
+<ul class="simple">
+<li><p><strong>FreeInsertion</strong> never inserts <code class="docutils literal notranslate"><span class="pre">Free</span></code> for an aliased tensor, since the
+parent owns the storage. It also extends the parent’s last-use to cover any
+reads or writes through aliases, so the parent is not freed prematurely.</p></li>
+<li><p><strong>DeadNodeElimination</strong> treats a View node as live if any consumer reads
+the slice, and otherwise prunes it.</p></li>
+<li><p><strong>Topological sort</strong> folds reads and writes through an alias as touching the
+parent. <code class="docutils literal notranslate"><span class="pre">GEMM(C_occ,</span> <span class="pre">…)</span></code> and <code class="docutils literal notranslate"><span class="pre">Syev(C,</span> <span class="pre">…)</span></code> recorded in the same body
+are correctly ordered as dependent, not parallelizable, even though they
+reference different <code class="docutils literal notranslate"><span class="pre">TensorId</span></code>s at the surface.</p></li>
+</ul>
+</section>
+<section id="what-boundexpr-is-and-how-passes-treat-it">
+<h2>What <code class="docutils literal notranslate"><span class="pre">BoundExpr</span></code> is, and how passes treat it<a class="headerlink" href="#what-boundexpr-is-and-how-passes-treat-it" title="Link to this heading">#</a></h2>
+<p>A <a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.BoundExpr.html#_CPPv4N7einsums13compute_graph9BoundExprE" title="einsums::compute_graph::BoundExpr"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">BoundExpr</span></code></a> is a tagged
+union over three forms:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variant</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Resolution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Const(v)</span></code></p></td>
+<td><p>Compile-time integer literal</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">v</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Param(n)</span></code></p></td>
+<td><p>Lookup into the active ParamTable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">params.get(n)</span></code>; throws if unset</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Callback</span></code></p></td>
+<td><p>Arbitrary <code class="docutils literal notranslate"><span class="pre">std::function&lt;…&gt;</span></code></p></td>
+<td><p>Invoked at execute time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Implicit conversions let callers write whichever they prefer:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w">              </span><span class="c1">// Const, Const</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">"n_occ"</span><span class="p">)</span><span class="w">        </span><span class="c1">// Const, Param</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="s">"first"</span><span class="p">,</span><span class="w"> </span><span class="s">"last"</span><span class="p">)</span><span class="w">   </span><span class="c1">// Param, Param</span>
+<span class="c1">// Const, Callback. A lambda needs an explicit std::function: converting it</span>
+<span class="c1">// to BoundExpr would take two user-defined conversions.</span>
+<span class="n">cg</span><span class="o">::</span><span class="n">ViewAxis</span><span class="o">::</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">BoundExpr</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="p">()</span><span class="o">&gt;</span><span class="p">([</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">computed_hi</span><span class="p">;</span><span class="w"> </span><span class="p">})))</span>
+</pre></div>
+</div>
+<p><strong>Optimization passes treat parameter values as opaque.</strong> A pass may inspect
+<code class="docutils literal notranslate"><span class="pre">BoundExpr::is_const()</span></code>, a structural property known at graph build, and use
+the constant value <code class="docutils literal notranslate"><span class="pre">e.const_value()</span></code> to specialize. It must not branch on the
+runtime value of a <code class="docutils literal notranslate"><span class="pre">Param</span></code>, because the value is not known when passes run, so
+any specialization would be invalidated the moment the user calls <code class="docutils literal notranslate"><span class="pre">set_param</span></code>.</p>
+<p>If a value should drive optimization decisions, make it a build-time
+constant (<code class="docutils literal notranslate"><span class="pre">Const(...)</span></code>). If the value should vary across runs without
+rebuilding the graph, make it a <code class="docutils literal notranslate"><span class="pre">Param</span></code>.</p>
+</section>
+<section id="rank-reducing-indices-and-axis-permutations">
+<span id="view-permute"></span><h2>Rank-reducing indices and axis permutations<a class="headerlink" href="#rank-reducing-indices-and-axis-permutations" title="Link to this heading">#</a></h2>
+<p>Beyond <code class="docutils literal notranslate"><span class="pre">Full</span></code>/<code class="docutils literal notranslate"><span class="pre">Range</span></code> slicing, a view can permute axes (transpose-via-view)
+and drop axes (rank-reducing integer index). Both are zero-copy: the result
+aliases the parent with reordered dims/strides and, for a drop, an added
+pointer offset.</p>
+<ul>
+<li><p><strong>Permute</strong>: <a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.permute_view.html#_CPPv4I_22CoreBasicTensorConcept_6size_tEIQ18HasCompileTimeRankI7ParentTEEN7einsums13compute_graph12permute_viewER10TensorViewINSt14remove_cvref_tI7ParentTE9ValueTypeE4RankER7ParentTRKNSt5arrayI6size_t4RankEE" title="einsums::compute_graph::permute_view"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cg::permute_view</span></code></a> reorders the axes, so result axis
+<code class="docutils literal notranslate"><span class="pre">k</span></code> aliases parent axis <code class="docutils literal notranslate"><span class="pre">perm[k]</span></code>. The full-reversal case is an ordinary
+transpose. Available on both the typed and runtime-rank paths.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Transpose a matrix as a view: At(i, j) == A(j, i).</span>
+<span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">At</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cg</span><span class="o">::</span><span class="n">permute_view</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">});</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Drop</strong>: <code class="docutils literal notranslate"><span class="pre">cg::ViewAxis::drop(i)</span></code> indexes an axis at <code class="docutils literal notranslate"><span class="pre">i</span></code> and removes it
+from the result, so <code class="docutils literal notranslate"><span class="pre">ResultRank</span> <span class="pre">==</span> <span class="pre">parent.rank()</span> <span class="pre">-</span> <span class="pre">(#Drop</span> <span class="pre">axes)</span></code>, and the
+dropped axis contributes only <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">*</span> <span class="pre">stride</span></code> to the slice’s base pointer.
+Drop is supported on the runtime-rank path only,
+<code class="docutils literal notranslate"><span class="pre">cg::view_runtime</span></code> or the Python <code class="docutils literal notranslate"><span class="pre">view_indexed</span></code> below. The typed,
+compile-time-rank <code class="docutils literal notranslate"><span class="pre">cg::view&lt;T,</span> <span class="pre">Rank&gt;(...)</span></code> is <code class="docutils literal notranslate"><span class="pre">Full</span></code>/<code class="docutils literal notranslate"><span class="pre">Range</span></code> only and
+throws on a <code class="docutils literal notranslate"><span class="pre">Drop</span></code> axis.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">Drop</span></code> axis and a permutation cannot be combined in one call (chain two
+views instead).</p>
+</section>
+<section id="python-runtime-rank-surface">
+<h2>Python / runtime-rank surface<a class="headerlink" href="#python-runtime-rank-surface" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RuntimeTensor</span></code> (the Python-facing tensor) uses the runtime-rank entry
+points, which the numpy-style Python API drives automatically inside a
+capture:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">einsums.graph.view(parent,</span> <span class="pre">ranges)</span></code>: a list of <code class="docutils literal notranslate"><span class="pre">(lo,</span> <span class="pre">hi)</span></code> per axis,
+where <code class="docutils literal notranslate"><span class="pre">(-1,</span> <span class="pre">-1)</span></code> means full. Rank-preserving slices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">einsums.graph.view_indexed(parent,</span> <span class="pre">specs)</span></code>: a list of <code class="docutils literal notranslate"><span class="pre">(kind,</span> <span class="pre">a,</span> <span class="pre">b)</span></code>
+per axis, where <code class="docutils literal notranslate"><span class="pre">0</span></code> is full, <code class="docutils literal notranslate"><span class="pre">1</span></code> is range <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b)</span></code>, and <code class="docutils literal notranslate"><span class="pre">2</span></code> is drop
+at <code class="docutils literal notranslate"><span class="pre">a</span></code>. Backs rank-reducing indexing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">einsums.graph.permute_view(parent,</span> <span class="pre">perm)</span></code>: axis permutation.</p></li>
+</ul>
+<p>So under <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">cg.capture(g):</span></code> the ordinary numpy spellings record View
+nodes: <code class="docutils literal notranslate"><span class="pre">A[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">A[:,</span> <span class="pre">j]</span></code> rank-reduce (via <code class="docutils literal notranslate"><span class="pre">view_indexed</span></code>), <code class="docutils literal notranslate"><span class="pre">A[1:3]</span></code>
+slices (via <code class="docutils literal notranslate"><span class="pre">view</span></code>), and <code class="docutils literal notranslate"><span class="pre">A.T</span></code> / <code class="docutils literal notranslate"><span class="pre">A.transpose(axes)</span></code> permute (via
+<code class="docutils literal notranslate"><span class="pre">permute_view</span></code>). Outside capture these resolve eagerly to plain
+<code class="docutils literal notranslate"><span class="pre">RuntimeTensorView</span></code>s.</p>
+</section>
+<section id="graph-editor-einsums-studio-integration">
+<h2>Graph editor (Einsums Studio) integration<a class="headerlink" href="#graph-editor-einsums-studio-integration" title="Link to this heading">#</a></h2>
+<p>The visual graph editor surfaces all three operations in the right-click
+“Add Node” menu:</p>
+<ul class="simple">
+<li><p><strong>View</strong> (Reshape category, violet): input pin <code class="docutils literal notranslate"><span class="pre">A</span></code>, output pin
+<code class="docutils literal notranslate"><span class="pre">slice</span></code>, single string parameter <code class="docutils literal notranslate"><span class="pre">axes</span></code>. The editor parses the
+<code class="docutils literal notranslate"><span class="pre">axes</span></code> string at codegen time and emits <code class="docutils literal notranslate"><span class="pre">cg::view(parent,</span> <span class="pre">...)</span></code>
+with the deduced T and Rank, so there are no template arguments to spell
+out by hand. Examples for the parameter:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;full,full&quot;</span></code>: rank-2 alias of the entire parent (the default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;full,0..n_occ&quot;</span></code>: column slice, where <code class="docutils literal notranslate"><span class="pre">n_occ</span></code> resolves from the
+Pipeline parameter table at execute time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;0..2,full&quot;</span></code>: first two rows.</p></li>
+</ul>
+</li>
+<li><p><strong>Write Param</strong> (Memory category, slate): single scalar input
+<code class="docutils literal notranslate"><span class="pre">value</span></code>, no output, string parameter <code class="docutils literal notranslate"><span class="pre">name</span></code>. Emits
+<code class="docutils literal notranslate"><span class="pre">cg::write_param(&quot;name&quot;,</span> <span class="pre">value)</span></code>.</p></li>
+<li><p><strong>Trace</strong> (Tensor Algebra category, warm orange): single tensor
+input <code class="docutils literal notranslate"><span class="pre">A</span></code>, single scalar output <code class="docutils literal notranslate"><span class="pre">result</span></code>. Emits a hoisted host
+scalar plus <code class="docutils literal notranslate"><span class="pre">cg::trace(&amp;result,</span> <span class="pre">A)</span></code> so the value is visible to
+Loop convergence pins between iterations.</p></li>
+</ul>
+<p>Saved <code class="docutils literal notranslate"><span class="pre">.eingraph</span></code> files round-trip through <code class="docutils literal notranslate"><span class="pre">op_kind_from_string</span></code>:
+the string identifiers are <code class="docutils literal notranslate"><span class="pre">&quot;View&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;WriteParam&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;Trace&quot;</span></code>
+respectively.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Slices are contiguous (<code class="docutils literal notranslate"><span class="pre">step</span> <span class="pre">==</span> <span class="pre">1</span></code>); strided slicing is not yet supported.</p></li>
+<li><p>Single-node only: slicing a distributed tensor whose partition straddles
+the slice yields undefined data. A pass-level check will be added when
+distributed View support lands.</p></li>
+<li><p>GPU placement: a View follows its parent’s residency. If GPU passes
+promote the parent, you get host-residency mismatches.</p></li>
+</ul>
+<p>Earlier restrictions that have since been lifted: an axis
+<a class="reference internal" href="#view-permute"><span class="std std-ref">permutation</span></a> gives transpose-via-view on both the typed
+and runtime-rank paths, and <code class="docutils literal notranslate"><span class="pre">Drop</span></code>, a rank-reducing index, is implemented on
+the runtime-rank path (<code class="docutils literal notranslate"><span class="pre">cg::view_runtime</span></code> or Python <code class="docutils literal notranslate"><span class="pre">view_indexed</span></code>), so its
+<code class="docutils literal notranslate"><span class="pre">ResultRank</span></code> may be less than the parent’s. The typed compile-time
+<code class="docutils literal notranslate"><span class="pre">cg::view&lt;T,</span> <span class="pre">Rank&gt;</span></code> remains <code class="docutils literal notranslate"><span class="pre">Full</span></code>/<code class="docutils literal notranslate"><span class="pre">Range</span></code> only. A <code class="docutils literal notranslate"><span class="pre">Drop</span></code> axis and a
+permutation cannot be combined in a single call; chain two views instead.</p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.BoundExpr.html#_CPPv4N7einsums13compute_graph9BoundExprE" title="einsums::compute_graph::BoundExpr"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">BoundExpr</span></code></a> - scalar integer expression resolved at execute time, with <code class="docutils literal notranslate"><span class="pre">Const</span></code>, <code class="docutils literal notranslate"><span class="pre">Param</span></code>, and <code class="docutils literal notranslate"><span class="pre">Callback</span></code> variants.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ParamTable.html#_CPPv4N7einsums13compute_graph10ParamTableE" title="einsums::compute_graph::ParamTable"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">ParamTable</span></code></a> - mutable name-keyed <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> table held by <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>; <code class="docutils literal notranslate"><span class="pre">View</span></code> executors read it, <code class="docutils literal notranslate"><span class="pre">cg::write_param</span></code> and <code class="docutils literal notranslate"><span class="pre">Pipeline::set_param</span></code> write to it.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.ViewAxis.html#_CPPv4N7einsums13compute_graph8ViewAxisE" title="einsums::compute_graph::ViewAxis"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">ViewAxis</span></code></a> - per-axis spec for a <code class="docutils literal notranslate"><span class="pre">cg::view</span></code> call, built with the <code class="docutils literal notranslate"><span class="pre">full()</span></code>, <code class="docutils literal notranslate"><span class="pre">range(lo,</span> <span class="pre">hi)</span></code>, and <code class="docutils literal notranslate"><span class="pre">drop(i)</span></code> factories.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.view.html#_CPPv4I0_6size_t_22CoreBasicTensorConceptDpEN7einsums13compute_graph4viewER10TensorViewI1T4RankER7ParentTDpRR4Axes" title="einsums::compute_graph::view"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">view</span></code></a> - record a <code class="docutils literal notranslate"><span class="pre">View</span></code> node and return a graph-owned slice <code class="docutils literal notranslate"><span class="pre">TensorView</span></code> that downstream operations can consume.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.permute_view.html#_CPPv4I_22CoreBasicTensorConcept_6size_tEIQ18HasCompileTimeRankI7ParentTEEN7einsums13compute_graph12permute_viewER10TensorViewINSt14remove_cvref_tI7ParentTE9ValueTypeE4RankER7ParentTRKNSt5arrayI6size_t4RankEE" title="einsums::compute_graph::permute_view"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">permute_view</span></code></a> - record a transpose / axis-permutation View whose result axis <code class="docutils literal notranslate"><span class="pre">k</span></code> aliases parent axis <code class="docutils literal notranslate"><span class="pre">perm[k]</span></code>.</p></li>
+<li><p><a class="reference internal" href="../../../../api/cpp/Einsums/ComputeGraph/einsums.compute_graph.write_param.html#_CPPv4I0EIQNSt15is_arithmetic_vI1TEEEN7einsums13compute_graph11write_paramEvNSt6stringER1T" title="einsums::compute_graph::write_param"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">write_param</span></code></a> - record a <code class="docutils literal notranslate"><span class="pre">WriteParam</span></code> node that stores a scalar variable’s value (dataflow-tracked) or a callback’s result into <code class="docutils literal notranslate"><span class="pre">params[name]</span></code>.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tensor_lifetime.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tensor Lifetime Management</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="rebind.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Graph Update / Rebind</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-use-cg-view">When to use <code class="docutils literal notranslate"><span class="pre">cg::view</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-example">Basic example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-slice-bounds-via-pipeline-parameters">Dynamic slice bounds via Pipeline parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mid-iteration-parameter-updates-cg-write-param">Mid-iteration parameter updates: <code class="docutils literal notranslate"><span class="pre">cg::write_param</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aliasing-semantics">Aliasing semantics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-boundexpr-is-and-how-passes-treat-it">What <code class="docutils literal notranslate"><span class="pre">BoundExpr</span></code> is, and how passes treat it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rank-reducing-indices-and-axis-permutations">Rank-reducing indices and axis permutations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-runtime-rank-surface">Python / runtime-rank surface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-editor-einsums-studio-integration">Graph editor (Einsums Studio) integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2026, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

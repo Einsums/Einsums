@@ -1,0 +1,70 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _modules_Einsums_TypeSupport_api:
+
+===================
+TypeSupport C++ API
+===================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+See the :ref:`narrative documentation <modules_Einsums_TypeSupport>` of this module for background and usage guidance.
+
+Classes
+-------
+
+- :cpp:any:`~einsums::arguments::tuple_position` - NOINTERNAL
+- :cpp:any:`~einsums::design_pats::Lockable` - Base class that makes a class Lockable, with a mutex of type ``Mutex``.
+- :cpp:any:`~einsums::design_pats::Observable` - Implementation of the Subject part of the Observable pattern from the Gang of Four.
+- :cpp:any:`~einsums::StringLiteral` - A string usable as a template parameter, as NamedTuple names need.
+
+Functions
+---------
+
+- :cpp:any:`~einsums::count_of_type` - Finds the number of items with the specified type.
+- :cpp:any:`~einsums::json_escape` - Escape a string for safe embedding in a JSON value.
+- :cpp:any:`~einsums::type_name` - Turns a type into a string representing its name.
+
+Operators
+---------
+
+- :cpp:any:`~einsums::operator!=` - Direct inequality comparison between two string literals.
+- :cpp:any:`~einsums::operator==` - Direct equality comparison between two string literals.
+
+Types
+-----
+
+- :cpp:any:`~einsums::are_all_convertible` - Checks to see if all arguments can be converted to the first argument.
+
+Variables
+---------
+
+- :cpp:any:`~einsums::are_all_convertible_v` - Checks to see if all arguments can be converted to the first argument.
+
+Macros
+------
+
+- :c:macro:`EINSUMS_SINGLETON_DEF` - Makes a class a singleton with a static ``Type &get_singleton()``. Place at the start of the class, define a private no-argument constructor, and pair with ``EINSUMS_SINGLETON_IMPL``.
+- :c:macro:`EINSUMS_SINGLETON_IMPL` - Creates the code for managing a singleton.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   einsums.arguments.tuple_position
+   einsums.count_of_type
+   einsums.design_pats.Lockable
+   einsums.design_pats.Observable
+   einsums.json_escape
+   einsums.StringLiteral
+   einsums.type_name
+   operators
+   types
+   variables
+   macros

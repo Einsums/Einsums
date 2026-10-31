@@ -1,0 +1,42 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.self_product_symmetry:
+
+=============================================
+einsums::compute_graph::self_product_symmetry
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymmetryRules.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: std::optional<SymmetryDescriptor> self_product_symmetry(const Graph &graph, const Node &node)
+
+   The symmetry the product term of an einsum has when one tensor fills both operand slots.
+
+   Swapping the two operands of ``A[a...]`` ``A[b...]`` changes nothing, so when a relabeling of the
+   letters carries A's list onto B's and B's onto A's, the term is unchanged by that relabeling. If
+   it maps C's letters onto C's letters, it is a symmetry of C. For the outer product
+   ``"i,j,a,b`` <- i,a ; j,b" of t1 with itself that is the exchange of (i,a) with (j,b), and for
+   ``"ij`` <- ki ; kj" it is the swap of i and j. With exactly one operand conjugated, the swap
+   conjugates the term instead, and the generator is a conjugating one.
+
+   This is the product alone. Whether the einsum's OUTPUT has the symmetry also depends on its
+   destination prefactor, which ``output_symmetry`` and ``symmetry_at`` account for.
+
+   Declines on two different tensors in the two slots (even two views of one buffer, which hold
+   different elements), operands of different rank, a relabeling that is not consistent or does not
+   keep C's letters among C's, an output above ``kMaxSymmetryRank``, a term wrapped in a
+   permutation operator, and a conjugating generator with a prefactor that is not real.
+
+   :param graph: The graph ``node`` belongs to.
+   :param node: The node.
+   :returns: A single-generator descriptor, or nothing.

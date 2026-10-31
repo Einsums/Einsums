@@ -1,0 +1,25 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.tensor_algebra.unfold:
+
+===============================
+einsums::tensor_algebra::unfold
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TensorAlgebra/Backends/Unfold.hpp``.
+
+.. cpp:namespace:: einsums::tensor_algebra
+
+.. cpp:function:: template <unsigned int mode, size_t CRank, typename T> Tensor<T, 2> unfold(const Tensor<T, CRank> &source)
+
+   Returns the mode-`mode` unfolding of `tensor` with modes startng at `0`
+
+   :returns: unfolded_tensor of shape ``(tensor.dim(mode), -1)``

@@ -1,0 +1,172 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.task_pool.WidthBudget:
+
+===============================
+einsums::task_pool::WidthBudget
+===============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/TaskPool/WidthBudget.hpp``.
+
+.. cpp:namespace:: einsums::task_pool
+
+.. cpp:class:: WidthBudget
+
+   Process-wide admission control for the threads a task is allowed to fork.
+
+   A moldable task declares a width (its kernel's thread count) and must be admitted before it
+   runs; admitted widths never sum past the machine's thread count. Process-wide, since nested and
+   concurrent replays share one machine.
+
+   **Admission order**
+
+   Strict priority with head-of-line blocking: while the highest-priority parked task does not
+   fit, nothing is admitted ahead of it. No backfilling, which would need duration estimates.
+
+   **Why it cannot deadlock**
+
+   Requests are clamped to the total, and a task holding width either runs to completion or lends
+   its width back while it waits (``BlockedScope``). So the charge drains to zero and the head fits.
+
+   **Threading**
+
+   Every member is thread-safe. Continuations run on the releasing thread, never under the lock.
+
+
+   .. cpp:function:: WidthBudget(PrivateConstructorStuff)
+
+   .. cpp:function:: WidthBudget(const WidthBudget &) = delete
+
+   .. cpp:function:: WidthBudget(WidthBudget &&) = delete
+
+   .. cpp:function:: static WidthBudget & get_singleton()
+
+   .. cpp:function:: unsigned int acquire(unsigned int width, Priority priority, Continuation resume)
+
+      Ask for ``width`` units on behalf of a task.
+
+      Never blocks. A request wider than the budget is clamped, not refused.
+
+      :returns: The width charged, to be handed back through ``release``; 0 means the task was parked and ``resume`` (which may already have run) owns it.
+
+
+   .. cpp:function:: void release(unsigned int width)
+
+      Hand back ``width`` units and admit whatever parked task now fits.
+
+
+   .. cpp:function:: void sync_machine_width()
+
+      Adopt the machine's current thread count as the budget total.
+
+      Only while idle, so admitted tasks never see the total change. Call from the thread starting
+      a run: a pool worker is pinned to one thread.
+
+
+   .. cpp:function:: unsigned int total() const
+
+      Threads the budget is currently rationing.
+
+
+   .. cpp:function:: unsigned int in_use() const
+
+      Width charged right now.
+
+
+   .. cpp:function:: unsigned int peak_in_use() const
+
+      Largest width ever charged by admission, since the last ``reset_peak``.
+
+      Admissions only (not widths reclaimed after a ``BlockedScope``), so it must never exceed ``total``.
+
+
+   .. cpp:function:: std::size_t parked() const
+
+      Number of tasks parked waiting for width.
+
+
+   .. cpp:function:: void reset_peak()
+
+      Forget the recorded peak. For tests and diagnostics.
+
+
+   .. cpp:class:: Priority
+
+      Admission order key.
+
+      Larger ``rank`` (longest remaining path to a sink) first, then smaller ``tiebreak``, so the order
+      depends on the graph, not on thread timing.
+
+
+      .. cpp:member:: std::int64_t rank
+
+      .. cpp:member:: std::size_t tiebreak
+
+
+   .. cpp:class:: HoldScope
+
+      Marks the calling thread as running an admitted task of ``width``.
+
+      Read by ``BlockedScope``. A width of 0 does nothing.
+
+
+      .. cpp:function:: explicit HoldScope(unsigned int width)
+
+      .. cpp:function:: HoldScope(const HoldScope &) = delete
+
+      .. cpp:function:: HoldScope(HoldScope &&) = delete
+
+      .. cpp:function:: ~HoldScope()
+
+      .. cpp:function:: HoldScope & operator=(const HoldScope &) = delete
+
+      .. cpp:function:: HoldScope & operator=(HoldScope &&) = delete
+
+
+   .. cpp:class:: BlockedScope
+
+      Lends the calling task's width to the work it is about to wait on.
+
+      Constructed where a nested run begins: the waiting task is not computing, and its body's tasks
+      draw on the same budget, so holding the width could wedge the run. Does nothing outside an
+      admitted task.
+
+
+      .. cpp:function:: BlockedScope()
+
+      .. cpp:function:: BlockedScope(const BlockedScope &) = delete
+
+      .. cpp:function:: BlockedScope(BlockedScope &&) = delete
+
+      .. cpp:function:: ~BlockedScope()
+
+      .. cpp:function:: BlockedScope & operator=(const BlockedScope &) = delete
+
+      .. cpp:function:: BlockedScope & operator=(BlockedScope &&) = delete
+
+
+   .. cpp:class:: Pending
+
+      One parked request, ordered by Priority for the head-of-line rule.
+
+
+      .. cpp:member:: std::int64_t rank
+
+      .. cpp:member:: std::size_t tiebreak
+
+      .. cpp:member:: std::uint64_t seq
+
+         arrival order, the last tiebreak so ordering is total
+
+
+      .. cpp:member:: unsigned int width
+
+      .. cpp:member:: Continuation resume

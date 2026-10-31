@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.gpu.blas.axpby:
+
+=========================
+einsums::gpu::blas::axpby
+=========================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/GPU/BLAS.hpp``.
+
+.. cpp:namespace:: einsums::gpu::blas
+
+.. cpp:function:: template <typename T> void axpby(int64_t n, T alpha, const T *x, int64_t incx, T beta, T *y, int64_t incy)
+
+   Axpby on device memory: y = alpha * x + beta * y.
+
+   :param n: Number of elements.
+   :param alpha: Scale factor for x.
+   :param x: Device pointer to source vector.
+   :param incx: Stride for x.
+   :param beta: Scale factor for y.
+   :param y: Device pointer to destination vector.
+   :param incy: Stride for y.

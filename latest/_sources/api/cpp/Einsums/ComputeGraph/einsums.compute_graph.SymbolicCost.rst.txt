@@ -1,0 +1,55 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.SymbolicCost:
+
+====================================
+einsums::compute_graph::SymbolicCost
+====================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/SymbolicCost.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: SymbolicCost
+
+   The symbolic cost of one operation: three polynomials in index-space scales.
+
+   **What "resident" approximates**
+
+   The live footprint of an operation is really the MAXIMUM over its operands, and a maximum of
+   polynomials is not a polynomial. The first cut taken here is the SUM of the operand sizes, which
+   is the same quantity as ``traffic`` for a node that touches each operand once. It is an upper
+   bound within a factor of the operand count, it orders the same way as the maximum whenever one
+   operand dominates the others (the usual case in a contraction), and it is wrong as an absolute
+   memory figure. Treat it as a ranking key, not as a byte count.
+
+
+   .. cpp:function:: std::string to_string(const SpaceRegistry *registry) const
+
+      Render all three polynomials.
+
+      :param registry: Registry used to resolve scale symbols. May be null.
+      :returns: The three polynomials, each labelled with its name and separated by commas.
+
+
+   .. cpp:member:: SymbolicPoly flops
+
+      Arithmetic operations.
+
+
+   .. cpp:member:: SymbolicPoly traffic
+
+      Words moved between memory and the kernel.
+
+
+   .. cpp:member:: SymbolicPoly resident
+
+      Words live at once. See the class documentation for the caveat.

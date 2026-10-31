@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.StreamTerm:
+
+================================
+einsums::packed_gemm::StreamTerm
+================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Stream.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:class:: template <typename T> StreamTerm
+
+   One contraction fed by a stream over a large tensor :math:`S`.
+
+   The term computes
+
+   .. math::
+
+      C[\rho(\mathrm{idx})] \leftarrow c_{pf} C[\rho(\mathrm{idx})] + \alpha \sum S[\mathrm{idx}]\, W[\pi(\mathrm{idx})]
+
+   where every axis of :math:`C` and of :math:`W` carries the label of some axis of :math:`S`. The maps are
+   given per axis of :math:`S`: ``c_axis`` names the axis of :math:`C` with the same label, or -1 when the
+   label is summed, and ``w_axis`` does the same for :math:`W`.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:member:: T *c
+
+      Output data. Terms with the same pointer accumulate into one output.
+
+
+   .. cpp:member:: StreamLayout c_layout
+
+      Output geometry.
+
+
+   .. cpp:member:: const T *w
+
+      The small operand's data.
+
+
+   .. cpp:member:: StreamLayout w_layout
+
+      The small operand's geometry.
+
+
+   .. cpp:member:: std::vector<int> c_axis
+
+      For each axis of S, the axis of C with the same label, or -1.
+
+
+   .. cpp:member:: std::vector<int> w_axis
+
+      For each axis of S, the axis of W with the same label, or -1.
+
+
+   .. cpp:member:: T alpha
+
+      Scale on the contraction.
+
+
+   .. cpp:member:: T c_pf
+
+      Scale on the output's prior contents; only the first term on an output may differ from 1.

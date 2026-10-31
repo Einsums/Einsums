@@ -1,0 +1,26 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.blis_contraction_body:
+
+===========================================
+einsums::packed_gemm::blis_contraction_body
+===========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/PackedGemm.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename ValueType, typename CType, typename AType, typename BType> void blis_contraction_body(const PackingPlan &plan, CType &C, const AType &A, const BType &B, ValueType alpha, ValueType beta, bool conj_a, bool conj_b, bool prefer_packed)
+
+   The packed engine on all of K: the vendor fast paths when the plan maps onto one GEMM or a batch of them, and otherwise BLIS-style packed loops over the resolved SIMD rung's tile kernel, its threads dividing the output. ``blis_contraction`` runs it once, or once per share of K.
+
+   It reads an operand only through ``data()``, ``dim()``, ``stride()`` and its rank, so a
+   ``StridedOperand`` serves as well as a tensor.

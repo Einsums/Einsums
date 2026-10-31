@@ -1,0 +1,75 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.FactorizationRegistry:
+
+=============================================
+einsums::compute_graph::FactorizationRegistry
+=============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/Factorization.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:class:: FactorizationRegistry
+
+   The providers a process knows about.
+
+   Process-global by default, in the manner of ``SpaceRegistry``, because a provider is a
+   capability of the build rather than of one graph. Registration is a startup act; a test
+   that adds one is expected to remove it, and ``clear`` exists for exactly that.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: FactorizationRegistry() = default
+
+   .. cpp:function:: void add(std::shared_ptr<FactorizationProvider> provider)
+
+      Register a provider.
+
+      :param provider: The provider. Held by shared_ptr and must outlive nothing in particular: the registry owns a reference.
+      :throws std::invalid_argument: When a provider of the same name is already registered, naming it. Two providers under one name would make which of them ran depend on registration order, and a pass whose result depends on that is not reproducible.
+
+
+   .. cpp:function:: std::vector<std::shared_ptr<FactorizationProvider>> for_tag(std::string_view tag) const
+
+      Every provider claiming ``tag``, in registration order.
+
+      :param tag: A provenance tag name.
+      :returns: The providers. Empty when nothing claims it.
+
+
+   .. cpp:function:: bool claims(std::string_view tag) const
+
+      Whether any provider claims ``tag``.
+
+      :param tag: A provenance tag name.
+      :returns: True when at least one does.
+
+
+   .. cpp:function:: bool remove(std::string_view name)
+
+      Remove a provider by name.
+
+      :param name: The provider's ``FactorizationProvider::name``.
+      :returns: True when one was removed.
+
+
+   .. cpp:function:: void clear()
+
+      Forget every provider.
+
+
+   .. cpp:function:: std::size_t size() const
+
+      How many providers are registered.
+
+      :returns: The count.

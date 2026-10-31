@@ -1,0 +1,31 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sasum:
+
+============================
+einsums::blas::vendor::sasum
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: float sasum(int_t n, const float *x, int_t incx)
+
+   Computes the sum of the absolute values of the input vector. If the vector is complex,
+   then it is the sum of the absolute values of the components, not the magnitudes.
+
+   .. versionadded:: 2.0.0
+
+   :param n: The number of elements.
+   :param x: The vector to process.
+   :param incx: The skip value for the vector.
+   :returns: The sum of the absolute values of the inputs as stated above.

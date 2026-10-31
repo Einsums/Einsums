@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.machine_section:
+
+==================================
+einsums::hardware::machine_section
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: json::Object machine_section(const MachineIdentity &identity)
+
+   The identity as the ``machine`` section of a profile writes it, fingerprint included.
+
+   .. versionadded:: 2.0.0
+
+   :param identity: The identity to write.
+   :returns: The section.

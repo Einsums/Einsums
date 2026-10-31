@@ -1,0 +1,27 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.physical_memory_bytes:
+
+========================================
+einsums::hardware::physical_memory_bytes
+========================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:function:: std::int64_t physical_memory_bytes()
+
+   Physical memory in bytes.
+
+   .. versionadded:: 2.0.0
+
+   :returns: The total, or zero when the platform will not say.

@@ -1,0 +1,30 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.create_tuple:
+
+=====================
+einsums::create_tuple
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Utilities/Tuple.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <size_t N, typename T> constexpr auto create_tuple(const T &value)
+
+   Creates a tuple consisting of copies of the passed value.
+
+   .. versionadded:: 1.1.0
+
+   :tparam N: The number of copies to make.
+   :tparam T: The type of the input.
+   :param value: The value to copy.
+   :returns: A tuple consisting of copies of the passed value.

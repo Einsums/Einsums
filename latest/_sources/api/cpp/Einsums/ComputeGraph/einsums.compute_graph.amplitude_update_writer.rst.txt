@@ -1,0 +1,40 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.amplitude_update_writer:
+
+===============================================
+einsums::compute_graph::amplitude_update_writer
+===============================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/EscapeAnalysis.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph
+
+.. cpp:function:: expected<NodeId, std::string> amplitude_update_writer(const Graph &graph, TensorId tensor)
+
+   The node of ``graph`` that updates ``tensor``, when ``graph`` is a solver's loop body.
+
+   A tagged tensor some node writes is normally refused outright by a factorization: its factors
+   would go stale whenever it changed, and a fitting runs once per bound problem. An AMPLITUDE is
+   written every iteration by design, and the way out is not to relax the refusal but to
+   recognize the one writer that makes a re-fit meaningful.
+
+   What counts as the update statement, and nothing else does:
+
+   - a ``DirectDivision`` whose destination is ``tensor``, which is a residual divided by an energy denominator into the amplitude, the plain update with the extrapolation left to the host predicate; or
+   - an ``Axpby`` accumulating into ``tensor`` whose source is itself produced in this graph by a ``DirectDivision``, which is the same update written as a step the host's DIIS can read.
+
+   There must be exactly ONE value-writer of the buffer here and none in any descendant, because
+   two writers mean the value the fit is about is not settled by the statement being recognized.
+
+   :param graph: The loop body.
+   :param tensor: The tagged tensor.
+   :returns: The updating node's id, or the reason this is not an update.

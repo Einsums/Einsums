@@ -1,0 +1,54 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.for_sequence:
+
+=====================
+einsums::for_sequence
+=====================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Iterator/Enumerate.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:function:: template <typename T, T... S, typename F> constexpr void for_sequence(std::integer_sequence<T, S...>, F f)
+
+   Provides compile-time for loop over a sequence.
+
+   .. versionadded:: 1.0.0
+
+   :tparam T: datatype of the sequence
+   :tparam S: the sequence to work through
+   :tparam F: the functor type to call
+   :param f: the functor to call
+
+
+.. cpp:function:: template <auto n, typename F> constexpr void for_sequence(F f)
+
+   Provides compile-time for loop semantics.
+
+   Calls ``f`` with a ``std::integral_constant`` for each of 0 to n-1, unrolled at compile time:
+
+   .. code-block:: text
+
+      auto index_lists = std::make_tuple(Indices{index::i, index::j, index::k}, Indices{index::i, index::k, index::j});
+      Tensor<double, 3> A = create_random_tensor("A", 10, 10, 10), B = create_random_tensor("B", 10, 10, 10);
+      double C = 0;
+
+      for_sequence<2>([&](auto n) { einsum(1.0, Indices{}, &C, 1.0,
+          std::get<(size_t) n>(index_lists), A, Indices{index::i, index::j, index::k}, B); });
+
+   The argument is cast to ``size_t`` for ``std::get``.
+
+   .. versionadded:: 1.0.0
+
+   :tparam n: the number of iterations to perform
+   :tparam F: the functor type to call
+   :param f: the functor

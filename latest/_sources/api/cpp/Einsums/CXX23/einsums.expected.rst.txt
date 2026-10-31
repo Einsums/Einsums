@@ -1,0 +1,128 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.expected:
+
+=================
+einsums::expected
+=================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/CXX23/Expected.hpp``.
+
+.. cpp:namespace:: einsums
+
+.. cpp:class:: template <typename T, typename E> expected
+
+   A value-or-error type (C++23 std::expected backport).
+
+   Holds either a value of type T or an error of type E. The caller must
+   check before accessing the value.
+
+   **Example**
+
+   .. code-block:: text
+
+      einsums::expected<Settings, std::string> load_settings(path) {
+          if (!file_exists(path))
+              return einsums::unexpected("file not found: " + path);
+          return Settings{...};
+      }
+
+      auto result = load_settings("settings.json");
+      if (result) {
+          use(result.value());
+      } else {
+          log_error(result.error());
+      }
+
+   :tparam T: Value type.
+   :tparam E: Error type.
+
+
+   .. cpp:function:: constexpr expected() requires std::default_initializable<T>
+
+      Default: constructs with a value-initialized T.
+
+
+   .. cpp:function:: constexpr expected(T val)
+
+      Construct from a value.
+
+
+   .. cpp:function:: constexpr expected(unexpected<E> err)
+
+      Construct from an unexpected error.
+
+
+   .. cpp:function:: constexpr expected(const expected<T, E> &) = default
+
+   .. cpp:function:: constexpr expected(expected<T, E> &&) = default
+
+   .. cpp:function:: constexpr expected<T, E> & operator=(const expected<T, E> &) = default
+
+   .. cpp:function:: constexpr expected<T, E> & operator=(expected<T, E> &&) = default
+
+   .. cpp:function:: constexpr bool has_value() const noexcept
+
+      True if holds a value (not an error).
+
+
+   .. cpp:function:: constexpr explicit operator bool() const noexcept
+
+      Boolean conversion: true if has value.
+
+
+   .. cpp:function:: constexpr T & value() &
+
+      Access the value. UB if holds an error.
+
+
+   .. cpp:function:: constexpr const T & value() const &
+
+   .. cpp:function:: constexpr T && value() &&
+
+   .. cpp:function:: constexpr E & error() &
+
+      Access the error. UB if holds a value.
+
+
+   .. cpp:function:: constexpr const E & error() const &
+
+   .. cpp:function:: constexpr T & operator*() &
+
+      Dereference: access value.
+
+
+   .. cpp:function:: constexpr const T & operator*() const &
+
+   .. cpp:function:: constexpr T * operator->()
+
+   .. cpp:function:: constexpr const T * operator->() const
+
+   .. cpp:function:: template <std::convertible_to<T> U> constexpr T value_or(U &&default_val) const &
+
+      Value or default.
+
+
+   .. cpp:function:: template <std::convertible_to<T> U> constexpr T value_or(U &&default_val) &&
+
+   .. cpp:function:: template <typename F> constexpr auto and_then(F &&f) &
+
+      Transform the value with f. If error, propagates the error.
+
+
+   .. cpp:function:: template <typename F> constexpr auto and_then(F &&f) const &
+
+   .. cpp:function:: template <typename F> constexpr auto transform(F &&f) &
+
+      Transform the value, wrapping in a new expected.
+
+
+   .. cpp:function:: template <typename F> constexpr auto transform(F &&f) const &

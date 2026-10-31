@@ -1,0 +1,36 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.blas.vendor.sgees:
+
+============================
+einsums::blas::vendor::sgees
+============================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/BLASVendor/Vendor.hpp``.
+
+.. cpp:namespace:: einsums::blas::vendor
+
+.. cpp:function:: int_t sgees(char jobvs, int_t n, float *a, int_t lda, int_t *sdim, float *wr, float *wi, float *vs, int_t ldvs)
+
+   Perform Schur decomposition on a matrix.
+
+   .. versionadded:: 1.0.0
+
+   :param jobvs: Whether to compute the Schur vectors. Case insensitive. Can be either 'n' or 'v'.
+   :param n: The number of rows and columns in the matrix.
+   :param a: The matrix to decompose.
+   :param lda: The leading dimension of the matrix.
+   :param sdim: The dimensions of the Schur blocks.
+   :param wr: The real component of the eigenvalues.
+   :param wi: The imaginary component of the eigenvalues.
+   :param vs: The Schur vectors.
+   :param ldvs: The leading dimension of the Schur vectors. Even if not referenced, it needs to be at least 1.
+   :returns: 0 on success. If positive and at most ``n`` , then the algorithm did not converge. If ``n + 1`` then the eigenvalues could not be sorted due to the problem being ill-conditioned. If ``n + 2`` then roundoff changed some of the values after reordering. If negative, then one of the parameters had an invalid value. The absolute value gives the parameter.

@@ -1,0 +1,28 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.compute_graph.element_ops.register_op:
+
+================================================
+einsums::compute_graph::element_ops::register_op
+================================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/ComputeGraph/ElementOps.hpp``.
+
+.. cpp:namespace:: einsums::compute_graph::element_ops
+
+.. cpp:function:: template <typename Kernel> void register_op(std::string name, Kernel kernel, ElementOpSignature signature)
+
+   Register an op in the process-wide registry.
+
+   :tparam Kernel: A dtype-generic callable; see ``ElementOpRegistry::register_op``.
+   :param name: The lookup name.
+   :param kernel: The kernel.
+   :param signature: What the op promises.

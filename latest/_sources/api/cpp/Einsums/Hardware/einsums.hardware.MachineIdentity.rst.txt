@@ -1,0 +1,64 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.hardware.MachineIdentity:
+
+==================================
+einsums::hardware::MachineIdentity
+==================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/Hardware/Machine.hpp``.
+
+.. cpp:namespace:: einsums::hardware
+
+.. cpp:class:: MachineIdentity
+
+   The hardware a measurement depends on.
+
+   Every field is detected, never taken from an option, so pinning a cache size for an A/B run
+   does not make the machine look like a different one.
+
+   .. versionadded:: 2.0.0
+
+
+   .. cpp:function:: bool operator==(const MachineIdentity &) const = default
+
+      Field-by-field equality.
+
+
+   .. cpp:member:: std::string cpu
+
+      The CPU brand string, such as "Apple M4 Pro".
+
+
+   .. cpp:member:: int physical_cores
+
+      Physical cores; the logical count when the platform does not say.
+
+
+   .. cpp:member:: int logical_cores
+
+      Logical processors, hardware threads included.
+
+
+   .. cpp:member:: CacheSizes caches
+
+      Data-cache sizes in bytes, detected rather than overridden.
+
+
+   .. cpp:member:: std::int64_t memory_gib
+
+      Physical memory in GiB, rounded to the nearest. Identical nodes can report a few MiB apart
+      once the kernel has reserved its share, and an exact byte count would tell them apart.
+
+
+   .. cpp:member:: std::string simd
+
+      The SIMD rung the kernels dispatch to, such as "x86-64-v3" or "sme".

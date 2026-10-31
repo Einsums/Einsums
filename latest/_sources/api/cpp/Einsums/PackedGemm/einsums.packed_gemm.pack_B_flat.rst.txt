@@ -1,0 +1,23 @@
+..
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
+
+
+.. _api_cpp_einsums.packed_gemm.pack_B_flat:
+
+=================================
+einsums::packed_gemm::pack_B_flat
+=================================
+
+.. note::
+   Generated from the C++ headers by ``apiary --emit-cpp-docs-json``.
+
+Defined in header ``Einsums/PackedGemm/Packing.hpp``.
+
+.. cpp:namespace:: einsums::packed_gemm
+
+.. cpp:function:: template <typename T> void pack_B_flat(T *dst, const T *B_data, const PackingPlan &plan, int64_t kc_start, int64_t kc_len, int64_t nc_start, int64_t nc_len, bool conj)
+
+   Pack B[kc:kc+kc_len, nc:nc+nc_len] into a plain k-major kc_len x nc_len matrix (element (k, j) at dst[k*nc_len + j]) - i.e. the column-major nc_len x kc_len matrix a vendor GEMM consumes with transB='T'.
