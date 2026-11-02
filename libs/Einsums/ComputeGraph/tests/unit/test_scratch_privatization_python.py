@@ -18,8 +18,8 @@ import pytest
 
 import einsums
 import einsums.graph as cg
+from _dtype_draws import assert_rounding_close, wide
 from einsums import linalg as la
-from einsums.testing import assert_close
 
 
 def _randn(rng, dtype, *shape):
@@ -28,6 +28,19 @@ def _randn(rng, dtype, *shape):
     if np.dtype(dtype).kind == "c":
         data = data + 1j * rng.standard_normal(shape)
     return np.ascontiguousarray(data.astype(dtype))
+
+
+def _assert_matches(actual, dtype, expr, *operands):
+    """Check ``actual`` against ``expr(*operands)`` evaluated in double precision.
+
+    A single-precision sum of products rounds at the size of its terms, not of its
+    result, so an entry that cancels toward zero can miss a bound relative to
+    itself - and numpy's own single-precision answer is no oracle for it. The
+    bound scales with ``expr`` over absolute values, which needs ``expr`` to be a
+    sum of products with nonnegative coefficients.
+    """
+    wide_ops = [np.asarray(x).astype(wide(dtype)) for x in operands]
+    assert_rounding_close(actual, expr(*wide_ops), dtype, expr(*[np.abs(x) for x in wide_ops]))
 
 
 @pytest.fixture
@@ -52,13 +65,11 @@ def test_set_executor_on_loop_body(rng, dtype):
 
     body.set_executor(cg.DataflowExecutor())
     g.execute()
-    An = np.asarray(A)
-    ref = 3 * (An @ An + An.T @ An)
-    assert_close(np.asarray(acc), ref)
+    _assert_matches(acc, dtype, lambda a: 3 * (a @ a + a.T @ a), A)
 
     body.set_executor(None)
     g.execute()
-    assert_close(np.asarray(acc), 2 * ref)
+    _assert_matches(acc, dtype, lambda a: 6 * (a @ a + a.T @ a), A)
 
 
 def test_privatization_splits_generations(rng, dtype):
@@ -85,8 +96,7 @@ def test_privatization_splits_generations(rng, dtype):
 
     g.apply(cg.default_pass_manager())  # materialize the clones
     g.execute()
-    ref = sum(np.asarray(A) @ np.asarray(A) for A in ops)
-    assert_close(np.asarray(acc), ref)
+    _assert_matches(acc, dtype, lambda *a: sum(x @ x for x in a), *ops)
 
 
 def test_privatization_requires_executor_by_default(rng):
@@ -161,8 +171,7 @@ def test_privatized_ccsd_style_loop_matches_numpy(rng, dtype):
     def sym(m):
         return m + m.T
 
-    ref = 3 * (sym(np.asarray(A1) @ np.asarray(A1)) + sym(np.asarray(A2) @ np.asarray(A2)))
-    assert_close(np.asarray(r2), ref)
+    _assert_matches(r2, dtype, lambda a1, a2: 3 * (sym(a1 @ a1) + sym(a2 @ a2)), A1, A2)
 
 
 def test_disjoint_view_writes_parallel_and_exact(rng, dtype):
@@ -181,15 +190,15 @@ def test_disjoint_view_writes_parallel_and_exact(rng, dtype):
             o_k = cg.view_indexed(out, [(2, k, 0), _FULL, _FULL])
             einsums.einsum("a,b <- a,c ; c,b", o_k, s_k, s_k, c_pf=1.0, ab_pf=1.0)
 
-    src_np = np.asarray(src)
-    ref = np.stack([src_np[k] @ src_np[k] for k in range(n)])
+    def slices(s):
+        return np.stack([s[k] @ s[k] for k in range(n)])
 
     g.execute()
-    assert_close(np.asarray(out), ref)
+    _assert_matches(out, dtype, slices, src)
 
     g.set_executor(cg.DataflowExecutor())
     g.execute()
-    assert_close(np.asarray(out), 2 * ref)
+    _assert_matches(out, dtype, lambda s: 2 * slices(s), src)
 
 
 def test_privatization_splits_generations_axpy_spelling(rng, dtype):
@@ -220,5 +229,4 @@ def test_privatization_splits_generations_axpy_spelling(rng, dtype):
 
     g.apply(cg.default_pass_manager())
     g.execute()
-    ref = sum(np.asarray(A) @ np.asarray(A) for A in ops)
-    assert_close(np.asarray(acc), ref)
+    _assert_matches(acc, dtype, lambda *a: sum(x @ x for x in a), *ops)
