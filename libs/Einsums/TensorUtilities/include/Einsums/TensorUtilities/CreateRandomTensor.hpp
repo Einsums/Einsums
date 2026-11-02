@@ -18,7 +18,6 @@
 #include <Einsums/Utilities/Random.hpp>
 
 #include <concepts>
-#include <omp.h>
 #include <random>
 #include <string>
 

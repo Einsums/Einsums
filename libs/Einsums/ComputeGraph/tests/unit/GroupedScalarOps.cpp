@@ -26,6 +26,10 @@
 #include <string>
 #include <vector>
 
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
+
 #include <Einsums/Testing.hpp>
 
 using namespace einsums;

@@ -44,7 +44,6 @@
 #include <functional>
 #include <memory>
 #include <numeric>
-#include <omp.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
