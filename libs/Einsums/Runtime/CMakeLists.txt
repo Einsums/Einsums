@@ -25,7 +25,7 @@ einsums_add_module(
   PYBIND
   SOURCES ${RuntimeSources}
   HEADERS ${RuntimeHeaders}
-  DEPENDENCIES tgt::hdf5 ZLIB::ZLIB
+  DEPENDENCIES tgt::hdf5
   MODULE_DEPENDENCIES
     Einsums_Assertion
     Einsums_Options

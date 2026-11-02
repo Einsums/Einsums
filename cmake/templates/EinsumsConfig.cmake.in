@@ -181,7 +181,6 @@ if(NOT TARGET @EINSUMS_MIMALLOC_TARGET@)
       "mimalloc that carries it, or rebuild Einsums against the one this environment has."
   )
 endif()
-einsums_find_package(ZLIB REQUIRED)
 einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
 

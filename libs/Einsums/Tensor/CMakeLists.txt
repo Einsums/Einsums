@@ -32,7 +32,7 @@ einsums_add_module(
   PYBIND
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  DEPENDENCIES tgt::hdf5 ZLIB::ZLIB
+  DEPENDENCIES tgt::hdf5
   MODULE_DEPENDENCIES
     Einsums_BLAS
     Einsums_BufferAllocator

@@ -13,5 +13,4 @@
 # * MakeAvailable called here so that install (of vendored headers into einsums namespace)
 #   can be localized into this file.
 
-find_package(ZLIB REQUIRED)
 find_package(TargetHDF5 REQUIRED)
