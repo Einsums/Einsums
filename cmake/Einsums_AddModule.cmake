@@ -58,7 +58,11 @@ include(Einsums_CodeCoverage)
 #:      Extra object files/targets to link **privately** into the module.
 #:
 #:    - ``PRIVATE_DEPENDENCIES <targets...>``:
-#:      Targets linked privately to ``<libname>_<modulename>``.
+#:      Targets only the module's sources use. The module compiles against their usage requirements
+#:      (``$<COMPILE_ONLY:>``) and ``<libname>`` links them ``PRIVATE``, so they stay out of the
+#:      exported link interface and a consumer's configure never has to find them. Linking them to
+#:      the OBJECT module instead would export them as ``$<LINK_ONLY:>`` items. A dependency named in
+#:      a public header belongs in ``DEPENDENCIES``. Not allowed on header-only modules.
 #:    - ``DEPENDENCIES <targets...>``:
 #:      Targets linked with module’s public keyword (``PUBLIC`` for object modules, ``INTERFACE`` for
 #:      header‑only modules).
@@ -94,7 +98,7 @@ include(Einsums_CodeCoverage)
 #:    - Links, in order:
 #:      - ``MODULE_DEPENDENCIES`` (public/interface as appropriate),
 #:      - ``DEPENDENCIES`` (public/interface),
-#:      - ``PRIVATE_DEPENDENCIES`` (private),
+#:      - ``PRIVATE_DEPENDENCIES`` (compile-only on the module, ``PRIVATE`` on ``<libname>``),
 #:      - Always links ``einsums_public_flags`` and ``einsums_base_libraries`` with the module’s
 #:        public/interface keyword; if the module is **OBJECT**, also links
 #:        ``einsums_private_flags`` privately.
@@ -307,7 +311,22 @@ function(einsums_add_module libname modulename)
   target_link_libraries(
     ${libname}_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
   )
-  target_link_libraries(${libname}_${modulename} PRIVATE ${${modulename}_PRIVATE_DEPENDENCIES})
+  if(${modulename}_PRIVATE_DEPENDENCIES)
+    if(module_is_interface_library)
+      einsums_error(
+        "einsums_add_module(${libname} ${modulename}): PRIVATE_DEPENDENCIES needs SOURCES; a header-only module has nothing to compile against them"
+      )
+    endif()
+    # The module is exported, and CMake exports an OBJECT library's private items as $<LINK_ONLY:>.
+    # BUILD_LOCAL_INTERFACE keeps the compile-only item out of the export entirely, so a consumer's
+    # CMake never has to parse $<COMPILE_ONLY:> or know the dependency's name.
+    foreach(dep IN LISTS ${modulename}_PRIVATE_DEPENDENCIES)
+      target_link_libraries(
+        ${libname}_${modulename} PRIVATE $<BUILD_LOCAL_INTERFACE:$<COMPILE_ONLY:${dep}>>
+      )
+    endforeach()
+    target_link_libraries(${libname} PRIVATE ${${modulename}_PRIVATE_DEPENDENCIES})
+  endif()
 
   target_link_libraries(
     ${libname}_${modulename} ${module_public_keyword} einsums_public_flags einsums_base_libraries

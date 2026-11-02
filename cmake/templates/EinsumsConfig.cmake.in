@@ -184,10 +184,6 @@ endif()
 einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
 
-if (@EINSUMS_WITH_BACKTRACES@)
-  einsums_find_package(cpptrace 1.0 REQUIRED)
-endif ()
-
 if (NOT TARGET tgt::lapack)
   add_library(tgt::lapack INTERFACE IMPORTED)
   if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR

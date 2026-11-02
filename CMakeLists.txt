@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR) # 3.25.2 for CUDA20 support.
+cmake_minimum_required(VERSION 3.27 FATAL_ERROR) # 3.27 for $<COMPILE_ONLY:> (PRIVATE_DEPENDENCIES).
 
 # Overrides must go before project() statement, otherwise they are ignored
 
@@ -81,9 +81,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 include(GNUInstallDirs)
 include(Einsums_Utils)
 include(CheckLanguage)
-
-# Explicitly set certain policies
-einsums_set_cmake_policy(CMP0144 NEW)
 
 # CMP0155 governs whether C++20 sources are scanned for module dependencies. Einsums has no modules,
 # so the scan is pure build-time cost - but pinning the policy OLD to avoid it is itself deprecated

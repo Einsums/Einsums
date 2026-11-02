@@ -24,7 +24,7 @@
 # A configuration that generates code asks find_package for the tool component, so an install of the
 # annotations alone is passed over for the source build rather than accepted and then failing in
 # codegen. On the source fallback the option keeps Clang/LLVM out of a configuration that only wants
-# the macros. Our 3.25 floor means CMP0077 is NEW, so this normal variable drives Apiary's option()
+# the macros. Our 3.27 floor means CMP0077 is NEW, so this normal variable drives Apiary's option()
 # directly.
 
 include(FetchContent)

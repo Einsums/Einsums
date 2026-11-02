@@ -12,9 +12,11 @@ set(DebuggingHeaders Einsums/Debugging/AttachDebugger.hpp Einsums/Debugging/Back
 set(DebuggingSources AttachDebugger.cpp Backtrace.cpp CrashHandler.cpp Options.cpp)
 
 set(ExtraDependencies)
+set(PrivateDependencies)
 
+# Only Backtrace.cpp uses cpptrace; no header names it.
 if(EINSUMS_WITH_BACKTRACES)
-  list(APPEND ExtraDependencies cpptrace::cpptrace)
+  list(APPEND PrivateDependencies cpptrace::cpptrace)
 endif()
 
 # MiniDumpWriteDump lives in DbgHelp. Linked rather than LoadLibrary'd on demand: the
@@ -30,6 +32,7 @@ einsums_add_module(
   SOURCES ${DebuggingSources}
   HEADERS ${DebuggingHeaders}
   DEPENDENCIES ${ExtraDependencies}
+  PRIVATE_DEPENDENCIES ${PrivateDependencies}
   MODULE_DEPENDENCIES Einsums_Config Einsums_Options
   CMAKE_SUBDIRS examples tests
 )
