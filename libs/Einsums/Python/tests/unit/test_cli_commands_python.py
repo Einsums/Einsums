@@ -33,6 +33,22 @@ def test_info_reports_the_build_and_machine(capsys):
     assert "Einsums" in capsys.readouterr().out
 
 
+def test_info_names_the_blas_the_runtime_uses(capsys, tmp_path, monkeypatch):
+    # info once found the BLAS only by walking otool's install names, and resolved @rpath ones against
+    # the working directory, so on macOS it reported "(could not tell)" from anywhere outside the
+    # library's own directory. Run from an unrelated directory to keep that case covered.
+    from einsums import hardware
+
+    monkeypatch.chdir(tmp_path)
+    assert main(["info", "--json"]) == 0
+    info = json.loads(capsys.readouterr().out)["einsums"]
+    runtime = json.loads(hardware.profile_header_json())["software"]["blas"]
+    assert runtime != "unidentified"
+    assert info["blas"] == runtime
+    assert info["libEinsums"] is not None and Path(info["libEinsums"]).is_file()
+    assert info["blas_libraries"], "the linked-library walk found no BLAS under libEinsums"
+
+
 def test_options_lists_the_registry_with_its_spellings():
     # In a fresh interpreter, as `einsums options` runs: the runtime is never started,
     # so the registry must know each environment variable before initialize().

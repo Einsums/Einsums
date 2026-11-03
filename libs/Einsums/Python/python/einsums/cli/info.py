@@ -64,26 +64,52 @@ def _cpu() -> dict[str, object]:
     return info
 
 
-def _linked_libraries(binary: Path) -> list[str]:
-    """Shared libraries *binary* resolves to, from ldd or otool (empty if neither is available)."""
+def _rpaths(binary: Path) -> list[str]:
+    """The LC_RPATH entries of a Mach-O *binary*, with @loader_path expanded."""
+    out = subprocess.run(["otool", "-l", str(binary)], capture_output=True, text=True).stdout
+    paths = re.findall(r"cmd LC_RPATH\n\s*cmdsize \d+\n\s*path (.+?) \(offset \d+\)", out)
+    return [p.replace("@loader_path", str(binary.parent)) for p in paths]
+
+
+def _linked_libraries(binary: Path, inherited: tuple[str, ...] = ()) -> list[tuple[str, tuple[str, ...]]]:
+    """Shared libraries *binary* resolves to, from ldd or otool (empty if neither is available).
+
+    Each comes with the rpaths a library it loads in turn searches. otool prints install names as the
+    binary records them, so an @rpath or @loader_path one is expanded here the way dyld would, against
+    *binary*'s own rpaths and those of whatever loaded it, rather than against the working directory.
+    """
     if sys.platform == "darwin" and shutil.which("otool"):
         out = subprocess.run(["otool", "-L", str(binary)], capture_output=True, text=True).stdout
-        return [line.split()[0] for line in out.splitlines()[1:] if line.strip()]
+        search = (*_rpaths(binary), *inherited)
+        found = []
+        for name in (line.split()[0] for line in out.splitlines()[1:] if line.strip()):
+            if name.startswith("@rpath/"):
+                candidates = [Path(p) / name.removeprefix("@rpath/") for p in search]
+            else:
+                candidates = [Path(name.replace("@loader_path", str(binary.parent)))]
+            hit = next((c for c in candidates if c.exists()), None)
+            # Unresolved, so a stand-in such as conda's libblas.3.dylib keeps its own name.
+            found.append((str(hit) if hit else name, search))
+        return found
     if shutil.which("ldd"):
         out = subprocess.run(["ldd", str(binary)], capture_output=True, text=True).stdout
-        return [m.group(1) for m in re.finditer(r"=>\s+(\S+)", out)]
+        return [(m.group(1), ()) for m in re.finditer(r"=>\s+(\S+)", out)]
     return []
 
 
-def _blas(libraries: list[str]) -> list[str]:
-    pattern = re.compile(r"(openblas|mkl|blis|flexiblas|accelerate|essl|armpl|libblas|liblapack)", re.I)
+def _blas_libraries(libraries: list[str]) -> list[str]:
+    pattern = re.compile(r"(openblas|mkl|blis|flexiblas|accelerate|essl|armpl|libblas|libcblas|liblapack)", re.I)
     return sorted({Path(lib).name for lib in libraries if pattern.search(Path(lib).name)})
 
 
+# The BLAS is named by the runtime, from the library that actually supplies dgemm in this process: the
+# same name a hardware profile records and checks. Linked libraries say only what a binary asked for,
+# and conda's libblas, for one, is a stand-in for whichever implementation the environment selected.
 _PROFILE_PROBE = (
     "import json; from einsums import hardware as hw; "
     "print(json.dumps({'state': hw.profile_state(), 'path': hw.profile_path(), "
-    "'reason': hw.profile_reason(), 'fingerprint': hw.machine_fingerprint()}))"
+    "'reason': hw.profile_reason(), 'fingerprint': hw.machine_fingerprint(), "
+    "'blas': json.loads(hw.profile_header_json())['software']['blas']}))"
 )
 
 
@@ -116,10 +142,14 @@ def collect() -> dict[str, object]:
     full = version.full_build_string()
     git = re.search(r"Git:\s*(\w+)", full)
     core_path = Path(_core.__file__).resolve()
-    libraries = _linked_libraries(core_path)
-    einsums_lib = next((str(Path(lib).resolve()) for lib in libraries if "libEinsums" in Path(lib).name), None)
+    linked = _linked_libraries(core_path)
+    einsums_lib, search = next(((lib, s) for lib, s in linked if "libEinsums" in Path(lib).name), (None, ()))
+    einsums_lib = str(Path(einsums_lib).resolve()) if einsums_lib and Path(einsums_lib).is_file() else None
+    libraries = [lib for lib, _ in linked]
     if einsums_lib:  # BLAS hangs off libEinsums, not off _core
-        libraries += _linked_libraries(Path(einsums_lib))
+        libraries += [lib for lib, _ in _linked_libraries(Path(einsums_lib), search)]
+    profile = _profile()
+    blas = profile.pop("blas", None)
     optional = {}
     for module, purpose in OPTIONAL.items():
         if importlib.util.find_spec(module) is None:
@@ -138,14 +168,24 @@ def collect() -> dict[str, object]:
             "build_date": version.build_date_time(),
             "package": str(core_path.parent),
             "libEinsums": einsums_lib,
-            "blas": _blas(libraries),
+            "blas": blas if blas != "unidentified" else None,
+            "blas_libraries": _blas_libraries(libraries),
             "options": config,
         },
         "python": {"version": platform.python_version(), "executable": sys.executable, "optional": optional},
         "platform": {"system": platform.platform()},
         "cpu": _cpu(),
-        "profile": _profile(),
+        "profile": profile,
     }
+
+
+def _blas_row(e: dict[str, object]) -> str:
+    libraries = ", ".join(e["blas_libraries"])
+    if e["blas"]:
+        # Name the linked libraries only when they are stand-ins the runtime name does not already show.
+        shown = all(lib in e["blas"] for lib in e["blas_libraries"])
+        return e["blas"] if shown or not libraries else f"{e['blas']}, linked through {libraries}"
+    return f"linked {libraries}; the runtime could not name the implementation" if libraries else "(could not tell)"
 
 
 def run(args: argparse.Namespace) -> int:
@@ -158,7 +198,7 @@ def run(args: argparse.Namespace) -> int:
         ("Einsums", f"{e['version']} ({e['build_type']}), commit {e['git_commit'] or '?'}, built {e['build_date']}"),
         ("Package", e["package"]),
         ("libEinsums", e["libEinsums"] or "(not found)"),
-        ("BLAS", ", ".join(e["blas"]) or "(could not tell)"),
+        ("BLAS", _blas_row(e)),
         ("Enabled", " ".join(k.removeprefix("EINSUMS_WITH_") for k, on in e["options"].items() if on) or "-"),
         ("Disabled", " ".join(k.removeprefix("EINSUMS_WITH_") for k, on in e["options"].items() if not on) or "-"),
         ("Python", f"{py['version']} ({py['executable']})"),
