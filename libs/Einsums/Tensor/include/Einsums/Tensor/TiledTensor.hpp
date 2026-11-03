@@ -197,6 +197,16 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
         }
     }
 
+    /**
+     * Move a tiled tensor. The tiles change owner without being copied, and @p other is left an empty tensor.
+     *
+     * @param other The tensor to be moved.
+     */
+    TiledTensor(TiledTensor &&other) noexcept
+        : _tile_offsets(std::exchange(other._tile_offsets, {})), _tile_sizes(std::exchange(other._tile_sizes, {})),
+          _tiles(std::exchange(other._tiles, {})), _dims(std::exchange(other._dims, Dim<rank>{})), _size(std::exchange(other._size, 0)),
+          _grid_size(std::exchange(other._grid_size, 0)), _name(std::move(other._name)) {}
+
     virtual ~TiledTensor() = default;
 
     /**
@@ -717,6 +727,27 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
     }
 
     /**
+     * @brief Move assignment. The tiles change owner without being copied, and @p other is left an empty tensor.
+     *
+     * @param other The tensor to move.
+     */
+    TiledTensor &operator=(TiledTensor &&other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        _tile_offsets = std::exchange(other._tile_offsets, {});
+        _tile_sizes   = std::exchange(other._tile_sizes, {});
+        _tiles        = std::exchange(other._tiles, {});
+        _dims         = std::exchange(other._dims, Dim<rank>{});
+        _size         = std::exchange(other._size, 0);
+        _grid_size    = std::exchange(other._grid_size, 0);
+        _name         = std::move(other._name);
+
+        return *this;
+    }
+
+    /**
      * @brief Copy assignment from a different kind of tiled tensor.
      *
      * @param copy The tensor to copy.
@@ -1229,7 +1260,18 @@ struct TiledTensor final : tensor_base::TiledTensor<T, Rank, einsums::Tensor<T, 
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>)
     TiledTensor(OtherTensor const &other) : tensor_base::TiledTensor<T, Rank, Tensor<T, Rank>>(other) {}
 
+    /**
+     * @brief Move constructor. The tiles change owner without being copied.
+     *
+     * @param other The tensor to move.
+     */
+    TiledTensor(TiledTensor<T, Rank> &&other) noexcept = default;
+
     ~TiledTensor() override = default;
+
+    // Declaring the move members deletes the implicit copy assignment (issue #322), so default it explicitly.
+    TiledTensor &operator=(TiledTensor<T, Rank> const &copy)      = default;
+    TiledTensor &operator=(TiledTensor<T, Rank> &&other) noexcept = default;
 
     /**
      * @brief Copy assignment.
@@ -1322,7 +1364,19 @@ struct TiledTensorView final : tensor_base::TiledTensor<T, Rank, einsums::Tensor
      */
     TiledTensorView(TiledTensorView<T, Rank> const &other) = default;
 
+    /**
+     * @brief Move constructor. The tile views change owner; the viewed tensor is untouched.
+     *
+     * @param other The tensor view to move.
+     */
+    TiledTensorView(TiledTensorView<T, Rank> &&other) noexcept = default;
+
     ~TiledTensorView() override = default;
+
+    // Declaring the move constructor deletes the implicit copy assignment (issue #322), so default it explicitly.
+    // There is no move assignment: an rvalue assigns through this copy assignment, as before. Whether assigning to a view
+    // writes into the viewed tiles, as TensorView does, or rebinds the view is not settled, and a rebinding move would decide it.
+    TiledTensorView &operator=(TiledTensorView<T, Rank> const &copy) = default;
 
     /**
      * @brief Checks to see if the view sees all of the data in the tensor.

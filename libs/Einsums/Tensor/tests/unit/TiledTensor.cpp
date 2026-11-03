@@ -7,6 +7,10 @@
 #include <Einsums/Tensor/TiledTensor.hpp>
 #include <Einsums/TensorAlgebra.hpp>
 
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include <Einsums/Testing.hpp>
 
 TEST_CASE("TiledTensor creation", "[tensor]") {
@@ -99,6 +103,82 @@ TEST_CASE("TiledTensor copy assignment", "[tensor]") {
         CHECK(A.num_filled() == 2);
         CHECK(A.tile(0, 0)(0, 0) == 1.0);
         CHECK(A.tile(2, 2)(1, 1) == 2.0);
+    }
+}
+
+// Issue #299: without move members a move fell back to the copy constructor, copying every tile,
+// and std::vector copied on growth because the move was not noexcept.
+TEST_CASE("TiledTensor move", "[tensor]") {
+    using namespace einsums;
+
+    static_assert(std::is_nothrow_move_constructible_v<TiledTensor<double, 2>>);
+    static_assert(std::is_nothrow_move_assignable_v<TiledTensor<double, 2>>);
+    static_assert(std::is_nothrow_move_constructible_v<TiledTensorView<double, 2>>);
+    static_assert(std::is_copy_assignable_v<TiledTensor<double, 2>>);
+    static_assert(std::is_copy_assignable_v<TiledTensorView<double, 2>>);
+
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    A.tile(0, 0)(0, 0)    = 1.0;
+    A.tile(2, 2)(1, 1)    = 2.0;
+    double const *storage = A.tile(2, 2).data();
+
+    SECTION("construction takes the tiles without copying") {
+        TiledTensor<double, 2> B(std::move(A));
+
+        CHECK(B.tile(2, 2).data() == storage);
+        CHECK(B.dim(0) == 3);
+        CHECK(B.num_filled() == 2);
+        CHECK(B.tile(0, 0)(0, 0) == 1.0);
+        CHECK(B.tile(2, 2)(1, 1) == 2.0);
+
+        // The moved-from tensor is empty and usable.
+        CHECK(A.num_filled() == 0);
+        CHECK(A.dim(0) == 0);
+        A = B;
+        CHECK(A.tile(2, 2)(1, 1) == 2.0);
+    }
+
+    SECTION("assignment takes the tiles without copying") {
+        TiledTensor<double, 2> B("B", std::array{3});
+        B.tile(0, 0)(1, 1) = 5.0;
+        B                  = std::move(A);
+
+        CHECK(B.tile(2, 2).data() == storage);
+        CHECK(B.dim(0) == 3);
+        CHECK(B.num_filled() == 2);
+        // B's own 3x3 tile is gone; (0, 0) is now A's 1x1 tile.
+        CHECK(B.tile(0, 0).dim(0) == 1);
+        CHECK(B.tile(0, 0)(0, 0) == 1.0);
+        CHECK(A.num_filled() == 0);
+    }
+
+    SECTION("to itself keeps the tiles") {
+        auto &self = A;
+        A          = std::move(self);
+
+        CHECK(A.tile(2, 2).data() == storage);
+        CHECK(A.num_filled() == 2);
+    }
+
+    SECTION("std::vector growth moves the tiles") {
+        std::vector<TiledTensor<double, 2>> tensors;
+        tensors.push_back(std::move(A));
+        for (int i = 0; i < 8; i++) {
+            tensors.emplace_back("filler", std::array{1, 2});
+        }
+
+        CHECK(tensors.front().tile(2, 2).data() == storage);
+    }
+
+    SECTION("a view moves its tile views") {
+        TiledTensorView<double, 2> V("V", std::array{1, 0, 2});
+        TensorView<double, 2>      tile_view = A.tile(2, 2)(All, All);
+        V.insert_tile({2, 2}, tile_view);
+        TiledTensorView<double, 2> W(std::move(V));
+
+        CHECK(W.num_filled() == 1);
+        CHECK(W.tile(2, 2).data() == storage);
+        CHECK(V.num_filled() == 0);
     }
 }
 
