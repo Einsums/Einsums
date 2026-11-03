@@ -265,6 +265,19 @@ APIARY_INSTANTIATE_AS("RuntimeTensorZ", GeneralRuntimeTensor<std::complex<double
     }
 
     /**
+     * @brief Move constructor. The storage block changes owner without being copied.
+     *
+     * Views and captured graphs that share the block follow the data to this tensor. @p other is left an
+     * empty tensor with a block of its own. The liveness token is not moved: it names the object at an
+     * address, and this one is a different object.
+     */
+    GeneralRuntimeTensor(GeneralRuntimeTensor<T, Alloc> &&other) noexcept
+        : _storage{std::exchange(other._storage, detail::make_storage_block<T, Vector>())}, _name{std::move(other._name)},
+          _impl{std::exchange(other._impl, detail::TensorImpl<T>{})}, _seen_generation{std::exchange(other._seen_generation, 0)},
+          _aliased{std::exchange(other._aliased, false)}, _symmetry{std::move(other._symmetry)},
+          _pending_init{std::exchange(other._pending_init, PendingInit::None)} {}
+
+    /**
      * @brief Copy with a different allocator.
      *
      * Handles host↔device transfers automatically when copying between
@@ -902,6 +915,37 @@ APIARY_INSTANTIATE_AS("RuntimeTensorZ", GeneralRuntimeTensor<std::complex<double
         } else {
             detail::copy_to(other.impl(), _impl);
         }
+
+        return *this;
+    }
+
+    /**
+     * @brief Move assignment. Takes @p other's storage block when nothing else shares this tensor's.
+     *
+     * Assignment writes into this tensor's block, and views and captured graphs that share it see the new
+     * data; a graph captured once and replayed after its inputs are reassigned depends on that. Swapping
+     * in @p other's block would leave them reading the old one, so while the block is shared this copies,
+     * as copy assignment does. Otherwise it is the move constructor's transfer, and this tensor keeps its
+     * own liveness token.
+     *
+     * @param other The tensor to move from.
+     */
+    // NOLINTNEXTLINE(performance-noexcept-move-constructor): the shared-block path copies, and copying allocates.
+    GeneralRuntimeTensor &operator=(GeneralRuntimeTensor<T, Alloc> &&other) {
+        if (this == &other) {
+            return *this;
+        }
+        if (_storage.use_count() > 1) {
+            return *this = std::as_const(other);
+        }
+
+        _storage         = std::exchange(other._storage, detail::make_storage_block<T, Vector>());
+        _name            = std::move(other._name);
+        _impl            = std::exchange(other._impl, detail::TensorImpl<T>{});
+        _seen_generation = std::exchange(other._seen_generation, 0);
+        _aliased         = std::exchange(other._aliased, false);
+        _symmetry        = std::move(other._symmetry);
+        _pending_init    = std::exchange(other._pending_init, PendingInit::None);
 
         return *this;
     }

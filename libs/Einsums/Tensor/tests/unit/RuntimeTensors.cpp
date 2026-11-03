@@ -7,6 +7,11 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
+#include <memory>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include <Einsums/Testing.hpp>
 
 TEMPLATE_TEST_CASE("Subset RuntimeTensorView", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
@@ -655,4 +660,88 @@ TEST_CASE("RuntimeTensor refuses a view while it has no storage", "[tensor][runt
     RuntimeTensorView<double> const col = t(All, Range{1, 2});
     REQUIRE(col.data() == t.data() + t.stride(1));
     REQUIRE(col(3, 0) == 2.0);
+}
+
+// Without move members a move fell back to the copy constructor, copying the whole buffer, and
+// std::vector copied on growth because the move was not noexcept.
+TEST_CASE("RuntimeTensor move", "[tensor][runtime][lifecycle]") {
+    using namespace einsums;
+
+    static_assert(std::is_nothrow_move_constructible_v<RuntimeTensor<double>>);
+    static_assert(std::is_copy_assignable_v<RuntimeTensor<double>>);
+
+    RuntimeTensor<double> A("A", std::vector<size_t>{4, 3});
+    A.set_all(1.5);
+    double const *storage = A.data();
+
+    SECTION("construction takes the buffer without copying") {
+        RuntimeTensor<double> B(std::move(A));
+
+        CHECK(B.data() == storage);
+        CHECK(B.name() == "A");
+        CHECK(B.dim(0) == 4);
+        CHECK(B(3, 2) == 1.5);
+
+        // The moved-from tensor is empty and usable.
+        CHECK(A.size() == 0);
+        A = B;
+        CHECK(A(3, 2) == 1.5);
+        CHECK(A.data() != B.data());
+    }
+
+    SECTION("construction does not move the liveness token") {
+        // The token names the object at an address; a graph that captured A must still see A die.
+        std::weak_ptr<void> const token = A.liveness_token();
+        RuntimeTensor<double>     B(std::move(A));
+
+        CHECK_FALSE(B.liveness_token().lock() == token.lock());
+    }
+
+    SECTION("a view of the source follows the data") {
+        RuntimeTensorView<double> const view = A(All, All);
+        RuntimeTensor<double>           B(std::move(A));
+
+        B(1, 1) = 7.0;
+        CHECK(view(1, 1) == 7.0);
+    }
+
+    SECTION("assignment takes the buffer when nothing shares the target's") {
+        RuntimeTensor<double> B("B", std::vector<size_t>{2, 2});
+        B = std::move(A);
+
+        CHECK(B.data() == storage);
+        CHECK(B.dim(0) == 4);
+        CHECK(B(3, 2) == 1.5);
+        CHECK(A.size() == 0);
+    }
+
+    SECTION("assignment writes into a target whose storage is shared") {
+        // A captured graph holds a shallow alias of its operands. Reassigning an input and replaying
+        // has to show the graph the new data, so the target's block must not be swapped out.
+        RuntimeTensor<double>       B("B", std::vector<size_t>{4, 3});
+        RuntimeTensor<double> const captured = B.shallow_alias();
+        B                                    = std::move(A);
+
+        CHECK(B(3, 2) == 1.5);
+        CHECK(captured.data() == B.data());
+        CHECK(captured(3, 2) == 1.5);
+    }
+
+    SECTION("assignment to itself keeps the buffer") {
+        auto &self = A;
+        A          = std::move(self);
+
+        CHECK(A.data() == storage);
+        CHECK(A(3, 2) == 1.5);
+    }
+
+    SECTION("std::vector growth moves the buffers") {
+        std::vector<RuntimeTensor<double>> tensors;
+        tensors.push_back(std::move(A));
+        for (int i = 0; i < 8; i++) {
+            tensors.emplace_back("filler", std::vector<size_t>{2});
+        }
+
+        CHECK(tensors.front().data() == storage);
+    }
 }
