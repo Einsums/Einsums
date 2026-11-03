@@ -2,11 +2,11 @@ name: macOS build and test workflow
 on:
   workflow_call:
     inputs:
-      full_matrix:
-        description: "Also build the Debug configuration (~35 min). Per-PR runs default to RelWithDebInfo-only; the nightly passes true."
-        type: boolean
+      build_type:
+        description: "CMAKE_BUILD_TYPE. Per-push runs use RelWithDebInfo; the nightly passes Debug (~35 min), the only build that enables EINSUMS_ASSERT on macOS."
+        type: string
         required: false
-        default: false
+        default: RelWithDebInfo
       build_ref:
         type: string
         required: false
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: ${{ fromJSON(inputs.full_matrix && '["Debug","RelWithDebInfo"]' || '["RelWithDebInfo"]') }}
+        build_type: [ "${{ inputs.build_type }}" ]
 
     name: "default • accelerate • ${{ matrix.build_type }}"
     runs-on: macos-latest
