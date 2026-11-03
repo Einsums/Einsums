@@ -210,7 +210,12 @@ def test_selecting_an_unknown_stage_raises():
 
 
 def test_select_default_is_loud_about_stages_that_lack_the_backend():
-    with pytest.raises(StageError, match="have no cpp backend"):
+    # Register the stage that lacks the backend here: relying on one left in the registry by an
+    # earlier test failed whenever an xdist worker ran this test first.
+    @stage
+    def lacks_cpp(a: TensorD) -> None: ...
+
+    with pytest.raises(StageError, match="have no cpp backend.*lacks_cpp"):
         stages.select_default("cpp")
 
 
