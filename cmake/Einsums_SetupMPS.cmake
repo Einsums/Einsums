@@ -6,7 +6,9 @@
 # Metal Performance Shaders (MPS) backend for Apple Silicon GPU.
 # Auto-detected on macOS when EINSUMS_WITH_MPS=ON (default on Apple).
 
-if(EINSUMS_WITH_MPS AND NOT TARGET einsums_mps)
+include_guard(GLOBAL)
+
+if(EINSUMS_WITH_MPS)
   include(Einsums_AddDefinitions)
 
   # Enable Objective-C++ for .mm files
@@ -18,7 +20,9 @@ if(EINSUMS_WITH_MPS AND NOT TARGET einsums_mps)
     return()
   endif()
 
-  # Check for Metal and MetalPerformanceShaders frameworks
+  # Check for Metal and MetalPerformanceShaders frameworks. The paths found here are only a presence
+  # check: the GPU module links the frameworks by name, because a path names the SDK of the machine
+  # that built Einsums and would be exported to consumers.
   find_library(METAL_FRAMEWORK Metal)
   find_library(MPS_FRAMEWORK MetalPerformanceShaders)
   find_library(FOUNDATION_FRAMEWORK Foundation)
@@ -32,12 +36,4 @@ if(EINSUMS_WITH_MPS AND NOT TARGET einsums_mps)
   message(STATUS "MPS backend: enabled (Metal=${METAL_FRAMEWORK}, MPS=${MPS_FRAMEWORK})")
 
   einsums_add_config_define(EINSUMS_HAVE_MPS)
-
-  # Create an imported target for convenience
-  add_library(einsums_mps INTERFACE IMPORTED)
-  target_link_libraries(einsums_mps INTERFACE
-    ${METAL_FRAMEWORK}
-    ${MPS_FRAMEWORK}
-    ${FOUNDATION_FRAMEWORK}
-  )
 endif()

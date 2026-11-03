@@ -32,12 +32,8 @@ if(EINSUMS_WITH_CUDA)
   set(GPU_VENDOR_DEPS CUDA::cublas CUDA::cusolver CUDA::cudart)
 elseif(EINSUMS_WITH_MPS)
   list(APPEND GPUSources MPSBackend.mm)
-  # Link the Apple frameworks by absolute path rather than via the
-  # `einsums_mps` INTERFACE IMPORTED target: imported targets can't be carried
-  # by export(EXPORT ...), so routing them through einsums_mps left external
-  # consumers (e.g. psi4) with a dangling `-leinsums_mps` in libEinsums's link
-  # interface. Plain framework paths export cleanly.
-  set(GPU_VENDOR_DEPS ${METAL_FRAMEWORK} ${MPS_FRAMEWORK} ${FOUNDATION_FRAMEWORK})
+  # The Apple frameworks are linked below, privately, rather than as DEPENDENCIES.
+  set(GPU_VENDOR_DEPS)
 else()
   # Mock backend: no vendor deps, uses CPU BLAS
   set(GPU_VENDOR_DEPS)
@@ -53,6 +49,18 @@ einsums_add_module(
   MODULE_DEPENDENCIES Einsums_Config Einsums_CXX23 Einsums_Errors Einsums_Logging Einsums_BLAS Einsums_BLASVendor Einsums_Profile
   CMAKE_SUBDIRS examples tests
 )
+
+# Only MPSBackend.mm uses Metal, MetalPerformanceShaders and Foundation, and no public header
+# includes them, so they are libEinsums's own link and not part of what a consumer links. Name them
+# rather than link the paths find_library found: those paths are in the SDK of the machine that built
+# Einsums, and a static libEinsums still exports its private links for consumers to repeat.
+if(EINSUMS_WITH_MPS)
+  target_link_libraries(
+    Einsums PRIVATE "$<LINK_LIBRARY:FRAMEWORK,Metal>"
+                    "$<LINK_LIBRARY:FRAMEWORK,MetalPerformanceShaders>"
+                    "$<LINK_LIBRARY:FRAMEWORK,Foundation>"
+  )
+endif()
 
 # MPS: compile the .mm file as Objective-C++ with ARC.
 #
