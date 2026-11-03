@@ -70,6 +70,38 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
     }
 }
 
+// Issue #322: on release/v1.1.x the defaulted move members deleted TiledTensor's copy assignment.
+TEST_CASE("TiledTensor copy assignment", "[tensor]") {
+    using namespace einsums;
+
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    A.tile(0, 0)(0, 0) = 1.0;
+    A.tile(2, 2)(1, 1) = 2.0;
+
+    SECTION("copies the tiles deeply") {
+        TiledTensor<double, 2> B("B", std::array{3});
+        B = A;
+
+        CHECK(B.dim(0) == 3);
+        CHECK(B.num_filled() == 2);
+        CHECK(B.tile(0, 0)(0, 0) == 1.0);
+        CHECK(B.tile(2, 2)(1, 1) == 2.0);
+
+        B.tile(0, 0)(0, 0) = 42.0;
+        CHECK(A.tile(0, 0)(0, 0) == 1.0);
+    }
+
+    SECTION("to itself keeps the tiles") {
+        // The assignment cleared the tiles before reading them, so it emptied the tensor.
+        auto const &self = A;
+        A                = self;
+
+        CHECK(A.num_filled() == 2);
+        CHECK(A.tile(0, 0)(0, 0) == 1.0);
+        CHECK(A.tile(2, 2)(1, 1) == 2.0);
+    }
+}
+
 TEST_CASE("TiledTensor GEMMs", "[tensor]") {
     using namespace einsums;
 

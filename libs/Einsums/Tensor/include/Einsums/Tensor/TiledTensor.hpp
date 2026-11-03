@@ -695,6 +695,11 @@ struct TiledTensor : public TiledTensorNoExtra, design_pats::Lockable<std::recur
      * @param copy The tensor to copy.
      */
     TiledTensor &operator=(TiledTensor const &copy) {
+        // zero() empties the tiles the loop below reads, so assigning a tensor to itself erased it.
+        if (this == &copy) {
+            return *this;
+        }
+
         zero();
         _tile_sizes   = copy._tile_sizes;
         _tile_offsets = copy._tile_offsets;
