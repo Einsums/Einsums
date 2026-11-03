@@ -31,11 +31,14 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <omp.h>
 #include <optional>
 #include <span>
 #include <string>
 #include <vector>
+
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
 
 #include <Einsums/Testing.hpp>
 

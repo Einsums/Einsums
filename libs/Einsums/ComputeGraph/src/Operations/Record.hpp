@@ -19,9 +19,12 @@
 #include <Einsums/TensorImpl/TensorImpl.hpp>
 
 #include <cstddef>
-#include <omp.h>
 #include <utility>
 #include <vector>
+
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
 
 EINSUMS_NAMESPACE_BEGIN(compute_graph::detail)
 
@@ -185,7 +188,12 @@ void for_each_selection_run(std::vector<std::vector<std::size_t>> const &indices
     // costs more than the move. 32k elements is ~256 KiB of doubles, well past
     // that crossover on anything current.
     constexpr std::size_t parallel_floor = 32768;
-    if (parallel && outer > 1 && outer * extents[0] >= parallel_floor && omp_get_max_threads() > 1 && !omp_in_parallel()) {
+#ifdef _OPENMP
+    bool const team_available = omp_get_max_threads() > 1 && !omp_in_parallel();
+#else
+    bool const team_available = false;
+#endif
+    if (parallel && outer > 1 && outer * extents[0] >= parallel_floor && team_available) {
 #pragma omp parallel for schedule(static)
         for (std::int64_t count = 0; count < static_cast<std::int64_t>(outer); ++count) {
             visit(static_cast<std::size_t>(count));

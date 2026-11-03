@@ -28,7 +28,6 @@
 #include <exception>
 #include <map>
 #include <memory>
-#include <omp.h>
 #include <optional>
 #include <ranges>
 #include <set>
@@ -36,6 +35,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
 
 EINSUMS_NAMESPACE_BEGIN(compute_graph)
 
@@ -316,7 +319,12 @@ class SampleCheck {
         if (!kernel_moldability(_built.the_node())) {
             return;
         }
-        unsigned const width = _sample.width != 0 ? _sample.width : static_cast<unsigned>(std::max(1, omp_get_max_threads()));
+#ifdef _OPENMP
+        int const team = omp_get_max_threads();
+#else
+        int const team = 1;
+#endif
+        unsigned const width = _sample.width != 0 ? _sample.width : static_cast<unsigned>(std::max(1, team));
         if (width < 2) {
             return;
         }

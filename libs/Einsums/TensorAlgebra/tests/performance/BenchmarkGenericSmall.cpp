@@ -22,8 +22,11 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 
-#include <omp.h>
 #include <string_view>
+
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
 
 #include <Einsums/Testing.hpp>
 

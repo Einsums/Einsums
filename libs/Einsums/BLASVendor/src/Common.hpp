@@ -13,7 +13,10 @@
 #include <Einsums/HPTT/HPTTTypes.hpp>
 
 #include <cctype>
-#include <omp.h>
+
+#ifdef _OPENMP
+#    include <omp.h>
+#endif
 
 #ifndef FC_SYMBOL
 #    define FC_SYMBOL 2
@@ -64,8 +67,13 @@ void transpose(int_t m, int_t n, T const *in, int_t ldin, T *out, int_t ldout) {
         outer_size_out[1] = static_cast<unsigned long>(m);
     }
 
-    auto plan = hptt::create_plan(perm, 2, T{1.0}, in, size_in, outer_size_in, T{0.0}, out, outer_size_out, hptt::ESTIMATE,
-                                  omp_get_max_threads(), {}, Order == OrderMajor::Row);
+#ifdef _OPENMP
+    int const threads = omp_get_max_threads();
+#else
+    int const threads = 1;
+#endif
+    auto plan = hptt::create_plan(perm, 2, T{1.0}, in, size_in, outer_size_in, T{0.0}, out, outer_size_out, hptt::ESTIMATE, threads, {},
+                                  Order == OrderMajor::Row);
 
     plan->execute();
 }

@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <iomanip>
 #include <mutex>
-#include <omp.h>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -20,6 +19,10 @@
 #    include <io.h>
 #else
 #    include <unistd.h>
+#endif
+
+#ifdef _OPENMP
+#    include <omp.h>
 #endif
 
 EINSUMS_NAMESPACE_BEGIN()
@@ -126,20 +129,24 @@ void suppress_output(bool onoff) {
 
 namespace {
 
-void print_line(std::string const &line) {
-    std::string line_header;
-
+/// Which OpenMP thread printed a line, when it was printed inside a parallel region; empty outside one.
+std::string thread_header() {
+#ifdef _OPENMP
     if (omp_in_parallel()) {
+        std::ostringstream oss;
         if (omp_get_thread_num() == 0) {
-            std::ostringstream oss;
             oss << "[ main #" << std::setw(6) << 0 << " ] ";
-            line_header = oss.str();
         } else {
-            std::ostringstream oss;
             oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
-            line_header = oss.str();
         }
+        return oss.str();
     }
+#endif
+    return {};
+}
+
+void print_line(std::string const &line) {
+    std::string line_header = thread_header();
     line_header.append(print::indent_string);
 
     std::lock_guard guard(print::lock);
@@ -151,19 +158,7 @@ void print_line(std::string const &line) {
 }
 
 void fprint_line(std::FILE *fp, std::string const &line) {
-    std::string line_header;
-
-    if (omp_in_parallel()) {
-        if (omp_get_thread_num() == 0) {
-            std::ostringstream oss;
-            oss << "[ main #" << std::setw(6) << 0 << " ] ";
-            line_header = oss.str();
-        } else {
-            std::ostringstream oss;
-            oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
-            line_header = oss.str();
-        }
-    }
+    std::string line_header = thread_header();
     line_header.append(print::indent_string);
 
     std::lock_guard guard(print::lock);
@@ -175,19 +170,7 @@ void fprint_line(std::FILE *fp, std::string const &line) {
 }
 
 void fprint_line(std::ostream &os, std::string const &line) {
-    std::string line_header;
-
-    if (omp_in_parallel()) {
-        if (omp_get_thread_num() == 0) {
-            std::ostringstream oss;
-            oss << "[ main #" << std::setw(6) << 0 << " ] ";
-            line_header = oss.str();
-        } else {
-            std::ostringstream oss;
-            oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
-            line_header = oss.str();
-        }
-    }
+    std::string line_header = thread_header();
     line_header.append(print::indent_string);
 
     std::lock_guard guard(print::lock);
