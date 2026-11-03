@@ -23,6 +23,13 @@
 # detectable TargetLAPACKConfig.cmake file (skip via CMAKE_DISABLE_FIND_PACKAGE_TargetLAPACK), or
 # (3) the libraries detected by the usual FindLAPACK.cmake module.
 #
+# For (3), MKL is tried first, then OpenBLAS (lp64, then ilp64), a generic BLAS, and last whatever
+# FindBLAS picks on its own. These inputs narrow that search: ::
+#
+# BLA_VENDOR - set by the caller, it replaces the passes with one search for that vendor
+# TargetLAPACK_INT_INTERFACE - lp64 or ilp64 keeps only the passes of that integer width
+# TargetLAPACK_SKIP_MKL - true skips the MKL attempt
+#
 # Einsums specialization * sets property VENDOR for MKL-ness * sets property INT_INTERFACE for
 # lp64/ilp64 * uses targets, not variables, from FindLAPACK (CMake 3.18)
 
@@ -61,32 +68,77 @@ else()
     endif()
   else()
     # 3rd precedence - usual variables from FindLAPACK.cmake
-    if(NOT MSVC)
+    # The caller's BLA_VENDOR and BLA_SIZEOF_INTEGER are put back once the passes below have used
+    # these names.
+    unset(_tl_caller_vendor)
+    unset(_tl_caller_sizeof)
+    if(DEFINED BLA_VENDOR)
+      set(_tl_caller_vendor "${BLA_VENDOR}")
+    endif()
+    if(DEFINED BLA_SIZEOF_INTEGER)
+      set(_tl_caller_sizeof "${BLA_SIZEOF_INTEGER}")
+    endif()
+
+    # A vendor the caller names is searched for as asked, MKL's FindBLAS names included.
+    set(_tl_try_mkl TRUE)
+    if(TargetLAPACK_SKIP_MKL OR DEFINED _tl_caller_vendor)
+      set(_tl_try_mkl FALSE)
+    endif()
+    if(_tl_try_mkl AND NOT MSVC)
       find_package(MKL CONFIG)
     endif()
-    if(TARGET MKL::MKL)
+    if(_tl_try_mkl AND TARGET MKL::MKL)
       add_library(tgt::lapack INTERFACE IMPORTED)
       set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
       set_property(TARGET tgt::lapack PROPERTY VENDOR "MKL")
       set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ${MKL_INTERFACE})
 
     else()
-      set(BLA_VENDOR OpenBLAS)
-      set(BLA_SIZEOF_INTEGER 4)
-      find_package(BLAS MODULE)
-      find_package(LAPACK MODULE)
-
-      if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
-        add_library(tgt::lapack INTERFACE IMPORTED)
-        set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
-        set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-        set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64)
-
+      # Each pass is vendor:BLA_SIZEOF_INTEGER:INT_INTERFACE. The generic and FindBLAS-chosen
+      # passes cannot tell the integer width, so they assume lp64.
+      if(DEFINED _tl_caller_vendor)
+        if(DEFINED _tl_caller_sizeof)
+          set(_tl_sizeof "${_tl_caller_sizeof}")
+        elseif(TargetLAPACK_INT_INTERFACE STREQUAL "ilp64")
+          set(_tl_sizeof 8)
+        else()
+          set(_tl_sizeof ANY)
+        endif()
+        if(_tl_sizeof STREQUAL "8")
+          set(_tl_passes "${_tl_caller_vendor}:8:ilp64")
+        else()
+          set(_tl_passes "${_tl_caller_vendor}:${_tl_sizeof}:lp64")
+        endif()
       else()
-        set(BLA_VENDOR OpenBLAS)
-        set(BLA_SIZEOF_INTEGER 8)
-        find_package(BLAS MODULE)
-        find_package(LAPACK MODULE)
+        set(_tl_passes OpenBLAS:4:lp64 OpenBLAS:8:ilp64 Generic:ANY:lp64 All:ANY:lp64)
+        if(TargetLAPACK_INT_INTERFACE)
+          if(NOT TargetLAPACK_INT_INTERFACE MATCHES "^i?lp64$")
+            message(
+              FATAL_ERROR
+                "TargetLAPACK_INT_INTERFACE is '${TargetLAPACK_INT_INTERFACE}'; it must be lp64 or ilp64"
+            )
+          endif()
+          list(FILTER _tl_passes INCLUDE REGEX ":${TargetLAPACK_INT_INTERFACE}$")
+        endif()
+      endif()
+
+      # Only the last pass is REQUIRED and reports its misses; the earlier ones are expected to
+      # miss whenever a later one is what the environment has.
+      list(LENGTH _tl_passes _tl_npasses)
+      set(_tl_ipass 0)
+      foreach(_tl_pass IN LISTS _tl_passes)
+        math(EXPR _tl_ipass "${_tl_ipass} + 1")
+        string(REPLACE ":" ";" _tl_fields "${_tl_pass}")
+        list(GET _tl_fields 0 BLA_VENDOR)
+        list(GET _tl_fields 1 BLA_SIZEOF_INTEGER)
+        list(GET _tl_fields 2 _tl_int_interface)
+        if(_tl_ipass EQUAL _tl_npasses)
+          set(_tl_mode REQUIRED)
+        else()
+          set(_tl_mode QUIET)
+        endif()
+        find_package(BLAS ${_tl_mode} MODULE)
+        find_package(LAPACK ${_tl_mode} MODULE)
 
         if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
           add_library(tgt::lapack INTERFACE IMPORTED)
@@ -94,36 +146,10 @@ else()
             TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
           )
           set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-          set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ilp64)
-
-        else()
-          set(BLA_VENDOR Generic)
-          set(BLA_SIZEOF_INTEGER ANY)
-          find_package(BLAS MODULE)
-          find_package(LAPACK MODULE)
-
-          if((TARGET BLAS::BLAS) AND (TARGET LAPACK::LAPACK))
-            add_library(tgt::lapack INTERFACE IMPORTED)
-            set_property(
-              TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
-            )
-            set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-            set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
-
-          else()
-            set(BLA_VENDOR All)
-            find_package(BLAS REQUIRED MODULE)
-            find_package(LAPACK REQUIRED MODULE)
-
-            add_library(tgt::lapack INTERFACE IMPORTED)
-            set_property(
-              TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS
-            )
-            set_property(TARGET tgt::lapack PROPERTY VENDOR ${BLA_VENDOR})
-            set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE lp64) # TODO assumption!
-          endif()
+          set_property(TARGET tgt::lapack PROPERTY INT_INTERFACE ${_tl_int_interface})
+          break()
         endif()
-      endif()
+      endforeach()
 
     endif()
 
@@ -155,6 +181,12 @@ else()
 
     unset(BLA_VENDOR)
     unset(BLA_SIZEOF_INTEGER)
+    if(DEFINED _tl_caller_vendor)
+      set(BLA_VENDOR "${_tl_caller_vendor}")
+    endif()
+    if(DEFINED _tl_caller_sizeof)
+      set(BLA_SIZEOF_INTEGER "${_tl_caller_sizeof}")
+    endif()
     unset(LAPACK_FOUND)
     unset(LAPACK_LIBRARIES)
   endif()

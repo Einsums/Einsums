@@ -185,21 +185,22 @@ einsums_find_package(TargetHDF5 REQUIRED)
 einsums_find_package(OpenMP MODULE COMPONENTS CXX)
 
 if (NOT TARGET tgt::lapack)
-  add_library(tgt::lapack INTERFACE IMPORTED)
   if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+    add_library(tgt::lapack INTERFACE IMPORTED)
     set(MKL_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
     find_package(MKL CONFIG ${extraArgs})
     set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
   else ()
-    set(BLA_VENDOR @EINSUMS_LINALG_VENDOR@)  # EINSUMS_LINALG_VENDOR
-    if (@EINSUMS_LINALG_INT_INTERFACE@ STREQUAL lp64)  # EINSUMS_LINALG_INT_INTERFACE
-      set(BLA_SIZEOF_INTEGER 4)
-    else ()
-      set(BLA_SIZEOF_INTEGER 8)
-    endif ()
-    find_package(BLAS MODULE ${extraArgs})
-    find_package(LAPACK MODULE ${extraArgs})
-    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+    # Run the search the build ran instead of replaying the vendor it recorded. The recorded vendor
+    # is the name the build asked for, and when that is All, FindBLAS on macOS picks the SDK's
+    # Accelerate ahead of the environment's libblas that libEinsums links. Hold the search to the
+    # integer width libEinsums was built with and off MKL, which it does not link. A BLA_VENDOR set
+    # by the consumer still chooses.
+    set(TargetLAPACK_INT_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
+    set(TargetLAPACK_SKIP_MKL TRUE)
+    einsums_find_package(TargetLAPACK MODULE REQUIRED)
+    unset(TargetLAPACK_INT_INTERFACE)
+    unset(TargetLAPACK_SKIP_MKL)
   endif ()
   set(EINSUMS_@EINSUMS_LINALG_INT_INTERFACE@_FOUND 1)
 endif ()
