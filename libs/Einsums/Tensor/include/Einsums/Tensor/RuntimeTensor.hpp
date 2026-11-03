@@ -1595,6 +1595,19 @@ APIARY_INSTANTIATE_AS("RuntimeTensorViewZ", RuntimeTensorView<std::complex<doubl
     RuntimeTensorView(RuntimeTensorView<T> const &copy) = default;
 
     /**
+     * @brief Move constructor. The view and its keepalive on the parent's storage change owner.
+     *
+     * The liveness token is not moved: it names the object at an address, and this one is a different
+     * object. There is no move assignment: assigning to a view writes into the viewed data, and an rvalue
+     * does the same through the copy assignment.
+     *
+     * @param other The view to move.
+     */
+    RuntimeTensorView(RuntimeTensorView<T> &&other) noexcept
+        : _name{std::move(other._name)}, _impl{std::exchange(other._impl, detail::TensorImpl<T>{})},
+          _storage_ref{std::move(other._storage_ref)} {}
+
+    /**
      * @brief Creates a new view based on another view.
      *
      * This view and the other view will share the same data pointer.

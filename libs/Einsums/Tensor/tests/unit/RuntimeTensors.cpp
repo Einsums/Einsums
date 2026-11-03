@@ -745,3 +745,52 @@ TEST_CASE("RuntimeTensor move", "[tensor][runtime][lifecycle]") {
         CHECK(tensors.front().data() == storage);
     }
 }
+
+// Views had no move constructor, so std::vector copied them on growth because the move was not noexcept.
+TEST_CASE("RuntimeTensorView move", "[tensor][runtime][view]") {
+    using namespace einsums;
+
+    static_assert(std::is_nothrow_move_constructible_v<RuntimeTensorView<double>>);
+    static_assert(std::is_copy_assignable_v<RuntimeTensorView<double>>);
+
+    RuntimeTensor<double> A("A", std::vector<size_t>{4, 3});
+    RuntimeTensor<double> B("B", std::vector<size_t>{4, 3});
+    A.set_all(1.5);
+    B.set_all(0.0);
+
+    SECTION("construction keeps viewing the same data") {
+        RuntimeTensorView<double> view = A(All, Range{1, 3});
+        double const             *data = view.data();
+        RuntimeTensorView<double> moved(std::move(view));
+
+        CHECK(moved.data() == data);
+        CHECK(moved.dim(1) == 2);
+        CHECK(moved(3, 1) == 1.5);
+    }
+
+    SECTION("construction does not move the liveness token") {
+        RuntimeTensorView<double> view  = A(All, All);
+        std::weak_ptr<void> const token = view.liveness_token();
+        RuntimeTensorView<double> moved(std::move(view));
+
+        CHECK_FALSE(moved.liveness_token().lock() == token.lock());
+    }
+
+    SECTION("the moved view keeps the parent's storage alive") {
+        auto parent = std::make_unique<RuntimeTensor<double>>("P", std::vector<size_t>{2, 2});
+        parent->set_all(4.0);
+        RuntimeTensorView<double> view = (*parent)(All, All);
+        RuntimeTensorView<double> moved(std::move(view));
+        parent.reset();
+
+        CHECK(moved(1, 1) == 4.0);
+    }
+
+    SECTION("assigning a temporary view writes into the viewed data") {
+        RuntimeTensorView<double> view = B(All, All);
+        view                           = A(All, All);
+
+        CHECK(view.data() == B.data());
+        CHECK(B(3, 2) == 1.5);
+    }
+}

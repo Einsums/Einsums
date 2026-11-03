@@ -7,6 +7,9 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
+#include <type_traits>
+#include <utility>
+
 #include <Einsums/Testing.hpp>
 
 TEMPLATE_TEST_CASE("Subset TensorView", "[tensor]", float, double, std::complex<float>, std::complex<double>) {
@@ -79,5 +82,35 @@ TEMPLATE_TEST_CASE("Block tensor views", "[tensor]", float, double, std::complex
                 REQUIRE(test(i, j) == test_view(i, j));
             }
         }
+    }
+}
+
+// Views had no move constructor, so std::vector copied them on growth because the move was not noexcept.
+TEST_CASE("TensorView move", "[tensor]") {
+    using namespace einsums;
+
+    static_assert(std::is_nothrow_move_constructible_v<TensorView<double, 2>>);
+    static_assert(std::is_copy_assignable_v<TensorView<double, 2>>);
+
+    auto A = create_random_tensor<double>("A", 4, 3);
+    auto B = create_random_tensor<double>("B", 4, 3);
+
+    SECTION("construction keeps viewing the same data") {
+        TensorView<double, 2> view = A(All, Range{1, 3});
+        double const         *data = view.data();
+        TensorView<double, 2> moved(std::move(view));
+
+        CHECK(moved.data() == data);
+        CHECK(moved.dim(1) == 2);
+        CHECK(moved(3, 1) == A(3, 2));
+    }
+
+    SECTION("assigning a temporary view writes into the viewed data") {
+        TensorView<double, 2> view = B(All, All);
+        view                       = A(All, All);
+
+        CHECK(view.data() == B.data());
+        CHECK(B(3, 2) == A(3, 2));
+        CHECK(B.data() != A.data());
     }
 }

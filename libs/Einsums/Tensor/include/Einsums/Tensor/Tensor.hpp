@@ -1720,6 +1720,12 @@ struct TensorView final : tensor_base::CoreTensor, design_pats::Lockable<std::re
     TensorView(TensorView const &) = default;
 
     /**
+     * Move constructor. There is no move assignment: assigning to a view writes into the viewed data, and an
+     * rvalue does the same through the copy assignment.
+     */
+    TensorView(TensorView &&) noexcept = default;
+
+    /**
      * Default destructor.
      */
     ~TensorView() = default;
