@@ -63,6 +63,13 @@ Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
       :param other: The tensor to be copied and converted.
 
 
+   .. cpp:function:: TiledTensor(TiledTensor<T, rank, TensorType> &&other) noexcept
+
+      Move a tiled tensor. The tiles change owner without being copied, and ``other`` is left an empty tensor.
+
+      :param other: The tensor to be moved.
+
+
    .. cpp:function:: virtual ~TiledTensor() = default
 
    .. cpp:function:: template <std::integral... MultiIndex> requires (sizeof...(MultiIndex) == rank) TensorType & tile(MultiIndex... index)
@@ -207,6 +214,13 @@ Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
       Copy assignment.
 
       :param copy: The tensor to copy.
+
+
+   .. cpp:function:: TiledTensor<T, rank, TensorType> & operator=(TiledTensor<T, rank, TensorType> &&other) noexcept
+
+      Move assignment. The tiles change owner without being copied, and ``other`` is left an empty tensor.
+
+      :param other: The tensor to move.
 
 
    .. cpp:function:: template <TiledTensorConcept TensorOther> requires (SameUnderlyingAndRank<TiledTensor<T, rank, TensorType>, TensorOther>) TiledTensor<T, rank, TensorType> & operator=(const TensorOther &copy)

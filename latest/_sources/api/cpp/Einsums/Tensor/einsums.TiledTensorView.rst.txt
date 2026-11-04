@@ -49,7 +49,16 @@ Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
       :param other: The tensor view to copy.
 
 
+   .. cpp:function:: TiledTensorView(TiledTensorView<T, Rank> &&other) noexcept = default
+
+      Move constructor. The tile views change owner; the viewed tensor is untouched.
+
+      :param other: The tensor view to move.
+
+
    .. cpp:function:: ~TiledTensorView() override = default
+
+   .. cpp:function:: TiledTensorView<T, Rank> & operator=(const TiledTensorView<T, Rank> &copy) = default
 
    .. cpp:function:: bool full_view_of_underlying() const override
 

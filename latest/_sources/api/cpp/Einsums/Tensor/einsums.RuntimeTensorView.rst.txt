@@ -36,6 +36,17 @@ Defined in header ``Einsums/Tensor/RuntimeTensor.hpp``.
       :param copy: The tensor to copy.
 
 
+   .. cpp:function:: RuntimeTensorView(RuntimeTensorView<T> &&other) noexcept
+
+      Move constructor. The view and its keepalive on the parent's storage change owner.
+
+      The liveness token is not moved: it names the object at an address, and this one is a different
+      object. There is no move assignment: assigning to a view writes into the viewed data, and an rvalue
+      does the same through the copy assignment.
+
+      :param other: The view to move.
+
+
    .. cpp:function:: RuntimeTensorView(const RuntimeTensor<T> &view)
 
       Creates a new view based on another view.

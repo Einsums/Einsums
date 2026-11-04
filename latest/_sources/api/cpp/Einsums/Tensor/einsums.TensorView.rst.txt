@@ -33,6 +33,12 @@ Defined in header ``Einsums/Tensor/Tensor.hpp``.
       Default copy constructor.
 
 
+   .. cpp:function:: TensorView(TensorView<T, rank> &&) noexcept = default
+
+      Move constructor. There is no move assignment: assigning to a view writes into the viewed data, and an
+      rvalue does the same through the copy assignment.
+
+
    .. cpp:function:: template <size_t OtherRank, Container Dim, typename Alloc, typename... Args> explicit TensorView(const GeneralTensor<T, OtherRank, Alloc> &other, const Dim &dims, Args &&... args)
 
       Creates a view of a tensor with the given properties.

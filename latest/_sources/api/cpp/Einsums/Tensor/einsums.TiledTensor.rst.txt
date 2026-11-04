@@ -57,7 +57,18 @@ Defined in header ``Einsums/Tensor/TiledTensor.hpp``.
       :param other: The tensor to copy.
 
 
+   .. cpp:function:: TiledTensor(TiledTensor<T, Rank> &&other) noexcept = default
+
+      Move constructor. The tiles change owner without being copied.
+
+      :param other: The tensor to move.
+
+
    .. cpp:function:: ~TiledTensor() override = default
+
+   .. cpp:function:: TiledTensor<T, Rank> & operator=(const TiledTensor<T, Rank> &copy) = default
+
+   .. cpp:function:: TiledTensor<T, Rank> & operator=(TiledTensor<T, Rank> &&other) noexcept = default
 
    .. cpp:function:: template <TiledTensorConcept TensorOther> requires (SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>) TiledTensor<T, Rank> & operator=(const TensorOther &copy)
 

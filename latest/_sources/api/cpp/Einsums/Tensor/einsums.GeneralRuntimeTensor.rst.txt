@@ -54,6 +54,15 @@ Defined in header ``Einsums/Tensor/RuntimeTensor.hpp``.
       Default copy constructor.
 
 
+   .. cpp:function:: GeneralRuntimeTensor(GeneralRuntimeTensor<T, Alloc> &&other) noexcept
+
+      Move constructor. The storage block changes owner without being copied.
+
+      Views and captured graphs that share the block follow the data to this tensor. ``other`` is left an
+      empty tensor with a block of its own. The liveness token is not moved: it names the object at an
+      address, and this one is a different object.
+
+
    .. cpp:function:: template <typename Alloc2> GeneralRuntimeTensor(const GeneralRuntimeTensor<T, Alloc2> &copy)
 
       Copy with a different allocator.
@@ -406,6 +415,19 @@ Defined in header ``Einsums/Tensor/RuntimeTensor.hpp``.
       Copy the data from one tensor into this tensor.
 
       :param other: The tensor to copy from.
+
+
+   .. cpp:function:: GeneralRuntimeTensor<T, Alloc> & operator=(GeneralRuntimeTensor<T, Alloc> &&other)
+
+      Move assignment. Takes ``other's`` storage block when nothing else shares this tensor's.
+
+      Assignment writes into this tensor's block, and views and captured graphs that share it see the new
+      data; a graph captured once and replayed after its inputs are reassigned depends on that. Swapping
+      in ``other's`` block would leave them reading the old one, so while the block is shared this copies,
+      as copy assignment does. Otherwise it is the move constructor's transfer, and this tensor keeps its
+      own liveness token.
+
+      :param other: The tensor to move from.
 
 
    .. cpp:function:: template <typename Alloc2> GeneralRuntimeTensor<T, Alloc> & operator=(const GeneralRuntimeTensor<T, Alloc2> &other)
