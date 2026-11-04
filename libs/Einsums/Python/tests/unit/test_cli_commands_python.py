@@ -45,8 +45,10 @@ def test_info_names_the_blas_the_runtime_uses(capsys, tmp_path, monkeypatch):
     runtime = json.loads(hardware.profile_header_json())["software"]["blas"]
     assert runtime != "unidentified"
     assert info["blas"] == runtime
-    assert info["libEinsums"] is not None and Path(info["libEinsums"]).is_file()
-    assert info["blas_libraries"], "the linked-library walk found no BLAS under libEinsums"
+    # The linked-library walk reads otool or ldd; Windows has neither, so there only the runtime names the BLAS.
+    if shutil.which("otool") or shutil.which("ldd"):
+        assert info["libEinsums"] is not None and Path(info["libEinsums"]).is_file()
+        assert info["blas_libraries"], "the linked-library walk found no BLAS under libEinsums"
 
 
 def test_options_lists_the_registry_with_its_spellings():
