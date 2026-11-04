@@ -40,6 +40,7 @@
 #include <fmt/format.h>
 
 #include <algorithm>
+#include <cmath>
 #include <complex>
 #include <cstdint>
 #include <cstdlib>
@@ -91,6 +92,27 @@ cg::Graph must_load(std::string const &text) {
     INFO((graph ? std::string{} : graph.error().message));
     REQUIRE(graph.has_value());
     return std::move(*graph);
+}
+
+/// How far a computed ``i,j <- i,k ; k,j`` may sit from reference_einsum's, element by element.
+///
+/// Rounding in a sum grows with its terms, not with what they cancel to, so a bound relative to the
+/// result fails whenever random terms nearly cancel: one seed in many drew an element of 6.5e-5 from
+/// terms near 1, which differed from the reference in its last bits and missed a relative 1e-13. Each
+/// of the two sums, computed and reference, is within k units of rounding of sum_k |A(i,k)| |B(k,j)|.
+Tensor<double, 2> gemm_rounding_bound(Tensor<double, 2> const &A, Tensor<double, 2> const &B) {
+    Tensor<double, 2> bound("bound", A.dim(0), B.dim(1));
+    auto const        k = static_cast<double>(A.dim(1));
+    for (size_t i = 0; i < A.dim(0); ++i) {
+        for (size_t j = 0; j < B.dim(1); ++j) {
+            double magnitude = 0.0;
+            for (size_t p = 0; p < A.dim(1); ++p) {
+                magnitude += std::abs(A(i, p)) * std::abs(B(p, j));
+            }
+            bound(i, j) = 2.0 * k * std::numeric_limits<double>::epsilon() * magnitude;
+        }
+    }
+    return bound;
 }
 
 /// The message a refused save produced.
@@ -1473,9 +1495,10 @@ TEST_CASE("SaveLoad - a backed tensor keeps its backing and is reopened through 
     ones.set_all(1.5);
     auto expected = create_zero_tensor<double>("E", 3, 2);
     reference_einsum("i,j <- i,k ; k,j", &expected, A, ones);
+    auto const bound = gemm_rounding_bound(A, ones);
     for (size_t i = 0; i < 3; ++i) {
         for (size_t j = 0; j < 2; ++j) {
-            CHECK_THAT(C2(i, j), Catch::Matchers::WithinRel(expected(i, j), 1e-13));
+            CHECK_THAT(C2(i, j), Catch::Matchers::WithinAbs(expected(i, j), bound(i, j)));
         }
     }
 
@@ -1584,12 +1607,13 @@ TEST_CASE("SaveLoad - a write backing keeps its access and is reopened for writi
 
     auto expected = create_zero_tensor<double>("E", 3, 2);
     reference_einsum("i,j <- i,k ; k,j", &expected, A, B);
+    auto const  bound  = gemm_rounding_bound(A, B);
     auto const &stored = sink_buffers()["saved"];
     REQUIRE(stored.size() == 6);
     // The sink holds the backing's column-major order.
     for (size_t i = 0; i < 3; ++i) {
         for (size_t j = 0; j < 2; ++j) {
-            CHECK_THAT(stored[i + (j * 3)], Catch::Matchers::WithinRel(expected(i, j), 1e-13));
+            CHECK_THAT(stored[i + (j * 3)], Catch::Matchers::WithinAbs(expected(i, j), bound(i, j)));
         }
     }
 
@@ -1644,12 +1668,13 @@ TEST_CASE("SaveLoad - a result declared at zero is zeroed at every replay of the
     loaded.apply(manager);
     auto expected = create_zero_tensor<double>("E", 3, 2);
     reference_einsum("i,j <- i,k ; k,j", &expected, A, X);
+    auto const bound = gemm_rounding_bound(A, X);
     for (int replay = 0; replay < 2; ++replay) {
         INFO("replay " << replay);
         loaded.execute();
         for (size_t i = 0; i < 3; ++i) {
             for (size_t j = 0; j < 2; ++j) {
-                CHECK_THAT(result(i, j), Catch::Matchers::WithinRel(expected(i, j), 1e-13));
+                CHECK_THAT(result(i, j), Catch::Matchers::WithinAbs(expected(i, j), bound(i, j)));
             }
         }
     }
