@@ -19,6 +19,7 @@ import pytest
 from einsums import _core, rc
 from einsums.cli import main
 from einsums.cli.completion import bash, command_tree, fish
+from einsums.cli.info import link_walk_tool
 
 
 def test_info_reports_the_build_and_machine(capsys):
@@ -45,8 +46,10 @@ def test_info_names_the_blas_the_runtime_uses(capsys, tmp_path, monkeypatch):
     runtime = json.loads(hardware.profile_header_json())["software"]["blas"]
     assert runtime != "unidentified"
     assert info["blas"] == runtime
-    # The linked-library walk reads otool or ldd; Windows has neither, so there only the runtime names the BLAS.
-    if shutil.which("otool") or shutil.which("ldd"):
+    # The linked-library walk needs a platform tool, and Windows has none, so there only the runtime names
+    # the BLAS. Ask info which tool it uses rather than looking on PATH: Git for Windows puts an MSYS ldd
+    # there, which info rightly ignores.
+    if link_walk_tool() is not None:
         assert info["libEinsums"] is not None and Path(info["libEinsums"]).is_file()
         assert info["blas_libraries"], "the linked-library walk found no BLAS under libEinsums"
 

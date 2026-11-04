@@ -71,14 +71,27 @@ def _rpaths(binary: Path) -> list[str]:
     return [p.replace("@loader_path", str(binary.parent)) for p in paths]
 
 
+def link_walk_tool() -> str | None:
+    """The tool that lists a binary's linked libraries here: otool on macOS, ldd on other Unixes.
+
+    None on Windows, which has no such tool of its own. The ldd that Git for Windows puts on PATH is
+    MSYS's, and prints MSYS paths that Windows Python cannot open, so it is not used even when present.
+    """
+    if sys.platform == "win32":
+        return None
+    tool = "otool" if sys.platform == "darwin" else "ldd"
+    return tool if shutil.which(tool) else None
+
+
 def _linked_libraries(binary: Path, inherited: tuple[str, ...] = ()) -> list[tuple[str, tuple[str, ...]]]:
-    """Shared libraries *binary* resolves to, from ldd or otool (empty if neither is available).
+    """Shared libraries *binary* resolves to, from ``link_walk_tool()`` (empty without one).
 
     Each comes with the rpaths a library it loads in turn searches. otool prints install names as the
     binary records them, so an @rpath or @loader_path one is expanded here the way dyld would, against
     *binary*'s own rpaths and those of whatever loaded it, rather than against the working directory.
     """
-    if sys.platform == "darwin" and shutil.which("otool"):
+    tool = link_walk_tool()
+    if tool == "otool":
         out = subprocess.run(["otool", "-L", str(binary)], capture_output=True, text=True).stdout
         search = (*_rpaths(binary), *inherited)
         found = []
@@ -91,7 +104,7 @@ def _linked_libraries(binary: Path, inherited: tuple[str, ...] = ()) -> list[tup
             # Unresolved, so a stand-in such as conda's libblas.3.dylib keeps its own name.
             found.append((str(hit) if hit else name, search))
         return found
-    if shutil.which("ldd"):
+    if tool == "ldd":
         out = subprocess.run(["ldd", str(binary)], capture_output=True, text=True).stdout
         return [(m.group(1), ()) for m in re.finditer(r"=>\s+(\S+)", out)]
     return []
